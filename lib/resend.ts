@@ -9,4 +9,4 @@ export function getResendClient(): Resend {
   return client;
 }
 
-export const AFZENDER = process.env.RESEND_AFZENDER ?? "Le Bouliste.be <onboarding@resend.dev>";
+export const AFZENDER = process.env.RESEND_AFZENDER ?? "PetanQ <onboarding@resend.dev>";
