@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-licht text-donker font-body;
+}
+
+.veld-input {
+  @apply rounded-md border-[1.5px] border-rand bg-white px-3 py-2.5 font-body text-sm text-donker outline-none transition-colors focus:border-blauw-3;
+}
