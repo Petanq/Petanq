@@ -1,10 +1,4 @@
-import type { Metadata } from "next";
 import { BeheerNav } from "@/components/beheer/beheer-nav";
-
-export const metadata: Metadata = {
-  title: "Beheer",
-  robots: { index: false, follow: false },
-};
 
 export default function BeheerDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
