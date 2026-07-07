@@ -25,7 +25,7 @@ export function NieuwToernooiNieuwsbriefEmail({
       <EmailLayout titel={`Nouveau tournoi en ${provincieNaam}`}>
         <Text style={tekstStijl}>Bonjour,</Text>
         <Text style={tekstStijl}>
-          Un nouveau tournoi vient d'être ajouté dans votre province ({provincieNaam}) :
+          {"Un nouveau tournoi vient d'être ajouté dans votre province "}({provincieNaam}) :
         </Text>
         <Text style={{ ...tekstStijl, fontWeight: 700 }}>
           {naam} — {clubnaam}

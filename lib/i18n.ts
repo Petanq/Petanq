@@ -179,7 +179,7 @@ const nl = {
     toernooien: "Toernooien",
     clubs: "Clubs",
   },
-} as const;
+};
 
 const fr: typeof nl = {
   nav: {

@@ -25,7 +25,7 @@ export function MeldingModeratorEmail({ naam, clubnaam, datum, gemeente, beheerL
         Bekijk in het beheerspaneel
       </Button>
       <Text style={{ ...tekstStijl, marginTop: "20px", color: "#94a3b8", fontSize: "12px" }}>
-        Un nouveau tournoi est en attente d'approbation. Consultez le panneau d'administration pour le vérifier.
+        {"Un nouveau tournoi est en attente d'approbation. Consultez le panneau d'administration pour le vérifier."}
       </Text>
     </EmailLayout>
   );

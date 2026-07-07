@@ -27,7 +27,7 @@ export function WeigeringEmail({ naam, reden }: Props) {
         Bonjour,
       </Text>
       <Text style={tekstStijl}>
-        Votre tournoi <strong>{naam}</strong> n'a malheureusement pas été publié sur Le Bouliste.be.
+        {"Votre tournoi "}<strong>{naam}</strong>{" n'a malheureusement pas été publié sur Le Bouliste.be."}
       </Text>
       {reden && (
         <Text style={tekstStijl}>
@@ -35,7 +35,7 @@ export function WeigeringEmail({ naam, reden }: Props) {
         </Text>
       )}
       <Text style={tekstStijl}>
-        Vous pouvez soumettre à nouveau votre tournoi après correction, ou nous contacter pour plus d'informations.
+        {"Vous pouvez soumettre à nouveau votre tournoi après correction, ou nous contacter pour plus d'informations."}
       </Text>
     </EmailLayout>
   );

@@ -14,7 +14,8 @@ export function BevestigingIndienerEmail({ taal, naam, datum, gemeente }: Props)
       <EmailLayout titel="Votre tournoi a bien été reçu">
         <Text style={tekstStijl}>Bonjour,</Text>
         <Text style={tekstStijl}>
-          Merci d'avoir soumis votre tournoi <strong>{naam}</strong> ({new Date(datum).toLocaleDateString("fr-BE")}, {gemeente}).
+          {"Merci d'avoir soumis votre tournoi "}<strong>{naam}</strong>{" "}
+          ({new Date(datum).toLocaleDateString("fr-BE")}, {gemeente}).
         </Text>
         <Text style={tekstStijl}>
           Un bénévole vérifiera votre demande sous 48 heures. Vous recevrez un e-mail dès que votre tournoi sera publié sur Le Bouliste.be.
