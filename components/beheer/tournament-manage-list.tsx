@@ -3,10 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
-import { Toernooi } from "@/lib/types";
+import { Categorie, Formule, Speelvorm, Toernooi } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { formatUur } from "@/lib/datum";
 import { toernooiBewerken, toernooiVerwijderen } from "@/actions/beheer-toernooien";
+
+const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"];
+const FORMULES: Formule[] = [
+  "tete-a-tete",
+  "doublette",
+  "triplette",
+  "sextet",
+  "quartet",
+  "kwintet",
+  "kleurentornooi",
+];
 
 export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] }) {
   const { t, taal } = useTranslation();
@@ -82,6 +93,11 @@ function EditForm({
   const [uur, setUur] = useState(toernooi.uur);
   const [gemeente, setGemeente] = useState(toernooi.gemeente);
   const [provincie, setProvincie] = useState<Provincie>(toernooi.provincie);
+  const [categorie, setCategorie] = useState<Categorie>(toernooi.categorie);
+  const [formule, setFormule] = useState<Formule>(toernooi.formule);
+  const [speelvorm, setSpeelvorm] = useState<Speelvorm>(toernooi.speelvorm ?? "rondes");
+  const [aantalRonden, setAantalRonden] = useState(String(toernooi.aantal_ronden ?? ""));
+  const [aantalPoules, setAantalPoules] = useState(String(toernooi.aantal_poules ?? ""));
   const [bezig, setBezig] = useState(false);
 
   async function opslaan() {
@@ -93,6 +109,11 @@ function EditForm({
       uur,
       gemeente,
       provincie,
+      categorie,
+      formule,
+      speelvorm,
+      aantal_ronden: speelvorm === "rondes" ? Number(aantalRonden) || null : null,
+      aantal_poules: speelvorm === "poules" ? Number(aantalPoules) || null : null,
     });
     setBezig(false);
     onKlaar();
@@ -135,7 +156,82 @@ function EditForm({
             ))}
           </select>
         </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.categorie}
+          <select
+            value={categorie}
+            onChange={(e) => setCategorie(e.target.value as Categorie)}
+            className="veld-input"
+          >
+            {CATEGORIEEN.map((c) => (
+              <option key={c} value={c}>
+                {t.categorie[c]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.formule}
+          <select
+            value={formule}
+            onChange={(e) => setFormule(e.target.value as Formule)}
+            className="veld-input"
+          >
+            {FORMULES.map((f) => (
+              <option key={f} value={f}>
+                {t.formule[f]}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
+
+      <div className="mt-3 flex flex-col gap-1.5">
+        <span className="text-xs font-bold text-donker">{t.form.speelvorm}</span>
+        <div className="flex gap-2">
+          {(["rondes", "poules"] as Speelvorm[]).map((sv) => (
+            <button
+              key={sv}
+              type="button"
+              onClick={() => setSpeelvorm(sv)}
+              className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+                speelvorm === sv
+                  ? "border-blauw bg-blauw text-white"
+                  : "border-rand text-grijs hover:border-blauw-3"
+              }`}
+            >
+              {t.speelvorm[sv]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {speelvorm === "rondes" ? (
+          <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+            {t.form.aantalRonden}
+            <input
+              type="number"
+              min={1}
+              value={aantalRonden}
+              onChange={(e) => setAantalRonden(e.target.value)}
+              className="veld-input"
+            />
+          </label>
+        ) : (
+          <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+            {t.form.aantalPoules}
+            <input
+              type="number"
+              min={1}
+              value={aantalPoules}
+              onChange={(e) => setAantalPoules(e.target.value)}
+              className="veld-input"
+            />
+          </label>
+        )}
+      </div>
+
       <div className="mt-3 flex gap-2">
         <button
           onClick={opslaan}
