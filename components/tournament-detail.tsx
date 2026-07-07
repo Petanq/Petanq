@@ -42,9 +42,16 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
           <Detail label={t.form.gemeente}>
             {toernooi.gemeente}, {vertaalProvincie(toernooi.provincie, taal)}
           </Detail>
-          <Detail label={t.form.aantalRonden}>
-            {toernooi.aantal_ronden} {t.lijst.ronden}
-          </Detail>
+          {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
+            <Detail label={t.form.aantalRonden}>
+              {toernooi.aantal_ronden} {t.lijst.ronden}
+            </Detail>
+          )}
+          {toernooi.speelvorm === "poules" && toernooi.aantal_poules && (
+            <Detail label={t.form.aantalPoules}>
+              {toernooi.aantal_poules} {t.lijst.poules}
+            </Detail>
+          )}
           <Detail label={t.filters.inschrijving}>
             {toernooi.gratis
               ? t.filters.gratis

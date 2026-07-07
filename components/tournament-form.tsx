@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
-import { Categorie, Formule } from "@/lib/types";
+import { Categorie, Formule, Speelvorm } from "@/lib/types";
 import { toernooiIndienen } from "@/actions/toernooien";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"];
@@ -31,7 +31,9 @@ export function TournamentForm() {
   const [provincie, setProvincie] = useState<Provincie | "">("");
   const [categorie, setCategorie] = useState<Categorie | "">("");
   const [formule, setFormule] = useState<Formule | "">("");
+  const [speelvorm, setSpeelvorm] = useState<Speelvorm>("rondes");
   const [aantalRonden, setAantalRonden] = useState("4");
+  const [aantalPoules, setAantalPoules] = useState("4");
   const [contactEmail, setContactEmail] = useState("");
   const [gratis, setGratis] = useState(false);
   const [inschrijvingsprijs, setInschrijvingsprijs] = useState("");
@@ -53,7 +55,9 @@ export function TournamentForm() {
         provincie,
         categorie,
         formule,
-        aantal_ronden: aantalRonden,
+        speelvorm,
+        aantal_ronden: speelvorm === "rondes" ? aantalRonden : null,
+        aantal_poules: speelvorm === "poules" ? aantalPoules : null,
         contact_email: contactEmail,
         gratis,
         inschrijvingsprijs: gratis ? null : inschrijvingsprijs || null,
@@ -202,18 +206,51 @@ export function TournamentForm() {
               </select>
             </Veld>
           </div>
+          <Veld label={t.form.speelvorm} verplicht>
+            <div className="flex gap-2">
+              {(["rondes", "poules"] as Speelvorm[]).map((sv) => (
+                <button
+                  key={sv}
+                  type="button"
+                  onClick={() => setSpeelvorm(sv)}
+                  className={`rounded-md border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
+                    speelvorm === sv
+                      ? "border-blauw bg-blauw text-white"
+                      : "border-rand text-grijs hover:border-blauw-3"
+                  }`}
+                >
+                  {t.speelvorm[sv]}
+                </button>
+              ))}
+            </div>
+          </Veld>
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Veld label={t.form.aantalRonden} verplicht>
-              <input
-                type="number"
-                min={1}
-                max={20}
-                required
-                value={aantalRonden}
-                onChange={(e) => setAantalRonden(e.target.value)}
-                className="veld-input"
-              />
-            </Veld>
+            {speelvorm === "rondes" ? (
+              <Veld label={t.form.aantalRonden} verplicht>
+                <input
+                  type="number"
+                  min={1}
+                  max={20}
+                  required
+                  value={aantalRonden}
+                  onChange={(e) => setAantalRonden(e.target.value)}
+                  className="veld-input"
+                />
+              </Veld>
+            ) : (
+              <Veld label={t.form.aantalPoules} verplicht>
+                <input
+                  type="number"
+                  min={1}
+                  max={20}
+                  required
+                  value={aantalPoules}
+                  onChange={(e) => setAantalPoules(e.target.value)}
+                  className="veld-input"
+                />
+              </Veld>
+            )}
             <Veld label={t.form.contactEmail} verplicht>
               <input
                 type="email"

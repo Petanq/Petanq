@@ -44,9 +44,16 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
             📍 {toernooi.gemeente}, {vertaalProvincie(toernooi.provincie, taal)}
           </span>
           <span className="text-[0.74rem] text-grijs">🕐 {formatUur(toernooi.uur)}</span>
-          <span className="text-[0.74rem] text-grijs">
-            {toernooi.aantal_ronden} {t.lijst.ronden}
-          </span>
+          {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
+            <span className="text-[0.74rem] text-grijs">
+              {toernooi.aantal_ronden} {t.lijst.ronden}
+            </span>
+          )}
+          {toernooi.speelvorm === "poules" && toernooi.aantal_poules && (
+            <span className="text-[0.74rem] text-grijs">
+              {toernooi.aantal_poules} {t.lijst.poules}
+            </span>
+          )}
         </div>
       </div>
 

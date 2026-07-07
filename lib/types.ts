@@ -11,6 +11,8 @@ export type Formule =
   | "kwintet"
   | "kleurentornooi";
 
+export type Speelvorm = "rondes" | "poules";
+
 export type ToernooiStatus = "in_behandeling" | "goedgekeurd" | "geweigerd";
 
 export type ModeratorRol = "moderator" | "admin";
@@ -30,7 +32,9 @@ export type Toernooi = {
   regio: Regio;
   categorie: Categorie;
   formule: Formule;
-  aantal_ronden: number;
+  speelvorm: Speelvorm;
+  aantal_ronden: number | null;
+  aantal_poules: number | null;
   inschrijvingsprijs: number | null;
   gratis: boolean;
   max_ploegen: number | null;
