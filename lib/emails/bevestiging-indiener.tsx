@@ -18,7 +18,7 @@ export function BevestigingIndienerEmail({ taal, naam, datum, gemeente }: Props)
           ({new Date(datum).toLocaleDateString("fr-BE")}, {gemeente}).
         </Text>
         <Text style={tekstStijl}>
-          Un bénévole vérifiera votre demande sous 48 heures. Vous recevrez un e-mail dès que votre tournoi sera publié sur Le Bouliste.be.
+          Un bénévole vérifiera votre demande sous 48 heures. Vous recevrez un e-mail dès que votre tournoi sera publié sur PetanQ.
         </Text>
       </EmailLayout>
     );
@@ -31,7 +31,7 @@ export function BevestigingIndienerEmail({ taal, naam, datum, gemeente }: Props)
         Bedankt voor het aanmelden van je toernooi <strong>{naam}</strong> ({new Date(datum).toLocaleDateString("nl-BE")}, {gemeente}).
       </Text>
       <Text style={tekstStijl}>
-        Een vrijwilliger bekijkt je aanmelding binnen 48 uur. Je ontvangt een e-mail zodra je toernooi op Le Bouliste.be verschijnt.
+        Een vrijwilliger bekijkt je aanmelding binnen 48 uur. Je ontvangt een e-mail zodra je toernooi op PetanQ verschijnt.
       </Text>
     </EmailLayout>
   );

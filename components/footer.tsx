@@ -9,7 +9,7 @@ export function Footer() {
     <div className="mt-3 border-t border-rand px-6 py-6 text-center text-[0.77rem] text-grijs">
       <span>
         {t.footer.tekst}{" "}
-        <a href="mailto:info@lebouliste.be" className="text-rood no-underline hover:underline">
+        <a href="mailto:info@petanq.be" className="text-rood no-underline hover:underline">
           {t.footer.link}
         </a>
       </span>

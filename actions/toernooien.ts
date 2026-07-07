@@ -11,7 +11,7 @@ import { MeldingModeratorEmail, meldingModeratorOnderwerp } from "@/lib/emails/m
 
 export type ToernooiActieResultaat = { succes: true } | { succes: false; fout: string };
 
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.lebouliste.be";
+const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
 
 export async function toernooiIndienen(
   input: unknown,

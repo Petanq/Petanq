@@ -13,8 +13,8 @@ export function Nav() {
       <Link href="/" className="flex items-center gap-2.5">
         <Logo />
         <div className="flex flex-col leading-none">
-          <span className="font-titel text-2xl tracking-wide text-white">
-            Le Bouliste<span className="text-geel">.be</span>
+          <span className="font-titel text-2xl font-extrabold tracking-tight text-white">
+            Petan<span className="text-rood">Q</span>
           </span>
           <span className="text-[0.6rem] font-semibold uppercase tracking-widest text-white/40">
             {t.nav.subtitel}

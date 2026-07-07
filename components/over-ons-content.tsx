@@ -12,8 +12,8 @@ export function OverOnsContent() {
       <p className="mb-6 text-sm leading-relaxed text-donker">{t.overOnsPagina.alinea2}</p>
       <p className="text-sm text-grijs">
         {t.overOnsPagina.contact}{" "}
-        <a href="mailto:info@lebouliste.be" className="text-rood hover:underline">
-          info@lebouliste.be
+        <a href="mailto:info@petanq.be" className="text-rood hover:underline">
+          info@petanq.be
         </a>
       </p>
     </div>

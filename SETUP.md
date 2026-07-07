@@ -1,4 +1,4 @@
-# Le Bouliste.be — setup-instructies
+# PetanQ — setup-instructies
 
 ## 1. Node.js installeren
 Download en installeer Node.js LTS (20.x) via https://nodejs.org. Herstart daarna je terminal en controleer:
@@ -42,7 +42,7 @@ Je kan nu inloggen op `/beheer/login` met dat e-mailadres/wachtwoord.
 ## 5. Resend-account aanmaken
 1. Ga naar https://resend.com en maak een account aan.
 2. Ga naar **API Keys** en maak een key aan → wordt `RESEND_API_KEY`.
-3. Voor productie: verifieer je eigen domein onder **Domains** (bv. `lebouliste.be`) en gebruik dan een afzender zoals `Le Bouliste.be <noreply@lebouliste.be>` als `RESEND_AFZENDER`.
+3. Voor productie: verifieer je eigen domein onder **Domains** (bv. `petanq.be`) en gebruik dan een afzender zoals `PetanQ <noreply@petanq.be>` als `RESEND_AFZENDER`.
    - Zonder geverifieerd domein kan je tijdens ontwikkeling testen met het Resend-sandboxadres `onboarding@resend.dev`, maar dan kunnen mails alleen naar je eigen geverifieerde Resend-account-e-mail verstuurd worden.
 
 ## 6. Omgevingsvariabelen instellen
@@ -63,6 +63,6 @@ Ga naar http://localhost:3000.
 ## 8. Deployen op Vercel
 1. Maak een Git-repository (GitHub/GitLab) van dit project en push de code.
 2. Ga naar https://vercel.com, importeer de repository.
-3. Voeg dezelfde omgevingsvariabelen uit `.env.local` toe bij **Project Settings > Environment Variables** (met `NEXT_PUBLIC_SITE_URL` = je definitieve domein, bv. `https://www.lebouliste.be`).
+3. Voeg dezelfde omgevingsvariabelen uit `.env.local` toe bij **Project Settings > Environment Variables** (met `NEXT_PUBLIC_SITE_URL` = je definitieve domein, bv. `https://www.petanq.be`).
 4. Deploy. Koppel nadien je eigen domein onder **Project Settings > Domains**.
 5. Werk `NEXT_PUBLIC_SITE_URL` bij zodra het domein actief is en herdeploy (nodig voor correcte sitemap/e-maillinks/OG-tags).

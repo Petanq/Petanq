@@ -13,7 +13,7 @@ import { Toernooi } from "@/lib/types";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.lebouliste.be";
+const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
 
 async function huidigeModeratorNaam(): Promise<string | null> {
   const supabase = createClient();

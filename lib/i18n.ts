@@ -2,7 +2,7 @@ export type Taal = "nl" | "fr";
 
 const nl = {
   nav: {
-    subtitel: "Alle toernooien van België",
+    subtitel: "De Belgische Petanquekalender",
     toernooien: "Toernooien",
     provincies: "Provincies",
     clubs: "Clubs",
@@ -15,7 +15,7 @@ const nl = {
     titelRegel2: "toernooien",
     titelAccent: "op één plaats",
     beschrijving:
-      "Geen verspreide Facebookposts meer. Le Bouliste.be brengt alle toernooien samen voor heel België, ingedeeld per provincie en gecontroleerd door vrijwilligers.",
+      "Geen verspreide Facebookposts meer. PetanQ brengt alle toernooien samen voor heel België, ingedeeld per provincie en gecontroleerd door vrijwilligers.",
     bekijkKalender: "📅 Bekijk de kalender",
     toernooiAanmelden: "Toernooi aanmelden",
     statToernooien: "Toernooien dit seizoen",
@@ -143,9 +143,9 @@ const nl = {
     kiesFormule: "Kies een formule",
   },
   overOnsPagina: {
-    titel: "Over Le Bouliste.be",
+    titel: "Over PetanQ",
     alinea1:
-      "Le Bouliste.be is de centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel. Geen verspreide Facebookposts en clubwebsites meer: alle toernooien op één plaats, per provincie ingedeeld.",
+      "PetanQ is de centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel. Geen verspreide Facebookposts en clubwebsites meer: alle toernooien op één plaats, per provincie ingedeeld.",
     alinea2:
       "Elk toernooi wordt gecontroleerd door een team vrijwilligers voordat het op de site verschijnt. Organiseer je zelf een toernooi? Meld het gratis aan via het formulier.",
     contact: "Vragen of opmerkingen? Mail naar",
@@ -183,7 +183,7 @@ const nl = {
 
 const fr: typeof nl = {
   nav: {
-    subtitel: "Tous les tournois de Belgique",
+    subtitel: "Le calendrier belge de pétanque",
     toernooien: "Tournois",
     provincies: "Provinces",
     clubs: "Clubs",
@@ -196,7 +196,7 @@ const fr: typeof nl = {
     titelRegel2: "de pétanque",
     titelAccent: "en un seul endroit",
     beschrijving:
-      "Fini les posts dispersés sur Facebook. Le Bouliste.be rassemble tous les tournois de Belgique, classés par province et vérifiés par des bénévoles.",
+      "Fini les posts dispersés sur Facebook. PetanQ rassemble tous les tournois de Belgique, classés par province et vérifiés par des bénévoles.",
     bekijkKalender: "📅 Voir le calendrier",
     toernooiAanmelden: "Ajouter un tournoi",
     statToernooien: "Tournois cette saison",
@@ -324,9 +324,9 @@ const fr: typeof nl = {
     kiesFormule: "Choisissez une formule",
   },
   overOnsPagina: {
-    titel: "À propos de Le Bouliste.be",
+    titel: "À propos de PetanQ",
     alinea1:
-      "Le Bouliste.be est le calendrier central des tournois de pétanque en Flandre, en Wallonie et à Bruxelles. Fini les posts Facebook et sites de clubs dispersés : tous les tournois au même endroit, classés par province.",
+      "PetanQ est le calendrier central des tournois de pétanque en Flandre, en Wallonie et à Bruxelles. Fini les posts Facebook et sites de clubs dispersés : tous les tournois au même endroit, classés par province.",
     alinea2:
       "Chaque tournoi est vérifié par une équipe de bénévoles avant d'apparaître sur le site. Vous organisez un tournoi ? Ajoutez-le gratuitement via le formulaire.",
     contact: "Des questions ou remarques ? Envoyez un e-mail à",
