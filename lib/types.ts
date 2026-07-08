@@ -39,6 +39,7 @@ export type Toernooi = {
   gratis: boolean;
   max_ploegen: number | null;
   vol: boolean;
+  affiche_url: string | null;
   contact_email: string;
   link_inschrijving: string | null;
   opmerking: string | null;

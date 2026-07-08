@@ -126,6 +126,7 @@ export async function toernooiBewerken(
       | "contact_email"
       | "link_inschrijving"
       | "opmerking"
+      | "affiche_url"
     >
   >
 ): Promise<BeheerActieResultaat> {

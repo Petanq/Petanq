@@ -31,6 +31,7 @@ export const toernooiSchema = z
     max_ploegen: z.coerce.number().int().min(1).max(500).nullable().optional(),
     link_inschrijving: z.string().trim().url().nullable().optional().or(z.literal("")),
     opmerking: z.string().trim().max(1000).nullable().optional(),
+    affiche_url: z.string().trim().url().nullable().optional().or(z.literal("")),
   })
   .superRefine((data, ctx) => {
     if (data.speelvorm === "rondes" && !data.aantal_ronden) {

@@ -73,6 +73,15 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
           <p className="mt-6 border-t border-rand pt-6 text-sm text-grijs">{toernooi.opmerking}</p>
         )}
 
+        {toernooi.affiche_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={toernooi.affiche_url}
+            alt={naam}
+            className="mt-6 max-h-[600px] w-full rounded-lg border-[1.5px] border-rand object-contain"
+          />
+        )}
+
         <div className="mt-8 flex flex-wrap gap-3 border-t border-rand pt-6">
           {toernooi.link_inschrijving && (
             <a

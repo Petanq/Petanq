@@ -7,6 +7,7 @@ import { Categorie, Formule, Speelvorm, Toernooi } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { formatUur } from "@/lib/datum";
 import { toernooiBewerken, toernooiVerwijderen } from "@/actions/beheer-toernooien";
+import { uploadAffiche } from "@/lib/upload-affiche";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"];
 const FORMULES: Formule[] = [
@@ -99,7 +100,17 @@ function EditForm({
   const [aantalRonden, setAantalRonden] = useState(String(toernooi.aantal_ronden ?? ""));
   const [aantalPoules, setAantalPoules] = useState(String(toernooi.aantal_poules ?? ""));
   const [vol, setVol] = useState(toernooi.vol);
+  const [afficheUrl, setAfficheUrl] = useState(toernooi.affiche_url);
+  const [afficheBezig, setAfficheBezig] = useState(false);
   const [bezig, setBezig] = useState(false);
+
+  async function afficheGekozen(bestand: File | null) {
+    if (!bestand) return;
+    setAfficheBezig(true);
+    const url = await uploadAffiche(bestand);
+    if (url) setAfficheUrl(url);
+    setAfficheBezig(false);
+  }
 
   async function opslaan() {
     setBezig(true);
@@ -116,6 +127,7 @@ function EditForm({
       aantal_ronden: speelvorm === "rondes" ? Number(aantalRonden) || null : null,
       aantal_poules: speelvorm === "poules" ? Number(aantalPoules) || null : null,
       vol,
+      affiche_url: afficheUrl,
     });
     setBezig(false);
     onKlaar();
@@ -238,6 +250,21 @@ function EditForm({
         <input type="checkbox" checked={vol} onChange={(e) => setVol(e.target.checked)} className="h-4 w-4" />
         {t.form.vol}
       </label>
+
+      <div className="mt-3 flex flex-col gap-1.5">
+        <span className="text-xs font-bold text-donker">{t.form.affiche}</span>
+        {afficheUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={afficheUrl} alt="" className="mb-1 h-32 w-auto rounded-md border border-rand object-contain" />
+        )}
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={(e) => afficheGekozen(e.target.files?.[0] ?? null)}
+          className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
+        />
+        {afficheBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
+      </div>
 
       <div className="mt-3 flex gap-2">
         <button

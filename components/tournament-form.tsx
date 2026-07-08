@@ -6,6 +6,7 @@ import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { Categorie, Formule, Speelvorm } from "@/lib/types";
 import { toernooiIndienen } from "@/actions/toernooien";
+import { uploadAffiche } from "@/lib/upload-affiche";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"];
 const FORMULES: Formule[] = [
@@ -40,10 +41,20 @@ export function TournamentForm() {
   const [maxPloegen, setMaxPloegen] = useState("");
   const [linkInschrijving, setLinkInschrijving] = useState("");
   const [opmerking, setOpmerking] = useState("");
+  const [afficheFile, setAfficheFile] = useState<File | null>(null);
+  const [afficheBezig, setAfficheBezig] = useState(false);
 
   async function versturen(e: React.FormEvent) {
     e.preventDefault();
     setStatus("bezig");
+
+    let afficheUrl: string | null = null;
+    if (afficheFile) {
+      setAfficheBezig(true);
+      afficheUrl = await uploadAffiche(afficheFile);
+      setAfficheBezig(false);
+    }
+
     const resultaat = await toernooiIndienen(
       {
         datum,
@@ -64,6 +75,7 @@ export function TournamentForm() {
         max_ploegen: maxPloegen || null,
         link_inschrijving: linkInschrijving || null,
         opmerking: opmerking || null,
+        affiche_url: afficheUrl || null,
       },
       taal
     );
@@ -314,6 +326,16 @@ export function TournamentForm() {
               className="veld-input resize-none"
             />
           </Veld>
+
+          <Veld label={t.form.affiche}>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(e) => setAfficheFile(e.target.files?.[0] ?? null)}
+              className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
+            />
+            {afficheFile && <p className="mt-1 text-xs text-grijs">{afficheFile.name}</p>}
+          </Veld>
         </fieldset>
 
         {status === "fout" && <p className="text-sm font-medium text-rood-2">{t.form.fout}</p>}
@@ -323,7 +345,11 @@ export function TournamentForm() {
           disabled={status === "bezig"}
           className="self-start rounded-lg bg-rood px-8 py-3 font-bold text-white transition-colors hover:bg-rood-2 disabled:opacity-60"
         >
-          {status === "bezig" ? t.form.bezigMetVersturen : t.form.versturen}
+          {afficheBezig
+            ? t.form.afficheUploaden
+            : status === "bezig"
+            ? t.form.bezigMetVersturen
+            : t.form.versturen}
         </button>
       </form>
     </div>
