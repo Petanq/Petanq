@@ -330,11 +330,12 @@ export function TournamentForm() {
           <Veld label={t.form.affiche}>
             <input
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/*"
               onChange={(e) => setAfficheFile(e.target.files?.[0] ?? null)}
               className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
             />
-            {afficheFile && <p className="mt-1 text-xs text-grijs">{afficheFile.name}</p>}
+            <p className="mt-1 text-xs text-grijs">{t.form.afficheHint}</p>
+            {afficheFile && <p className="mt-1 text-xs font-semibold text-donker">{afficheFile.name}</p>}
           </Veld>
         </fieldset>
 
