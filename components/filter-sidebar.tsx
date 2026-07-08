@@ -73,8 +73,18 @@ export function FilterSidebar({
 }) {
   const { t, taal } = useTranslation();
 
-  function tel(predicaat: (tn: Toernooi) => boolean) {
-    return alleToernooien.filter(predicaat).length;
+  function voldoetAanOverigeFilters(tn: Toernooi, exclusief: keyof FilterState) {
+    if (exclusief !== "regio" && filters.regio && tn.regio !== filters.regio) return false;
+    if (exclusief !== "provincie" && filters.provincie && tn.provincie !== filters.provincie) return false;
+    if (exclusief !== "categorie" && filters.categorie && tn.categorie !== filters.categorie) return false;
+    if (exclusief !== "formule" && filters.formule && tn.formule !== filters.formule) return false;
+    if (exclusief !== "club" && filters.club && !tn.clubnaam.toLowerCase().includes(filters.club.toLowerCase()))
+      return false;
+    return true;
+  }
+
+  function tel(exclusief: keyof FilterState, predicaat: (tn: Toernooi) => boolean) {
+    return alleToernooien.filter((tn) => voldoetAanOverigeFilters(tn, exclusief) && predicaat(tn)).length;
   }
 
   return (
@@ -94,7 +104,7 @@ export function FilterSidebar({
           actief={filters.regio === null}
           onClick={() => setFilters({ ...filters, regio: null, provincie: null })}
           label={t.filters.heelBelgie}
-          aantal={alleToernooien.length}
+          aantal={tel("regio", () => true)}
         />
         {REGIOS.map((regio) => (
           <FilterItem
@@ -102,7 +112,7 @@ export function FilterSidebar({
             actief={filters.regio === regio}
             onClick={() => setFilters({ ...filters, regio, provincie: null })}
             label={vertaalRegio(regio, taal)}
-            aantal={tel((tn) => tn.regio === regio)}
+            aantal={tel("regio", (tn) => tn.regio === regio)}
           />
         ))}
       </FilterCard>
@@ -112,7 +122,7 @@ export function FilterSidebar({
           actief={filters.provincie === null}
           onClick={() => setFilters({ ...filters, provincie: null })}
           label={t.filters.alleProvincies}
-          aantal={alleToernooien.length}
+          aantal={tel("provincie", () => true)}
         />
         {ALLE_PROVINCIES.filter((p) => !filters.regio || PROVINCIE_REGIO[p] === filters.regio).map((provincie) => (
           <FilterItem
@@ -120,7 +130,7 @@ export function FilterSidebar({
             actief={filters.provincie === provincie}
             onClick={() => setFilters({ ...filters, provincie })}
             label={vertaalProvincie(provincie, taal)}
-            aantal={tel((tn) => tn.provincie === provincie)}
+            aantal={tel("provincie", (tn) => tn.provincie === provincie)}
           />
         ))}
       </FilterCard>
@@ -130,7 +140,7 @@ export function FilterSidebar({
           actief={filters.categorie === null}
           onClick={() => setFilters({ ...filters, categorie: null })}
           label={t.filters.alleCategorieen}
-          aantal={alleToernooien.length}
+          aantal={tel("categorie", () => true)}
         />
         {CATEGORIEEN.map((categorie) => (
           <FilterItem
@@ -138,7 +148,7 @@ export function FilterSidebar({
             actief={filters.categorie === categorie}
             onClick={() => setFilters({ ...filters, categorie })}
             label={t.categorie[categorie]}
-            aantal={tel((tn) => tn.categorie === categorie)}
+            aantal={tel("categorie", (tn) => tn.categorie === categorie)}
             pip={CATEGORIE_PIP[categorie]}
           />
         ))}
@@ -149,7 +159,7 @@ export function FilterSidebar({
           actief={filters.formule === null}
           onClick={() => setFilters({ ...filters, formule: null })}
           label={t.filters.alleFormules}
-          aantal={alleToernooien.length}
+          aantal={tel("formule", () => true)}
         />
         {FORMULES.map((formule) => (
           <FilterItem
@@ -157,7 +167,7 @@ export function FilterSidebar({
             actief={filters.formule === formule}
             onClick={() => setFilters({ ...filters, formule })}
             label={t.formule[formule]}
-            aantal={tel((tn) => tn.formule === formule)}
+            aantal={tel("formule", (tn) => tn.formule === formule)}
           />
         ))}
       </FilterCard>
