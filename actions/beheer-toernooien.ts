@@ -9,6 +9,7 @@ import {
 } from "@/lib/emails/nieuw-toernooi-nieuwsbrief";
 import { WeigeringEmail, weigeringOnderwerp } from "@/lib/emails/weigering";
 import { vertaalProvincie } from "@/lib/provincies";
+import { toernooiSchema } from "@/lib/validations";
 import { Toernooi } from "@/lib/types";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
@@ -56,6 +57,62 @@ export async function toernooiGoedkeuren(id: string): Promise<BeheerActieResulta
   }
 
   revalidatePath("/beheer");
+  revalidatePath("/beheer/toernooien");
+  revalidatePath("/");
+  return { succes: true };
+}
+
+export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerActieResultaat> {
+  const parsed = toernooiSchema.safeParse(input);
+  if (!parsed.success) {
+    return { succes: false, fout: "ongeldige_invoer" };
+  }
+  const data = parsed.data;
+
+  const supabase = createClient();
+  const moderatorNaam = await huidigeModeratorNaam();
+
+  const { data: toernooi, error } = await supabase
+    .from("toernooien")
+    .insert({
+      datum: data.datum,
+      uur: data.uur,
+      clubnaam: data.clubnaam,
+      naam_nl: data.naam_nl,
+      naam_fr: data.naam_fr,
+      gemeente: data.gemeente,
+      provincie: data.provincie,
+      categorie: data.categorie,
+      formule: data.formule,
+      speelvorm: data.speelvorm,
+      aantal_ronden: data.speelvorm === "rondes" ? data.aantal_ronden ?? null : null,
+      aantal_poules: data.speelvorm === "poules" ? data.aantal_poules ?? null : null,
+      inschrijvingsprijs: data.gratis ? null : data.inschrijvingsprijs || null,
+      gratis: data.gratis ?? false,
+      max_ploegen: data.max_ploegen || null,
+      contact_email: data.contact_email,
+      link_inschrijving: data.link_inschrijving || null,
+      opmerking: data.opmerking || null,
+      affiche_url: data.affiche_url || null,
+      status: "goedgekeurd",
+      ingediend_door: data.contact_email,
+      goedgekeurd_door: moderatorNaam,
+      goedgekeurd_op: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (error || !toernooi) {
+    console.error("Toernooi toevoegen (admin) mislukt:", error?.message);
+    return { succes: false, fout: "server_fout" };
+  }
+
+  try {
+    await stuurNieuwsbriefVoorToernooi(toernooi as Toernooi);
+  } catch (mailFout) {
+    console.error("Nieuwsbriefmail versturen mislukt:", mailFout);
+  }
+
   revalidatePath("/beheer/toernooien");
   revalidatePath("/");
   return { succes: true };

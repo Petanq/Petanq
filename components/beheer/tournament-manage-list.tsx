@@ -6,7 +6,7 @@ import { useTranslation } from "@/lib/language-context";
 import { Categorie, Formule, Speelvorm, Toernooi } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { formatUur } from "@/lib/datum";
-import { toernooiBewerken, toernooiVerwijderen } from "@/actions/beheer-toernooien";
+import { toernooiBewerken, toernooiToevoegenAlsAdmin, toernooiVerwijderen } from "@/actions/beheer-toernooien";
 import { uploadAffiche } from "@/lib/upload-affiche";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"];
@@ -23,6 +23,7 @@ const FORMULES: Formule[] = [
 export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] }) {
   const { t, taal } = useTranslation();
   const router = useRouter();
+  const [toevoegenOpen, setToevoegenOpen] = useState(false);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
   const [bezig, setBezig] = useState(false);
 
@@ -36,6 +37,25 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="flex justify-end">
+        <button
+          onClick={() => setToevoegenOpen((v) => !v)}
+          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white"
+        >
+          {t.beheer.nieuwToernooi}
+        </button>
+      </div>
+
+      {toevoegenOpen && (
+        <AddForm
+          onKlaar={() => {
+            setToevoegenOpen(false);
+            router.refresh();
+          }}
+          onAnnuleren={() => setToevoegenOpen(false)}
+        />
+      )}
+
       {toernooien.map((tn) =>
         bewerkId === tn.id ? (
           <EditForm
@@ -74,6 +94,305 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
           </div>
         )
       )}
+    </div>
+  );
+}
+
+function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: () => void }) {
+  const { t, taal } = useTranslation();
+  const [clubnaam, setClubnaam] = useState("");
+  const [naamNl, setNaamNl] = useState("");
+  const [naamFr, setNaamFr] = useState("");
+  const [datum, setDatum] = useState("");
+  const [uur, setUur] = useState("");
+  const [gemeente, setGemeente] = useState("");
+  const [provincie, setProvincie] = useState<Provincie | "">("");
+  const [categorie, setCategorie] = useState<Categorie | "">("");
+  const [formule, setFormule] = useState<Formule | "">("");
+  const [speelvorm, setSpeelvorm] = useState<Speelvorm>("rondes");
+  const [aantalRonden, setAantalRonden] = useState("4");
+  const [aantalPoules, setAantalPoules] = useState("4");
+  const [contactEmail, setContactEmail] = useState("");
+  const [gratis, setGratis] = useState(false);
+  const [inschrijvingsprijs, setInschrijvingsprijs] = useState("");
+  const [maxPloegen, setMaxPloegen] = useState("");
+  const [linkInschrijving, setLinkInschrijving] = useState("");
+  const [opmerking, setOpmerking] = useState("");
+  const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
+  const [afficheBezig, setAfficheBezig] = useState(false);
+  const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState(false);
+
+  async function afficheGekozen(bestand: File | null) {
+    if (!bestand) return;
+    setAfficheBezig(true);
+    const url = await uploadAffiche(bestand);
+    if (url) setAfficheUrl(url);
+    setAfficheBezig(false);
+  }
+
+  async function toevoegen() {
+    setBezig(true);
+    setFout(false);
+    const resultaat = await toernooiToevoegenAlsAdmin({
+      clubnaam,
+      naam_nl: naamNl,
+      naam_fr: naamFr,
+      datum,
+      uur,
+      gemeente,
+      provincie,
+      categorie,
+      formule,
+      speelvorm,
+      aantal_ronden: speelvorm === "rondes" ? aantalRonden : null,
+      aantal_poules: speelvorm === "poules" ? aantalPoules : null,
+      contact_email: contactEmail,
+      gratis,
+      inschrijvingsprijs: gratis ? null : inschrijvingsprijs || null,
+      max_ploegen: maxPloegen || null,
+      link_inschrijving: linkInschrijving || null,
+      opmerking: opmerking || null,
+      affiche_url: afficheUrl,
+    });
+    setBezig(false);
+    if (resultaat.succes) {
+      onKlaar();
+    } else {
+      setFout(true);
+    }
+  }
+
+  return (
+    <div className="rounded-[10px] border-[1.5px] border-blauw-3 bg-white p-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.clubnaam}
+          <input value={clubnaam} onChange={(e) => setClubnaam(e.target.value)} className="veld-input" />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.contactEmail}
+          <input
+            type="email"
+            value={contactEmail}
+            onChange={(e) => setContactEmail(e.target.value)}
+            className="veld-input"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.naamNl}
+          <input value={naamNl} onChange={(e) => setNaamNl(e.target.value)} className="veld-input" />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.naamFr}
+          <input value={naamFr} onChange={(e) => setNaamFr(e.target.value)} className="veld-input" />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.datum}
+          <input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} className="veld-input" />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.uur}
+          <input type="time" value={uur} onChange={(e) => setUur(e.target.value)} className="veld-input" />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.gemeente}
+          <input value={gemeente} onChange={(e) => setGemeente(e.target.value)} className="veld-input" />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.provincie}
+          <select
+            value={provincie}
+            onChange={(e) => setProvincie(e.target.value as Provincie)}
+            className="veld-input"
+          >
+            <option value="" disabled>
+              {t.form.kiesProvincie}
+            </option>
+            {ALLE_PROVINCIES.map((p) => (
+              <option key={p} value={p}>
+                {vertaalProvincie(p, taal)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.categorie}
+          <select
+            value={categorie}
+            onChange={(e) => setCategorie(e.target.value as Categorie)}
+            className="veld-input"
+          >
+            <option value="" disabled>
+              {t.form.kiesCategorie}
+            </option>
+            {CATEGORIEEN.map((c) => (
+              <option key={c} value={c}>
+                {t.categorie[c]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.formule}
+          <select
+            value={formule}
+            onChange={(e) => setFormule(e.target.value as Formule)}
+            className="veld-input"
+          >
+            <option value="" disabled>
+              {t.form.kiesFormule}
+            </option>
+            {FORMULES.map((f) => (
+              <option key={f} value={f}>
+                {t.formule[f]}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="mt-3 flex flex-col gap-1.5">
+        <span className="text-xs font-bold text-donker">{t.form.speelvorm}</span>
+        <div className="flex gap-2">
+          {(["rondes", "poules"] as Speelvorm[]).map((sv) => (
+            <button
+              key={sv}
+              type="button"
+              onClick={() => setSpeelvorm(sv)}
+              className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+                speelvorm === sv
+                  ? "border-blauw bg-blauw text-white"
+                  : "border-rand text-grijs hover:border-blauw-3"
+              }`}
+            >
+              {t.speelvorm[sv]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {speelvorm === "rondes" ? (
+          <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+            {t.form.aantalRonden}
+            <input
+              type="number"
+              min={1}
+              value={aantalRonden}
+              onChange={(e) => setAantalRonden(e.target.value)}
+              className="veld-input"
+            />
+          </label>
+        ) : (
+          <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+            {t.form.aantalPoules}
+            <input
+              type="number"
+              min={1}
+              value={aantalPoules}
+              onChange={(e) => setAantalPoules(e.target.value)}
+              className="veld-input"
+            />
+          </label>
+        )}
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.maxPloegen}
+          <input
+            type="number"
+            min={1}
+            value={maxPloegen}
+            onChange={(e) => setMaxPloegen(e.target.value)}
+            className="veld-input"
+          />
+        </label>
+      </div>
+
+      <label className="mt-3 flex items-center gap-2 text-sm font-medium text-donker">
+        <input type="checkbox" checked={gratis} onChange={(e) => setGratis(e.target.checked)} className="h-4 w-4" />
+        {t.form.gratis}
+      </label>
+
+      {!gratis && (
+        <label className="mt-3 flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.inschrijvingsprijs}
+          <input
+            type="number"
+            min={0}
+            step="0.5"
+            value={inschrijvingsprijs}
+            onChange={(e) => setInschrijvingsprijs(e.target.value)}
+            className="veld-input"
+          />
+        </label>
+      )}
+
+      <label className="mt-3 flex flex-col gap-1 text-xs font-bold text-donker">
+        {t.form.linkInschrijving}
+        <input
+          type="url"
+          placeholder="https://"
+          value={linkInschrijving}
+          onChange={(e) => setLinkInschrijving(e.target.value)}
+          className="veld-input"
+        />
+      </label>
+
+      <label className="mt-3 flex flex-col gap-1 text-xs font-bold text-donker">
+        {t.form.opmerking}
+        <textarea
+          rows={3}
+          value={opmerking}
+          onChange={(e) => setOpmerking(e.target.value)}
+          className="veld-input resize-none"
+        />
+      </label>
+
+      <div className="mt-3 flex flex-col gap-1.5">
+        <span className="text-xs font-bold text-donker">{t.form.affiche}</span>
+        {afficheUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={afficheUrl} alt="" className="mb-1 h-32 w-auto rounded-md border border-rand object-contain" />
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => afficheGekozen(e.target.files?.[0] ?? null)}
+          className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
+        />
+        <p className="text-xs text-grijs">{t.form.afficheHint}</p>
+        {afficheBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
+      </div>
+
+      {fout && <p className="mt-3 text-sm font-medium text-rood-2">{t.form.fout}</p>}
+
+      <div className="mt-3 flex gap-2">
+        <button
+          onClick={toevoegen}
+          disabled={
+            bezig ||
+            !clubnaam ||
+            !naamNl ||
+            !naamFr ||
+            !datum ||
+            !uur ||
+            !gemeente ||
+            !provincie ||
+            !categorie ||
+            !formule ||
+            !contactEmail
+          }
+          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+        >
+          {t.beheer.opslaan}
+        </button>
+        <button
+          onClick={onAnnuleren}
+          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+        >
+          {t.beheer.annuleren}
+        </button>
+      </div>
     </div>
   );
 }
