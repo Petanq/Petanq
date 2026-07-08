@@ -58,6 +58,7 @@ export type Club = {
   gemeente: string;
   provincie: Provincie;
   regio: Regio;
+  adres: string | null;
   website: string | null;
   contact_email: string | null;
   aangemaakt_op: string;

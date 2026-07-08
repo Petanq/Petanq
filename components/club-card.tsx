@@ -13,7 +13,17 @@ export function ClubCard({ club }: { club: Club }) {
       </div>
       <div className="min-w-0">
         <div className="truncate text-[0.88rem] font-bold text-donker">{club.naam}</div>
-        <div className="truncate text-[0.76rem] text-grijs">📍 {club.gemeente}</div>
+        <div className="truncate text-[0.76rem] text-grijs">
+          📍 {club.adres || club.gemeente}
+        </div>
+        {club.contact_email && (
+          <a
+            href={`mailto:${club.contact_email}`}
+            className="truncate text-[0.74rem] text-blauw-3 hover:underline"
+          >
+            ✉️ {club.contact_email}
+          </a>
+        )}
       </div>
     </div>
   );

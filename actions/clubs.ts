@@ -16,6 +16,7 @@ export async function clubVoorstellen(input: unknown): Promise<ClubActieResultaa
     naam: parsed.data.naam,
     gemeente: parsed.data.gemeente,
     provincie: parsed.data.provincie,
+    adres: parsed.data.adres || null,
     website: parsed.data.website || null,
     contact_email: parsed.data.contact_email || null,
     actief: false,

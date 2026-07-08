@@ -16,6 +16,7 @@ export async function clubToevoegen(input: unknown): Promise<BeheerActieResultaa
     naam: parsed.data.naam,
     gemeente: parsed.data.gemeente,
     provincie: parsed.data.provincie,
+    adres: parsed.data.adres || null,
     website: parsed.data.website || null,
     contact_email: parsed.data.contact_email || null,
     actief: true,
@@ -29,7 +30,9 @@ export async function clubToevoegen(input: unknown): Promise<BeheerActieResultaa
 
 export async function clubBewerken(
   id: string,
-  wijzigingen: Partial<Pick<Club, "naam" | "gemeente" | "provincie" | "website" | "contact_email">>
+  wijzigingen: Partial<
+    Pick<Club, "naam" | "gemeente" | "provincie" | "adres" | "website" | "contact_email">
+  >
 ): Promise<BeheerActieResultaat> {
   const supabase = createClient();
   const { error } = await supabase.from("clubs").update(wijzigingen).eq("id", id);

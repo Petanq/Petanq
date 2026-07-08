@@ -127,6 +127,7 @@ function ClubFormulier({
   const { t, taal } = useTranslation();
   const [naam, setNaam] = useState(club?.naam ?? "");
   const [gemeente, setGemeente] = useState(club?.gemeente ?? "");
+  const [adres, setAdres] = useState(club?.adres ?? "");
   const [provincie, setProvincie] = useState<Provincie | "">(club?.provincie ?? "");
   const [website, setWebsite] = useState(club?.website ?? "");
   const [contactEmail, setContactEmail] = useState(club?.contact_email ?? "");
@@ -139,11 +140,12 @@ function ClubFormulier({
         naam,
         gemeente,
         provincie: provincie as Provincie,
+        adres: adres || null,
         website: website || null,
         contact_email: contactEmail || null,
       });
     } else {
-      await clubToevoegen({ naam, gemeente, provincie, website, contact_email: contactEmail });
+      await clubToevoegen({ naam, gemeente, provincie, adres, website, contact_email: contactEmail });
     }
     setBezig(false);
     onKlaar();
@@ -176,6 +178,10 @@ function ClubFormulier({
               </option>
             ))}
           </select>
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.clubForm.adres}
+          <input value={adres} onChange={(e) => setAdres(e.target.value)} className="veld-input" />
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.clubForm.website}

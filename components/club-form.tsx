@@ -15,6 +15,7 @@ export function ClubForm() {
   const [status, setStatus] = useState<"idle" | "bezig" | "ok" | "fout">("idle");
   const [naam, setNaam] = useState("");
   const [gemeente, setGemeente] = useState("");
+  const [adres, setAdres] = useState("");
   const [provincie, setProvincie] = useState<Provincie | "">(voorgeselecteerdeProvincie ?? "");
   const [website, setWebsite] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -26,6 +27,7 @@ export function ClubForm() {
       naam,
       gemeente,
       provincie,
+      adres: adres || undefined,
       website: website || undefined,
       contact_email: contactEmail || undefined,
     });
@@ -62,6 +64,14 @@ export function ClubForm() {
             required
             value={gemeente}
             onChange={(e) => setGemeente(e.target.value)}
+            className="veld-input"
+          />
+        </Veld>
+        <Veld label={t.clubForm.adres}>
+          <input
+            value={adres}
+            onChange={(e) => setAdres(e.target.value)}
+            placeholder="Straat 12, 1000 Stad"
             className="veld-input"
           />
         </Veld>

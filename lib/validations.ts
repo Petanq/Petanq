@@ -47,6 +47,7 @@ export const clubSchema = z.object({
   naam: z.string().trim().min(2).max(120),
   gemeente: z.string().trim().min(2).max(120),
   provincie: provincieEnum,
+  adres: z.string().trim().max(200).nullable().optional().or(z.literal("")),
   website: z.string().trim().url().nullable().optional().or(z.literal("")),
   contact_email: z.string().trim().email().nullable().optional().or(z.literal("")),
 });
