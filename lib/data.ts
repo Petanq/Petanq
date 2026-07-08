@@ -71,6 +71,21 @@ export async function getAlleClubsVoorBeheer(): Promise<Club[]> {
   return data as Club[];
 }
 
+export async function getWachtendeClubs(): Promise<Club[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("clubs")
+    .select("*")
+    .eq("actief", false)
+    .order("aangemaakt_op", { ascending: true });
+
+  if (error) {
+    console.error("Kon wachtende clubs niet ophalen:", error.message);
+    return [];
+  }
+  return data as Club[];
+}
+
 export async function getActieveClubs(): Promise<Club[]> {
   const supabase = createClient();
   const { data, error } = await supabase

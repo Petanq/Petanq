@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Club } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
+import { uploadClubFoto } from "@/lib/upload-club-foto";
 import {
   clubActiefZetten,
   clubBewerken,
@@ -18,6 +19,9 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
   const [toevoegenOpen, setToevoegenOpen] = useState(false);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
   const [bezig, setBezig] = useState<string | null>(null);
+
+  const wachtend = clubs.filter((c) => !c.actief);
+  const overige = clubs.filter((c) => c.actief);
 
   async function toggleActief(club: Club) {
     setBezig(club.id);
@@ -34,8 +38,79 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
     router.refresh();
   }
 
+  function renderClub(club: Club) {
+    return bewerkId === club.id ? (
+      <ClubFormulier
+        key={club.id}
+        club={club}
+        onKlaar={() => {
+          setBewerkId(null);
+          router.refresh();
+        }}
+        onAnnuleren={() => setBewerkId(null)}
+      />
+    ) : (
+      <div
+        key={club.id}
+        className={`flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] bg-white p-3.5 ${
+          club.actief ? "border-rand" : "border-geel"
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          {club.foto_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={club.foto_url}
+              alt=""
+              className="h-11 w-11 shrink-0 rounded-full border border-rand object-cover"
+            />
+          )}
+          <div>
+            <div className="font-bold text-donker">{club.naam}</div>
+            <div className="text-sm text-grijs">
+              {club.gemeente}, {vertaalProvincie(club.provincie, "nl")}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+              club.actief ? "bg-[#ecfdf5] text-groen" : "bg-[#fffbeb] text-[#b45309]"
+            }`}
+          >
+            {club.actief ? t.beheer.actief : t.beheer.inactief}
+          </span>
+          <button
+            onClick={() => setBewerkId(club.id)}
+            className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker hover:border-blauw-3"
+          >
+            {t.beheer.bewerken}
+          </button>
+          <button
+            onClick={() => toggleActief(club)}
+            disabled={bezig === club.id}
+            className={`rounded-md px-3 py-1.5 text-sm font-semibold disabled:opacity-60 ${
+              club.actief
+                ? "border border-rand text-donker hover:border-blauw-3"
+                : "bg-groen text-white"
+            }`}
+          >
+            {club.actief ? t.beheer.deactiveren : t.beheer.activeren}
+          </button>
+          <button
+            onClick={() => verwijderen(club.id)}
+            disabled={bezig === club.id}
+            className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white disabled:opacity-60"
+          >
+            {t.beheer.verwijderen}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <div className="flex justify-end">
         <button
           onClick={() => setToevoegenOpen((v) => !v)}
@@ -56,60 +131,26 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
       )}
 
       <div className="flex flex-col gap-2">
-        {clubs.map((club) =>
-          bewerkId === club.id ? (
-            <ClubFormulier
-              key={club.id}
-              club={club}
-              onKlaar={() => {
-                setBewerkId(null);
-                router.refresh();
-              }}
-              onAnnuleren={() => setBewerkId(null)}
-            />
-          ) : (
-            <div
-              key={club.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-3.5"
-            >
-              <div>
-                <div className="font-bold text-donker">{club.naam}</div>
-                <div className="text-sm text-grijs">
-                  {club.gemeente}, {vertaalProvincie(club.provincie, "nl")}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                    club.actief ? "bg-[#ecfdf5] text-groen" : "bg-[#f1f5f9] text-grijs"
-                  }`}
-                >
-                  {club.actief ? t.beheer.actief : t.beheer.inactief}
-                </span>
-                <button
-                  onClick={() => setBewerkId(club.id)}
-                  className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker hover:border-blauw-3"
-                >
-                  {t.beheer.bewerken}
-                </button>
-                <button
-                  onClick={() => toggleActief(club)}
-                  disabled={bezig === club.id}
-                  className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker hover:border-blauw-3 disabled:opacity-60"
-                >
-                  {club.actief ? t.beheer.deactiveren : t.beheer.activeren}
-                </button>
-                <button
-                  onClick={() => verwijderen(club.id)}
-                  disabled={bezig === club.id}
-                  className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white disabled:opacity-60"
-                >
-                  {t.beheer.verwijderen}
-                </button>
-              </div>
-            </div>
-          )
+        <h2 className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-widest text-donker">
+          {t.beheer.nieuweClubaanvragen}
+          {wachtend.length > 0 && (
+            <span className="rounded-full bg-rood px-2 py-0.5 text-xs font-bold text-white">
+              {wachtend.length}
+            </span>
+          )}
+        </h2>
+        {wachtend.length === 0 ? (
+          <p className="text-sm text-grijs">{t.beheer.geenNieuweClubaanvragen}</p>
+        ) : (
+          <div className="flex flex-col gap-2">{wachtend.map(renderClub)}</div>
         )}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <h2 className="text-sm font-extrabold uppercase tracking-widest text-donker">
+          {t.beheer.alleClubs}
+        </h2>
+        <div className="flex flex-col gap-2">{overige.map(renderClub)}</div>
       </div>
     </div>
   );
@@ -131,7 +172,17 @@ function ClubFormulier({
   const [provincie, setProvincie] = useState<Provincie | "">(club?.provincie ?? "");
   const [website, setWebsite] = useState(club?.website ?? "");
   const [contactEmail, setContactEmail] = useState(club?.contact_email ?? "");
+  const [fotoUrl, setFotoUrl] = useState(club?.foto_url ?? null);
+  const [fotoBezig, setFotoBezig] = useState(false);
   const [bezig, setBezig] = useState(false);
+
+  async function fotoGekozen(bestand: File | null) {
+    if (!bestand) return;
+    setFotoBezig(true);
+    const url = await uploadClubFoto(bestand);
+    if (url) setFotoUrl(url);
+    setFotoBezig(false);
+  }
 
   async function opslaan() {
     setBezig(true);
@@ -143,9 +194,18 @@ function ClubFormulier({
         adres: adres || null,
         website: website || null,
         contact_email: contactEmail || null,
+        foto_url: fotoUrl,
       });
     } else {
-      await clubToevoegen({ naam, gemeente, provincie, adres, website, contact_email: contactEmail });
+      await clubToevoegen({
+        naam,
+        gemeente,
+        provincie,
+        adres,
+        website,
+        contact_email: contactEmail,
+        foto_url: fotoUrl,
+      });
     }
     setBezig(false);
     onKlaar();
@@ -196,6 +256,23 @@ function ClubFormulier({
           />
         </label>
       </div>
+
+      <div className="mt-3 flex flex-col gap-1.5">
+        <span className="text-xs font-bold text-donker">{t.clubForm.foto}</span>
+        {fotoUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={fotoUrl} alt="" className="mb-1 h-24 w-24 rounded-full border border-rand object-cover" />
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => fotoGekozen(e.target.files?.[0] ?? null)}
+          className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
+        />
+        <p className="text-xs text-grijs">{t.clubForm.fotoHint}</p>
+        {fotoBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
+      </div>
+
       <div className="mt-3 flex gap-2">
         <button
           onClick={opslaan}

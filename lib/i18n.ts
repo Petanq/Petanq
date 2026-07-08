@@ -114,6 +114,8 @@ const nl = {
     provincie: "Provincie",
     website: "Website (optioneel)",
     contactEmail: "Contact e-mail (optioneel)",
+    foto: "Foto van de club (optioneel)",
+    fotoHint: "Tip: je kan hier gewoon met je GSM een foto nemen.",
     versturen: "Versturen",
     verzonden: "Bedankt! Je voorstel wordt binnenkort bekeken door een vrijwilliger.",
     annuleren: "Annuleren",
@@ -194,6 +196,9 @@ const nl = {
     dashboard: "Dashboard",
     toernooien: "Toernooien",
     clubs: "Clubs",
+    nieuweClubaanvragen: "Nieuwe clubaanvragen",
+    geenNieuweClubaanvragen: "Geen nieuwe clubaanvragen.",
+    alleClubs: "Alle clubs",
   },
 };
 
@@ -311,6 +316,8 @@ const fr: typeof nl = {
     provincie: "Province",
     website: "Site web (optionnel)",
     contactEmail: "E-mail de contact (optionnel)",
+    foto: "Photo du club (optionnel)",
+    fotoHint: "Astuce : vous pouvez simplement prendre une photo avec votre GSM.",
     versturen: "Envoyer",
     verzonden: "Merci ! Votre proposition sera bientôt examinée par un bénévole.",
     annuleren: "Annuler",
@@ -391,6 +398,9 @@ const fr: typeof nl = {
     dashboard: "Tableau de bord",
     toernooien: "Tournois",
     clubs: "Clubs",
+    nieuweClubaanvragen: "Nouvelles demandes de club",
+    geenNieuweClubaanvragen: "Aucune nouvelle demande de club.",
+    alleClubs: "Tous les clubs",
   },
 };
 

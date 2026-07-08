@@ -63,6 +63,7 @@ export type Club = {
   adres: string | null;
   website: string | null;
   contact_email: string | null;
+  foto_url: string | null;
   aangemaakt_op: string;
   actief: boolean;
 };
