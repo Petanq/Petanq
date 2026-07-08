@@ -122,6 +122,7 @@ export async function toernooiBewerken(
       | "inschrijvingsprijs"
       | "gratis"
       | "max_ploegen"
+      | "vol"
       | "contact_email"
       | "link_inschrijving"
       | "opmerking"

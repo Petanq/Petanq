@@ -98,6 +98,7 @@ function EditForm({
   const [speelvorm, setSpeelvorm] = useState<Speelvorm>(toernooi.speelvorm ?? "rondes");
   const [aantalRonden, setAantalRonden] = useState(String(toernooi.aantal_ronden ?? ""));
   const [aantalPoules, setAantalPoules] = useState(String(toernooi.aantal_poules ?? ""));
+  const [vol, setVol] = useState(toernooi.vol);
   const [bezig, setBezig] = useState(false);
 
   async function opslaan() {
@@ -114,6 +115,7 @@ function EditForm({
       speelvorm,
       aantal_ronden: speelvorm === "rondes" ? Number(aantalRonden) || null : null,
       aantal_poules: speelvorm === "poules" ? Number(aantalPoules) || null : null,
+      vol,
     });
     setBezig(false);
     onKlaar();
@@ -231,6 +233,11 @@ function EditForm({
           </label>
         )}
       </div>
+
+      <label className="mt-3 flex items-center gap-2 text-sm font-medium text-donker">
+        <input type="checkbox" checked={vol} onChange={(e) => setVol(e.target.checked)} className="h-4 w-4" />
+        {t.form.vol}
+      </label>
 
       <div className="mt-3 flex gap-2">
         <button

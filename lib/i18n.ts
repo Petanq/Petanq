@@ -51,6 +51,7 @@ const nl = {
     morgen: "Morgen",
     overDagen: (n: number) => `Over ${n} dagen`,
     voorbij: "Voorbij",
+    volBadge: "Vol",
   },
   categorie: {
     heren: "Heren / H/HG",
@@ -139,6 +140,7 @@ const nl = {
     inschrijvingsprijs: "Inschrijvingsprijs (€)",
     gratis: "Dit toernooi is gratis",
     maxPloegen: "Maximum aantal ploegen",
+    vol: "Toernooi is volzet",
     linkInschrijving: "Link naar inschrijving",
     opmerking: "Opmerking",
     verplicht: "verplicht",
@@ -242,6 +244,7 @@ const fr: typeof nl = {
     morgen: "Demain",
     overDagen: (n: number) => `Dans ${n} jours`,
     voorbij: "Passé",
+    volBadge: "Complet",
   },
   categorie: {
     heren: "Messieurs / H/HG",
@@ -330,6 +333,7 @@ const fr: typeof nl = {
     inschrijvingsprijs: "Prix d'inscription (€)",
     gratis: "Ce tournoi est gratuit",
     maxPloegen: "Nombre maximum d'équipes",
+    vol: "Tournoi complet",
     linkInschrijving: "Lien d'inscription",
     opmerking: "Remarque",
     verplicht: "obligatoire",

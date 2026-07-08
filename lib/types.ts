@@ -38,6 +38,7 @@ export type Toernooi = {
   inschrijvingsprijs: number | null;
   gratis: boolean;
   max_ploegen: number | null;
+  vol: boolean;
   contact_email: string;
   link_inschrijving: string | null;
   opmerking: string | null;

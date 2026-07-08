@@ -58,6 +58,11 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
       </div>
 
       <div className="flex flex-col items-end gap-1">
+        {toernooi.vol && (
+          <span className="whitespace-nowrap rounded bg-rood px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+            {t.lijst.volBadge}
+          </span>
+        )}
         <span
           className={`whitespace-nowrap rounded px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${FORMULE_BADGE[toernooi.formule]}`}
         >
