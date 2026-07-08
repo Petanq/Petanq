@@ -120,14 +120,20 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
   const [opmerking, setOpmerking] = useState("");
   const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
   const [afficheBezig, setAfficheBezig] = useState(false);
+  const [afficheFout, setAfficheFout] = useState(false);
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState(false);
 
   async function afficheGekozen(bestand: File | null) {
     if (!bestand) return;
     setAfficheBezig(true);
+    setAfficheFout(false);
     const url = await uploadAffiche(bestand);
-    if (url) setAfficheUrl(url);
+    if (url) {
+      setAfficheUrl(url);
+    } else {
+      setAfficheFout(true);
+    }
     setAfficheBezig(false);
   }
 
@@ -362,6 +368,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
         />
         <p className="text-xs text-grijs">{t.form.afficheHint}</p>
         {afficheBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
+        {afficheFout && <p className="text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
       </div>
 
       {fout && <p className="mt-3 text-sm font-medium text-rood-2">{t.form.fout}</p>}
@@ -421,13 +428,19 @@ function EditForm({
   const [vol, setVol] = useState(toernooi.vol);
   const [afficheUrl, setAfficheUrl] = useState(toernooi.affiche_url);
   const [afficheBezig, setAfficheBezig] = useState(false);
+  const [afficheFout, setAfficheFout] = useState(false);
   const [bezig, setBezig] = useState(false);
 
   async function afficheGekozen(bestand: File | null) {
     if (!bestand) return;
     setAfficheBezig(true);
+    setAfficheFout(false);
     const url = await uploadAffiche(bestand);
-    if (url) setAfficheUrl(url);
+    if (url) {
+      setAfficheUrl(url);
+    } else {
+      setAfficheFout(true);
+    }
     setAfficheBezig(false);
   }
 
@@ -584,6 +597,7 @@ function EditForm({
         />
         <p className="text-xs text-grijs">{t.form.afficheHint}</p>
         {afficheBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
+        {afficheFout && <p className="text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
       </div>
 
       <div className="mt-3 flex gap-2">

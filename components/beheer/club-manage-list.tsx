@@ -174,13 +174,19 @@ function ClubFormulier({
   const [contactEmail, setContactEmail] = useState(club?.contact_email ?? "");
   const [fotoUrl, setFotoUrl] = useState(club?.foto_url ?? null);
   const [fotoBezig, setFotoBezig] = useState(false);
+  const [fotoFout, setFotoFout] = useState(false);
   const [bezig, setBezig] = useState(false);
 
   async function fotoGekozen(bestand: File | null) {
     if (!bestand) return;
     setFotoBezig(true);
+    setFotoFout(false);
     const url = await uploadClubFoto(bestand);
-    if (url) setFotoUrl(url);
+    if (url) {
+      setFotoUrl(url);
+    } else {
+      setFotoFout(true);
+    }
     setFotoBezig(false);
   }
 
@@ -271,6 +277,7 @@ function ClubFormulier({
         />
         <p className="text-xs text-grijs">{t.clubForm.fotoHint}</p>
         {fotoBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
+        {fotoFout && <p className="text-xs font-semibold text-rood-2">{t.clubForm.fotoFout}</p>}
       </div>
 
       <div className="mt-3 flex gap-2">
