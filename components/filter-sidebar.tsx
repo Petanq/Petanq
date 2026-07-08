@@ -162,28 +162,6 @@ export function FilterSidebar({
         ))}
       </FilterCard>
 
-      <FilterCard titel={t.filters.inschrijving}>
-        <FilterItem
-          actief={filters.inschrijving === "gratis"}
-          onClick={() =>
-            setFilters({ ...filters, inschrijving: filters.inschrijving === "gratis" ? null : "gratis" })
-          }
-          label={t.filters.gratis}
-          aantal={tel((tn) => tn.gratis)}
-        />
-        <FilterItem
-          actief={filters.inschrijving === "betalend"}
-          onClick={() =>
-            setFilters({
-              ...filters,
-              inschrijving: filters.inschrijving === "betalend" ? null : "betalend",
-            })
-          }
-          label={t.filters.betalend}
-          aantal={tel((tn) => !tn.gratis)}
-        />
-      </FilterCard>
-
       <FilterCard titel={t.filters.clubsInLijst}>
         <input
           type="text"
