@@ -7,6 +7,7 @@ import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { Categorie, Formule, Speelvorm } from "@/lib/types";
 import { toernooiIndienen } from "@/actions/toernooien";
 import { uploadAffiche } from "@/lib/upload-affiche";
+import { Knop } from "@/components/ui/knop";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"];
 const FORMULES: Formule[] = [
@@ -341,17 +342,13 @@ export function TournamentForm() {
 
         {status === "fout" && <p className="text-sm font-medium text-rood-2">{t.form.fout}</p>}
 
-        <button
-          type="submit"
-          disabled={status === "bezig"}
-          className="self-start rounded-lg bg-rood px-8 py-3 font-bold text-white transition-colors hover:bg-rood-2 disabled:opacity-60"
-        >
+        <Knop type="submit" variant="rood" disabled={status === "bezig"} className="self-start">
           {afficheBezig
             ? t.form.afficheUploaden
             : status === "bezig"
             ? t.form.bezigMetVersturen
             : t.form.versturen}
-        </button>
+        </Knop>
       </form>
     </div>
   );

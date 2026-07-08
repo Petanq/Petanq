@@ -5,6 +5,7 @@ import { useTranslation } from "@/lib/language-context";
 import { Toernooi } from "@/lib/types";
 import { dagNummer, maandKort } from "@/lib/datum";
 import { CATEGORIE_BADGE } from "@/lib/stijlen";
+import { Knop } from "@/components/ui/knop";
 
 type HeroProps = {
   previewToernooien: Toernooi[];
@@ -50,18 +51,12 @@ export function Hero({ previewToernooien, aantalToernooien, aantalClubs }: HeroP
             {t.hero.beschrijving}
           </p>
           <div className="mb-10 flex flex-wrap gap-3">
-            <a
-              href="#toernooien"
-              className="rounded-lg bg-rood px-6 py-3 font-bold text-white shadow-[0_4px_16px_rgba(192,57,43,0.35)] transition-all hover:-translate-y-px hover:bg-rood-2"
-            >
+            <Knop href="#toernooien" variant="rood">
               {t.hero.bekijkKalender}
-            </a>
-            <Link
-              href="/toernooi-toevoegen"
-              className="rounded-lg border-[1.5px] border-white/20 bg-white/10 px-6 py-3 font-semibold text-white transition-colors hover:bg-white/[0.16]"
-            >
+            </Knop>
+            <Knop href="/toernooi-toevoegen" variant="outline">
               {t.hero.toernooiAanmelden}
-            </Link>
+            </Knop>
           </div>
           <div className="flex flex-wrap gap-8 border-t border-white/10 pt-6">
             <Stat waarde={`${aantalToernooien}+`} label={t.hero.statToernooien} />

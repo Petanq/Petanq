@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
+import { Knop } from "@/components/ui/knop";
 
 export function CtaBlock() {
   const { t } = useTranslation();
@@ -13,12 +13,9 @@ export function CtaBlock() {
           <h3 className="mb-1 font-titel text-2xl tracking-wide text-white">{t.cta.titel}</h3>
           <p className="text-[0.84rem] text-white/50">{t.cta.subtitel}</p>
         </div>
-        <Link
-          href="/toernooi-toevoegen"
-          className="whitespace-nowrap rounded-lg bg-rood px-6 py-3 font-bold text-white shadow-[0_4px_16px_rgba(192,57,43,0.35)] transition-all hover:-translate-y-px hover:bg-rood-2"
-        >
+        <Knop href="/toernooi-toevoegen" variant="rood" className="whitespace-nowrap">
           {t.cta.knop}
-        </Link>
+        </Knop>
       </div>
       <div
         className="hidden bg-cover bg-center sm:block"

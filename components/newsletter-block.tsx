@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { inschrijvenOpNieuwsbrief } from "@/actions/nieuwsbrief";
+import { Knop } from "@/components/ui/knop";
 
 export function NewsletterBlock() {
   const { t, taal } = useTranslation();
@@ -42,13 +43,9 @@ export function NewsletterBlock() {
             placeholder={t.nieuwsbrief.emailPlaceholder}
             className="w-[200px] rounded-lg border-none px-3.5 py-2.5 font-body text-[0.85rem] outline-none"
           />
-          <button
-            type="submit"
-            disabled={status === "bezig"}
-            className="rounded-lg bg-geel px-4 py-2.5 font-bold text-donker disabled:opacity-60"
-          >
+          <Knop type="submit" variant="geel" disabled={status === "bezig"}>
             {t.nieuwsbrief.inschrijven}
-          </button>
+          </Knop>
         </form>
         {status === "ok" && (
           <p className="col-span-full text-[0.8rem] font-medium text-geel">{t.nieuwsbrief.dankjewel}</p>

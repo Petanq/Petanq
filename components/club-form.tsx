@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { clubVoorstellen } from "@/actions/clubs";
+import { Knop } from "@/components/ui/knop";
 
 export function ClubForm() {
   const { t, taal } = useTranslation();
@@ -112,18 +113,11 @@ export function ClubForm() {
 
         {status === "fout" && <p className="text-sm font-medium text-rood-2">{t.form.fout}</p>}
 
-        <div className="mt-2 flex gap-3">
-          <button
-            type="submit"
-            disabled={status === "bezig"}
-            className="rounded-lg bg-rood px-6 py-3 font-bold text-white transition-colors hover:bg-rood-2 disabled:opacity-60"
-          >
+        <div className="mt-2 flex items-center gap-3">
+          <Knop type="submit" variant="rood" disabled={status === "bezig"}>
             {t.clubForm.versturen}
-          </button>
-          <Link
-            href="/clubs"
-            className="rounded-lg border-[1.5px] border-rand px-6 py-3 font-semibold text-donker"
-          >
+          </Knop>
+          <Link href="/clubs" className="font-semibold text-donker underline">
             {t.clubForm.annuleren}
           </Link>
         </div>

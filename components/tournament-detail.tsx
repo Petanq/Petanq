@@ -6,6 +6,7 @@ import { Toernooi } from "@/lib/types";
 import { dagVanWeekKort, dagNummer, maandVolledig, formatUur, countdownTekst, parseDatum } from "@/lib/datum";
 import { vertaalProvincie } from "@/lib/provincies";
 import { CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
+import { Knop } from "@/components/ui/knop";
 
 export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
   const { t, taal } = useTranslation();
@@ -84,14 +85,9 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
 
         <div className="mt-8 flex flex-wrap gap-3 border-t border-rand pt-6">
           {toernooi.link_inschrijving && (
-            <a
-              href={toernooi.link_inschrijving}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg bg-rood px-6 py-3 font-bold text-white transition-colors hover:bg-rood-2"
-            >
+            <Knop href={toernooi.link_inschrijving} variant="rood">
               {t.hero.toernooiAanmelden}
-            </a>
+            </Knop>
           )}
           <a
             href={`mailto:${toernooi.contact_email}`}
