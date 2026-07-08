@@ -37,7 +37,8 @@ const nl = {
     inschrijving: "Inschrijving",
     gratis: "Gratis",
     betalend: "Betalend",
-    clubsInLijst: "Clubs in deze lijst",
+    clubsInLijst: "Zoek op club",
+    zoekClubPlaceholder: "Naam van de club...",
     wisFilters: "Filters wissen",
   },
   lijst: {
@@ -227,7 +228,8 @@ const fr: typeof nl = {
     inschrijving: "Inscription",
     gratis: "Gratuit",
     betalend: "Payant",
-    clubsInLijst: "Clubs dans cette liste",
+    clubsInLijst: "Rechercher un club",
+    zoekClubPlaceholder: "Nom du club...",
     wisFilters: "Effacer les filtres",
   },
   lijst: {

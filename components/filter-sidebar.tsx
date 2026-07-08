@@ -73,8 +73,6 @@ export function FilterSidebar({
 }) {
   const { t, taal } = useTranslation();
 
-  const clubsInLijst = Array.from(new Set(alleToernooien.map((tn) => tn.clubnaam))).sort();
-
   function tel(predicaat: (tn: Toernooi) => boolean) {
     return alleToernooien.filter(predicaat).length;
   }
@@ -186,21 +184,15 @@ export function FilterSidebar({
         />
       </FilterCard>
 
-      {clubsInLijst.length > 0 && (
-        <FilterCard titel={t.filters.clubsInLijst}>
-          <div className="max-h-[280px] overflow-y-auto">
-            {clubsInLijst.map((club) => (
-              <FilterItem
-                key={club}
-                actief={filters.club === club}
-                onClick={() => setFilters({ ...filters, club: filters.club === club ? null : club })}
-                label={club}
-                aantal={tel((tn) => tn.clubnaam === club)}
-              />
-            ))}
-          </div>
-        </FilterCard>
-      )}
+      <FilterCard titel={t.filters.clubsInLijst}>
+        <input
+          type="text"
+          value={filters.club ?? ""}
+          onChange={(e) => setFilters({ ...filters, club: e.target.value || null })}
+          placeholder={t.filters.zoekClubPlaceholder}
+          className="w-full rounded-md border-[1.5px] border-rand bg-licht px-3 py-2 font-body text-[0.83rem] outline-none focus:border-blauw-3 focus:bg-white"
+        />
+      </FilterCard>
     </aside>
   );
 }
