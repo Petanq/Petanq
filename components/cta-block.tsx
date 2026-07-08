@@ -19,7 +19,7 @@ export function CtaBlock() {
       </div>
       <div
         className="hidden bg-cover bg-center sm:block"
-        style={{ backgroundImage: "url('/images/legs-petanque.jpg')" }}
+        style={{ backgroundImage: "url('/images/boules-koppel.jpg')" }}
       />
     </div>
   );

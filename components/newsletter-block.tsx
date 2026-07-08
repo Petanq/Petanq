@@ -27,7 +27,7 @@ export function NewsletterBlock() {
     <div className="mt-4 grid grid-cols-1 overflow-hidden rounded-xl bg-gradient-to-br from-blauw to-[#1e3a6e] sm:grid-cols-[200px_1fr]">
       <div
         className="hidden bg-cover bg-center sm:block"
-        style={{ backgroundImage: "url('/images/bocce-family.jpg')" }}
+        style={{ backgroundImage: "url('/images/boules-vrienden.jpg')" }}
       />
       <div className="grid grid-cols-1 gap-6 p-7 sm:grid-cols-[1fr_auto] sm:items-center">
         <div>
