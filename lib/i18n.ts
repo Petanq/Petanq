@@ -8,6 +8,7 @@ const nl = {
     clubs: "Clubs",
     overOns: "Over ons",
     toernooiToevoegen: "+ Toernooi toevoegen",
+    login: "Login",
   },
   hero: {
     label: "Vlaanderen • Wallonië • Brussel",
@@ -214,6 +215,7 @@ const fr: typeof nl = {
     clubs: "Clubs",
     overOns: "À propos",
     toernooiToevoegen: "+ Ajouter un tournoi",
+    login: "Connexion",
   },
   hero: {
     label: "Flandre • Wallonie • Bruxelles",

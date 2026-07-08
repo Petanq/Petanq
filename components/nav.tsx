@@ -40,6 +40,13 @@ export function Nav() {
       <div className="flex items-center gap-3">
         <LanguageToggle />
         <Link
+          href="/beheer/login"
+          title={t.nav.login}
+          className="hidden items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-2 text-[0.83rem] font-medium text-white/50 transition-colors hover:bg-white/[0.08] hover:text-white sm:flex"
+        >
+          🔒 {t.nav.login}
+        </Link>
+        <Link
           href="/toernooi-toevoegen"
           className="whitespace-nowrap rounded-lg bg-rood px-4 py-2 text-[0.83rem] font-bold text-white transition-colors hover:bg-rood-2"
         >

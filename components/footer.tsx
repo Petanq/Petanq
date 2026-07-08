@@ -14,9 +14,13 @@ export function Footer() {
           {t.footer.link}
         </a>
       </span>
-      <div className="mt-2">
+      <div className="mt-2 flex items-center justify-center gap-3">
         <Link href="/privacybeleid" className="text-grijs underline hover:text-donker">
           {t.footer.privacybeleid}
+        </Link>
+        <span className="text-rand">·</span>
+        <Link href="/beheer/login" className="text-grijs underline hover:text-donker">
+          {t.nav.login}
         </Link>
       </div>
     </div>
