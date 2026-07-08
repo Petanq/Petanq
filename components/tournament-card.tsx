@@ -14,20 +14,20 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
   return (
     <Link
       href={`/toernooien/${toernooi.id}`}
-      className="group relative grid grid-cols-[52px_1fr_auto] items-center gap-3.5 overflow-hidden rounded-[10px] border-[1.5px] border-rand bg-white p-3.5 px-4 transition-all hover:translate-x-[3px] hover:border-blauw-3/40 hover:shadow-[0_4px_20px_rgba(26,68,128,0.09)]"
+      className="group relative grid grid-cols-[56px_1fr_auto] items-center gap-4 overflow-hidden rounded-2xl border-[1.5px] border-rand bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-blauw-3/40 hover:shadow-[0_8px_24px_rgba(26,68,128,0.1)]"
     >
       <span
-        className={`absolute left-0 top-0 h-full w-1 rounded-l-[10px] ${CATEGORIE_STREEP[toernooi.categorie]}`}
+        className={`absolute left-0 top-3 h-[calc(100%-24px)] w-1 rounded-full ${CATEGORIE_STREEP[toernooi.categorie]}`}
       />
 
-      <div className="rounded-lg bg-licht px-0.5 py-1.5 text-center">
-        <div className="font-body text-[0.58rem] font-bold uppercase tracking-wide text-grijs">
+      <div className="rounded-xl bg-donker px-0.5 py-2 text-center">
+        <div className="font-body text-[0.58rem] font-bold uppercase tracking-wide text-white/50">
           {dagVanWeekKort(toernooi.datum, taal)}
         </div>
-        <div className="font-titel text-2xl leading-none text-blauw">
+        <div className="font-titel text-2xl leading-none text-geel">
           {dagNummer(toernooi.datum)}
         </div>
-        <div className="font-body text-[0.58rem] font-bold uppercase tracking-wider text-grijs">
+        <div className="font-body text-[0.58rem] font-bold uppercase tracking-wider text-white/50">
           {maandKort(toernooi.datum, taal)}
         </div>
       </div>
@@ -59,17 +59,17 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
 
       <div className="flex flex-col items-end gap-1">
         {toernooi.vol && (
-          <span className="whitespace-nowrap rounded bg-rood px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+          <span className="whitespace-nowrap rounded-full bg-rood px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
             {t.lijst.volBadge}
           </span>
         )}
         <span
-          className={`whitespace-nowrap rounded px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${FORMULE_BADGE[toernooi.formule]}`}
+          className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${FORMULE_BADGE[toernooi.formule]}`}
         >
           {t.formule[toernooi.formule]}
         </span>
         <span
-          className={`whitespace-nowrap rounded px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${CATEGORIE_BADGE[toernooi.categorie]}`}
+          className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${CATEGORIE_BADGE[toernooi.categorie]}`}
         >
           {t.categorie[toernooi.categorie]}
         </span>
