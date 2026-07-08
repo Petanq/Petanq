@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/lib/language-context";
 import { Categorie, Formule, Toernooi } from "@/lib/types";
-import { ALLE_PROVINCIES, Provincie, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
+import { ALLE_PROVINCIES, PROVINCIE_REGIO, Provincie, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
 import { CATEGORIE_PIP } from "@/lib/stijlen";
 
 export type FilterState = {
@@ -92,7 +92,7 @@ export function FilterSidebar({
       <FilterCard titel={t.filters.regio}>
         <FilterItem
           actief={filters.regio === null}
-          onClick={() => setFilters({ ...filters, regio: null })}
+          onClick={() => setFilters({ ...filters, regio: null, provincie: null })}
           label={t.filters.heelBelgie}
           aantal={alleToernooien.length}
         />
@@ -100,7 +100,7 @@ export function FilterSidebar({
           <FilterItem
             key={regio}
             actief={filters.regio === regio}
-            onClick={() => setFilters({ ...filters, regio })}
+            onClick={() => setFilters({ ...filters, regio, provincie: null })}
             label={vertaalRegio(regio, taal)}
             aantal={tel((tn) => tn.regio === regio)}
           />
@@ -114,7 +114,7 @@ export function FilterSidebar({
           label={t.filters.alleProvincies}
           aantal={alleToernooien.length}
         />
-        {ALLE_PROVINCIES.map((provincie) => (
+        {ALLE_PROVINCIES.filter((p) => !filters.regio || PROVINCIE_REGIO[p] === filters.regio).map((provincie) => (
           <FilterItem
             key={provincie}
             actief={filters.provincie === provincie}
