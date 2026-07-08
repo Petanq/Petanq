@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 
 export function Footer() {
@@ -13,6 +14,11 @@ export function Footer() {
           {t.footer.link}
         </a>
       </span>
+      <div className="mt-2">
+        <Link href="/privacybeleid" className="text-grijs underline hover:text-donker">
+          {t.footer.privacybeleid}
+        </Link>
+      </div>
     </div>
   );
 }

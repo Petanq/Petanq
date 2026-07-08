@@ -95,6 +95,7 @@ const nl = {
   footer: {
     tekst: "Alle gegevens worden gecontroleerd door vrijwilligers. Ontbreekt er een toernooi?",
     link: "Stuur een melding.",
+    privacybeleid: "Privacybeleid",
   },
   clubsPagina: {
     titel: "Clubs",
@@ -300,6 +301,7 @@ const fr: typeof nl = {
   footer: {
     tekst: "Toutes les données sont vérifiées par des bénévoles. Un tournoi manque ?",
     link: "Envoyez un signalement.",
+    privacybeleid: "Politique de confidentialité",
   },
   clubsPagina: {
     titel: "Clubs",
