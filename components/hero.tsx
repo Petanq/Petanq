@@ -18,6 +18,15 @@ export function Hero({ previewToernooien, aantalToernooien, aantalClubs }: HeroP
   return (
     <div className="relative overflow-hidden bg-blauw">
       <div
+        className="pointer-events-none absolute inset-0 opacity-60"
+        style={{
+          backgroundImage: "url('/images/hero-petanque.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center 35%",
+        }}
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-blauw via-blauw/90 to-blauw/50" />
+      <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
