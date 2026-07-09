@@ -52,6 +52,8 @@ export const clubSchema = z.object({
   adres: z.string().trim().max(200).nullable().optional().or(z.literal("")),
   website: z.string().trim().url().nullable().optional().or(z.literal("")),
   contact_email: z.string().trim().email().nullable().optional().or(z.literal("")),
+  telefoon: z.string().trim().max(30).nullable().optional().or(z.literal("")),
+  openingsuren: z.string().trim().max(300).nullable().optional().or(z.literal("")),
   foto_url: z.string().trim().url().nullable().optional().or(z.literal("")),
 });
 

@@ -172,6 +172,8 @@ function ClubFormulier({
   const [provincie, setProvincie] = useState<Provincie | "">(club?.provincie ?? "");
   const [website, setWebsite] = useState(club?.website ?? "");
   const [contactEmail, setContactEmail] = useState(club?.contact_email ?? "");
+  const [telefoon, setTelefoon] = useState(club?.telefoon ?? "");
+  const [openingsuren, setOpeningsuren] = useState(club?.openingsuren ?? "");
   const [fotoUrl, setFotoUrl] = useState(club?.foto_url ?? null);
   const [fotoBezig, setFotoBezig] = useState(false);
   const [fotoFout, setFotoFout] = useState(false);
@@ -200,6 +202,8 @@ function ClubFormulier({
         adres: adres || null,
         website: website || null,
         contact_email: contactEmail || null,
+        telefoon: telefoon || null,
+        openingsuren: openingsuren || null,
         foto_url: fotoUrl,
       });
     } else {
@@ -210,6 +214,8 @@ function ClubFormulier({
         adres,
         website,
         contact_email: contactEmail,
+        telefoon,
+        openingsuren,
         foto_url: fotoUrl,
       });
     }
@@ -258,6 +264,18 @@ function ClubFormulier({
           <input
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
+            className="veld-input"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.clubForm.telefoon}
+          <input value={telefoon} onChange={(e) => setTelefoon(e.target.value)} className="veld-input" />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker sm:col-span-2">
+          {t.clubForm.openingsuren}
+          <input
+            value={openingsuren}
+            onChange={(e) => setOpeningsuren(e.target.value)}
             className="veld-input"
           />
         </label>
