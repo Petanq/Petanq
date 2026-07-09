@@ -24,4 +24,4 @@ export function MeldingNieuweClubEmail({ naam, gemeente, beheerLink }: Props) {
   );
 }
 
-export const meldingNieuweClubOnderwerp = "Nieuwe club wacht op goedkeuring — PetanQ";
+export const meldingNieuweClubOnderwerp = "Nieuwe club wacht op goedkeuring — Qpetanque";

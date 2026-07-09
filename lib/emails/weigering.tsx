@@ -13,7 +13,7 @@ export function WeigeringEmail({ naam, reden }: Props) {
     <EmailLayout titel="Jouw toernooi is niet gepubliceerd / Votre tournoi n'a pas été publié">
       <Text style={tekstStijl}>Hallo,</Text>
       <Text style={tekstStijl}>
-        Jouw toernooi <strong>{naam}</strong> is helaas niet gepubliceerd op PetanQ.
+        Jouw toernooi <strong>{naam}</strong> is helaas niet gepubliceerd op Qpetanque.
       </Text>
       {reden && (
         <Text style={tekstStijl}>
@@ -27,7 +27,7 @@ export function WeigeringEmail({ naam, reden }: Props) {
         Bonjour,
       </Text>
       <Text style={tekstStijl}>
-        {"Votre tournoi "}<strong>{naam}</strong>{" n'a malheureusement pas été publié sur PetanQ."}
+        {"Votre tournoi "}<strong>{naam}</strong>{" n'a malheureusement pas été publié sur Qpetanque."}
       </Text>
       {reden && (
         <Text style={tekstStijl}>

@@ -3,7 +3,7 @@ import { PrivacybeleidContent } from "@/components/privacybeleid-content";
 
 export const metadata: Metadata = {
   title: "Privacybeleid",
-  description: "Hoe PetanQ omgaat met je persoonsgegevens.",
+  description: "Hoe Qpetanque omgaat met je persoonsgegevens.",
 };
 
 export default function PrivacybeleidPagina() {
