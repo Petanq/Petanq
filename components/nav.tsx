@@ -14,7 +14,7 @@ export function Nav() {
         <Logo />
         <div className="flex flex-col leading-none">
           <span className="flex items-center font-titel text-2xl font-extrabold tracking-tight text-white">
-            petanque
+            Qpetanque
           </span>
           <span className="text-[0.6rem] font-semibold uppercase tracking-widest text-white/40">
             {t.nav.subtitel}

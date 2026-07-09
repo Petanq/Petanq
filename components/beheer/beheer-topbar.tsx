@@ -26,7 +26,7 @@ export function BeheerTopbar() {
         <Link href="/beheer" className="flex items-center gap-2.5">
           <Logo />
           <span className="flex items-center font-titel text-xl font-extrabold tracking-tight text-white">
-            petanque
+            Qpetanque
           </span>
         </Link>
         <span className="rounded-full border border-geel/40 bg-geel/10 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-widest text-geel">

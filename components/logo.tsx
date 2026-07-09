@@ -1,7 +1,9 @@
+const ZONNESTRALEN = [0, 45, 90, 135, 180, 225, 270, 315];
+
 export function Logo({ className = "h-9 w-9" }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 40 40"
+      viewBox="0 0 44 44"
       className={`${className} shrink-0`}
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -13,9 +15,25 @@ export function Logo({ className = "h-9 w-9" }: { className?: string }) {
           <stop offset="100%" stopColor="#707070" />
         </radialGradient>
       </defs>
-      <circle cx="17" cy="17" r="12.5" fill="none" stroke="#D62828" strokeWidth="6.5" />
-      <path d="M13 22 L25 30" stroke="#D62828" strokeWidth="6.5" strokeLinecap="round" fill="none" />
-      <circle cx="17" cy="17" r="6" fill="url(#qpetanque-bal)" />
+
+      {ZONNESTRALEN.map((hoek) => (
+        <line
+          key={hoek}
+          x1="22"
+          y1="7"
+          x2="22"
+          y2="2"
+          stroke="#F4C430"
+          strokeWidth="3"
+          strokeLinecap="round"
+          transform={`rotate(${hoek} 22 22)`}
+        />
+      ))}
+
+      <circle cx="22" cy="22" r="14" fill="#1F1F1F" stroke="#F4C430" strokeWidth="1.3" />
+      <circle cx="19.5" cy="20" r="7.5" fill="url(#qpetanque-bal)" />
+      <circle cx="29" cy="28" r="3" fill="#D62828" />
+      <circle cx="27.6" cy="26.6" r="0.9" fill="#ef6b6b" opacity="0.8" />
     </svg>
   );
 }
