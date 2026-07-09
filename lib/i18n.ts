@@ -178,6 +178,14 @@ const nl = {
       "Elk toernooi wordt gecontroleerd door een team vrijwilligers voordat het op de site verschijnt. Organiseer je zelf een toernooi? Meld het gratis aan via het formulier.",
     contact: "Vragen of opmerkingen? Mail naar",
   },
+  provinciesPagina: {
+    titel: "Provincies",
+    beschrijving: "Klik op een provincie om de clubs daar te bekijken.",
+    hint: "Beweeg over de kaart of tik op een provincie.",
+    klikOm: "klik om clubs te bekijken →",
+    clubsInProvincie: "clubs",
+    bron: "Kaart gebaseerd op werk van TUBS (Wikimedia Commons), gelicentieerd onder",
+  },
   beheer: {
     inloggen: "Inloggen",
     email: "E-mailadres",
@@ -399,6 +407,14 @@ const fr: typeof nl = {
     alinea2:
       "Chaque tournoi est vérifié par une équipe de bénévoles avant d'apparaître sur le site. Vous organisez un tournoi ? Ajoutez-le gratuitement via le formulaire.",
     contact: "Des questions ou remarques ? Envoyez un e-mail à",
+  },
+  provinciesPagina: {
+    titel: "Provinces",
+    beschrijving: "Cliquez sur une province pour voir les clubs qui s'y trouvent.",
+    hint: "Survolez la carte ou touchez une province.",
+    klikOm: "cliquez pour voir les clubs →",
+    clubsInProvincie: "clubs",
+    bron: "Carte basée sur le travail de TUBS (Wikimedia Commons), sous licence",
   },
   beheer: {
     inloggen: "Connexion",

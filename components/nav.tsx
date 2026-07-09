@@ -26,7 +26,7 @@ export function Nav() {
         <Link href="/#toernooien" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white">
           {t.nav.toernooien}
         </Link>
-        <Link href="/clubs#provincies" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white">
+        <Link href="/provincies" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white">
           {t.nav.provincies}
         </Link>
         <Link href="/clubs" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white">

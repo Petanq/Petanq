@@ -105,7 +105,7 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
             {zichtbareProvincies.map((provincie) => {
               const clubsInProvincie = gefilterd.filter((c) => c.provincie === provincie);
               return (
-                <div key={provincie} className="mb-6">
+                <div key={provincie} id={provincie} className="mb-6 scroll-mt-20">
                   <h3 className="mb-2.5 text-[0.7rem] font-extrabold uppercase tracking-widest text-[#94a3b8]">
                     {vertaalProvincie(provincie, taal)}
                   </h3>
