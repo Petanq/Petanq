@@ -13,6 +13,7 @@ export type FilterState = {
   formule: Formule | null;
   inschrijving: "gratis" | "betalend" | null;
   club: string | null;
+  type: "officieel" | "open" | null;
 };
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
@@ -80,6 +81,8 @@ export function FilterSidebar({
     if (exclusief !== "formule" && filters.formule && tn.formule !== filters.formule) return false;
     if (exclusief !== "club" && filters.club && !tn.clubnaam.toLowerCase().includes(filters.club.toLowerCase()))
       return false;
+    if (exclusief !== "type" && filters.type === "open" && !tn.open_toernooi) return false;
+    if (exclusief !== "type" && filters.type === "officieel" && tn.open_toernooi) return false;
     return true;
   }
 
@@ -170,6 +173,27 @@ export function FilterSidebar({
             aantal={tel("formule", (tn) => tn.formule === formule)}
           />
         ))}
+      </FilterCard>
+
+      <FilterCard titel={t.form.tornooiType}>
+        <FilterItem
+          actief={filters.type === null}
+          onClick={() => setFilters({ ...filters, type: null })}
+          label={t.filters.alleTypes}
+          aantal={tel("type", () => true)}
+        />
+        <FilterItem
+          actief={filters.type === "officieel"}
+          onClick={() => setFilters({ ...filters, type: "officieel" })}
+          label={t.form.officieelToernooi}
+          aantal={tel("type", (tn) => !tn.open_toernooi)}
+        />
+        <FilterItem
+          actief={filters.type === "open"}
+          onClick={() => setFilters({ ...filters, type: "open" })}
+          label={t.form.openToernooi}
+          aantal={tel("type", (tn) => tn.open_toernooi)}
+        />
       </FilterCard>
 
       <FilterCard titel={t.filters.clubsInLijst}>

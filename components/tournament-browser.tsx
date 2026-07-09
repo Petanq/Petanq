@@ -18,6 +18,7 @@ const LEGE_FILTERS: FilterState = {
   formule: null,
   inschrijving: null,
   club: null,
+  type: null,
 };
 
 export function TournamentBrowser({ toernooien }: { toernooien: Toernooi[] }) {
@@ -36,6 +37,8 @@ export function TournamentBrowser({ toernooien }: { toernooien: Toernooi[] }) {
       if (filters.inschrijving === "gratis" && !tn.gratis) return false;
       if (filters.inschrijving === "betalend" && tn.gratis) return false;
       if (filters.club && !tn.clubnaam.toLowerCase().includes(filters.club.toLowerCase())) return false;
+      if (filters.type === "open" && !tn.open_toernooi) return false;
+      if (filters.type === "officieel" && tn.open_toernooi) return false;
       if (actieveMaand && maandJaarKey(tn.datum) !== actieveMaand) return false;
       if (zoekTerm) {
         const haystack = `${tn.clubnaam} ${tn.gemeente} ${tn.naam_nl} ${tn.naam_fr}`.toLowerCase();
