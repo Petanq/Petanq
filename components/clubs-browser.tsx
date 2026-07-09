@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { Club } from "@/lib/types";
@@ -27,9 +28,20 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
 
   return (
     <div id="provincies" className="mx-auto max-w-[1140px] px-6 py-8 lg:px-10">
-      <div className="mb-6">
-        <h1 className="font-titel text-4xl tracking-wide text-blauw">{t.clubsPagina.titel}</h1>
-        <p className="text-sm text-grijs">{t.clubsPagina.beschrijving}</p>
+      <div className="relative mb-6 overflow-hidden rounded-2xl">
+        <Image
+          src="/images/boulodrome-club.jpg"
+          alt=""
+          width={1140}
+          height={280}
+          className="h-[220px] w-full object-cover sm:h-[280px]"
+          style={{ objectPosition: "center 30%" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-blauw/90 via-blauw/20 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+          <h1 className="font-titel text-4xl tracking-wide text-white">{t.clubsPagina.titel}</h1>
+          <p className="max-w-lg text-sm text-white/70">{t.clubsPagina.beschrijving}</p>
+        </div>
       </div>
 
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
