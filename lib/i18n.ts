@@ -61,6 +61,7 @@ const nl = {
     jeugd: "Jeugd",
     kampioenschap: "Kampioenschap",
     circuit: "50+ Circuit",
+    recreanten: "Recreanten",
   },
   formule: {
     "tete-a-tete": "Tête-à-tête",
@@ -276,6 +277,7 @@ const fr: typeof nl = {
     jeugd: "Jeunes",
     kampioenschap: "Championnat",
     circuit: "Circuit 50+",
+    recreanten: "Loisirs",
   },
   formule: {
     "tete-a-tete": "Tête-à-tête",

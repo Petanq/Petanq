@@ -15,7 +15,7 @@ export type FilterState = {
   club: string | null;
 };
 
-const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"];
+const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
   "tete-a-tete",
   "doublette",

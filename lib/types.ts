@@ -1,6 +1,6 @@
 import { Provincie, Regio } from "./provincies";
 
-export type Categorie = "heren" | "dames" | "mix" | "jeugd" | "kampioenschap" | "circuit";
+export type Categorie = "heren" | "dames" | "mix" | "jeugd" | "kampioenschap" | "circuit" | "recreanten";
 
 export type Formule =
   | "tete-a-tete"

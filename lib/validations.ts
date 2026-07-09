@@ -12,7 +12,7 @@ export const toernooiSchema = z
     naam_fr: z.string().trim().min(2).max(160),
     gemeente: z.string().trim().min(2).max(120),
     provincie: provincieEnum,
-    categorie: z.enum(["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"]),
+    categorie: z.enum(["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"]),
     formule: z.enum([
       "tete-a-tete",
       "doublette",

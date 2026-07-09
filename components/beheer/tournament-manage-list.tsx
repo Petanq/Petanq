@@ -9,7 +9,7 @@ import { formatUur } from "@/lib/datum";
 import { toernooiBewerken, toernooiToevoegenAlsAdmin, toernooiVerwijderen } from "@/actions/beheer-toernooien";
 import { uploadAffiche } from "@/lib/upload-affiche";
 
-const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"];
+const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
   "tete-a-tete",
   "doublette",

@@ -9,7 +9,7 @@ import { toernooiIndienen } from "@/actions/toernooien";
 import { uploadAffiche } from "@/lib/upload-affiche";
 import { Knop } from "@/components/ui/knop";
 
-const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit"];
+const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
   "tete-a-tete",
   "doublette",

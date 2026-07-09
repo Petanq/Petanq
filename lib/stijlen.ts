@@ -7,6 +7,7 @@ export const CATEGORIE_STREEP: Record<Categorie, string> = {
   jeugd: "bg-[#059669]",
   kampioenschap: "bg-[#b45309]",
   circuit: "bg-[#64748b]",
+  recreanten: "bg-[#0d9488]",
 };
 
 export const CATEGORIE_BADGE: Record<Categorie, string> = {
@@ -16,6 +17,7 @@ export const CATEGORIE_BADGE: Record<Categorie, string> = {
   jeugd: "bg-[#ecfdf5] text-[#059669]",
   kampioenschap: "bg-[#fef3c7] text-[#b45309]",
   circuit: "bg-[#f1f5f9] text-[#475569]",
+  recreanten: "bg-[#f0fdfa] text-[#0d9488]",
 };
 
 export const CATEGORIE_PIP: Record<Categorie, string> = {
@@ -25,6 +27,7 @@ export const CATEGORIE_PIP: Record<Categorie, string> = {
   jeugd: "bg-[#059669]",
   kampioenschap: "bg-kamp",
   circuit: "bg-circuit",
+  recreanten: "bg-[#0d9488]",
 };
 
 export const FORMULE_BADGE: Record<Formule, string> = {
