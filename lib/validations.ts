@@ -32,6 +32,7 @@ export const toernooiSchema = z
     link_inschrijving: z.string().trim().url().nullable().optional().or(z.literal("")),
     opmerking: z.string().trim().max(1000).nullable().optional(),
     affiche_url: z.string().trim().url().nullable().optional().or(z.literal("")),
+    open_toernooi: z.boolean().optional().default(false),
   })
   .superRefine((data, ctx) => {
     if (data.speelvorm === "rondes" && !data.aantal_ronden) {

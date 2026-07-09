@@ -70,7 +70,14 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
         ) : (
           <div key={tn.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-4">
             <div>
-              <div className="text-xs font-bold uppercase tracking-wide text-blauw-2">{tn.clubnaam}</div>
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blauw-2">
+                {tn.clubnaam}
+                {tn.open_toernooi && (
+                  <span className="rounded-full bg-[#f0fdfa] px-2 py-0.5 text-[0.65rem] font-bold text-[#0d9488]">
+                    {t.lijst.openBadge}
+                  </span>
+                )}
+              </div>
               <div className="font-bold text-donker">{tn.naam_nl}</div>
               <div className="text-sm text-grijs">
                 {tn.datum} · {formatUur(tn.uur)} · {tn.gemeente}, {vertaalProvincie(tn.provincie, taal)}
@@ -100,6 +107,7 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
 
 function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: () => void }) {
   const { t, taal } = useTranslation();
+  const [openToernooi, setOpenToernooi] = useState(false);
   const [clubnaam, setClubnaam] = useState("");
   const [naamNl, setNaamNl] = useState("");
   const [naamFr, setNaamFr] = useState("");
@@ -160,6 +168,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
       link_inschrijving: linkInschrijving || null,
       opmerking: opmerking || null,
       affiche_url: afficheUrl,
+      open_toernooi: openToernooi,
     });
     setBezig(false);
     if (resultaat.succes) {
@@ -171,9 +180,33 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
 
   return (
     <div className="rounded-[10px] border-[1.5px] border-blauw-3 bg-white p-4">
+      <div className="mb-3 flex flex-col gap-1.5">
+        <span className="text-xs font-bold text-donker">{t.form.tornooiType}</span>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setOpenToernooi(false)}
+            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+              !openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
+            }`}
+          >
+            {t.form.officieelToernooi}
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpenToernooi(true)}
+            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+              openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
+            }`}
+          >
+            {t.form.openToernooi}
+          </button>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.form.clubnaam}
+          {openToernooi ? t.form.organisator : t.form.clubnaam}
           <input value={clubnaam} onChange={(e) => setClubnaam(e.target.value)} className="veld-input" />
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
@@ -414,6 +447,8 @@ function EditForm({
   onAnnuleren: () => void;
 }) {
   const { t, taal } = useTranslation();
+  const [openToernooi, setOpenToernooi] = useState(toernooi.open_toernooi);
+  const [clubnaam, setClubnaam] = useState(toernooi.clubnaam);
   const [naamNl, setNaamNl] = useState(toernooi.naam_nl);
   const [naamFr, setNaamFr] = useState(toernooi.naam_fr);
   const [datum, setDatum] = useState(toernooi.datum);
@@ -447,6 +482,7 @@ function EditForm({
   async function opslaan() {
     setBezig(true);
     await toernooiBewerken(toernooi.id, {
+      clubnaam,
       naam_nl: naamNl,
       naam_fr: naamFr,
       datum,
@@ -460,6 +496,7 @@ function EditForm({
       aantal_poules: speelvorm === "poules" ? Number(aantalPoules) || null : null,
       vol,
       affiche_url: afficheUrl,
+      open_toernooi: openToernooi,
     });
     setBezig(false);
     onKlaar();
@@ -467,7 +504,35 @@ function EditForm({
 
   return (
     <div className="rounded-[10px] border-[1.5px] border-blauw-3 bg-white p-4">
+      <div className="mb-3 flex flex-col gap-1.5">
+        <span className="text-xs font-bold text-donker">{t.form.tornooiType}</span>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setOpenToernooi(false)}
+            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+              !openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
+            }`}
+          >
+            {t.form.officieelToernooi}
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpenToernooi(true)}
+            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+              openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
+            }`}
+          >
+            {t.form.openToernooi}
+          </button>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {openToernooi ? t.form.organisator : t.form.clubnaam}
+          <input value={clubnaam} onChange={(e) => setClubnaam(e.target.value)} className="veld-input" />
+        </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.naamNl}
           <input value={naamNl} onChange={(e) => setNaamNl(e.target.value)} className="veld-input" />

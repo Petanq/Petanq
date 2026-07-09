@@ -94,6 +94,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
       link_inschrijving: data.link_inschrijving || null,
       opmerking: data.opmerking || null,
       affiche_url: data.affiche_url || null,
+      open_toernooi: data.open_toernooi ?? false,
       status: "goedgekeurd",
       ingediend_door: data.contact_email,
       goedgekeurd_door: moderatorNaam,
@@ -184,6 +185,7 @@ export async function toernooiBewerken(
       | "link_inschrijving"
       | "opmerking"
       | "affiche_url"
+      | "open_toernooi"
     >
   >
 ): Promise<BeheerActieResultaat> {

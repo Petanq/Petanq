@@ -26,6 +26,7 @@ export function TournamentForm() {
 
   const [datum, setDatum] = useState("");
   const [uur, setUur] = useState("");
+  const [openToernooi, setOpenToernooi] = useState(false);
   const [clubnaam, setClubnaam] = useState("");
   const [naamNl, setNaamNl] = useState("");
   const [naamFr, setNaamFr] = useState("");
@@ -77,6 +78,7 @@ export function TournamentForm() {
         link_inschrijving: linkInschrijving || null,
         opmerking: opmerking || null,
         affiche_url: afficheUrl || null,
+        open_toernooi: openToernooi,
       },
       taal
     );
@@ -124,7 +126,33 @@ export function TournamentForm() {
               />
             </Veld>
           </div>
-          <Veld label={t.form.clubnaam} verplicht>
+          <Veld label={t.form.tornooiType} verplicht>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setOpenToernooi(false)}
+                className={`rounded-md border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
+                  !openToernooi
+                    ? "border-blauw bg-blauw text-white"
+                    : "border-rand text-grijs hover:border-blauw-3"
+                }`}
+              >
+                {t.form.officieelToernooi}
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpenToernooi(true)}
+                className={`rounded-md border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
+                  openToernooi
+                    ? "border-blauw bg-blauw text-white"
+                    : "border-rand text-grijs hover:border-blauw-3"
+                }`}
+              >
+                {t.form.openToernooi}
+              </button>
+            </div>
+          </Veld>
+          <Veld label={openToernooi ? t.form.organisator : t.form.clubnaam} verplicht>
             <input
               required
               value={clubnaam}

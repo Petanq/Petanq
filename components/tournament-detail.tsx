@@ -26,6 +26,11 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
               {t.lijst.volBadge}
             </span>
           )}
+          {toernooi.open_toernooi && (
+            <span className="rounded bg-[#f0fdfa] px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-[#0d9488]">
+              {t.lijst.openBadge}
+            </span>
+          )}
           <span className={`rounded px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${FORMULE_BADGE[toernooi.formule]}`}>
             {t.formule[toernooi.formule]}
           </span>
