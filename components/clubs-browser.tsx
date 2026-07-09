@@ -30,12 +30,12 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
     <div id="provincies" className="mx-auto max-w-[1140px] px-6 py-8 lg:px-10">
       <div className="relative mb-6 overflow-hidden rounded-2xl">
         <Image
-          src="/images/boulodrome-club.jpg"
+          src="/images/petanque-benen.jpg"
           alt=""
           width={1140}
           height={280}
           className="h-[220px] w-full object-cover sm:h-[280px]"
-          style={{ objectPosition: "center 30%" }}
+          style={{ objectPosition: "center 55%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-blauw/90 via-blauw/20 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
