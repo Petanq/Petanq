@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Club, Toernooi } from "@/lib/types";
+import { Club, Moderator, Toernooi } from "@/lib/types";
 
 export async function getGoedgekeurdeToernooien(): Promise<Toernooi[]> {
   const supabase = createClient();
@@ -84,6 +84,28 @@ export async function getWachtendeClubs(): Promise<Club[]> {
     return [];
   }
   return data as Club[];
+}
+
+export async function getModeratoren(): Promise<Moderator[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("moderatoren").select("*").order("naam", { ascending: true });
+
+  if (error) {
+    console.error("Kon moderatoren niet ophalen:", error.message);
+    return [];
+  }
+  return data as Moderator[];
+}
+
+export async function getHuidigeModerator(): Promise<Moderator | null> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data } = await supabase.from("moderatoren").select("*").eq("user_id", user.id).single();
+  return (data as Moderator) ?? null;
 }
 
 export async function getActieveClubs(): Promise<Club[]> {

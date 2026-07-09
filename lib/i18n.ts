@@ -204,6 +204,14 @@ const nl = {
     nieuweClubaanvragen: "Nieuwe clubaanvragen",
     geenNieuweClubaanvragen: "Geen nieuwe clubaanvragen.",
     alleClubs: "Alle clubs",
+    vrijwilligers: "Vrijwilligers",
+    naam: "Naam",
+    rolAdmin: "Beheerder",
+    rolModerator: "Moderator",
+    jijzelf: "Jij",
+    geenProvincie: "Geen specifieke provincie",
+    enkelEigenGegevens: "Als moderator zie je hier enkel je eigen gegevens, niet die van andere vrijwilligers.",
+    verwijderenBevestiging: "Weet je zeker dat je deze vrijwilliger wil verwijderen?",
   },
 };
 
@@ -411,6 +419,14 @@ const fr: typeof nl = {
     nieuweClubaanvragen: "Nouvelles demandes de club",
     geenNieuweClubaanvragen: "Aucune nouvelle demande de club.",
     alleClubs: "Tous les clubs",
+    vrijwilligers: "Bénévoles",
+    naam: "Nom",
+    rolAdmin: "Administrateur",
+    rolModerator: "Modérateur",
+    jijzelf: "Toi",
+    geenProvincie: "Aucune province spécifique",
+    enkelEigenGegevens: "En tant que modérateur, vous ne voyez ici que vos propres données, pas celles des autres bénévoles.",
+    verwijderenBevestiging: "Voulez-vous vraiment supprimer ce bénévole ?",
   },
 };
 
