@@ -74,17 +74,32 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
           {weigerId === tn.id && (
             <div className="mt-3 flex flex-col gap-2 border-t border-rand pt-3">
               <label className="text-xs font-bold text-donker">{t.beheer.commentaarWeigering}</label>
+              <div className="flex flex-wrap gap-1.5">
+                {[t.beheer.redenOnvolledig, t.beheer.redenDubbel, t.beheer.redenVerkeerdeCategorie].map(
+                  (snelReden) => (
+                    <button
+                      key={snelReden}
+                      type="button"
+                      onClick={() => setReden(snelReden)}
+                      className="rounded-full border border-rand px-3 py-1 text-xs font-semibold text-grijs hover:border-blauw-3 hover:text-donker"
+                    >
+                      {snelReden}
+                    </button>
+                  )
+                )}
+              </div>
               <textarea
                 rows={2}
                 value={reden}
                 onChange={(e) => setReden(e.target.value)}
                 className="veld-input resize-none"
               />
+              {!reden.trim() && <p className="text-xs text-grijs">{t.beheer.redenVerplicht}</p>}
               <div className="flex gap-2">
                 <button
                   onClick={weigerenBevestigen}
-                  disabled={bezigId === tn.id}
-                  className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white"
+                  disabled={bezigId === tn.id || !reden.trim()}
+                  className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
                 >
                   {t.beheer.bevestigen}
                 </button>

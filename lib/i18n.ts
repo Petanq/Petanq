@@ -254,6 +254,10 @@ const nl = {
     nieuwWachtwoordOpslaan: "Wachtwoord instellen",
     wachtwoordGewijzigd: "Je wachtwoord is aangepast. Je kan nu inloggen.",
     wachtwoordTeKort: "Kies een wachtwoord van minstens 8 tekens.",
+    redenVerplicht: "Geef een reden op zodat de indiener weet wat er mis is.",
+    redenOnvolledig: "Onvolledige/onduidelijke gegevens",
+    redenDubbel: "Staat al in de kalender",
+    redenVerkeerdeCategorie: "Verkeerde categorie/formule",
   },
 };
 
@@ -511,6 +515,10 @@ const fr: typeof nl = {
     nieuwWachtwoordOpslaan: "Définir le mot de passe",
     wachtwoordGewijzigd: "Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.",
     wachtwoordTeKort: "Choisissez un mot de passe d'au moins 8 caractères.",
+    redenVerplicht: "Indiquez une raison pour que la personne sache ce qui ne va pas.",
+    redenOnvolledig: "Informations incomplètes/peu claires",
+    redenDubbel: "Déjà présent dans le calendrier",
+    redenVerkeerdeCategorie: "Mauvaise catégorie/formule",
   },
 };
 
