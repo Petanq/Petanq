@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { Knop } from "@/components/ui/knop";
 
@@ -54,10 +55,10 @@ export function Hero({ aantalToernooien, aantalClubs }: HeroProps) {
             </Knop>
           </div>
           <div className="flex flex-wrap gap-8 border-t border-white/10 pt-6">
-            <Stat waarde={`${aantalToernooien}+`} label={t.hero.statToernooien} />
-            <Stat waarde={`${aantalClubs}+`} label={t.hero.statClubs} />
-            <Stat waarde="11" label={t.hero.statProvincies} />
-            <Stat waarde="8" label={t.hero.statControleurs} />
+            <Stat href="#toernooien" waarde={`${aantalToernooien}+`} label={t.hero.statToernooien} />
+            <Stat href="/clubs" waarde={`${aantalClubs}+`} label={t.hero.statClubs} />
+            <Stat href="/provincies" waarde="11" label={t.hero.statProvincies} />
+            <Stat href="/over-ons" waarde="8" label={t.hero.statControleurs} />
           </div>
         </div>
       </div>
@@ -65,13 +66,15 @@ export function Hero({ aantalToernooien, aantalClubs }: HeroProps) {
   );
 }
 
-function Stat({ waarde, label }: { waarde: string; label: string }) {
+function Stat({ href, waarde, label }: { href: string; waarde: string; label: string }) {
   return (
-    <div>
-      <div className="font-titel text-3xl leading-none text-geel">{waarde}</div>
-      <div className="mt-1 whitespace-pre-line text-[0.72rem] font-semibold uppercase tracking-wide text-white/45">
+    <Link href={href} className="group">
+      <div className="font-titel text-3xl leading-none text-geel transition-colors group-hover:text-white">
+        {waarde}
+      </div>
+      <div className="mt-1 whitespace-pre-line text-[0.72rem] font-semibold uppercase tracking-wide text-white/45 underline decoration-transparent underline-offset-4 transition-colors group-hover:text-white/70 group-hover:decoration-white/40">
         {label}
       </div>
-    </div>
+    </Link>
   );
 }
