@@ -17,7 +17,6 @@ const LEGE_FILTERS: FilterState = {
   categorie: null,
   formule: null,
   inschrijving: null,
-  club: null,
   type: null,
 };
 
@@ -36,7 +35,6 @@ export function TournamentBrowser({ toernooien }: { toernooien: Toernooi[] }) {
       if (filters.formule && tn.formule !== filters.formule) return false;
       if (filters.inschrijving === "gratis" && !tn.gratis) return false;
       if (filters.inschrijving === "betalend" && tn.gratis) return false;
-      if (filters.club && !tn.clubnaam.toLowerCase().includes(filters.club.toLowerCase())) return false;
       if (filters.type === "open" && !tn.open_toernooi) return false;
       if (filters.type === "officieel" && tn.open_toernooi) return false;
       if (actieveMaand && maandJaarKey(tn.datum) !== actieveMaand) return false;

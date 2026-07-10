@@ -12,7 +12,6 @@ export type FilterState = {
   categorie: Categorie | null;
   formule: Formule | null;
   inschrijving: "gratis" | "betalend" | null;
-  club: string | null;
   type: "officieel" | "open" | null;
 };
 
@@ -79,8 +78,6 @@ export function FilterSidebar({
     if (exclusief !== "provincie" && filters.provincie && tn.provincie !== filters.provincie) return false;
     if (exclusief !== "categorie" && filters.categorie && tn.categorie !== filters.categorie) return false;
     if (exclusief !== "formule" && filters.formule && tn.formule !== filters.formule) return false;
-    if (exclusief !== "club" && filters.club && !tn.clubnaam.toLowerCase().includes(filters.club.toLowerCase()))
-      return false;
     if (exclusief !== "type" && filters.type === "open" && !tn.open_toernooi) return false;
     if (exclusief !== "type" && filters.type === "officieel" && tn.open_toernooi) return false;
     return true;
@@ -193,16 +190,6 @@ export function FilterSidebar({
           onClick={() => setFilters({ ...filters, type: "open" })}
           label={t.form.openToernooi}
           aantal={tel("type", (tn) => tn.open_toernooi)}
-        />
-      </FilterCard>
-
-      <FilterCard titel={t.filters.clubsInLijst}>
-        <input
-          type="text"
-          value={filters.club ?? ""}
-          onChange={(e) => setFilters({ ...filters, club: e.target.value || null })}
-          placeholder={t.filters.zoekClubPlaceholder}
-          className="w-full rounded-md border-[1.5px] border-rand bg-licht px-3 py-2 font-body text-[0.83rem] outline-none focus:border-blauw-3 focus:bg-white"
         />
       </FilterCard>
     </aside>
