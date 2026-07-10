@@ -229,6 +229,9 @@ const nl = {
     geenProvincie: "Geen specifieke provincie",
     enkelEigenGegevens: "Als moderator zie je hier enkel je eigen gegevens, niet die van andere vrijwilligers.",
     verwijderenBevestiging: "Weet je zeker dat je deze vrijwilliger wil verwijderen?",
+    bezigMetOpslaan: "Bezig met opslaan...",
+    clubBijgewerkt: "✓ Club bijgewerkt",
+    clubToegevoegd: "✓ Club toegevoegd",
   },
 };
 
@@ -461,6 +464,9 @@ const fr: typeof nl = {
     geenProvincie: "Aucune province spécifique",
     enkelEigenGegevens: "En tant que modérateur, vous ne voyez ici que vos propres données, pas celles des autres bénévoles.",
     verwijderenBevestiging: "Voulez-vous vraiment supprimer ce bénévole ?",
+    bezigMetOpslaan: "Enregistrement...",
+    clubBijgewerkt: "✓ Club mis à jour",
+    clubToegevoegd: "✓ Club ajouté",
   },
 };
 

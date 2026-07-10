@@ -20,6 +20,12 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
   const [bewerkId, setBewerkId] = useState<string | null>(null);
   const [bezig, setBezig] = useState<string | null>(null);
   const [zoekterm, setZoekterm] = useState("");
+  const [melding, setMelding] = useState<string | null>(null);
+
+  function toonMelding(tekst: string) {
+    setMelding(tekst);
+    setTimeout(() => setMelding(null), 3000);
+  }
 
   const wachtend = clubs.filter((c) => !c.actief);
   const zoekLower = zoekterm.trim().toLowerCase();
@@ -51,6 +57,7 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
         club={club}
         onKlaar={() => {
           setBewerkId(null);
+          toonMelding(t.beheer.clubBijgewerkt);
           router.refresh();
         }}
         onAnnuleren={() => setBewerkId(null)}
@@ -117,6 +124,12 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
 
   return (
     <div className="flex flex-col gap-6">
+      {melding && (
+        <div className="fixed right-6 top-6 z-50 rounded-md bg-groen px-4 py-2.5 text-sm font-bold text-white shadow-lg">
+          {melding}
+        </div>
+      )}
+
       <div className="flex justify-end">
         <button
           onClick={() => setToevoegenOpen((v) => !v)}
@@ -130,6 +143,7 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
         <ClubFormulier
           onKlaar={() => {
             setToevoegenOpen(false);
+            toonMelding(t.beheer.clubToegevoegd);
             router.refresh();
           }}
           onAnnuleren={() => setToevoegenOpen(false)}
@@ -340,7 +354,7 @@ function ClubFormulier({
           disabled={bezig || !naam || !gemeente || !provincie}
           className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
         >
-          {t.beheer.opslaan}
+          {bezig ? t.beheer.bezigMetOpslaan : t.beheer.opslaan}
         </button>
         <button
           onClick={onAnnuleren}
