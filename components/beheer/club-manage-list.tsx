@@ -228,6 +228,7 @@ function ClubFormulier({
   const [fotoBezig, setFotoBezig] = useState(false);
   const [fotoFout, setFotoFout] = useState(false);
   const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState<string | null>(null);
 
   async function fotoGekozen(bestand: File | null) {
     if (!bestand) return;
@@ -244,32 +245,35 @@ function ClubFormulier({
 
   async function opslaan() {
     setBezig(true);
-    if (club) {
-      await clubBewerken(club.id, {
-        naam,
-        gemeente,
-        provincie: provincie as Provincie,
-        adres: adres || null,
-        website: website || null,
-        contact_email: contactEmail || null,
-        telefoon: telefoon || null,
-        openingsuren: openingsuren || null,
-        foto_url: fotoUrl,
-      });
-    } else {
-      await clubToevoegen({
-        naam,
-        gemeente,
-        provincie,
-        adres,
-        website,
-        contact_email: contactEmail,
-        telefoon,
-        openingsuren,
-        foto_url: fotoUrl,
-      });
-    }
+    setFout(null);
+    const resultaat = club
+      ? await clubBewerken(club.id, {
+          naam,
+          gemeente,
+          provincie: provincie as Provincie,
+          adres: adres || null,
+          website: website || null,
+          contact_email: contactEmail || null,
+          telefoon: telefoon || null,
+          openingsuren: openingsuren || null,
+          foto_url: fotoUrl,
+        })
+      : await clubToevoegen({
+          naam,
+          gemeente,
+          provincie,
+          adres,
+          website,
+          contact_email: contactEmail,
+          telefoon,
+          openingsuren,
+          foto_url: fotoUrl,
+        });
     setBezig(false);
+    if (!resultaat.succes) {
+      setFout(resultaat.fout);
+      return;
+    }
     onKlaar();
   }
 
@@ -347,6 +351,8 @@ function ClubFormulier({
         {fotoBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
         {fotoFout && <p className="text-xs font-semibold text-rood-2">{t.clubForm.fotoFout}</p>}
       </div>
+
+      {fout && <p className="mt-3 text-sm font-semibold text-rood-2">{t.beheer.opslaanFout}</p>}
 
       <div className="mt-3 flex gap-2">
         <button

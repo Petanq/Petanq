@@ -232,6 +232,7 @@ const nl = {
     bezigMetOpslaan: "Bezig met opslaan...",
     clubBijgewerkt: "✓ Club bijgewerkt",
     clubToegevoegd: "✓ Club toegevoegd",
+    opslaanFout: "Opslaan mislukt. Controleer of alle SQL-migraties uitgevoerd zijn in Supabase, of probeer het later opnieuw.",
   },
 };
 
@@ -467,6 +468,7 @@ const fr: typeof nl = {
     bezigMetOpslaan: "Enregistrement...",
     clubBijgewerkt: "✓ Club mis à jour",
     clubToegevoegd: "✓ Club ajouté",
+    opslaanFout: "Échec de l'enregistrement. Vérifiez que toutes les migrations SQL ont été exécutées dans Supabase, ou réessayez plus tard.",
   },
 };
 
