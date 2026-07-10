@@ -237,6 +237,16 @@ const nl = {
     clubBijgewerkt: "✓ Club bijgewerkt",
     clubToegevoegd: "✓ Club toegevoegd",
     opslaanFout: "Opslaan mislukt. Controleer of alle SQL-migraties uitgevoerd zijn in Supabase, of probeer het later opnieuw.",
+    wachtwoordVergeten: "Wachtwoord vergeten?",
+    wachtwoordResettenTitel: "Wachtwoord resetten",
+    wachtwoordResettenBeschrijving: "Vul je e-mailadres in. Je krijgt een link om een nieuw wachtwoord in te stellen.",
+    linkVersturen: "Stuur reset-link",
+    linkVerzonden: "Als dit e-mailadres bestaat, is er een reset-link naar verstuurd. Controleer je inbox.",
+    terugNaarInloggen: "Terug naar inloggen",
+    nieuwWachtwoord: "Nieuw wachtwoord",
+    nieuwWachtwoordOpslaan: "Wachtwoord instellen",
+    wachtwoordGewijzigd: "Je wachtwoord is aangepast. Je kan nu inloggen.",
+    wachtwoordTeKort: "Kies een wachtwoord van minstens 8 tekens.",
   },
 };
 
@@ -477,6 +487,16 @@ const fr: typeof nl = {
     clubBijgewerkt: "✓ Club mis à jour",
     clubToegevoegd: "✓ Club ajouté",
     opslaanFout: "Échec de l'enregistrement. Vérifiez que toutes les migrations SQL ont été exécutées dans Supabase, ou réessayez plus tard.",
+    wachtwoordVergeten: "Mot de passe oublié ?",
+    wachtwoordResettenTitel: "Réinitialiser le mot de passe",
+    wachtwoordResettenBeschrijving: "Entrez votre adresse e-mail. Vous recevrez un lien pour définir un nouveau mot de passe.",
+    linkVersturen: "Envoyer le lien",
+    linkVerzonden: "Si cette adresse existe, un lien de réinitialisation a été envoyé. Vérifiez votre boîte de réception.",
+    terugNaarInloggen: "Retour à la connexion",
+    nieuwWachtwoord: "Nouveau mot de passe",
+    nieuwWachtwoordOpslaan: "Définir le mot de passe",
+    wachtwoordGewijzigd: "Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.",
+    wachtwoordTeKort: "Choisissez un mot de passe d'au moins 8 caractères.",
   },
 };
 

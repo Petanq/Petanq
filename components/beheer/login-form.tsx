@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
@@ -62,6 +63,12 @@ export function LoginForm() {
         >
           {t.beheer.inloggenKnop}
         </button>
+        <Link
+          href="/beheer/wachtwoord-vergeten"
+          className="text-center text-sm font-semibold text-blauw-2 underline"
+        >
+          {t.beheer.wachtwoordVergeten}
+        </Link>
       </form>
     </div>
   );

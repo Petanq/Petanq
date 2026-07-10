@@ -24,14 +24,17 @@ export function ClubForm() {
   async function versturen(e: React.FormEvent) {
     e.preventDefault();
     setStatus("bezig");
-    const resultaat = await clubVoorstellen({
-      naam,
-      gemeente,
-      provincie,
-      adres: adres || undefined,
-      website: website || undefined,
-      contact_email: contactEmail || undefined,
-    });
+    const resultaat = await clubVoorstellen(
+      {
+        naam,
+        gemeente,
+        provincie,
+        adres: adres || undefined,
+        website: website || undefined,
+        contact_email: contactEmail || undefined,
+      },
+      taal
+    );
     setStatus(resultaat.succes ? "ok" : "fout");
   }
 

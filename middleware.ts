@@ -29,8 +29,11 @@ export async function middleware(request: NextRequest) {
 
   const isBeheerRoute = request.nextUrl.pathname.startsWith("/beheer");
   const isLoginRoute = request.nextUrl.pathname === "/beheer/login";
+  const isWachtwoordVergetenRoute = request.nextUrl.pathname === "/beheer/wachtwoord-vergeten";
+  const isWachtwoordResettenRoute = request.nextUrl.pathname === "/beheer/wachtwoord-resetten";
+  const isOpenlijkeRoute = isLoginRoute || isWachtwoordVergetenRoute || isWachtwoordResettenRoute;
 
-  if (isBeheerRoute && !isLoginRoute && !user) {
+  if (isBeheerRoute && !isOpenlijkeRoute && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/beheer/login";
     return NextResponse.redirect(url);
