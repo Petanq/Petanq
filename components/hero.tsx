@@ -46,7 +46,7 @@ export function Hero({ aantalToernooien, aantalClubs }: HeroProps) {
             {t.hero.beschrijving}
           </p>
           <div className="mb-10 flex flex-wrap gap-3">
-            <Knop href="#kalender" variant="rood">
+            <Knop href="#kalender" variant="geel">
               {t.hero.bekijkKalender}
             </Knop>
             <Knop href="/toernooi-toevoegen" variant="outline">

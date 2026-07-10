@@ -6,7 +6,7 @@ type Variant = "rood" | "outline" | "geel";
 const VARIANT_STYLES: Record<Variant, string> = {
   rood: "bg-rood text-white hover:bg-rood-2 shadow-[0_4px_16px_rgba(192,57,43,0.35)]",
   outline: "border-[1.5px] border-white/20 bg-white/10 text-white hover:bg-white/[0.16]",
-  geel: "bg-geel text-donker hover:brightness-95",
+  geel: "bg-geel text-donker hover:brightness-105 shadow-[0_4px_20px_rgba(244,196,48,0.45)] hover:shadow-[0_6px_24px_rgba(244,196,48,0.6)]",
 };
 
 const BADGE_STYLES: Record<Variant, string> = {
