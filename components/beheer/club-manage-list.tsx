@@ -354,7 +354,13 @@ function ClubFormulier({
         {fotoFout && <p className="text-xs font-semibold text-rood-2">{t.clubForm.fotoFout}</p>}
       </div>
 
-      {fout && <p className="mt-3 text-sm font-semibold text-rood-2">{t.beheer.opslaanFout}</p>}
+      {fout && (
+        <p className="mt-3 text-sm font-semibold text-rood-2">
+          {t.beheer.opslaanFout}
+          <br />
+          <span className="font-mono text-xs font-normal">{fout}</span>
+        </p>
+      )}
 
       <div className="mt-3 flex gap-2">
         <button

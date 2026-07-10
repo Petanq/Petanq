@@ -25,7 +25,7 @@ export async function clubToevoegen(input: unknown): Promise<BeheerActieResultaa
     actief: true,
   });
 
-  if (error) return { succes: false, fout: "server_fout" };
+  if (error) return { succes: false, fout: error.message };
   revalidatePath("/beheer/clubs");
   revalidatePath("/clubs");
   return { succes: true };
@@ -50,7 +50,7 @@ export async function clubBewerken(
 ): Promise<BeheerActieResultaat> {
   const supabase = createClient();
   const { error } = await supabase.from("clubs").update(wijzigingen).eq("id", id);
-  if (error) return { succes: false, fout: "server_fout" };
+  if (error) return { succes: false, fout: error.message };
   revalidatePath("/beheer/clubs");
   revalidatePath("/clubs");
   return { succes: true };
