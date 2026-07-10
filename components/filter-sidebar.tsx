@@ -45,15 +45,17 @@ function FilterItem({
     <li>
       <button
         onClick={onClick}
-        className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-[0.42rem] text-left text-[0.83rem] font-medium transition-colors ${
-          actief ? "bg-[#eff6ff] font-bold text-blauw-2" : "text-[#475569] hover:bg-[#f1f5f9]"
+        className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-[0.42rem] text-left text-[0.83rem] font-medium transition-all ${
+          actief
+            ? "bg-gradient-to-r from-[#fdf3d9] to-[#fdf3d9]/40 font-bold text-donker shadow-[inset_2px_0_0_0_#f4c430]"
+            : "text-[#475569] hover:bg-[#f8f6f0] hover:text-donker"
         }`}
       >
         {pip && <span className={`h-[9px] w-[9px] shrink-0 rounded-full ${pip}`} />}
         <span className="flex-1 truncate">{label}</span>
         <span
-          className={`min-w-[20px] rounded-full px-1.5 py-[0.1rem] text-center text-[0.67rem] font-bold ${
-            actief ? "bg-blauw-2 text-white" : "bg-[#f1f5f9] text-[#64748b]"
+          className={`min-w-[20px] rounded-full px-1.5 py-[0.1rem] text-center text-[0.67rem] font-bold transition-colors ${
+            actief ? "bg-geel text-donker" : "bg-[#f1f5f9] text-[#64748b]"
           }`}
         >
           {aantal}
@@ -96,7 +98,7 @@ export function FilterSidebar({
           value={filters.zoek}
           onChange={(e) => setFilters({ ...filters, zoek: e.target.value })}
           placeholder={t.filters.zoekPlaceholder}
-          className="w-full rounded-md border-[1.5px] border-rand bg-licht px-3 py-2 font-body text-[0.85rem] outline-none focus:border-blauw-3 focus:bg-white"
+          className="w-full rounded-md border-[1.5px] border-rand bg-licht px-3 py-2 font-body text-[0.85rem] outline-none transition-colors focus:border-geel focus:bg-white"
         />
       </div>
 
@@ -222,25 +224,36 @@ function FilterCard({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const heeftActieveFilter = Boolean(actiefLabel);
 
   return (
-    <div className="mb-3.5 rounded-[10px] border-[1.5px] border-rand bg-white p-[1.1rem]">
+    <div
+      className={`mb-3.5 rounded-[10px] border-[1.5px] bg-white p-[1.1rem] transition-shadow ${
+        heeftActieveFilter ? "border-geel/60 shadow-[0_2px_10px_rgba(244,196,48,0.15)]" : "border-rand"
+      }`}
+    >
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-2 text-left"
+        className="group flex w-full items-center justify-between gap-2 text-left"
       >
         <span className="flex min-w-0 items-center gap-2">
-          <span className="text-[0.66rem] font-extrabold uppercase tracking-widest text-[#94a3b8]">
+          <span
+            className={`text-[0.66rem] font-extrabold uppercase tracking-widest transition-colors ${
+              heeftActieveFilter ? "text-[#b8860b]" : "text-[#94a3b8] group-hover:text-donker"
+            }`}
+          >
             {titel}
           </span>
           {!open && actiefLabel && (
-            <span className="truncate rounded-full bg-[#eff6ff] px-2 py-0.5 text-[0.68rem] font-bold text-blauw-2">
+            <span className="truncate rounded-full bg-geel px-2 py-0.5 text-[0.68rem] font-bold text-donker shadow-sm">
               {actiefLabel}
             </span>
           )}
         </span>
         <span
-          className={`shrink-0 text-[#94a3b8] transition-transform ${open ? "rotate-180" : ""}`}
+          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs transition-all ${
+            open ? "rotate-180 bg-geel text-donker" : "bg-[#f8f6f0] text-[#94a3b8] group-hover:bg-[#fdf3d9] group-hover:text-[#b8860b]"
+          }`}
           aria-hidden
         >
           ▾
