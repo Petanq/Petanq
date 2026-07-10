@@ -40,6 +40,7 @@ export type Toernooi = {
   max_ploegen: number | null;
   vol: boolean;
   open_toernooi: boolean;
+  finale: boolean;
   affiche_url: string | null;
   contact_email: string;
   link_inschrijving: string | null;

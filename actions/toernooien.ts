@@ -47,6 +47,7 @@ export async function toernooiIndienen(
       opmerking: data.opmerking || null,
       affiche_url: data.affiche_url || null,
       open_toernooi: data.open_toernooi ?? false,
+      finale: data.speelvorm === "rondes" ? data.finale ?? false : false,
       status: "in_behandeling",
       ingediend_door: data.contact_email,
     })

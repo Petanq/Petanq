@@ -37,6 +37,7 @@ export function TournamentForm() {
   const [speelvorm, setSpeelvorm] = useState<Speelvorm>("rondes");
   const [aantalRonden, setAantalRonden] = useState("4");
   const [aantalPoules, setAantalPoules] = useState("4");
+  const [finale, setFinale] = useState(false);
   const [contactEmail, setContactEmail] = useState("");
   const [gratis, setGratis] = useState(false);
   const [inschrijvingsprijs, setInschrijvingsprijs] = useState("");
@@ -79,6 +80,7 @@ export function TournamentForm() {
         opmerking: opmerking || null,
         affiche_url: afficheUrl || null,
         open_toernooi: openToernooi,
+        finale,
       },
       taal
     );
@@ -278,6 +280,15 @@ export function TournamentForm() {
                   onChange={(e) => setAantalRonden(e.target.value)}
                   className="veld-input"
                 />
+                <label className="mt-2 flex items-center gap-2 text-sm font-medium text-donker">
+                  <input
+                    type="checkbox"
+                    checked={finale}
+                    onChange={(e) => setFinale(e.target.checked)}
+                    className="h-4 w-4"
+                  />
+                  {t.form.finale}
+                </label>
               </Veld>
             ) : (
               <Veld label={t.form.aantalPoules} verplicht>

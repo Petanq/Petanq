@@ -114,6 +114,7 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
               <div className="font-bold text-donker">{tn.naam_nl}</div>
               <div className="text-sm text-grijs">
                 {tn.datum} · {formatUur(tn.uur)} · {tn.gemeente}, {vertaalProvincie(tn.provincie, taal)}
+                {tn.finale && ` · ${t.lijst.metFinale}`}
               </div>
             </div>
             <div className="flex gap-2">
@@ -153,6 +154,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
   const [speelvorm, setSpeelvorm] = useState<Speelvorm>("rondes");
   const [aantalRonden, setAantalRonden] = useState("4");
   const [aantalPoules, setAantalPoules] = useState("4");
+  const [finale, setFinale] = useState(false);
   const [contactEmail, setContactEmail] = useState("");
   const [gratis, setGratis] = useState(false);
   const [inschrijvingsprijs, setInschrijvingsprijs] = useState("");
@@ -202,6 +204,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
       opmerking: opmerking || null,
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
+      finale,
     });
     setBezig(false);
     if (resultaat.succes) {
@@ -342,6 +345,12 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
             </button>
           ))}
         </div>
+        {speelvorm === "rondes" && (
+          <label className="mt-2 flex items-center gap-2 text-sm font-medium text-donker">
+            <input type="checkbox" checked={finale} onChange={(e) => setFinale(e.target.checked)} className="h-4 w-4" />
+            {t.form.finale}
+          </label>
+        )}
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -493,6 +502,7 @@ function EditForm({
   const [speelvorm, setSpeelvorm] = useState<Speelvorm>(toernooi.speelvorm ?? "rondes");
   const [aantalRonden, setAantalRonden] = useState(String(toernooi.aantal_ronden ?? ""));
   const [aantalPoules, setAantalPoules] = useState(String(toernooi.aantal_poules ?? ""));
+  const [finale, setFinale] = useState(toernooi.finale);
   const [vol, setVol] = useState(toernooi.vol);
   const [afficheUrl, setAfficheUrl] = useState(toernooi.affiche_url);
   const [afficheBezig, setAfficheBezig] = useState(false);
@@ -530,6 +540,7 @@ function EditForm({
       vol,
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
+      finale,
     });
     setBezig(false);
     onKlaar();
@@ -648,6 +659,12 @@ function EditForm({
             </button>
           ))}
         </div>
+        {speelvorm === "rondes" && (
+          <label className="mt-2 flex items-center gap-2 text-sm font-medium text-donker">
+            <input type="checkbox" checked={finale} onChange={(e) => setFinale(e.target.checked)} className="h-4 w-4" />
+            {t.form.finale}
+          </label>
+        )}
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">

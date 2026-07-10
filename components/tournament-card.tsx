@@ -52,6 +52,7 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
           {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
             <span className="text-[0.74rem] text-grijs">
               {toernooi.aantal_ronden} {t.lijst.ronden}
+              {toernooi.finale && ` ${t.lijst.metFinale}`}
             </span>
           )}
           {toernooi.speelvorm === "poules" && toernooi.aantal_poules && (

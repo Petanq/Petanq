@@ -56,6 +56,7 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
           {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
             <Detail label={t.form.aantalRonden}>
               {toernooi.aantal_ronden} {t.lijst.ronden}
+              {toernooi.finale && ` ${t.lijst.metFinale}`}
             </Detail>
           )}
           {toernooi.speelvorm === "poules" && toernooi.aantal_poules && (
