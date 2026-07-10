@@ -50,42 +50,44 @@ export function MonthCalendar({ toernooien }: { toernooien: Toernooi[] }) {
   const toernooienVanDag = geselecteerdeDag ? perDag.get(geselecteerdeDag) ?? [] : [];
 
   return (
-    <div className="overflow-hidden rounded-[18px] border-[1.5px] border-rand bg-white">
-      <div
-        className="relative flex items-center justify-between px-6 py-8 sm:px-8"
-        style={{
-          backgroundImage: `linear-gradient(rgba(31,31,31,0.72), rgba(31,31,31,0.72)), url('${achtergrond}')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+    <div
+      className="relative overflow-hidden rounded-[18px] border-[1.5px] border-donker"
+      style={{
+        backgroundImage: `url('${achtergrond}')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-b from-donker/85 via-donker/90 to-donker/95" />
+
+      <div className="relative flex items-center justify-between px-6 py-8 sm:px-8">
         <button
           onClick={() => {
             setMaandOffset((v) => v - 1);
             setGeselecteerdeDag(null);
           }}
-          className="rounded-full border border-white/30 bg-white/10 px-3 py-2 text-white transition-colors hover:bg-white/20"
+          className="rounded-full border border-geel/40 bg-white/10 px-3 py-2 text-geel transition-colors hover:bg-white/20"
           aria-label="vorige maand"
         >
           ←
         </button>
         <h3 className="font-titel text-2xl tracking-wide text-white sm:text-3xl">
-          {maandVolledig(maandIndex, taal)} {jaar}
+          {maandVolledig(maandIndex, taal)} <span className="text-geel">{jaar}</span>
         </h3>
         <button
           onClick={() => {
             setMaandOffset((v) => v + 1);
             setGeselecteerdeDag(null);
           }}
-          className="rounded-full border border-white/30 bg-white/10 px-3 py-2 text-white transition-colors hover:bg-white/20"
+          className="rounded-full border border-geel/40 bg-white/10 px-3 py-2 text-geel transition-colors hover:bg-white/20"
           aria-label="volgende maand"
         >
           →
         </button>
       </div>
 
-      <div className="p-4 sm:p-6">
-        <div className="mb-2 grid grid-cols-7 gap-1.5 text-center text-[0.7rem] font-bold uppercase tracking-wide text-grijs">
+      <div className="relative p-4 sm:p-8 sm:pt-0">
+        <div className="mb-2 grid grid-cols-7 gap-1.5 text-center text-[0.7rem] font-bold uppercase tracking-wide text-white/50">
           {[1, 2, 3, 4, 5, 6, 0].map((i) => (
             <div key={i}>{t.dagen[i]}</div>
           ))}
@@ -104,9 +106,9 @@ export function MonthCalendar({ toernooien }: { toernooien: Toernooi[] }) {
                   isGeselecteerd
                     ? "border-rood bg-rood text-white"
                     : tornooienVanCel.length > 0
-                      ? "border-geel/50 bg-[#fffaf0] text-donker hover:border-rood"
-                      : "border-transparent text-grijs hover:border-rand"
-                } ${isVandaag && !isGeselecteerd ? "ring-2 ring-blauw-3" : ""}`}
+                      ? "border-geel/60 bg-white/10 text-geel hover:bg-white/20"
+                      : "border-white/10 bg-white/[0.03] text-white/70 hover:border-white/30"
+                } ${isVandaag && !isGeselecteerd ? "ring-2 ring-geel" : ""}`}
               >
                 <span>{cel.datum.getDate()}</span>
                 {tornooienVanCel.length > 0 && (
@@ -120,9 +122,9 @@ export function MonthCalendar({ toernooien }: { toernooien: Toernooi[] }) {
         </div>
 
         {geselecteerdeDag && (
-          <div className="mt-5 flex flex-col gap-2 border-t border-rand pt-5">
+          <div className="mt-5 flex flex-col gap-2 border-t border-white/15 pt-5">
             {toernooienVanDag.length === 0 ? (
-              <p className="text-center text-sm text-grijs">{t.lijst.geenResultaten}</p>
+              <p className="text-center text-sm text-white/60">{t.lijst.geenResultaten}</p>
             ) : (
               toernooienVanDag.map((tn) => <TournamentCard key={tn.id} toernooi={tn} />)
             )}
