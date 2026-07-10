@@ -23,6 +23,7 @@ const FORMULES: Formule[] = [
 export function TournamentForm() {
   const { t, taal } = useTranslation();
   const [status, setStatus] = useState<"idle" | "bezig" | "ok" | "fout">("idle");
+  const [foutReden, setFoutReden] = useState<string | null>(null);
 
   const [datum, setDatum] = useState("");
   const [uur, setUur] = useState("");
@@ -84,6 +85,7 @@ export function TournamentForm() {
       },
       taal
     );
+    setFoutReden(resultaat.succes ? null : resultaat.fout);
     setStatus(resultaat.succes ? "ok" : "fout");
   }
 
@@ -379,7 +381,11 @@ export function TournamentForm() {
           </Veld>
         </fieldset>
 
-        {status === "fout" && <p className="text-sm font-medium text-rood-2">{t.form.fout}</p>}
+        {status === "fout" && (
+          <p className="text-sm font-medium text-rood-2">
+            {foutReden === "dubbel_toernooi" ? t.form.foutDubbel : t.form.fout}
+          </p>
+        )}
 
         <Knop type="submit" variant="rood" disabled={status === "bezig"} className="self-start">
           {afficheBezig

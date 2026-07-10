@@ -56,6 +56,7 @@ export async function toernooiIndienen(
 
   if (error || !nieuwToernooi) {
     console.error("Toernooi indienen mislukt:", error?.message);
+    if (error?.code === "23505") return { succes: false, fout: "dubbel_toernooi" };
     return { succes: false, fout: "server_fout" };
   }
 

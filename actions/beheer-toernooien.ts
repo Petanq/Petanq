@@ -9,7 +9,7 @@ import {
 } from "@/lib/emails/nieuw-toernooi-nieuwsbrief";
 import { WeigeringEmail, weigeringOnderwerp } from "@/lib/emails/weigering";
 import { vertaalProvincie } from "@/lib/provincies";
-import { toernooiSchema } from "@/lib/validations";
+import { toernooiSchema, toernooiWijzigenSchema } from "@/lib/validations";
 import { Toernooi } from "@/lib/types";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
@@ -106,6 +106,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
 
   if (error || !toernooi) {
     console.error("Toernooi toevoegen (admin) mislukt:", error?.message);
+    if (error?.code === "23505") return { succes: false, fout: "dubbel_toernooi" };
     return { succes: false, fout: "server_fout" };
   }
 
@@ -191,9 +192,15 @@ export async function toernooiBewerken(
     >
   >
 ): Promise<BeheerActieResultaat> {
+  const parsed = toernooiWijzigenSchema.safeParse(wijzigingen);
+  if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
+
   const supabase = createClient();
-  const { error } = await supabase.from("toernooien").update(wijzigingen).eq("id", id);
-  if (error) return { succes: false, fout: "server_fout" };
+  const { error } = await supabase.from("toernooien").update(parsed.data).eq("id", id);
+  if (error) {
+    if (error.code === "23505") return { succes: false, fout: "dubbel_toernooi" };
+    return { succes: false, fout: "server_fout" };
+  }
   revalidatePath("/beheer/toernooien");
   revalidatePath("/");
   return { succes: true };

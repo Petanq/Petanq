@@ -165,7 +165,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
   const [afficheBezig, setAfficheBezig] = useState(false);
   const [afficheFout, setAfficheFout] = useState(false);
   const [bezig, setBezig] = useState(false);
-  const [fout, setFout] = useState(false);
+  const [fout, setFout] = useState<string | null>(null);
 
   async function afficheGekozen(bestand: File | null) {
     if (!bestand) return;
@@ -182,7 +182,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
 
   async function toevoegen() {
     setBezig(true);
-    setFout(false);
+    setFout(null);
     const resultaat = await toernooiToevoegenAlsAdmin({
       clubnaam,
       naam_nl: naamNl,
@@ -210,7 +210,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
     if (resultaat.succes) {
       onKlaar();
     } else {
-      setFout(true);
+      setFout(resultaat.fout);
     }
   }
 
@@ -446,7 +446,11 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
         {afficheFout && <p className="text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
       </div>
 
-      {fout && <p className="mt-3 text-sm font-medium text-rood-2">{t.form.fout}</p>}
+      {fout && (
+        <p className="mt-3 text-sm font-medium text-rood-2">
+          {fout === "dubbel_toernooi" ? t.form.foutDubbel : t.form.fout}
+        </p>
+      )}
 
       <div className="mt-3 flex gap-2">
         <button
@@ -503,11 +507,18 @@ function EditForm({
   const [aantalRonden, setAantalRonden] = useState(String(toernooi.aantal_ronden ?? ""));
   const [aantalPoules, setAantalPoules] = useState(String(toernooi.aantal_poules ?? ""));
   const [finale, setFinale] = useState(toernooi.finale);
+  const [contactEmail, setContactEmail] = useState(toernooi.contact_email);
+  const [gratis, setGratis] = useState(toernooi.gratis);
+  const [inschrijvingsprijs, setInschrijvingsprijs] = useState(String(toernooi.inschrijvingsprijs ?? ""));
+  const [maxPloegen, setMaxPloegen] = useState(String(toernooi.max_ploegen ?? ""));
+  const [linkInschrijving, setLinkInschrijving] = useState(toernooi.link_inschrijving ?? "");
+  const [opmerking, setOpmerking] = useState(toernooi.opmerking ?? "");
   const [vol, setVol] = useState(toernooi.vol);
   const [afficheUrl, setAfficheUrl] = useState(toernooi.affiche_url);
   const [afficheBezig, setAfficheBezig] = useState(false);
   const [afficheFout, setAfficheFout] = useState(false);
   const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState<string | null>(null);
 
   async function afficheGekozen(bestand: File | null) {
     if (!bestand) return;
@@ -524,7 +535,8 @@ function EditForm({
 
   async function opslaan() {
     setBezig(true);
-    await toernooiBewerken(toernooi.id, {
+    setFout(null);
+    const resultaat = await toernooiBewerken(toernooi.id, {
       clubnaam,
       naam_nl: naamNl,
       naam_fr: naamFr,
@@ -537,12 +549,22 @@ function EditForm({
       speelvorm,
       aantal_ronden: speelvorm === "rondes" ? Number(aantalRonden) || null : null,
       aantal_poules: speelvorm === "poules" ? Number(aantalPoules) || null : null,
+      contact_email: contactEmail,
+      gratis,
+      inschrijvingsprijs: gratis ? null : Number(inschrijvingsprijs) || null,
+      max_ploegen: Number(maxPloegen) || null,
+      link_inschrijving: linkInschrijving || null,
+      opmerking: opmerking || null,
       vol,
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
       finale,
     });
     setBezig(false);
+    if (!resultaat.succes) {
+      setFout(resultaat.fout);
+      return;
+    }
     onKlaar();
   }
 
@@ -576,6 +598,15 @@ function EditForm({
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {openToernooi ? t.form.organisator : t.form.clubnaam}
           <input value={clubnaam} onChange={(e) => setClubnaam(e.target.value)} className="veld-input" />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.contactEmail}
+          <input
+            type="email"
+            value={contactEmail}
+            onChange={(e) => setContactEmail(e.target.value)}
+            className="veld-input"
+          />
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.naamNl}
@@ -691,7 +722,57 @@ function EditForm({
             />
           </label>
         )}
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.maxPloegen}
+          <input
+            type="number"
+            min={1}
+            value={maxPloegen}
+            onChange={(e) => setMaxPloegen(e.target.value)}
+            className="veld-input"
+          />
+        </label>
       </div>
+
+      <label className="mt-3 flex items-center gap-2 text-sm font-medium text-donker">
+        <input type="checkbox" checked={gratis} onChange={(e) => setGratis(e.target.checked)} className="h-4 w-4" />
+        {t.form.gratis}
+      </label>
+
+      {!gratis && (
+        <label className="mt-3 flex flex-col gap-1 text-xs font-bold text-donker">
+          {t.form.inschrijvingsprijs}
+          <input
+            type="number"
+            min={0}
+            step="0.5"
+            value={inschrijvingsprijs}
+            onChange={(e) => setInschrijvingsprijs(e.target.value)}
+            className="veld-input"
+          />
+        </label>
+      )}
+
+      <label className="mt-3 flex flex-col gap-1 text-xs font-bold text-donker">
+        {t.form.linkInschrijving}
+        <input
+          type="url"
+          placeholder="https://"
+          value={linkInschrijving}
+          onChange={(e) => setLinkInschrijving(e.target.value)}
+          className="veld-input"
+        />
+      </label>
+
+      <label className="mt-3 flex flex-col gap-1 text-xs font-bold text-donker">
+        {t.form.opmerking}
+        <textarea
+          rows={3}
+          value={opmerking}
+          onChange={(e) => setOpmerking(e.target.value)}
+          className="veld-input resize-none"
+        />
+      </label>
 
       <label className="mt-3 flex items-center gap-2 text-sm font-medium text-donker">
         <input type="checkbox" checked={vol} onChange={(e) => setVol(e.target.checked)} className="h-4 w-4" />
@@ -714,6 +795,12 @@ function EditForm({
         {afficheBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
         {afficheFout && <p className="text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
       </div>
+
+      {fout && (
+        <p className="mt-3 text-sm font-medium text-rood-2">
+          {fout === "dubbel_toernooi" ? t.form.foutDubbel : t.form.fout}
+        </p>
+      )}
 
       <div className="mt-3 flex gap-2">
         <button

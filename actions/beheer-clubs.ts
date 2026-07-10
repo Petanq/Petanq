@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { clubSchema } from "@/lib/validations";
+import { clubSchema, clubWijzigenSchema } from "@/lib/validations";
 import { Club } from "@/lib/types";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
@@ -48,8 +48,11 @@ export async function clubBewerken(
     >
   >
 ): Promise<BeheerActieResultaat> {
+  const parsed = clubWijzigenSchema.safeParse(wijzigingen);
+  if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
+
   const supabase = createClient();
-  const { error } = await supabase.from("clubs").update(wijzigingen).eq("id", id);
+  const { error } = await supabase.from("clubs").update(parsed.data).eq("id", id);
   if (error) return { succes: false, fout: error.message };
   revalidatePath("/beheer/clubs");
   revalidatePath("/clubs");
