@@ -25,6 +25,12 @@ const nl = {
     statControleurs: "Vrijwillige controleurs",
     bekijkAlle: "Bekijk alle toernooien →",
   },
+  nietGevonden: {
+    titel: "Deze pagina bestaat niet (meer)",
+    beschrijving:
+      "Misschien is dit toernooi of deze club intussen verwijderd, of klopt de link niet meer.",
+    terugNaarKalender: "← Terug naar de toernooienkalender",
+  },
   filters: {
     zoekPlaceholder: "Zoek club of locatie...",
     regio: "Regio",
@@ -57,6 +63,7 @@ const nl = {
     gevondenClubs: "Gevonden clubs",
     weergaveLijst: "Lijst",
     weergaveKalender: "Kalender",
+    meldFout: "Klopt hier iets niet? Meld het ons →",
   },
   categorie: {
     heren: "Heren / H/HG",
@@ -275,6 +282,12 @@ const fr: typeof nl = {
     statControleurs: "Bénévoles vérificateurs",
     bekijkAlle: "Voir tous les tournois →",
   },
+  nietGevonden: {
+    titel: "Cette page n'existe pas (ou plus)",
+    beschrijving:
+      "Ce tournoi ou ce club a peut-être été supprimé entre-temps, ou le lien n'est plus valide.",
+    terugNaarKalender: "← Retour au calendrier des tournois",
+  },
   filters: {
     zoekPlaceholder: "Rechercher club ou lieu...",
     regio: "Région",
@@ -307,6 +320,7 @@ const fr: typeof nl = {
     gevondenClubs: "Clubs trouvés",
     weergaveLijst: "Liste",
     weergaveKalender: "Calendrier",
+    meldFout: "Une erreur ici ? Signalez-le nous →",
   },
   categorie: {
     heren: "Messieurs / H/HG",

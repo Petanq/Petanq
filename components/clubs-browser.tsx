@@ -41,6 +41,12 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
         <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
           <h1 className="font-titel text-4xl tracking-wide text-white">{t.clubsPagina.titel}</h1>
           <p className="max-w-lg text-sm text-white/70">{t.clubsPagina.beschrijving}</p>
+          <a
+            href={`mailto:info@petanq.be?subject=${encodeURIComponent("Melding fout bij een club")}`}
+            className="mt-1 inline-block text-xs font-semibold text-white/60 underline hover:text-white"
+          >
+            {t.lijst.meldFout}
+          </a>
         </div>
       </div>
 

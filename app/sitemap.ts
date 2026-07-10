@@ -10,7 +10,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const statischePaden: MetadataRoute.Sitemap = [
     { url: base, changeFrequency: "daily", priority: 1 },
     { url: `${base}/clubs`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${base}/provincies`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${base}/toernooi-toevoegen`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/clubs/toevoegen`, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${base}/over-ons`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${base}/privacybeleid`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
   const toernooiPaden: MetadataRoute.Sitemap = toernooien.map((toernooi) => ({
