@@ -11,7 +11,7 @@ export default async function HomePage() {
   return (
     <>
       <Hero aantalToernooien={toernooien.length} aantalClubs={clubs.length} />
-      <TournamentBrowser toernooien={toekomstig} />
+      <TournamentBrowser toernooien={toekomstig} clubs={clubs} />
     </>
   );
 }

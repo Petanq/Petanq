@@ -53,6 +53,7 @@ const nl = {
     voorbij: "Voorbij",
     volBadge: "Vol",
     openBadge: "Open toernooi",
+    gevondenClubs: "Gevonden clubs",
   },
   categorie: {
     heren: "Heren / H/HG",
@@ -287,6 +288,7 @@ const fr: typeof nl = {
     voorbij: "Passé",
     volBadge: "Complet",
     openBadge: "Tournoi ouvert",
+    gevondenClubs: "Clubs trouvés",
   },
   categorie: {
     heren: "Messieurs / H/HG",

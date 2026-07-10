@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
-import { Toernooi } from "@/lib/types";
+import { Club, Toernooi } from "@/lib/types";
 import { maandJaarKey, maandVolledig, parseDatum } from "@/lib/datum";
 import { FilterSidebar, FilterState } from "./filter-sidebar";
 import { MonthPills } from "./month-pills";
 import { TournamentCard } from "./tournament-card";
+import { ClubCard } from "./club-card";
 import { NewsletterBlock } from "./newsletter-block";
 import { CtaBlock } from "./cta-block";
 
@@ -20,12 +21,19 @@ const LEGE_FILTERS: FilterState = {
   type: null,
 };
 
-export function TournamentBrowser({ toernooien }: { toernooien: Toernooi[] }) {
+export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[]; clubs: Club[] }) {
   const { t, taal } = useTranslation();
   const [filters, setFilters] = useState<FilterState>(LEGE_FILTERS);
   const [actieveMaand, setActieveMaand] = useState<string | null>(null);
 
   const zoekTerm = filters.zoek.trim().toLowerCase();
+
+  const gevondenClubs = useMemo(() => {
+    if (!zoekTerm) return [];
+    return clubs.filter(
+      (c) => c.naam.toLowerCase().includes(zoekTerm) || c.gemeente.toLowerCase().includes(zoekTerm)
+    );
+  }, [clubs, zoekTerm]);
 
   const gefilterd = useMemo(() => {
     return toernooien.filter((tn) => {
@@ -74,6 +82,19 @@ export function TournamentBrowser({ toernooien }: { toernooien: Toernooi[] }) {
             setActieveMaand={setActieveMaand}
           />
         </div>
+
+        {gevondenClubs.length > 0 && (
+          <div className="mb-4">
+            <h3 className="mb-2 text-xs font-extrabold uppercase tracking-widest text-grijs">
+              {t.lijst.gevondenClubs}
+            </h3>
+            <div className="flex flex-col gap-2">
+              {gevondenClubs.map((club) => (
+                <ClubCard key={club.id} club={club} />
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col gap-2">
           {groepen.length === 0 && (
