@@ -11,6 +11,7 @@ import { WeigeringEmail, weigeringOnderwerp } from "@/lib/emails/weigering";
 import { vertaalProvincie } from "@/lib/provincies";
 import { toernooiSchema, toernooiWijzigenSchema } from "@/lib/validations";
 import { Toernooi } from "@/lib/types";
+import { isModerator } from "@/lib/auth-helpers";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -31,6 +32,8 @@ async function huidigeModeratorNaam(): Promise<string | null> {
 }
 
 export async function toernooiGoedkeuren(id: string): Promise<BeheerActieResultaat> {
+  if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
+
   const supabase = createClient();
   const moderatorNaam = await huidigeModeratorNaam();
 
@@ -63,6 +66,8 @@ export async function toernooiGoedkeuren(id: string): Promise<BeheerActieResulta
 }
 
 export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerActieResultaat> {
+  if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
+
   const parsed = toernooiSchema.safeParse(input);
   if (!parsed.success) {
     return { succes: false, fout: "ongeldige_invoer" };
@@ -122,6 +127,8 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
 }
 
 export async function toernooiWeigeren(id: string, reden: string | null): Promise<BeheerActieResultaat> {
+  if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
+
   const supabase = createClient();
   const moderatorNaam = await huidigeModeratorNaam();
 
@@ -154,6 +161,8 @@ export async function toernooiWeigeren(id: string, reden: string | null): Promis
 }
 
 export async function toernooiVerwijderen(id: string): Promise<BeheerActieResultaat> {
+  if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
+
   const supabase = createClient();
   const { error } = await supabase.from("toernooien").delete().eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
@@ -192,6 +201,8 @@ export async function toernooiBewerken(
     >
   >
 ): Promise<BeheerActieResultaat> {
+  if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
+
   const parsed = toernooiWijzigenSchema.safeParse(wijzigingen);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
 
