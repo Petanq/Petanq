@@ -83,6 +83,8 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
             <div className="text-sm text-grijs">
               {club.gemeente}, {vertaalProvincie(club.provincie, "nl")}
             </div>
+            {club.adres && <div className="text-xs text-grijs">📍 {club.adres}</div>}
+            {club.telefoon && <div className="text-xs text-grijs">📞 {club.telefoon}</div>}
           </div>
         </div>
         <div className="flex items-center gap-2">
