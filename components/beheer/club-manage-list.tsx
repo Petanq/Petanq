@@ -19,9 +19,15 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
   const [toevoegenOpen, setToevoegenOpen] = useState(false);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
   const [bezig, setBezig] = useState<string | null>(null);
+  const [zoekterm, setZoekterm] = useState("");
 
   const wachtend = clubs.filter((c) => !c.actief);
-  const overige = clubs.filter((c) => c.actief);
+  const zoekLower = zoekterm.trim().toLowerCase();
+  const overige = clubs
+    .filter((c) => c.actief)
+    .filter(
+      (c) => !zoekLower || c.naam.toLowerCase().includes(zoekLower) || c.gemeente.toLowerCase().includes(zoekLower)
+    );
 
   async function toggleActief(club: Club) {
     setBezig(club.id);
@@ -147,9 +153,21 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <h2 className="text-sm font-extrabold uppercase tracking-widest text-donker">
-          {t.beheer.alleClubs}
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-sm font-extrabold uppercase tracking-widest text-donker">
+            {t.beheer.alleClubs}
+          </h2>
+          <input
+            type="search"
+            value={zoekterm}
+            onChange={(e) => setZoekterm(e.target.value)}
+            placeholder={t.clubsPagina.zoekPlaceholder}
+            className="veld-input w-full sm:w-64"
+          />
+        </div>
+        {overige.length === 0 && (
+          <p className="text-sm text-grijs">{t.clubsPagina.geenResultaten}</p>
+        )}
         <div className="flex flex-col gap-5">
           {ALLE_PROVINCIES.map((p) => {
             const clubsInProvincie = overige
