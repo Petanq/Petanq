@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { Club, Toernooi } from "@/lib/types";
 import { maandJaarKey, maandVolledig, parseDatum } from "@/lib/datum";
@@ -8,6 +8,7 @@ import { FilterSidebar, FilterState } from "./filter-sidebar";
 import { MonthPills } from "./month-pills";
 import { TournamentCard } from "./tournament-card";
 import { ClubCard } from "./club-card";
+import { MonthCalendar } from "./month-calendar";
 import { NewsletterBlock } from "./newsletter-block";
 import { CtaBlock } from "./cta-block";
 
@@ -25,6 +26,19 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
   const { t, taal } = useTranslation();
   const [filters, setFilters] = useState<FilterState>(LEGE_FILTERS);
   const [actieveMaand, setActieveMaand] = useState<string | null>(null);
+  const [weergave, setWeergave] = useState<"lijst" | "kalender">("lijst");
+
+  useEffect(() => {
+    function checkHash() {
+      if (window.location.hash === "#kalender") {
+        setWeergave("kalender");
+        document.getElementById("toernooien")?.scrollIntoView();
+      }
+    }
+    checkHash();
+    window.addEventListener("hashchange", checkHash);
+    return () => window.removeEventListener("hashchange", checkHash);
+  }, []);
 
   const zoekTerm = filters.zoek.trim().toLowerCase();
 
@@ -76,11 +90,33 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
       <main>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-titel text-2xl tracking-wide text-blauw">{t.lijst.titel}</h2>
-          <MonthPills
-            maandSleutels={maandSleutels}
-            actieveMaand={actieveMaand}
-            setActieveMaand={setActieveMaand}
-          />
+          <div className="flex items-center gap-2">
+            {weergave === "lijst" && (
+              <MonthPills
+                maandSleutels={maandSleutels}
+                actieveMaand={actieveMaand}
+                setActieveMaand={setActieveMaand}
+              />
+            )}
+            <div className="flex overflow-hidden rounded-full border border-rand">
+              <button
+                onClick={() => setWeergave("lijst")}
+                className={`px-3 py-1.5 text-xs font-bold transition-colors ${
+                  weergave === "lijst" ? "bg-blauw text-white" : "text-grijs hover:bg-licht"
+                }`}
+              >
+                {t.lijst.weergaveLijst}
+              </button>
+              <button
+                onClick={() => setWeergave("kalender")}
+                className={`px-3 py-1.5 text-xs font-bold transition-colors ${
+                  weergave === "kalender" ? "bg-blauw text-white" : "text-grijs hover:bg-licht"
+                }`}
+              >
+                {t.lijst.weergaveKalender}
+              </button>
+            </div>
+          </div>
         </div>
 
         {gevondenClubs.length > 0 && (
@@ -96,29 +132,33 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
           </div>
         )}
 
-        <div className="flex flex-col gap-2">
-          {groepen.length === 0 && (
-            <p className="rounded-lg border border-rand bg-white p-6 text-center text-sm text-grijs">
-              {t.lijst.geenResultaten}
-            </p>
-          )}
-          {groepen.map(([sleutel, lijst]) => {
-            const [jaar] = sleutel.split("-");
-            const maandIndex = parseDatum(`${sleutel}-01`).getMonth();
-            return (
-              <div key={sleutel}>
-                <div className="my-2 flex items-center gap-3 rounded-md bg-blauw px-4 py-2 font-titel text-lg tracking-widest text-white first:mt-0">
-                  📅 <span className="text-geel">{maandVolledig(maandIndex, taal).toUpperCase()}</span> {jaar}
+        {weergave === "kalender" ? (
+          <MonthCalendar toernooien={gefilterd} />
+        ) : (
+          <div className="flex flex-col gap-2">
+            {groepen.length === 0 && (
+              <p className="rounded-lg border border-rand bg-white p-6 text-center text-sm text-grijs">
+                {t.lijst.geenResultaten}
+              </p>
+            )}
+            {groepen.map(([sleutel, lijst]) => {
+              const [jaar] = sleutel.split("-");
+              const maandIndex = parseDatum(`${sleutel}-01`).getMonth();
+              return (
+                <div key={sleutel}>
+                  <div className="my-2 flex items-center gap-3 rounded-md bg-blauw px-4 py-2 font-titel text-lg tracking-widest text-white first:mt-0">
+                    📅 <span className="text-geel">{maandVolledig(maandIndex, taal).toUpperCase()}</span> {jaar}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {lijst.map((tn) => (
+                      <TournamentCard key={tn.id} toernooi={tn} />
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  {lijst.map((tn) => (
-                    <TournamentCard key={tn.id} toernooi={tn} />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         <NewsletterBlock />
         <CtaBlock />

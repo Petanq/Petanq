@@ -54,6 +54,8 @@ const nl = {
     volBadge: "Vol",
     openBadge: "Open toernooi",
     gevondenClubs: "Gevonden clubs",
+    weergaveLijst: "Lijst",
+    weergaveKalender: "Kalender",
   },
   categorie: {
     heren: "Heren / H/HG",
@@ -289,6 +291,8 @@ const fr: typeof nl = {
     volBadge: "Complet",
     openBadge: "Tournoi ouvert",
     gevondenClubs: "Clubs trouvés",
+    weergaveLijst: "Liste",
+    weergaveKalender: "Calendrier",
   },
   categorie: {
     heren: "Messieurs / H/HG",
