@@ -26,6 +26,8 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
   const [toevoegenOpen, setToevoegenOpen] = useState(false);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
   const [bezig, setBezig] = useState(false);
+  const [filterCategorie, setFilterCategorie] = useState<Categorie | "">("");
+  const [filterProvincie, setFilterProvincie] = useState<Provincie | "">("");
 
   async function verwijderen(id: string) {
     if (!window.confirm("Weet je zeker dat je dit toernooi wil verwijderen?")) return;
@@ -35,9 +37,40 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
     router.refresh();
   }
 
+  const zichtbareToernooien = toernooien
+    .filter((tn) => !filterCategorie || tn.categorie === filterCategorie)
+    .filter((tn) => !filterProvincie || tn.provincie === filterProvincie)
+    .sort((a, b) => (a.datum + a.uur).localeCompare(b.datum + b.uur));
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          <select
+            value={filterCategorie}
+            onChange={(e) => setFilterCategorie(e.target.value as Categorie | "")}
+            className="veld-input w-auto"
+          >
+            <option value="">{t.filters.alleCategorieen}</option>
+            {CATEGORIEEN.map((c) => (
+              <option key={c} value={c}>
+                {t.categorie[c]}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterProvincie}
+            onChange={(e) => setFilterProvincie(e.target.value as Provincie | "")}
+            className="veld-input w-auto"
+          >
+            <option value="">{t.filters.alleProvincies}</option>
+            {ALLE_PROVINCIES.map((p) => (
+              <option key={p} value={p}>
+                {vertaalProvincie(p, taal)}
+              </option>
+            ))}
+          </select>
+        </div>
         <button
           onClick={() => setToevoegenOpen((v) => !v)}
           className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white"
@@ -56,7 +89,7 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
         />
       )}
 
-      {toernooien.map((tn) =>
+      {zichtbareToernooien.map((tn) =>
         bewerkId === tn.id ? (
           <EditForm
             key={tn.id}

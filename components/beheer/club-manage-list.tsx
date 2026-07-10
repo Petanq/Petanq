@@ -14,7 +14,7 @@ import {
 } from "@/actions/beheer-clubs";
 
 export function ClubManageList({ clubs }: { clubs: Club[] }) {
-  const { t } = useTranslation();
+  const { t, taal } = useTranslation();
   const router = useRouter();
   const [toevoegenOpen, setToevoegenOpen] = useState(false);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
@@ -150,7 +150,25 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
         <h2 className="text-sm font-extrabold uppercase tracking-widest text-donker">
           {t.beheer.alleClubs}
         </h2>
-        <div className="flex flex-col gap-2">{overige.map(renderClub)}</div>
+        <div className="flex flex-col gap-5">
+          {ALLE_PROVINCIES.map((p) => {
+            const clubsInProvincie = overige
+              .filter((c) => c.provincie === p)
+              .sort((a, b) => a.naam.localeCompare(b.naam));
+            if (clubsInProvincie.length === 0) return null;
+            return (
+              <div key={p} className="flex flex-col gap-2">
+                <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blauw-2">
+                  {vertaalProvincie(p, taal)}
+                  <span className="rounded-full bg-licht px-2 py-0.5 text-[0.65rem] font-bold text-blauw-2">
+                    {clubsInProvincie.length}
+                  </span>
+                </h3>
+                <div className="flex flex-col gap-2">{clubsInProvincie.map(renderClub)}</div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
