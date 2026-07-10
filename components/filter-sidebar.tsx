@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { Categorie, Formule, Toernooi } from "@/lib/types";
 import { ALLE_PROVINCIES, PROVINCIE_REGIO, Provincie, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
@@ -99,7 +100,7 @@ export function FilterSidebar({
         />
       </div>
 
-      <FilterCard titel={t.filters.regio}>
+      <FilterCard titel={t.filters.regio} actiefLabel={filters.regio ? vertaalRegio(filters.regio, taal) : null}>
         <FilterItem
           actief={filters.regio === null}
           onClick={() => setFilters({ ...filters, regio: null, provincie: null })}
@@ -117,7 +118,10 @@ export function FilterSidebar({
         ))}
       </FilterCard>
 
-      <FilterCard titel={t.filters.provincie}>
+      <FilterCard
+        titel={t.filters.provincie}
+        actiefLabel={filters.provincie ? vertaalProvincie(filters.provincie, taal) : null}
+      >
         <FilterItem
           actief={filters.provincie === null}
           onClick={() => setFilters({ ...filters, provincie: null })}
@@ -135,7 +139,10 @@ export function FilterSidebar({
         ))}
       </FilterCard>
 
-      <FilterCard titel={t.filters.categorie}>
+      <FilterCard
+        titel={t.filters.categorie}
+        actiefLabel={filters.categorie ? t.categorie[filters.categorie] : null}
+      >
         <FilterItem
           actief={filters.categorie === null}
           onClick={() => setFilters({ ...filters, categorie: null })}
@@ -154,7 +161,7 @@ export function FilterSidebar({
         ))}
       </FilterCard>
 
-      <FilterCard titel={t.filters.formule}>
+      <FilterCard titel={t.filters.formule} actiefLabel={filters.formule ? t.formule[filters.formule] : null}>
         <FilterItem
           actief={filters.formule === null}
           onClick={() => setFilters({ ...filters, formule: null })}
@@ -172,7 +179,16 @@ export function FilterSidebar({
         ))}
       </FilterCard>
 
-      <FilterCard titel={t.form.tornooiType}>
+      <FilterCard
+        titel={t.form.tornooiType}
+        actiefLabel={
+          filters.type === "officieel"
+            ? t.form.officieelToernooi
+            : filters.type === "open"
+              ? t.form.openToernooi
+              : null
+        }
+      >
         <FilterItem
           actief={filters.type === null}
           onClick={() => setFilters({ ...filters, type: null })}
@@ -196,13 +212,41 @@ export function FilterSidebar({
   );
 }
 
-function FilterCard({ titel, children }: { titel: string; children: React.ReactNode }) {
+function FilterCard({
+  titel,
+  actiefLabel,
+  children,
+}: {
+  titel: string;
+  actiefLabel?: string | null;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="mb-3.5 rounded-[10px] border-[1.5px] border-rand bg-white p-[1.1rem]">
-      <div className="mb-3 text-[0.66rem] font-extrabold uppercase tracking-widest text-[#94a3b8]">
-        {titel}
-      </div>
-      <ul className="flex flex-col gap-0.5">{children}</ul>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-2 text-left"
+      >
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="text-[0.66rem] font-extrabold uppercase tracking-widest text-[#94a3b8]">
+            {titel}
+          </span>
+          {!open && actiefLabel && (
+            <span className="truncate rounded-full bg-[#eff6ff] px-2 py-0.5 text-[0.68rem] font-bold text-blauw-2">
+              {actiefLabel}
+            </span>
+          )}
+        </span>
+        <span
+          className={`shrink-0 text-[#94a3b8] transition-transform ${open ? "rotate-180" : ""}`}
+          aria-hidden
+        >
+          ▾
+        </span>
+      </button>
+      {open && <ul className="mt-3 flex flex-col gap-0.5">{children}</ul>}
     </div>
   );
 }
