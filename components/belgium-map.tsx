@@ -3,13 +3,31 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
-import { Provincie, PROVINCIE_REGIO, Regio, vertaalProvincie } from "@/lib/provincies";
+import { Provincie, PROVINCIE_REGIO, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
 import { PROVINCIE_VLAKKEN } from "@/lib/belgium-map-data";
 
-const REGIO_KLEUR: Record<Regio, { normaal: string; actief: string; schaduw: string }> = {
-  vlaanderen: { normaal: "#F4C430", actief: "#ffd75e", schaduw: "rgba(244,196,48,0.55)" },
-  wallonie: { normaal: "#D62828", actief: "#e8534a", schaduw: "rgba(214,40,40,0.55)" },
-  brussel: { normaal: "#3D3D3D", actief: "#54545c", schaduw: "rgba(61,61,61,0.55)" },
+// Elke provincie krijgt een eigen kleur, maar uit de kleurfamilie van haar
+// gewest (goud/amber = Vlaanderen, rood/koraal = Wallonië) zodat het gewest
+// nog steeds in één oogopslag herkenbaar blijft; Brussel krijgt een eigen
+// afwijkende kleur omdat het als enclave geen buren binnen zijn "familie" heeft.
+const PROVINCIE_KLEUR: Record<Provincie, { normaal: string; actief: string; schaduw: string }> = {
+  antwerpen: { normaal: "#F4C430", actief: "#ffd75e", schaduw: "rgba(244,196,48,0.55)" },
+  "oost-vlaanderen": { normaal: "#FFB627", actief: "#ffca5c", schaduw: "rgba(255,182,39,0.55)" },
+  "west-vlaanderen": { normaal: "#E8A33D", actief: "#f3ba69", schaduw: "rgba(232,163,61,0.55)" },
+  limburg: { normaal: "#F7D060", actief: "#ffe08c", schaduw: "rgba(247,208,96,0.55)" },
+  "vlaams-brabant": { normaal: "#C98A1B", actief: "#e0a545", schaduw: "rgba(201,138,27,0.55)" },
+  henegouwen: { normaal: "#D62828", actief: "#e8534a", schaduw: "rgba(214,40,40,0.55)" },
+  luik: { normaal: "#E85D4A", actief: "#f0816f", schaduw: "rgba(232,93,74,0.55)" },
+  namen: { normaal: "#B8232A", actief: "#d1454c", schaduw: "rgba(184,35,42,0.55)" },
+  "waals-brabant": { normaal: "#F2785C", actief: "#f79b85", schaduw: "rgba(242,120,92,0.55)" },
+  luxemburg: { normaal: "#8C1D1D", actief: "#a83f3f", schaduw: "rgba(140,29,29,0.55)" },
+  brussel: { normaal: "#6B3FA0", actief: "#8a5ec2", schaduw: "rgba(107,63,160,0.55)" },
+};
+
+const REGIO_EMOJI: Record<Regio, string> = {
+  vlaanderen: "🦁",
+  wallonie: "🐓",
+  brussel: "🏛️",
 };
 
 export function BelgiumMap({ aantalPerProvincie }: { aantalPerProvincie: Record<string, number> }) {
@@ -59,8 +77,7 @@ export function BelgiumMap({ aantalPerProvincie }: { aantalPerProvincie: Record<
           </filter>
         </defs>
         {PROVINCIE_VLAKKEN.map(({ provincie, points }, i) => {
-          const regio = PROVINCIE_REGIO[provincie];
-          const kleur = REGIO_KLEUR[regio];
+          const kleur = PROVINCIE_KLEUR[provincie];
           const actief = hover === provincie;
           return (
             <polygon
@@ -132,6 +149,34 @@ export function BelgiumMap({ aantalPerProvincie }: { aantalPerProvincie: Record<
           );
         })}
       </svg>
+
+      <div className="flex w-full max-w-xl flex-wrap items-start justify-center gap-x-8 gap-y-4 rounded-2xl border-[1.5px] border-rand bg-white px-5 py-4 shadow-sm">
+        {(["vlaanderen", "wallonie", "brussel"] as Regio[]).map((regio) => (
+          <div key={regio} className="flex flex-col items-center gap-2">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-grijs">
+              {REGIO_EMOJI[regio]} {vertaalRegio(regio, taal)}
+            </span>
+            <div className="flex flex-wrap justify-center gap-1.5">
+              {PROVINCIE_VLAKKEN.filter((v) => PROVINCIE_REGIO[v.provincie] === regio).map((v) => (
+                <button
+                  key={v.provincie}
+                  type="button"
+                  onClick={() => ga(v.provincie)}
+                  onMouseEnter={() => setHover(v.provincie)}
+                  onMouseLeave={() => setHover(null)}
+                  className="flex items-center gap-1.5 rounded-full border border-rand bg-[#faf9f7] px-2.5 py-1 text-[0.7rem] font-semibold text-donker transition-colors hover:border-blauw-3"
+                >
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ background: PROVINCIE_KLEUR[v.provincie].normaal }}
+                  />
+                  {vertaalProvincie(v.provincie, taal)}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
 
       <div className="flex min-h-[4rem] w-full max-w-sm flex-col items-center justify-center rounded-2xl border-[1.5px] border-rand bg-white px-5 py-3 text-center shadow-sm transition-all">
         {hover ? (
