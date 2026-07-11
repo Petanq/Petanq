@@ -26,16 +26,16 @@ export function Nav() {
         </Link>
 
         <div className="hidden gap-1 md:flex">
-          <Link href="/#toernooien" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white">
+          <Link href="/#toernooien" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.toernooien}
           </Link>
-          <Link href="/provincies" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white">
+          <Link href="/provincies" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.provincies}
           </Link>
-          <Link href="/clubs" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white">
+          <Link href="/clubs" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.clubs}
           </Link>
-          <Link href="/over-ons" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white">
+          <Link href="/over-ons" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.overOns}
           </Link>
         </div>
@@ -45,7 +45,7 @@ export function Nav() {
           <Link
             href="/beheer/login"
             title={t.nav.login}
-            className="hidden items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-2 text-[0.83rem] font-medium text-white/50 transition-colors hover:bg-white/[0.08] hover:text-white sm:flex"
+            className="hidden items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-2 text-[0.83rem] font-medium text-white/50 transition-colors hover:bg-white/[0.08] hover:text-geel sm:flex"
           >
             🔒 {t.nav.login}
           </Link>
@@ -73,28 +73,28 @@ export function Nav() {
           <Link
             href="/#toernooien"
             onClick={() => setMenuOpen(false)}
-            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >
             {t.nav.toernooien}
           </Link>
           <Link
             href="/provincies"
             onClick={() => setMenuOpen(false)}
-            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >
             {t.nav.provincies}
           </Link>
           <Link
             href="/clubs"
             onClick={() => setMenuOpen(false)}
-            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >
             {t.nav.clubs}
           </Link>
           <Link
             href="/over-ons"
             onClick={() => setMenuOpen(false)}
-            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >
             {t.nav.overOns}
           </Link>
@@ -108,7 +108,7 @@ export function Nav() {
           <Link
             href="/beheer/login"
             onClick={() => setMenuOpen(false)}
-            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/50 transition-colors hover:bg-white/[0.08] hover:text-white sm:hidden"
+            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/50 transition-colors hover:bg-white/[0.08] hover:text-geel sm:hidden"
           >
             🔒 {t.nav.login}
           </Link>

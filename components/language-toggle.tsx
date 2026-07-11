@@ -10,7 +10,7 @@ export function LanguageToggle() {
       <button
         onClick={() => setTaal("nl")}
         className={`rounded-md px-3 py-1 font-body text-[0.8rem] font-bold transition-colors ${
-          taal === "nl" ? "bg-white text-blauw shadow" : "text-white/50 hover:text-white/80"
+          taal === "nl" ? "bg-geel text-donker shadow" : "text-white/50 hover:text-white/80"
         }`}
         aria-pressed={taal === "nl"}
       >
@@ -19,7 +19,7 @@ export function LanguageToggle() {
       <button
         onClick={() => setTaal("fr")}
         className={`rounded-md px-3 py-1 font-body text-[0.8rem] font-bold transition-colors ${
-          taal === "fr" ? "bg-white text-blauw shadow" : "text-white/50 hover:text-white/80"
+          taal === "fr" ? "bg-geel text-donker shadow" : "text-white/50 hover:text-white/80"
         }`}
         aria-pressed={taal === "fr"}
       >
