@@ -24,39 +24,39 @@ export async function toernooiIndienen(
   const data = parsed.data;
 
   const supabase = createClient();
-  const { data: nieuwToernooi, error } = await supabase
-    .from("toernooien")
-    .insert({
-      datum: data.datum,
-      uur: data.uur,
-      clubnaam: data.clubnaam,
-      naam_nl: data.naam_nl,
-      naam_fr: data.naam_fr,
-      gemeente: data.gemeente,
-      provincie: data.provincie,
-      categorie: data.categorie,
-      formule: data.formule,
-      speelvorm: data.speelvorm,
-      aantal_ronden: data.speelvorm === "rondes" ? data.aantal_ronden ?? null : null,
-      aantal_poules: data.speelvorm === "poules" ? data.aantal_poules ?? null : null,
-      inschrijvingsprijs: data.gratis ? null : data.inschrijvingsprijs || null,
-      gratis: data.gratis ?? false,
-      max_ploegen: data.max_ploegen || null,
-      contact_email: data.contact_email,
-      link_inschrijving: data.link_inschrijving || null,
-      opmerking: data.opmerking || null,
-      affiche_url: data.affiche_url || null,
-      open_toernooi: data.open_toernooi ?? false,
-      finale: data.speelvorm === "rondes" ? data.finale ?? false : false,
-      status: "in_behandeling",
-      ingediend_door: data.contact_email,
-    })
-    .select()
-    .single();
+  const { error } = await supabase.from("toernooien").insert({
+    datum: data.datum,
+    uur: data.uur,
+    clubnaam: data.clubnaam,
+    naam_nl: data.naam_nl,
+    naam_fr: data.naam_fr,
+    gemeente: data.gemeente,
+    provincie: data.provincie,
+    categorie: data.categorie,
+    formule: data.formule,
+    speelvorm: data.speelvorm,
+    aantal_ronden: data.speelvorm === "rondes" ? data.aantal_ronden ?? null : null,
+    aantal_poules: data.speelvorm === "poules" ? data.aantal_poules ?? null : null,
+    inschrijvingsprijs: data.gratis ? null : data.inschrijvingsprijs || null,
+    gratis: data.gratis ?? false,
+    max_ploegen: data.max_ploegen || null,
+    contact_email: data.contact_email,
+    link_inschrijving: data.link_inschrijving || null,
+    opmerking: data.opmerking || null,
+    affiche_url: data.affiche_url || null,
+    open_toernooi: data.open_toernooi ?? false,
+    finale: data.speelvorm === "rondes" ? data.finale ?? false : false,
+    status: "in_behandeling",
+    ingediend_door: data.contact_email,
+  });
 
-  if (error || !nieuwToernooi) {
-    console.error("Toernooi indienen mislukt:", error?.message);
-    if (error?.code === "23505") return { succes: false, fout: "dubbel_toernooi" };
+  // Let op: geen .select() na deze insert — de indiener (anoniem/publiek) mag
+  // een "in_behandeling"-toernooi zelf niet meteen terug uitlezen (RLS-select
+  // staat enkel goedgekeurde toernooien toe), dus een .select() hier zou de
+  // hele insert laten mislukken met een row-level-security-foutmelding.
+  if (error) {
+    console.error("Toernooi indienen mislukt:", error.message);
+    if (error.code === "23505") return { succes: false, fout: "dubbel_toernooi" };
     return { succes: false, fout: "server_fout" };
   }
 
