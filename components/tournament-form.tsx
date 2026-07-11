@@ -6,7 +6,9 @@ import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { Categorie, Formule, Speelvorm } from "@/lib/types";
 import { toernooiIndienen } from "@/actions/toernooien";
-import { uploadAffiche } from "@/lib/upload-affiche";
+import { uploadNaarStorage } from "@/lib/upload-bestand";
+import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
+import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
 import { Knop } from "@/components/ui/knop";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
@@ -45,19 +47,77 @@ export function TournamentForm() {
   const [maxPloegen, setMaxPloegen] = useState("");
   const [linkInschrijving, setLinkInschrijving] = useState("");
   const [opmerking, setOpmerking] = useState("");
-  const [afficheFile, setAfficheFile] = useState<File | null>(null);
+  const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
+  const [afficheNaam, setAfficheNaam] = useState<string | null>(null);
   const [afficheBezig, setAfficheBezig] = useState(false);
+  const [afficheFout, setAfficheFout] = useState(false);
+  const [aiBezig, setAiBezig] = useState(false);
+  const [autoIngevuld, setAutoIngevuld] = useState(false);
+
+  async function bestandNaarBase64(bestand: File): Promise<string> {
+    const buffer = await bestand.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binair = "";
+    for (let i = 0; i < bytes.length; i++) binair += String.fromCharCode(bytes[i]);
+    return btoa(binair);
+  }
+
+  function vulVeldenInVanAffiche(velden: AfficheVelden) {
+    if (velden.datum) setDatum(velden.datum);
+    if (velden.uur) setUur(velden.uur);
+    if (velden.clubnaam) setClubnaam(velden.clubnaam);
+    if (velden.naam_nl) setNaamNl(velden.naam_nl);
+    if (velden.naam_fr) setNaamFr(velden.naam_fr);
+    if (velden.gemeente) setGemeente(velden.gemeente);
+    if (velden.provincie && (ALLE_PROVINCIES as string[]).includes(velden.provincie)) {
+      setProvincie(velden.provincie as Provincie);
+    }
+    if (velden.categorie && CATEGORIEEN.includes(velden.categorie as Categorie)) {
+      setCategorie(velden.categorie as Categorie);
+    }
+    if (velden.formule && FORMULES.includes(velden.formule as Formule)) {
+      setFormule(velden.formule as Formule);
+    }
+    if (velden.speelvorm === "rondes" || velden.speelvorm === "poules") {
+      setSpeelvorm(velden.speelvorm);
+    }
+    if (velden.aantal_ronden) setAantalRonden(String(velden.aantal_ronden));
+    if (velden.aantal_poules) setAantalPoules(String(velden.aantal_poules));
+    if (velden.contact_email) setContactEmail(velden.contact_email);
+    if (velden.gratis) setGratis(true);
+    if (velden.inschrijvingsprijs != null) setInschrijvingsprijs(String(velden.inschrijvingsprijs));
+    if (velden.max_ploegen) setMaxPloegen(String(velden.max_ploegen));
+    if (velden.link_inschrijving) setLinkInschrijving(velden.link_inschrijving);
+    if (velden.opmerking) setOpmerking(velden.opmerking);
+    setAutoIngevuld(true);
+  }
+
+  async function afficheGekozen(bestand: File | null) {
+    if (!bestand) return;
+    setAfficheNaam(bestand.name);
+    setAfficheFout(false);
+    setAfficheBezig(true);
+
+    const verwerkt = await verwerkAfficheAfbeelding(bestand);
+    const url = await uploadNaarStorage("affiches", verwerkt);
+    setAfficheBezig(false);
+
+    if (!url) {
+      setAfficheFout(true);
+      return;
+    }
+    setAfficheUrl(url);
+
+    setAiBezig(true);
+    const base64 = await bestandNaarBase64(verwerkt);
+    const velden = await afficheAnalyseren(base64, verwerkt.type);
+    setAiBezig(false);
+    if (velden) vulVeldenInVanAffiche(velden);
+  }
 
   async function versturen(e: React.FormEvent) {
     e.preventDefault();
     setStatus("bezig");
-
-    let afficheUrl: string | null = null;
-    if (afficheFile) {
-      setAfficheBezig(true);
-      afficheUrl = await uploadAffiche(afficheFile);
-      setAfficheBezig(false);
-    }
 
     const resultaat = await toernooiIndienen(
       {
@@ -106,6 +166,30 @@ export function TournamentForm() {
       <p className="mb-8 text-sm text-grijs">{t.form.beschrijving}</p>
 
       <form onSubmit={versturen} className="flex flex-col gap-6">
+        <fieldset className="flex flex-col gap-4 rounded-lg border-[1.5px] border-dashed border-blauw-3 bg-blauw-3/5 p-4">
+          <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
+            {t.form.affiche}
+          </legend>
+          <Veld label={t.form.affiche}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => afficheGekozen(e.target.files?.[0] ?? null)}
+              className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
+            />
+            <p className="mt-1 text-xs text-grijs">{t.form.afficheHint}</p>
+            {afficheNaam && !afficheBezig && !afficheFout && (
+              <p className="mt-1 text-xs font-semibold text-donker">{afficheNaam}</p>
+            )}
+            {afficheBezig && <p className="mt-1 text-xs font-semibold text-blauw-2">{t.form.afficheUploaden}</p>}
+            {aiBezig && <p className="mt-1 text-xs font-semibold text-blauw-2">{t.form.afficheAnalyseren}</p>}
+            {afficheFout && <p className="mt-1 text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
+            {autoIngevuld && !aiBezig && (
+              <p className="mt-1 text-xs font-semibold text-groen">{t.form.afficheAutoIngevuld}</p>
+            )}
+          </Veld>
+        </fieldset>
+
         <fieldset className="flex flex-col gap-4">
           <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
             {t.form.sectieBasis}
@@ -368,17 +452,6 @@ export function TournamentForm() {
               className="veld-input resize-none"
             />
           </Veld>
-
-          <Veld label={t.form.affiche}>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setAfficheFile(e.target.files?.[0] ?? null)}
-              className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
-            />
-            <p className="mt-1 text-xs text-grijs">{t.form.afficheHint}</p>
-            {afficheFile && <p className="mt-1 text-xs font-semibold text-donker">{afficheFile.name}</p>}
-          </Veld>
         </fieldset>
 
         {status === "fout" && (
@@ -387,9 +460,16 @@ export function TournamentForm() {
           </p>
         )}
 
-        <Knop type="submit" variant="rood" disabled={status === "bezig"} className="self-start">
+        <Knop
+          type="submit"
+          variant="rood"
+          disabled={status === "bezig" || afficheBezig || aiBezig}
+          className="self-start"
+        >
           {afficheBezig
             ? t.form.afficheUploaden
+            : aiBezig
+            ? t.form.afficheAnalyseren
             : status === "bezig"
             ? t.form.bezigMetVersturen
             : t.form.versturen}

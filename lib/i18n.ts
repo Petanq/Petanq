@@ -170,6 +170,9 @@ const nl = {
     afficheKiezen: "Kies een afbeelding",
     afficheHint: "Tip: je kan hier gewoon met je GSM een foto van de affiche nemen.",
     afficheFout: "Uploaden mislukt. Probeer een andere foto of probeer het later opnieuw.",
+    afficheAnalyseren: "De affiche wordt gelezen...",
+    afficheAutoIngevuld:
+      "We hebben op basis van de affiche alvast enkele velden ingevuld — controleer ze zeker voor je verstuurt.",
     linkInschrijving: "Link naar inschrijving",
     opmerking: "Opmerking",
     verplicht: "verplicht",
@@ -431,6 +434,9 @@ const fr: typeof nl = {
     afficheKiezen: "Choisissez une image",
     afficheHint: "Astuce : vous pouvez simplement prendre une photo de l'affiche avec votre GSM.",
     afficheFout: "Échec du téléchargement. Essayez une autre photo ou réessayez plus tard.",
+    afficheAnalyseren: "Lecture de l'affiche en cours...",
+    afficheAutoIngevuld:
+      "Nous avons déjà rempli certains champs à partir de l'affiche — vérifiez-les bien avant d'envoyer.",
     linkInschrijving: "Lien d'inscription",
     opmerking: "Remarque",
     verplicht: "obligatoire",
