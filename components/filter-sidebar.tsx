@@ -237,11 +237,7 @@ function FilterCard({
         className="group flex w-full items-center justify-between gap-2 text-left"
       >
         <span className="flex min-w-0 items-center gap-2">
-          <span
-            className={`text-[0.66rem] font-extrabold uppercase tracking-widest transition-colors ${
-              heeftActieveFilter ? "text-[#b8860b]" : "text-[#94a3b8] group-hover:text-donker"
-            }`}
-          >
+          <span className="text-[0.66rem] font-extrabold uppercase tracking-widest text-[#b8860b] transition-colors group-hover:text-donker">
             {titel}
           </span>
           {!open && actiefLabel && (
@@ -251,8 +247,8 @@ function FilterCard({
           )}
         </span>
         <span
-          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs transition-all ${
-            open ? "rotate-180 bg-geel text-donker" : "bg-[#f8f6f0] text-[#94a3b8] group-hover:bg-[#fdf3d9] group-hover:text-[#b8860b]"
+          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs text-[#b8860b] transition-all ${
+            open ? "rotate-180 bg-geel text-donker" : "bg-[#fdf3d9] group-hover:bg-geel group-hover:text-donker"
           }`}
           aria-hidden
         >
