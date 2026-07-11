@@ -16,7 +16,7 @@ export function BevestigingClubIndienerEmail({ taal, naam, gemeente }: Props) {
           {"Merci d'avoir proposé le club "}<strong>{naam}</strong> ({gemeente}).
         </Text>
         <Text style={tekstStijl}>
-          Un bénévole vérifiera votre proposition sous peu. Vous recevrez un e-mail dès que le club sera publié sur Qpetanque.
+          Un bénévole vérifiera votre proposition sous peu. Vous recevrez un e-mail dès que le club sera publié sur Petanque13.
         </Text>
       </EmailLayout>
     );
@@ -29,7 +29,7 @@ export function BevestigingClubIndienerEmail({ taal, naam, gemeente }: Props) {
         Bedankt voor het voorstellen van club <strong>{naam}</strong> ({gemeente}).
       </Text>
       <Text style={tekstStijl}>
-        Een vrijwilliger bekijkt je voorstel binnenkort. Je ontvangt een e-mail zodra de club op Qpetanque verschijnt.
+        Een vrijwilliger bekijkt je voorstel binnenkort. Je ontvangt een e-mail zodra de club op Petanque13 verschijnt.
       </Text>
     </EmailLayout>
   );

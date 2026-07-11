@@ -16,7 +16,7 @@ const nl = {
     titelRegel2: "toernooien",
     titelAccent: "op één plaats",
     beschrijving:
-      "Geen verspreide Facebookposts meer. Qpetanque brengt alle toernooien samen voor heel België, ingedeeld per provincie en gecontroleerd door vrijwilligers.",
+      "Geen verspreide Facebookposts meer. Petanque13 brengt alle toernooien samen voor heel België, ingedeeld per provincie en gecontroleerd door vrijwilligers.",
     bekijkKalender: "📅 Bekijk de kalender",
     toernooiAanmelden: "Toernooi aanmelden",
     statToernooien: "Toernooien dit seizoen",
@@ -184,9 +184,9 @@ const nl = {
     kiesFormule: "Kies een formule",
   },
   overOnsPagina: {
-    titel: "Over Qpetanque",
+    titel: "Over Petanque13",
     alinea1:
-      "Qpetanque is de centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel. Geen verspreide Facebookposts en clubwebsites meer: alle toernooien op één plaats, per provincie ingedeeld.",
+      "Petanque13 is de centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel. Geen verspreide Facebookposts en clubwebsites meer: alle toernooien op één plaats, per provincie ingedeeld.",
     alinea2:
       "Elk toernooi wordt gecontroleerd door een team vrijwilligers voordat het op de site verschijnt. Organiseer je zelf een toernooi? Meld het gratis aan via het formulier.",
     contact: "Vragen of opmerkingen? Mail naar",
@@ -277,7 +277,7 @@ const fr: typeof nl = {
     titelRegel2: "de pétanque",
     titelAccent: "en un seul endroit",
     beschrijving:
-      "Fini les posts dispersés sur Facebook. Qpetanque rassemble tous les tournois de Belgique, classés par province et vérifiés par des bénévoles.",
+      "Fini les posts dispersés sur Facebook. Petanque13 rassemble tous les tournois de Belgique, classés par province et vérifiés par des bénévoles.",
     bekijkKalender: "📅 Voir le calendrier",
     toernooiAanmelden: "Ajouter un tournoi",
     statToernooien: "Tournois cette saison",
@@ -445,9 +445,9 @@ const fr: typeof nl = {
     kiesFormule: "Choisissez une formule",
   },
   overOnsPagina: {
-    titel: "À propos de Qpetanque",
+    titel: "À propos de Petanque13",
     alinea1:
-      "Qpetanque est le calendrier central des tournois de pétanque en Flandre, en Wallonie et à Bruxelles. Fini les posts Facebook et sites de clubs dispersés : tous les tournois au même endroit, classés par province.",
+      "Petanque13 est le calendrier central des tournois de pétanque en Flandre, en Wallonie et à Bruxelles. Fini les posts Facebook et sites de clubs dispersés : tous les tournois au même endroit, classés par province.",
     alinea2:
       "Chaque tournoi est vérifié par une équipe de bénévoles avant d'apparaître sur le site. Vous organisez un tournoi ? Ajoutez-le gratuitement via le formulaire.",
     contact: "Des questions ou remarques ? Envoyez un e-mail à",

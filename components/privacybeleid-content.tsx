@@ -10,7 +10,7 @@ const inhoud = {
       {
         kop: "1. Wie is verantwoordelijk voor je gegevens?",
         alineas: [
-          "Qpetanque is een vrijwilligersinitiatief dat een centrale toernooikalender voor petanque in België aanbiedt. Voor vragen over dit privacybeleid of je persoonsgegevens kan je terecht op info@petanq.be.",
+          "Petanque13 is een vrijwilligersinitiatief dat een centrale toernooikalender voor petanque in België aanbiedt. Voor vragen over dit privacybeleid of je persoonsgegevens kan je terecht op info@petanq.be.",
         ],
       },
       {
@@ -58,7 +58,7 @@ const inhoud = {
       {
         kop: "7. Cookies en lokale opslag",
         alineas: [
-          "Qpetanque gebruikt geen advertentie- of trackingcookies. Je taalvoorkeur (NL/FR) wordt lokaal in je browser opgeslagen (localStorage) en nooit naar onze servers verzonden. Als je inlogt als moderator, gebruikt Supabase een noodzakelijk inlogcookie om je sessie te onthouden.",
+          "Petanque13 gebruikt geen advertentie- of trackingcookies. Je taalvoorkeur (NL/FR) wordt lokaal in je browser opgeslagen (localStorage) en nooit naar onze servers verzonden. Als je inlogt als moderator, gebruikt Supabase een noodzakelijk inlogcookie om je sessie te onthouden.",
         ],
       },
       {
@@ -78,7 +78,7 @@ const inhoud = {
       {
         kop: "1. Qui est responsable de vos données ?",
         alineas: [
-          "Qpetanque est une initiative bénévole qui propose un calendrier central des tournois de pétanque en Belgique. Pour toute question concernant cette politique de confidentialité ou vos données personnelles, contactez info@petanq.be.",
+          "Petanque13 est une initiative bénévole qui propose un calendrier central des tournois de pétanque en Belgique. Pour toute question concernant cette politique de confidentialité ou vos données personnelles, contactez info@petanq.be.",
         ],
       },
       {
@@ -126,7 +126,7 @@ const inhoud = {
       {
         kop: "7. Cookies et stockage local",
         alineas: [
-          "Qpetanque n'utilise aucun cookie publicitaire ou de suivi. Votre préférence linguistique (NL/FR) est enregistrée localement dans votre navigateur (localStorage) et n'est jamais envoyée à nos serveurs. Si vous vous connectez en tant que modérateur, Supabase utilise un cookie de connexion nécessaire pour mémoriser votre session.",
+          "Petanque13 n'utilise aucun cookie publicitaire ou de suivi. Votre préférence linguistique (NL/FR) est enregistrée localement dans votre navigateur (localStorage) et n'est jamais envoyée à nos serveurs. Si vous vous connectez en tant que modérateur, Supabase utilise un cookie de connexion nécessaire pour mémoriser votre session.",
         ],
       },
       {

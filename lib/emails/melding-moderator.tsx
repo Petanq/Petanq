@@ -31,4 +31,4 @@ export function MeldingModeratorEmail({ naam, clubnaam, datum, gemeente, beheerL
   );
 }
 
-export const meldingModeratorOnderwerp = "Nieuw toernooi in behandeling — Qpetanque";
+export const meldingModeratorOnderwerp = "Nieuw toernooi in behandeling — Petanque13";

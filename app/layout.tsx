@@ -14,24 +14,24 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Qpetanque — De Belgische Petanquekalender",
-    template: "%s | Qpetanque",
+    default: "Petanque13 — De Belgische Petanquekalender",
+    template: "%s | Petanque13",
   },
   description:
     "De centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel. Gecontroleerd door vrijwilligers.",
   openGraph: {
-    title: "Qpetanque — De Belgische Petanquekalender",
+    title: "Petanque13 — De Belgische Petanquekalender",
     description:
       "De centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel.",
     url: siteUrl,
-    siteName: "Qpetanque",
+    siteName: "Petanque13",
     locale: "nl_BE",
     alternateLocale: "fr_BE",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Qpetanque — De Belgische Petanquekalender",
+    title: "Petanque13 — De Belgische Petanquekalender",
     description:
       "De centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel.",
   },

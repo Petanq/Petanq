@@ -22,7 +22,7 @@ export function EmailLayout({
             {children}
             <Hr style={{ borderColor: "#e5e5e5", margin: "24px 0 16px" }} />
             <Text style={{ fontSize: "12px", color: "#555555", margin: 0 }}>
-              Qpetanque — de centrale kalender voor petanquetoernooien in België.
+              Petanque13 — de centrale kalender voor petanquetoernooien in België.
             </Text>
           </Section>
         </Container>
