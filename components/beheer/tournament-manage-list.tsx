@@ -516,8 +516,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
             !gemeente ||
             !provincie ||
             !categorie ||
-            !formule ||
-            !contactEmail
+            !formule
           }
           className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
         >
@@ -558,7 +557,7 @@ function EditForm({
   const [aantalRonden, setAantalRonden] = useState(String(toernooi.aantal_ronden ?? ""));
   const [aantalPoules, setAantalPoules] = useState(String(toernooi.aantal_poules ?? ""));
   const [finale, setFinale] = useState(toernooi.finale);
-  const [contactEmail, setContactEmail] = useState(toernooi.contact_email);
+  const [contactEmail, setContactEmail] = useState(toernooi.contact_email ?? "");
   const [gratis, setGratis] = useState(toernooi.gratis);
   const [inschrijvingsprijs, setInschrijvingsprijs] = useState(String(toernooi.inschrijvingsprijs ?? ""));
   const [maxPloegen, setMaxPloegen] = useState(String(toernooi.max_ploegen ?? ""));

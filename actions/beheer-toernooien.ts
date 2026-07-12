@@ -95,14 +95,14 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
       inschrijvingsprijs: data.gratis ? null : data.inschrijvingsprijs || null,
       gratis: data.gratis ?? false,
       max_ploegen: data.max_ploegen || null,
-      contact_email: data.contact_email,
+      contact_email: data.contact_email || null,
       link_inschrijving: data.link_inschrijving || null,
       opmerking: data.opmerking || null,
       affiche_url: data.affiche_url || null,
       open_toernooi: data.open_toernooi ?? false,
       finale: data.speelvorm === "rondes" ? data.finale ?? false : false,
       status: "goedgekeurd",
-      ingediend_door: data.contact_email,
+      ingediend_door: data.contact_email || null,
       goedgekeurd_door: moderatorNaam,
       goedgekeurd_op: new Date().toISOString(),
     })
@@ -144,16 +144,18 @@ export async function toernooiWeigeren(id: string, reden: string | null): Promis
     return { succes: false, fout: "server_fout" };
   }
 
-  try {
-    const resend = getResendClient();
-    await resend.emails.send({
-      from: AFZENDER,
-      to: toernooi.contact_email,
-      subject: weigeringOnderwerp,
-      react: WeigeringEmail({ naam: toernooi.naam_nl, reden }),
-    });
-  } catch (mailFout) {
-    console.error("Weigeringsmail versturen mislukt:", mailFout);
+  if (toernooi.contact_email) {
+    try {
+      const resend = getResendClient();
+      await resend.emails.send({
+        from: AFZENDER,
+        to: toernooi.contact_email,
+        subject: weigeringOnderwerp,
+        react: WeigeringEmail({ naam: toernooi.naam_nl, reden }),
+      });
+    } catch (mailFout) {
+      console.error("Weigeringsmail versturen mislukt:", mailFout);
+    }
   }
 
   revalidatePath("/beheer");

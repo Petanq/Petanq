@@ -95,12 +95,14 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
               {t.hero.toernooiAanmelden}
             </Knop>
           )}
-          <a
-            href={`mailto:${toernooi.contact_email}`}
-            className="rounded-lg border-[1.5px] border-rand px-6 py-3 font-semibold text-donker transition-colors hover:border-blauw-3"
-          >
-            {toernooi.contact_email}
-          </a>
+          {toernooi.contact_email && (
+            <a
+              href={`mailto:${toernooi.contact_email}`}
+              className="rounded-lg border-[1.5px] border-rand px-6 py-3 font-semibold text-donker transition-colors hover:border-blauw-3"
+            >
+              {toernooi.contact_email}
+            </a>
+          )}
         </div>
 
         <a

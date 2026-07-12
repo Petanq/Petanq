@@ -42,7 +42,7 @@ export type Toernooi = {
   open_toernooi: boolean;
   finale: boolean;
   affiche_url: string | null;
-  contact_email: string;
+  contact_email: string | null;
   link_inschrijving: string | null;
   opmerking: string | null;
   status: ToernooiStatus;

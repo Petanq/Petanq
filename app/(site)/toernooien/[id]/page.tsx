@@ -50,7 +50,7 @@ export default async function ToernooiDetailPagina({ params }: Props) {
     organizer: {
       "@type": "Organization",
       name: toernooi.clubnaam,
-      email: toernooi.contact_email,
+      ...(toernooi.contact_email ? { email: toernooi.contact_email } : {}),
     },
     offers: toernooi.gratis
       ? { "@type": "Offer", price: "0", priceCurrency: "EUR" }

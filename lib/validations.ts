@@ -24,7 +24,7 @@ const toernooiBaseSchema = z.object({
   speelvorm: z.enum(["rondes", "poules"]).default("rondes"),
   aantal_ronden: z.coerce.number().int().min(1).max(20).nullable().optional(),
   aantal_poules: z.coerce.number().int().min(1).max(20).nullable().optional(),
-  contact_email: z.string().trim().email(),
+  contact_email: z.string().trim().email().nullable().optional().or(z.literal("")),
   inschrijvingsprijs: z.coerce.number().min(0).max(1000).nullable().optional(),
   gratis: z.boolean().optional().default(false),
   max_ploegen: z.coerce.number().int().min(1).max(500).nullable().optional(),

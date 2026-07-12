@@ -30,7 +30,7 @@ export function TournamentForm() {
 
   const [datum, setDatum] = useState("");
   const [uur, setUur] = useState("");
-  const [openToernooi, setOpenToernooi] = useState(false);
+  const [openToernooi, setOpenToernooi] = useState(true);
   const [clubnaam, setClubnaam] = useState("");
   const [naamNl, setNaamNl] = useState("");
   const [naamFr, setNaamFr] = useState("");
@@ -375,10 +375,9 @@ export function TournamentForm() {
                 />
               </Veld>
             )}
-            <Veld label={t.form.contactEmail} verplicht>
+            <Veld label={`${t.form.contactEmail} (${t.form.optioneel})`}>
               <input
                 type="email"
-                required
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
                 className="veld-input"

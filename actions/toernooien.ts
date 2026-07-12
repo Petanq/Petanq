@@ -40,14 +40,14 @@ export async function toernooiIndienen(
     inschrijvingsprijs: data.gratis ? null : data.inschrijvingsprijs || null,
     gratis: data.gratis ?? false,
     max_ploegen: data.max_ploegen || null,
-    contact_email: data.contact_email,
+    contact_email: data.contact_email || null,
     link_inschrijving: data.link_inschrijving || null,
     opmerking: data.opmerking || null,
     affiche_url: data.affiche_url || null,
     open_toernooi: data.open_toernooi ?? false,
     finale: data.speelvorm === "rondes" ? data.finale ?? false : false,
     status: "in_behandeling",
-    ingediend_door: data.contact_email,
+    ingediend_door: data.contact_email || null,
   });
 
   // Let op: geen .select() na deze insert — de indiener (anoniem/publiek) mag
@@ -65,17 +65,19 @@ export async function toernooiIndienen(
     const resend = getResendClient();
     const naam = taalFormulier === "fr" ? data.naam_fr : data.naam_nl;
 
-    await resend.emails.send({
-      from: AFZENDER,
-      to: data.contact_email,
-      subject: bevestigingIndienerOnderwerp(taalFormulier),
-      react: BevestigingIndienerEmail({
-        taal: taalFormulier,
-        naam,
-        datum: data.datum,
-        gemeente: data.gemeente,
-      }),
-    });
+    if (data.contact_email) {
+      await resend.emails.send({
+        from: AFZENDER,
+        to: data.contact_email,
+        subject: bevestigingIndienerOnderwerp(taalFormulier),
+        react: BevestigingIndienerEmail({
+          taal: taalFormulier,
+          naam,
+          datum: data.datum,
+          gemeente: data.gemeente,
+        }),
+      });
+    }
 
     const serviceClient = createServiceRoleClient();
     const { data: moderatoren } = await serviceClient.from("moderatoren").select("email");
