@@ -8,6 +8,12 @@ export function Footer() {
 
   return (
     <div className="mt-3 border-t border-rand px-6 py-6 text-center text-[0.77rem] text-grijs">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/logo-wordmark.png"
+        alt="Petanque13"
+        className="mx-auto mb-3 h-10 w-auto"
+      />
       <span>
         {t.footer.tekst}{" "}
         <a href="mailto:info@petanq.be" className="text-rood no-underline hover:underline">
