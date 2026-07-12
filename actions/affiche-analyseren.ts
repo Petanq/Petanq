@@ -50,6 +50,13 @@ export async function afficheAnalyseren(
   if (!process.env.ANTHROPIC_API_KEY) return null;
 
   const vandaag = new Date().toISOString().slice(0, 10);
+  const GELDIGE_MEDIA_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const;
+  // Sommige GSM-browsers geven een leeg/onbekend mediatype door (bv. bij een
+  // rechtstreekse camera-foto) terwijl de bytes wel degelijk een gewone foto
+  // zijn — in dat geval gokken we op jpeg i.p.v. de aanvraag te laten falen.
+  const veiligMediaType = (GELDIGE_MEDIA_TYPES as readonly string[]).includes(mediaType)
+    ? (mediaType as (typeof GELDIGE_MEDIA_TYPES)[number])
+    : "image/jpeg";
 
   try {
     const anthropic = getClient();
@@ -64,7 +71,7 @@ export async function afficheAnalyseren(
               type: "image",
               source: {
                 type: "base64",
-                media_type: mediaType as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
+                media_type: veiligMediaType,
                 data: afbeeldingBase64,
               },
             },

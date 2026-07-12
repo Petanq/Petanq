@@ -8,7 +8,11 @@ const KWALITEIT = 0.85;
  * Faalt dit (oude browser, geen afbeelding, ...) dan geven we gewoon het originele bestand terug.
  */
 export async function verwerkAfficheAfbeelding(bestand: File): Promise<File> {
-  if (!bestand.type.startsWith("image/") || bestand.type === "image/svg+xml") {
+  // Let op: sommige GSM-browsers leveren een cameraf-oto af met een leeg/onbekend
+  // `.type`-veld (i.p.v. "image/jpeg"). Enkel expliciet gekende niet-verwerkbare
+  // types overslaan — bij twijfel toch proberen, createImageBitmap herkent het
+  // echte formaat aan de inhoud van het bestand, niet aan dit label.
+  if (bestand.type === "image/svg+xml") {
     return bestand;
   }
 
