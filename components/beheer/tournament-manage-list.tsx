@@ -8,6 +8,10 @@ import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { formatUur } from "@/lib/datum";
 import { toernooiBewerken, toernooiToevoegenAlsAdmin, toernooiVerwijderen } from "@/actions/beheer-toernooien";
 import { uploadAffiche } from "@/lib/upload-affiche";
+import { uploadNaarStorage } from "@/lib/upload-bestand";
+import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
+import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
+import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
@@ -164,20 +168,60 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
   const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
   const [afficheBezig, setAfficheBezig] = useState(false);
   const [afficheFout, setAfficheFout] = useState(false);
+  const [aiBezig, setAiBezig] = useState(false);
+  const [autoIngevuld, setAutoIngevuld] = useState(false);
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<string | null>(null);
 
+  function vulVeldenInVanAffiche(velden: AfficheVelden) {
+    if (velden.datum) setDatum(velden.datum);
+    if (velden.uur) setUur(velden.uur);
+    if (velden.clubnaam) setClubnaam(velden.clubnaam);
+    if (velden.naam_nl) setNaamNl(velden.naam_nl);
+    if (velden.naam_fr) setNaamFr(velden.naam_fr);
+    if (velden.gemeente) setGemeente(velden.gemeente);
+    if (velden.provincie && (ALLE_PROVINCIES as string[]).includes(velden.provincie)) {
+      setProvincie(velden.provincie as Provincie);
+    }
+    if (velden.categorie && CATEGORIEEN.includes(velden.categorie as Categorie)) {
+      setCategorie(velden.categorie as Categorie);
+    }
+    if (velden.formule && FORMULES.includes(velden.formule as Formule)) {
+      setFormule(velden.formule as Formule);
+    }
+    if (velden.speelvorm === "rondes" || velden.speelvorm === "poules") {
+      setSpeelvorm(velden.speelvorm);
+    }
+    if (velden.aantal_ronden) setAantalRonden(String(velden.aantal_ronden));
+    if (velden.aantal_poules) setAantalPoules(String(velden.aantal_poules));
+    if (velden.contact_email) setContactEmail(velden.contact_email);
+    if (velden.gratis) setGratis(true);
+    if (velden.inschrijvingsprijs != null) setInschrijvingsprijs(String(velden.inschrijvingsprijs));
+    if (velden.max_ploegen) setMaxPloegen(String(velden.max_ploegen));
+    if (velden.link_inschrijving) setLinkInschrijving(velden.link_inschrijving);
+    if (velden.opmerking) setOpmerking(velden.opmerking);
+    setAutoIngevuld(true);
+  }
+
   async function afficheGekozen(bestand: File | null) {
     if (!bestand) return;
-    setAfficheBezig(true);
     setAfficheFout(false);
-    const url = await uploadAffiche(bestand);
-    if (url) {
-      setAfficheUrl(url);
-    } else {
-      setAfficheFout(true);
-    }
+    setAfficheBezig(true);
+    const verwerkt = await verwerkAfficheAfbeelding(bestand);
+    const url = await uploadNaarStorage("affiches", verwerkt);
     setAfficheBezig(false);
+
+    if (!url) {
+      setAfficheFout(true);
+      return;
+    }
+    setAfficheUrl(url);
+
+    setAiBezig(true);
+    const base64 = await bestandNaarBase64(verwerkt);
+    const velden = await afficheAnalyseren(base64, verwerkt.type);
+    setAiBezig(false);
+    if (velden) vulVeldenInVanAffiche(velden);
   }
 
   async function toevoegen() {
@@ -254,13 +298,16 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
             className="veld-input"
           />
         </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.form.naamNl}
-          <input value={naamNl} onChange={(e) => setNaamNl(e.target.value)} className="veld-input" />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.form.naamFr}
-          <input value={naamFr} onChange={(e) => setNaamFr(e.target.value)} className="veld-input" />
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker sm:col-span-2">
+          {t.form.naamToernooi}
+          <input
+            value={naamNl}
+            onChange={(e) => {
+              setNaamNl(e.target.value);
+              setNaamFr(e.target.value);
+            }}
+            className="veld-input"
+          />
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.datum}
@@ -443,7 +490,11 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
         />
         <p className="text-xs text-grijs">{t.form.afficheHint}</p>
         {afficheBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
+        {aiBezig && <p className="text-xs font-semibold text-blauw-2">{t.form.afficheAnalyseren}</p>}
         {afficheFout && <p className="text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
+        {autoIngevuld && !aiBezig && (
+          <p className="text-xs font-semibold text-groen">{t.form.afficheAutoIngevuld}</p>
+        )}
       </div>
 
       {fout && (

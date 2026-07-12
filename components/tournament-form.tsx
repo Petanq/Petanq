@@ -9,6 +9,7 @@ import { toernooiIndienen } from "@/actions/toernooien";
 import { uploadNaarStorage } from "@/lib/upload-bestand";
 import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
 import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
+import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
 import { Knop } from "@/components/ui/knop";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
@@ -53,14 +54,6 @@ export function TournamentForm() {
   const [afficheFout, setAfficheFout] = useState(false);
   const [aiBezig, setAiBezig] = useState(false);
   const [autoIngevuld, setAutoIngevuld] = useState(false);
-
-  async function bestandNaarBase64(bestand: File): Promise<string> {
-    const buffer = await bestand.arrayBuffer();
-    const bytes = new Uint8Array(buffer);
-    let binair = "";
-    for (let i = 0; i < bytes.length; i++) binair += String.fromCharCode(bytes[i]);
-    return btoa(binair);
-  }
 
   function vulVeldenInVanAffiche(velden: AfficheVelden) {
     if (velden.datum) setDatum(velden.datum);
