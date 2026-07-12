@@ -248,24 +248,17 @@ export function TournamentForm() {
               className="veld-input"
             />
           </Veld>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Veld label={t.form.naamNl} verplicht>
-              <input
-                required
-                value={naamNl}
-                onChange={(e) => setNaamNl(e.target.value)}
-                className="veld-input"
-              />
-            </Veld>
-            <Veld label={t.form.naamFr} verplicht>
-              <input
-                required
-                value={naamFr}
-                onChange={(e) => setNaamFr(e.target.value)}
-                className="veld-input"
-              />
-            </Veld>
-          </div>
+          <Veld label={t.form.naamToernooi} verplicht>
+            <input
+              required
+              value={naamNl}
+              onChange={(e) => {
+                setNaamNl(e.target.value);
+                setNaamFr(e.target.value);
+              }}
+              className="veld-input"
+            />
+          </Veld>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Veld label={t.form.gemeente} verplicht>
               <input
