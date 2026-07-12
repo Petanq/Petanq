@@ -24,12 +24,6 @@ const PROVINCIE_KLEUR: Record<Provincie, { normaal: string; actief: string; scha
   brussel: { normaal: "#6B3FA0", actief: "#8a5ec2", schaduw: "rgba(107,63,160,0.55)" },
 };
 
-const REGIO_EMOJI: Record<Regio, string> = {
-  vlaanderen: "🦁",
-  wallonie: "🐓",
-  brussel: "🏛️",
-};
-
 export function BelgiumMap({ aantalPerProvincie }: { aantalPerProvincie: Record<string, number> }) {
   const { t, taal } = useTranslation();
   const router = useRouter();
@@ -154,7 +148,7 @@ export function BelgiumMap({ aantalPerProvincie }: { aantalPerProvincie: Record<
         {(["vlaanderen", "wallonie", "brussel"] as Regio[]).map((regio) => (
           <div key={regio} className="flex flex-col items-center gap-2">
             <span className="text-xs font-extrabold uppercase tracking-widest text-grijs">
-              {REGIO_EMOJI[regio]} {vertaalRegio(regio, taal)}
+              {vertaalRegio(regio, taal)}
             </span>
             <div className="flex flex-wrap justify-center gap-1.5">
               {PROVINCIE_VLAKKEN.filter((v) => PROVINCIE_REGIO[v.provincie] === regio).map((v) => (
