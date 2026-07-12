@@ -32,6 +32,7 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
   const [bezig, setBezig] = useState(false);
   const [filterCategorie, setFilterCategorie] = useState<Categorie | "">("");
   const [filterProvincie, setFilterProvincie] = useState<Provincie | "">("");
+  const [filterType, setFilterType] = useState<"" | "open" | "officieel">("");
 
   async function verwijderen(id: string) {
     if (!window.confirm("Weet je zeker dat je dit toernooi wil verwijderen?")) return;
@@ -44,6 +45,7 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
   const zichtbareToernooien = toernooien
     .filter((tn) => !filterCategorie || tn.categorie === filterCategorie)
     .filter((tn) => !filterProvincie || tn.provincie === filterProvincie)
+    .filter((tn) => !filterType || (filterType === "open" ? tn.open_toernooi : !tn.open_toernooi))
     .sort((a, b) => (a.datum + a.uur).localeCompare(b.datum + b.uur));
 
   return (
@@ -73,6 +75,15 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
                 {vertaalProvincie(p, taal)}
               </option>
             ))}
+          </select>
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value as "" | "open" | "officieel")}
+            className="veld-input w-auto"
+          >
+            <option value="">{t.filters.alleTypes}</option>
+            <option value="open">{t.form.openToernooi}</option>
+            <option value="officieel">{t.form.officieelToernooi}</option>
           </select>
         </div>
         <button
