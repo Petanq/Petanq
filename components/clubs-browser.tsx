@@ -134,26 +134,38 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
               const clubsInProvincie = gefilterd.filter((c) => c.provincie === provincie);
               const uitgeklapt = zoek.trim().length > 0 || opengeklapt.has(provincie);
               return (
-                <div key={provincie} id={provincie} className="mb-3 scroll-mt-20">
+                <div
+                  key={provincie}
+                  id={provincie}
+                  className={`mb-3 scroll-mt-20 rounded-[10px] border-[1.5px] bg-white transition-shadow ${
+                    uitgeklapt ? "border-geel/60 shadow-[0_2px_10px_rgba(244,196,48,0.15)]" : "border-rand"
+                  }`}
+                >
                   <button
                     onClick={() => toggleProvincie(provincie)}
-                    className="mb-2.5 flex w-full items-center gap-2 text-left"
+                    className="group flex w-full items-center justify-between gap-2 p-4 text-left"
                   >
-                    <span
-                      className={`text-[#94a3b8] transition-transform ${uitgeklapt ? "rotate-90" : ""}`}
-                      aria-hidden="true"
-                    >
-                      ›
-                    </span>
-                    <span className="text-[0.7rem] font-extrabold uppercase tracking-widest text-[#94a3b8]">
+                    <span className="text-[0.8rem] font-extrabold uppercase tracking-widest text-[#b8860b] transition-colors group-hover:text-donker">
                       {vertaalProvincie(provincie, taal)}
                     </span>
-                    <span className="text-[0.7rem] font-bold text-[#94a3b8] opacity-70">
-                      {clubsInProvincie.length}
+                    <span className="flex items-center gap-2">
+                      <span className="rounded-full bg-[#fdf3d9] px-2.5 py-0.5 text-xs font-bold text-[#b8860b]">
+                        {clubsInProvincie.length}
+                      </span>
+                      <span
+                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs text-[#b8860b] transition-all ${
+                          uitgeklapt
+                            ? "rotate-90 bg-geel text-donker"
+                            : "bg-[#fdf3d9] group-hover:bg-geel group-hover:text-donker"
+                        }`}
+                        aria-hidden="true"
+                      >
+                        ›
+                      </span>
                     </span>
                   </button>
                   {uitgeklapt && (
-                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-2.5 p-4 pt-0 sm:grid-cols-2 lg:grid-cols-3">
                       {clubsInProvincie.map((club) => (
                         <ClubCard key={club.id} club={club} />
                       ))}
