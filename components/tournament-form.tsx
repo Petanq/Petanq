@@ -35,6 +35,7 @@ export function TournamentForm() {
   const [naamNl, setNaamNl] = useState("");
   const [naamFr, setNaamFr] = useState("");
   const [gemeente, setGemeente] = useState("");
+  const [adres, setAdres] = useState("");
   const [provincie, setProvincie] = useState<Provincie | "">("");
   const [categorie, setCategorie] = useState<Categorie | "">("");
   const [formule, setFormule] = useState<Formule | "">("");
@@ -62,6 +63,7 @@ export function TournamentForm() {
     if (velden.naam_nl) setNaamNl(velden.naam_nl);
     if (velden.naam_fr) setNaamFr(velden.naam_fr);
     if (velden.gemeente) setGemeente(velden.gemeente);
+    if (velden.adres) setAdres(velden.adres);
     if (velden.provincie && (ALLE_PROVINCIES as string[]).includes(velden.provincie)) {
       setProvincie(velden.provincie as Provincie);
     }
@@ -120,6 +122,7 @@ export function TournamentForm() {
         naam_nl: naamNl,
         naam_fr: naamFr,
         gemeente,
+        adres: adres || null,
         provincie,
         categorie,
         formule,
@@ -251,6 +254,9 @@ export function TournamentForm() {
               }}
               className="veld-input"
             />
+          </Veld>
+          <Veld label={`${t.form.adres} (${t.form.optioneel})`}>
+            <input value={adres} onChange={(e) => setAdres(e.target.value)} className="veld-input" />
           </Veld>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Veld label={t.form.gemeente} verplicht>

@@ -10,6 +10,7 @@ export type AfficheVelden = {
   naam_nl: string | null;
   naam_fr: string | null;
   gemeente: string | null;
+  adres: string | null;
   provincie: string | null;
   categorie: string | null;
   formule: string | null;
@@ -95,6 +96,7 @@ export async function afficheAnalyseren(
               naam_nl: { type: ["string", "null"], description: "Naam van het toernooi (Nederlands)" },
               naam_fr: { type: ["string", "null"], description: "Naam van het toernooi (Frans)" },
               gemeente: { type: ["string", "null"] },
+              adres: { type: ["string", "null"], description: "Straat en huisnummer van de locatie, indien vermeld" },
               provincie: { type: ["string", "null"], enum: [...ALLE_PROVINCIES, null] },
               categorie: { type: ["string", "null"], enum: [...CATEGORIEEN, null] },
               formule: { type: ["string", "null"], enum: [...FORMULES, null] },
@@ -118,6 +120,7 @@ export async function afficheAnalyseren(
               "naam_nl",
               "naam_fr",
               "gemeente",
+              "adres",
               "provincie",
               "categorie",
               "formule",

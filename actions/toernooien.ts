@@ -31,6 +31,7 @@ export async function toernooiIndienen(
     naam_nl: data.naam_nl,
     naam_fr: data.naam_fr,
     gemeente: data.gemeente,
+    adres: data.adres || null,
     provincie: data.provincie,
     categorie: data.categorie,
     formule: data.formule,

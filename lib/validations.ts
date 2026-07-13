@@ -10,6 +10,7 @@ const toernooiBaseSchema = z.object({
   naam_nl: z.string().trim().min(2).max(160),
   naam_fr: z.string().trim().min(2).max(160),
   gemeente: z.string().trim().min(2).max(120),
+  adres: z.string().trim().max(200).nullable().optional().or(z.literal("")),
   provincie: provincieEnum,
   categorie: z.enum(["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"]),
   formule: z.enum([

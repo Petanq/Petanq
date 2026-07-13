@@ -86,6 +86,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
       naam_nl: data.naam_nl,
       naam_fr: data.naam_fr,
       gemeente: data.gemeente,
+      adres: data.adres || null,
       provincie: data.provincie,
       categorie: data.categorie,
       formule: data.formule,
@@ -184,6 +185,7 @@ export async function toernooiBewerken(
       | "naam_nl"
       | "naam_fr"
       | "gemeente"
+      | "adres"
       | "provincie"
       | "categorie"
       | "formule"

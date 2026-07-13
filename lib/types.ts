@@ -28,6 +28,7 @@ export type Toernooi = {
   naam_nl: string;
   naam_fr: string;
   gemeente: string;
+  adres: string | null;
   provincie: Provincie;
   regio: Regio;
   categorie: Categorie;

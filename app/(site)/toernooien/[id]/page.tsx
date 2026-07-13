@@ -42,6 +42,7 @@ export default async function ToernooiDetailPagina({ params }: Props) {
       name: toernooi.clubnaam,
       address: {
         "@type": "PostalAddress",
+        ...(toernooi.adres ? { streetAddress: toernooi.adres } : {}),
         addressLocality: toernooi.gemeente,
         addressRegion: vertaalProvincie(toernooi.provincie, "nl"),
         addressCountry: "BE",

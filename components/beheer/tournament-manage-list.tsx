@@ -163,6 +163,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
   const [datum, setDatum] = useState("");
   const [uur, setUur] = useState("");
   const [gemeente, setGemeente] = useState("");
+  const [adres, setAdres] = useState("");
   const [provincie, setProvincie] = useState<Provincie | "">("");
   const [categorie, setCategorie] = useState<Categorie | "">("");
   const [formule, setFormule] = useState<Formule | "">("");
@@ -191,6 +192,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
     if (velden.naam_nl) setNaamNl(velden.naam_nl);
     if (velden.naam_fr) setNaamFr(velden.naam_fr);
     if (velden.gemeente) setGemeente(velden.gemeente);
+    if (velden.adres) setAdres(velden.adres);
     if (velden.provincie && (ALLE_PROVINCIES as string[]).includes(velden.provincie)) {
       setProvincie(velden.provincie as Provincie);
     }
@@ -245,6 +247,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
       datum,
       uur,
       gemeente,
+      adres: adres || null,
       provincie,
       categorie,
       formule,
@@ -348,6 +351,10 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
               </option>
             ))}
           </select>
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker sm:col-span-2">
+          {t.form.adres}
+          <input value={adres} onChange={(e) => setAdres(e.target.value)} className="veld-input" />
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.categorie}
@@ -561,6 +568,7 @@ function EditForm({
   const [datum, setDatum] = useState(toernooi.datum);
   const [uur, setUur] = useState(toernooi.uur);
   const [gemeente, setGemeente] = useState(toernooi.gemeente);
+  const [adres, setAdres] = useState(toernooi.adres ?? "");
   const [provincie, setProvincie] = useState<Provincie>(toernooi.provincie);
   const [categorie, setCategorie] = useState<Categorie>(toernooi.categorie);
   const [formule, setFormule] = useState<Formule>(toernooi.formule);
@@ -604,6 +612,7 @@ function EditForm({
       datum,
       uur,
       gemeente,
+      adres: adres || null,
       provincie,
       categorie,
       formule,
@@ -702,6 +711,10 @@ function EditForm({
               </option>
             ))}
           </select>
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-bold text-donker sm:col-span-2">
+          {t.form.adres}
+          <input value={adres} onChange={(e) => setAdres(e.target.value)} className="veld-input" />
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.categorie}

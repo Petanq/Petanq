@@ -51,7 +51,21 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
           </Detail>
           <Detail label={t.form.uur}>{formatUur(toernooi.uur)}</Detail>
           <Detail label={t.form.gemeente}>
-            {toernooi.gemeente}, {vertaalProvincie(toernooi.provincie, taal)}
+            {toernooi.adres ? (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  `${toernooi.adres}, ${toernooi.gemeente}`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-donker"
+              >
+                {toernooi.adres}, {toernooi.gemeente}
+              </a>
+            ) : (
+              toernooi.gemeente
+            )}
+            , {vertaalProvincie(toernooi.provincie, taal)}
           </Detail>
           {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
             <Detail label={t.form.aantalRonden}>

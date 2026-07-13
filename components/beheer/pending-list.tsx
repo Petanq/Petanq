@@ -90,6 +90,7 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
 
           {uitgeklaptId === tn.id && (
             <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 border-t border-rand pt-3 text-sm sm:grid-cols-2">
+              {tn.adres && <Detail label={t.form.adres}>{tn.adres}</Detail>}
               <Detail label={t.form.categorie}>{t.categorie[tn.categorie]}</Detail>
               <Detail label={t.form.formule}>{t.formule[tn.formule]}</Detail>
               <Detail label={t.form.speelvorm}>
