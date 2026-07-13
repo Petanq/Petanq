@@ -1,5 +1,5 @@
 import { Club } from "@/lib/types";
-import { initialenVan, avatarKleurVoor } from "@/lib/initialen";
+import { schakeringVoor } from "@/lib/initialen";
 
 export function ClubCard({ club }: { club: Club }) {
   return (
@@ -15,12 +15,12 @@ export function ClubCard({ club }: { club: Club }) {
           className="h-11 w-11 shrink-0 rounded-full border border-rand object-cover"
         />
       ) : (
-        <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-titel text-lg text-white ${avatarKleurVoor(
-            club.naam
-          )}`}
-        >
-          {initialenVan(club.naam)}
+        <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border border-rand">
+          <div
+            className="h-full w-full bg-cover bg-center"
+            style={{ backgroundImage: "url('/images/logo-icon.png')" }}
+          />
+          <div className="absolute inset-0 bg-donker" style={{ opacity: schakeringVoor(club.naam) }} />
         </div>
       )}
       <div className="min-w-0">
