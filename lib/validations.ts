@@ -3,8 +3,20 @@ import { ALLE_PROVINCIES } from "./provincies";
 
 const provincieEnum = z.enum(ALLE_PROVINCIES as [string, ...string[]]);
 
+const huidigJaar = new Date().getFullYear();
+
+// Een half ingetypt jaartal in het datumveld (bv. "6" i.p.v. "2026") wordt door
+// de browser soms toch als geldige datum doorgestuurd — dit vangt dat af.
+const datumVeld = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Ongeldige datum")
+  .refine((datum) => {
+    const jaar = Number(datum.slice(0, 4));
+    return jaar >= huidigJaar - 1 && jaar <= huidigJaar + 5;
+  }, "Ongeldig jaartal");
+
 const toernooiBaseSchema = z.object({
-  datum: z.string().min(1),
+  datum: datumVeld,
   uur: z.string().min(1),
   clubnaam: z.string().trim().min(2).max(120),
   naam_nl: z.string().trim().min(2).max(160),
