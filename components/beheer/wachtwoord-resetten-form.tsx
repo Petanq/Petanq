@@ -11,6 +11,7 @@ export function WachtwoordResettenForm() {
   const router = useRouter();
   const [wachtwoord, setWachtwoord] = useState("");
   const [status, setStatus] = useState<"idle" | "bezig" | "gelukt" | "te_kort" | "fout">("idle");
+  const [foutDetail, setFoutDetail] = useState<string | null>(null);
 
   async function opslaan(e: React.FormEvent) {
     e.preventDefault();
@@ -19,9 +20,15 @@ export function WachtwoordResettenForm() {
       return;
     }
     setStatus("bezig");
+    setFoutDetail(null);
     const supabase = createClient();
+    // De link zet het inlog-token in de URL; de client moet dat eerst zelf verwerken
+    // (asynchroon, bij het aanmaken van de client) voordat updateUser() een sessie heeft.
+    await supabase.auth.getSession();
     const { error } = await supabase.auth.updateUser({ password: wachtwoord });
     if (error) {
+      console.error("Wachtwoord instellen mislukt:", error.message);
+      setFoutDetail(error.message);
       setStatus("fout");
       return;
     }
@@ -57,7 +64,12 @@ export function WachtwoordResettenForm() {
           />
         </label>
         {status === "te_kort" && <p className="text-sm font-medium text-rood-2">{t.beheer.wachtwoordTeKort}</p>}
-        {status === "fout" && <p className="text-sm font-medium text-rood-2">{t.form.fout}</p>}
+        {status === "fout" && (
+          <p className="text-sm font-medium text-rood-2">
+            {t.form.fout}
+            {foutDetail && <span className="mt-0.5 block text-xs font-normal text-grijs">({foutDetail})</span>}
+          </p>
+        )}
         <button
           type="submit"
           disabled={status === "bezig"}
