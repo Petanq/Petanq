@@ -21,6 +21,16 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
   const [bezig, setBezig] = useState<string | null>(null);
   const [zoekterm, setZoekterm] = useState("");
   const [melding, setMelding] = useState<string | null>(null);
+  const [opengeklapt, setOpengeklapt] = useState<Set<Provincie>>(new Set());
+
+  function toggleProvincie(p: Provincie) {
+    setOpengeklapt((prev) => {
+      const next = new Set(prev);
+      if (next.has(p)) next.delete(p);
+      else next.add(p);
+      return next;
+    });
+  }
 
   function toonMelding(tekst: string) {
     setMelding(tekst);
@@ -184,21 +194,46 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
         {overige.length === 0 && (
           <p className="text-sm text-grijs">{t.clubsPagina.geenResultaten}</p>
         )}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3">
           {ALLE_PROVINCIES.map((p) => {
             const clubsInProvincie = overige
               .filter((c) => c.provincie === p)
               .sort((a, b) => a.naam.localeCompare(b.naam));
             if (clubsInProvincie.length === 0) return null;
+            const uitgeklapt = zoekterm.trim().length > 0 || opengeklapt.has(p);
             return (
-              <div key={p} className="flex flex-col gap-2">
-                <h3 className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-[#b8860b]">
-                  {vertaalProvincie(p, taal)}
-                  <span className="rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.65rem] font-bold text-[#b8860b]">
-                    {clubsInProvincie.length}
+              <div
+                key={p}
+                className={`rounded-[10px] border-[1.5px] bg-white transition-shadow ${
+                  uitgeklapt ? "border-geel/60 shadow-[0_2px_10px_rgba(244,196,48,0.15)]" : "border-rand"
+                }`}
+              >
+                <button
+                  onClick={() => toggleProvincie(p)}
+                  className="group flex w-full items-center justify-between gap-2 p-4 text-left"
+                >
+                  <span className="text-[0.8rem] font-extrabold uppercase tracking-widest text-[#b8860b] transition-colors group-hover:text-donker">
+                    {vertaalProvincie(p, taal)}
                   </span>
-                </h3>
-                <div className="flex flex-col gap-2">{clubsInProvincie.map(renderClub)}</div>
+                  <span className="flex items-center gap-2">
+                    <span className="rounded-full bg-[#fdf3d9] px-2.5 py-0.5 text-xs font-bold text-[#b8860b]">
+                      {clubsInProvincie.length}
+                    </span>
+                    <span
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs text-[#b8860b] transition-all ${
+                        uitgeklapt
+                          ? "rotate-90 bg-geel text-donker"
+                          : "bg-[#fdf3d9] group-hover:bg-geel group-hover:text-donker"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      ›
+                    </span>
+                  </span>
+                </button>
+                {uitgeklapt && (
+                  <div className="flex flex-col gap-2 p-4 pt-0">{clubsInProvincie.map(renderClub)}</div>
+                )}
               </div>
             );
           })}
