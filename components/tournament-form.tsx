@@ -236,17 +236,6 @@ export function TournamentForm() {
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => setOpenToernooi(false)}
-                className={`rounded-md border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
-                  !openToernooi
-                    ? "border-blauw bg-blauw text-white"
-                    : "border-rand text-grijs hover:border-blauw-3"
-                }`}
-              >
-                {t.form.officieelToernooi}
-              </button>
-              <button
-                type="button"
                 onClick={() => setOpenToernooi(true)}
                 className={`rounded-md border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
                   openToernooi
@@ -255,6 +244,17 @@ export function TournamentForm() {
                 }`}
               >
                 {t.form.openToernooi}
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpenToernooi(false)}
+                className={`rounded-md border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
+                  !openToernooi
+                    ? "border-blauw bg-blauw text-white"
+                    : "border-rand text-grijs hover:border-blauw-3"
+                }`}
+              >
+                {t.form.officieelToernooi}
               </button>
             </div>
           </Veld>

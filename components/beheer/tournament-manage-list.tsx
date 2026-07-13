@@ -279,21 +279,21 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => setOpenToernooi(false)}
-            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
-              !openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
-            }`}
-          >
-            {t.form.officieelToernooi}
-          </button>
-          <button
-            type="button"
             onClick={() => setOpenToernooi(true)}
             className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
               openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
             }`}
           >
             {t.form.openToernooi}
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpenToernooi(false)}
+            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+              !openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
+            }`}
+          >
+            {t.form.officieelToernooi}
           </button>
         </div>
       </div>
@@ -645,21 +645,21 @@ export function EditForm({
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => setOpenToernooi(false)}
-            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
-              !openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
-            }`}
-          >
-            {t.form.officieelToernooi}
-          </button>
-          <button
-            type="button"
             onClick={() => setOpenToernooi(true)}
             className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
               openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
             }`}
           >
             {t.form.openToernooi}
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpenToernooi(false)}
+            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+              !openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
+            }`}
+          >
+            {t.form.officieelToernooi}
           </button>
         </div>
       </div>
