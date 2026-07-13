@@ -5,6 +5,7 @@ import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Moderator, ModeratorRol } from "@/lib/types";
 import { Provincie } from "@/lib/provincies";
 import { isModerator, isAdmin } from "@/lib/auth-helpers";
+import { maakKorteLink } from "@/lib/korte-link";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 export type UitnodigenResultaat =
@@ -73,7 +74,7 @@ export async function moderatorUitnodigen(input: {
       }
 
       revalidatePath("/beheer/moderatoren");
-      return { succes: true, link: linkData.properties.action_link };
+      return { succes: true, link: await maakKorteLink(linkData.properties.action_link) };
     }
     console.error("Vrijwilliger uitnodigen mislukt:", error?.message);
     return { succes: false, fout: "server_fout" };
@@ -95,7 +96,7 @@ export async function moderatorUitnodigen(input: {
   }
 
   revalidatePath("/beheer/moderatoren");
-  return { succes: true, link: data.properties.action_link };
+  return { succes: true, link: await maakKorteLink(data.properties.action_link) };
 }
 
 export async function moderatorBewerken(
