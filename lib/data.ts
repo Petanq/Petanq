@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Club, Moderator, Toernooi } from "@/lib/types";
 
 export async function getGoedgekeurdeToernooien(): Promise<Toernooi[]> {
@@ -106,6 +106,26 @@ export async function getHuidigeModerator(): Promise<Moderator | null> {
 
   const { data } = await supabase.from("moderatoren").select("*").eq("user_id", user.id).single();
   return (data as Moderator) ?? null;
+}
+
+export type BezoekStatistieken = { totaal: number; dezeMaand: number };
+
+export async function getBezoekStatistieken(): Promise<BezoekStatistieken> {
+  const supabase = createServiceRoleClient();
+  const { data, error } = await supabase.from("site_bezoeken").select("dag, aantal");
+
+  if (error || !data) {
+    console.error("Kon bezoekstatistieken niet ophalen:", error?.message);
+    return { totaal: 0, dezeMaand: 0 };
+  }
+
+  const huidigeMaand = new Date().toISOString().slice(0, 7);
+  const totaal = data.reduce((som: number, rij: { dag: string; aantal: number }) => som + rij.aantal, 0);
+  const dezeMaand = data
+    .filter((rij: { dag: string; aantal: number }) => rij.dag.startsWith(huidigeMaand))
+    .reduce((som: number, rij: { dag: string; aantal: number }) => som + rij.aantal, 0);
+
+  return { totaal, dezeMaand };
 }
 
 export async function getActieveClubs(): Promise<Club[]> {
