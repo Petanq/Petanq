@@ -14,10 +14,16 @@ export function MonthPills({
 }) {
   const { t, taal } = useTranslation();
 
+  // Meerdere jaren in dezelfde lijst (bv. oude testdata naast lopende toernooien)
+  // geven anders identiek ogende pillen zoals twee keer "Juli" zonder onderscheid.
+  const jaren = new Set(maandSleutels.map((sleutel) => sleutel.slice(0, 4)));
+  const toonJaar = jaren.size > 1;
+
   return (
     <div className="flex flex-wrap gap-1.5">
       {maandSleutels.map((sleutel) => {
         const maandIndex = parseDatum(`${sleutel}-01`).getMonth();
+        const jaar = sleutel.slice(0, 4);
         return (
           <button
             key={sleutel}
@@ -29,6 +35,7 @@ export function MonthPills({
             }`}
           >
             {maandVolledig(maandIndex, taal)}
+            {toonJaar && ` ${jaar}`}
           </button>
         );
       })}
