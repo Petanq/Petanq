@@ -91,4 +91,5 @@ export type Moderator = {
   email: string;
   provincie: Provincie | null;
   rol: ModeratorRol;
+  wachtwoord_ingesteld: boolean;
 };

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
+import { moderatorWachtwoordBevestigen } from "@/actions/beheer-moderatoren";
 
 export function WachtwoordResettenForm() {
   const { t } = useTranslation();
@@ -32,6 +33,7 @@ export function WachtwoordResettenForm() {
       setStatus("fout");
       return;
     }
+    await moderatorWachtwoordBevestigen();
     setStatus("gelukt");
     setTimeout(() => router.push("/beheer/login"), 2000);
   }

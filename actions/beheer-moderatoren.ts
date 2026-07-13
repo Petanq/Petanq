@@ -112,6 +112,24 @@ export async function moderatorBewerken(
   return { succes: true };
 }
 
+export async function moderatorWachtwoordBevestigen(): Promise<BeheerActieResultaat> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const serviceClient = createServiceRoleClient();
+  const { error } = await serviceClient
+    .from("moderatoren")
+    .update({ wachtwoord_ingesteld: true })
+    .eq("user_id", user.id);
+  if (error) return { succes: false, fout: "server_fout" };
+
+  revalidatePath("/beheer/moderatoren");
+  return { succes: true };
+}
+
 export async function moderatorVerwijderen(id: string): Promise<BeheerActieResultaat> {
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
 

@@ -101,19 +101,9 @@ export type ModeratorMetStatus = Moderator & { bevestigd: boolean };
 
 export async function getModeratorenMetStatus(): Promise<ModeratorMetStatus[]> {
   const moderatoren = await getModeratoren();
-  if (moderatoren.length === 0) return [];
-
-  const serviceClient = createServiceRoleClient();
-  const { data: gebruikersData, error } = await serviceClient.auth.admin.listUsers({ perPage: 200 });
-  if (error) {
-    console.error("Kon gebruikersstatus niet ophalen:", error.message);
-    return moderatoren.map((mod) => ({ ...mod, bevestigd: false }));
-  }
-
-  return moderatoren.map((mod) => {
-    const gebruiker = gebruikersData.users.find((g) => g.id === mod.user_id);
-    return { ...mod, bevestigd: !!gebruiker?.last_sign_in_at };
-  });
+  // "Actief" betekent hier: heeft effectief zelf een wachtwoord ingesteld en kan
+  // dus echt inloggen — niet enkel dat de uitnodigingslink ooit werd geopend.
+  return moderatoren.map((mod) => ({ ...mod, bevestigd: mod.wachtwoord_ingesteld }));
 }
 
 export async function getHuidigeModerator(): Promise<Moderator | null> {
