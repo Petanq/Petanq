@@ -14,7 +14,7 @@ export function Nav() {
     <nav className="sticky top-0 z-[300] border-b border-white/[0.07] bg-blauw">
       <div className="flex h-16 items-center justify-between px-6 lg:px-10">
         <Link href="/" className="flex items-center gap-2.5">
-          <Logo />
+          <Logo className="h-12 w-12" />
           <div className="flex flex-col leading-none">
             <span className="flex items-center font-titel text-2xl font-extrabold tracking-tight text-white">
               Petanque13

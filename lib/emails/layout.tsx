@@ -1,4 +1,6 @@
-import { Body, Container, Head, Heading, Html, Section, Text, Hr } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Img, Section, Text, Hr } from "@react-email/components";
+
+const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
 
 export function EmailLayout({
   titel,
@@ -12,10 +14,25 @@ export function EmailLayout({
       <Head />
       <Body style={{ backgroundColor: "#F5F5F5", fontFamily: "Helvetica, Arial, sans-serif" }}>
         <Container style={{ maxWidth: "480px", margin: "0 auto", padding: "24px 0" }}>
-          <Section style={{ backgroundColor: "#1F1F1F", borderRadius: "10px 10px 0 0", padding: "24px 32px" }}>
-            <Text style={{ color: "#ffffff", fontSize: "20px", fontWeight: 700, margin: 0, letterSpacing: "0.02em" }}>
-              Petan<span style={{ color: "#D62828" }}>Q</span>
-            </Text>
+          <Section style={{ backgroundColor: "#1F1F1F", borderRadius: "10px 10px 0 0", padding: "20px 32px" }}>
+            <table role="presentation" cellPadding={0} cellSpacing={0}>
+              <tr>
+                <td style={{ verticalAlign: "middle", paddingRight: "10px" }}>
+                  <Img
+                    src={`${siteUrl()}/images/logo-icon.png`}
+                    width="32"
+                    height="32"
+                    alt="Petanque13"
+                    style={{ borderRadius: "50%", display: "block" }}
+                  />
+                </td>
+                <td style={{ verticalAlign: "middle" }}>
+                  <Text style={{ color: "#ffffff", fontSize: "20px", fontWeight: 700, margin: 0, letterSpacing: "0.02em" }}>
+                    Petanque13
+                  </Text>
+                </td>
+              </tr>
+            </table>
           </Section>
           <Section style={{ backgroundColor: "#ffffff", borderRadius: "0 0 10px 10px", padding: "32px" }}>
             <Heading style={{ fontSize: "18px", color: "#1F1F1F", margin: "0 0 16px" }}>{titel}</Heading>
