@@ -1,5 +1,5 @@
 import { Club } from "@/lib/types";
-import { schakeringVoor } from "@/lib/initialen";
+import { avatarTintVoor } from "@/lib/initialen";
 
 export function ClubCard({ club }: { club: Club }) {
   return (
@@ -15,13 +15,13 @@ export function ClubCard({ club }: { club: Club }) {
           className="h-11 w-11 shrink-0 rounded-full border border-rand object-cover"
         />
       ) : (
-        <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border border-rand">
-          <div
-            className="h-full w-full bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/logo-icon.png')" }}
-          />
-          <div className="absolute inset-0 bg-donker" style={{ opacity: schakeringVoor(club.naam) }} />
-        </div>
+        <div
+          className="h-11 w-11 shrink-0 rounded-full border border-rand bg-contain bg-center bg-no-repeat"
+          style={{
+            backgroundColor: avatarTintVoor(club.naam),
+            backgroundImage: "url('/images/logo-icon.png')",
+          }}
+        />
       )}
       <div className="min-w-0">
         <div className="truncate text-[0.88rem] font-bold text-donker">{club.naam}</div>
