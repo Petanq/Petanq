@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
-import { Moderator } from "@/lib/types";
+import { Moderator, ModeratorRol } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
-import { moderatorBewerken, moderatorVerwijderen } from "@/actions/beheer-moderatoren";
+import { moderatorBewerken, moderatorVerwijderen, moderatorUitnodigen } from "@/actions/beheer-moderatoren";
 
 export function ModeratorManageList({
   moderatoren,
@@ -20,6 +20,7 @@ export function ModeratorManageList({
   const router = useRouter();
   const [bewerkId, setBewerkId] = useState<string | null>(null);
   const [bezig, setBezig] = useState<string | null>(null);
+  const [uitnodigenOpen, setUitnodigenOpen] = useState(false);
 
   async function verwijderen(mod: Moderator) {
     if (!window.confirm(`${t.beheer.verwijderenBevestiging} ${mod.naam}?`)) return;
@@ -32,6 +33,26 @@ export function ModeratorManageList({
   return (
     <div className="flex flex-col gap-4">
       {!isAdmin && <p className="text-sm text-grijs">{t.beheer.enkelEigenGegevens}</p>}
+
+      {isAdmin && (
+        <div>
+          <button
+            onClick={() => setUitnodigenOpen((v) => !v)}
+            className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white"
+          >
+            {t.beheer.vrijwilligerUitnodigen}
+          </button>
+          {uitnodigenOpen && (
+            <UitnodigenFormulier
+              onKlaar={() => {
+                setUitnodigenOpen(false);
+                router.refresh();
+              }}
+              onAnnuleren={() => setUitnodigenOpen(false)}
+            />
+          )}
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         {moderatoren.map((mod) =>
@@ -155,6 +176,107 @@ function ModeratorFormulier({
           {t.beheer.annuleren}
         </button>
       </div>
+    </div>
+  );
+}
+
+function UitnodigenFormulier({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: () => void }) {
+  const { t, taal } = useTranslation();
+  const [naam, setNaam] = useState("");
+  const [email, setEmail] = useState("");
+  const [rol, setRol] = useState<ModeratorRol>("moderator");
+  const [provincie, setProvincie] = useState<Provincie | "">("");
+  const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState<string | null>(null);
+  const [gelukt, setGelukt] = useState(false);
+
+  async function uitnodigen() {
+    setBezig(true);
+    setFout(null);
+    const resultaat = await moderatorUitnodigen({
+      email,
+      naam,
+      rol,
+      provincie: provincie || null,
+    });
+    setBezig(false);
+    if (!resultaat.succes) {
+      setFout(resultaat.fout);
+      return;
+    }
+    setGelukt(true);
+    setTimeout(onKlaar, 1200);
+  }
+
+  return (
+    <div className="mt-3 rounded-[10px] border-[1.5px] border-blauw-3 bg-white p-4">
+      {gelukt ? (
+        <p className="text-sm font-semibold text-groen">{t.beheer.uitnodigingVerstuurd}</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+              {t.beheer.naam}
+              <input value={naam} onChange={(e) => setNaam(e.target.value)} className="veld-input" />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+              {t.beheer.emailAdres}
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="veld-input"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+              {t.beheer.rol}
+              <select
+                value={rol}
+                onChange={(e) => setRol(e.target.value as ModeratorRol)}
+                className="veld-input"
+              >
+                <option value="moderator">{t.beheer.rolModerator}</option>
+                <option value="admin">{t.beheer.rolAdmin}</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+              {t.clubForm.provincie} ({t.form.optioneel})
+              <select
+                value={provincie}
+                onChange={(e) => setProvincie(e.target.value as Provincie)}
+                className="veld-input"
+              >
+                <option value="">{t.beheer.geenProvincie}</option>
+                {ALLE_PROVINCIES.map((p) => (
+                  <option key={p} value={p}>
+                    {vertaalProvincie(p, taal)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {fout && (
+            <p className="mt-2 text-sm font-medium text-rood-2">
+              {fout === "al_geregistreerd" ? t.beheer.foutAlGeregistreerd : t.form.fout}
+            </p>
+          )}
+          <div className="mt-3 flex gap-2">
+            <button
+              onClick={uitnodigen}
+              disabled={bezig || !naam || !email}
+              className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+            >
+              {t.beheer.uitnodigen}
+            </button>
+            <button
+              onClick={onAnnuleren}
+              className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+            >
+              {t.beheer.annuleren}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

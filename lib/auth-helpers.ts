@@ -8,3 +8,10 @@ export async function isModerator(): Promise<boolean> {
   if (error) return false;
   return data === true;
 }
+
+export async function isAdmin(): Promise<boolean> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("is_admin");
+  if (error) return false;
+  return data === true;
+}
