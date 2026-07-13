@@ -24,7 +24,7 @@ export function BeheerTopbar() {
     <nav className="flex h-16 items-center justify-between border-b border-white/10 bg-donker px-6 lg:px-10">
       <div className="flex items-center gap-3">
         <Link href="/beheer" className="flex items-center gap-2.5">
-          <Logo />
+          <Logo className="h-14 w-14" />
           <span className="flex items-center font-titel text-xl font-extrabold tracking-tight text-white">
             Petanque13
           </span>
