@@ -31,7 +31,9 @@ export async function middleware(request: NextRequest) {
   const isLoginRoute = request.nextUrl.pathname === "/beheer/login";
   const isWachtwoordVergetenRoute = request.nextUrl.pathname === "/beheer/wachtwoord-vergeten";
   const isWachtwoordResettenRoute = request.nextUrl.pathname === "/beheer/wachtwoord-resetten";
-  const isOpenlijkeRoute = isLoginRoute || isWachtwoordVergetenRoute || isWachtwoordResettenRoute;
+  const isAanmeldenRoute = request.nextUrl.pathname === "/beheer/aanmelden";
+  const isOpenlijkeRoute =
+    isLoginRoute || isWachtwoordVergetenRoute || isWachtwoordResettenRoute || isAanmeldenRoute;
 
   if (isBeheerRoute && !isOpenlijkeRoute && !user) {
     const url = request.nextUrl.clone();

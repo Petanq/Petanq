@@ -77,3 +77,10 @@ export const nieuwsbriefSchema = z.object({
 });
 
 export type NieuwsbriefFormData = z.infer<typeof nieuwsbriefSchema>;
+
+export const vrijwilligerAanmeldenSchema = z.object({
+  naam: z.string().trim().min(2).max(100),
+  email: z.string().trim().email(),
+  wachtwoord: z.string().min(8).max(72),
+  provincie: provincieEnum.nullable(),
+});

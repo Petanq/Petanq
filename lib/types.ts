@@ -92,4 +92,5 @@ export type Moderator = {
   provincie: Provincie | null;
   rol: ModeratorRol;
   wachtwoord_ingesteld: boolean;
+  goedgekeurd: boolean;
 };

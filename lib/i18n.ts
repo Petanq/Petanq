@@ -283,6 +283,19 @@ const nl = {
     redenOnvolledig: "Onvolledige/onduidelijke gegevens",
     redenDubbel: "Staat al in de kalender",
     redenVerkeerdeCategorie: "Verkeerde categorie/formule",
+    vrijwilligerWorden: "Vrijwilliger worden?",
+    aanmeldenTitel: "Vrijwilliger worden",
+    aanmeldenBeschrijving:
+      "Vraag toegang aan tot het beheerpaneel. Een beheerder moet je aanvraag nog goedkeuren voor je kan inloggen.",
+    kiesWachtwoord: "Kies een wachtwoord",
+    aanmeldenKnop: "Aanvraag versturen",
+    aanmeldingVerzonden:
+      "Aanvraag verstuurd. Een beheerder moet dit nog goedkeuren — vraag het gerust na.",
+    wachtOpGoedkeuringTitel: "Wacht op goedkeuring",
+    wachtOpGoedkeuringTekst:
+      "Je account is aangemaakt, maar een beheerder moet je nog goedkeuren voor je toegang krijgt tot het beheerpaneel.",
+    nieuweVrijwilligerAanvragen: "Nieuwe aanvragen",
+    geenNieuweVrijwilligerAanvragen: "Geen nieuwe aanvragen.",
   },
 };
 
@@ -569,6 +582,19 @@ const fr: typeof nl = {
     redenOnvolledig: "Informations incomplètes/peu claires",
     redenDubbel: "Déjà présent dans le calendrier",
     redenVerkeerdeCategorie: "Mauvaise catégorie/formule",
+    vrijwilligerWorden: "Devenir bénévole ?",
+    aanmeldenTitel: "Devenir bénévole",
+    aanmeldenBeschrijving:
+      "Demandez l'accès au panneau d'administration. Un administrateur doit encore approuver votre demande avant que vous puissiez vous connecter.",
+    kiesWachtwoord: "Choisissez un mot de passe",
+    aanmeldenKnop: "Envoyer la demande",
+    aanmeldingVerzonden:
+      "Demande envoyée. Un administrateur doit encore l'approuver — n'hésitez pas à en reparler.",
+    wachtOpGoedkeuringTitel: "En attente d'approbation",
+    wachtOpGoedkeuringTekst:
+      "Votre compte a été créé, mais un administrateur doit encore vous approuver avant que vous n'ayez accès au panneau d'administration.",
+    nieuweVrijwilligerAanvragen: "Nouvelles demandes",
+    geenNieuweVrijwilligerAanvragen: "Aucune nouvelle demande.",
   },
 };
 

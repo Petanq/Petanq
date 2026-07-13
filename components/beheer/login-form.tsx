@@ -69,6 +69,9 @@ export function LoginForm() {
         >
           {t.beheer.wachtwoordVergeten}
         </Link>
+        <Link href="/beheer/aanmelden" className="text-center text-sm font-semibold text-blauw-2 underline">
+          {t.beheer.vrijwilligerWorden}
+        </Link>
       </form>
     </div>
   );

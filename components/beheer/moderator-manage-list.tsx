@@ -6,7 +6,12 @@ import { useTranslation } from "@/lib/language-context";
 import { Moderator, ModeratorRol } from "@/lib/types";
 import { ModeratorMetStatus } from "@/lib/data";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
-import { moderatorBewerken, moderatorVerwijderen, moderatorUitnodigen } from "@/actions/beheer-moderatoren";
+import {
+  moderatorBewerken,
+  moderatorVerwijderen,
+  moderatorUitnodigen,
+  moderatorGoedkeuren,
+} from "@/actions/beheer-moderatoren";
 
 export function ModeratorManageList({
   moderatoren,
@@ -23,12 +28,116 @@ export function ModeratorManageList({
   const [bezig, setBezig] = useState<string | null>(null);
   const [uitnodigenOpen, setUitnodigenOpen] = useState(false);
 
+  const wachtend = moderatoren.filter((mod) => !mod.goedgekeurd);
+  const bevestigd = moderatoren.filter((mod) => mod.goedgekeurd);
+
   async function verwijderen(mod: Moderator) {
     if (!window.confirm(`${t.beheer.verwijderenBevestiging} ${mod.naam}?`)) return;
     setBezig(mod.id);
     await moderatorVerwijderen(mod.id);
     setBezig(null);
     router.refresh();
+  }
+
+  async function goedkeuren(mod: Moderator) {
+    setBezig(mod.id);
+    await moderatorGoedkeuren(mod.id);
+    setBezig(null);
+    router.refresh();
+  }
+
+  function renderRij(mod: ModeratorMetStatus) {
+    if (bewerkId === mod.id) {
+      return (
+        <ModeratorFormulier
+          key={mod.id}
+          moderator={mod}
+          onKlaar={() => {
+            setBewerkId(null);
+            router.refresh();
+          }}
+          onAnnuleren={() => setBewerkId(null)}
+        />
+      );
+    }
+
+    return (
+      <div
+        key={mod.id}
+        className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-3.5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]"
+      >
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-donker">{mod.naam}</span>
+            {mod.user_id === huidigUserId && (
+              <span className="rounded-full bg-[#eff6ff] px-2 py-0.5 text-[0.65rem] font-bold text-blauw-2">
+                {t.beheer.jijzelf}
+              </span>
+            )}
+            <span
+              className={`rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${
+                mod.rol === "admin" ? "bg-[#fef3c7] text-[#92400e]" : "bg-[#f1f5f9] text-[#475569]"
+              }`}
+            >
+              {mod.rol === "admin" ? t.beheer.rolAdmin : t.beheer.rolModerator}
+            </span>
+            {mod.goedgekeurd && (
+              <span
+                className={`rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${
+                  mod.bevestigd ? "bg-[#f0fdf4] text-groen" : "bg-[#fef3c7] text-[#92400e]"
+                }`}
+              >
+                {mod.bevestigd ? t.beheer.uitnodigingGeaccepteerd : t.beheer.wachtOpBevestiging}
+              </span>
+            )}
+          </div>
+          <div className="text-sm text-grijs">
+            {mod.email}
+            {mod.provincie && <> · {vertaalProvincie(mod.provincie, taal)}</>}
+          </div>
+        </div>
+        <div className="flex gap-2">
+          {mod.goedgekeurd ? (
+            <>
+              <button
+                onClick={() => setBewerkId(mod.id)}
+                className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+              >
+                {t.beheer.bewerken}
+              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => verwijderen(mod)}
+                  disabled={bezig === mod.id}
+                  className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+                >
+                  {t.beheer.verwijderen}
+                </button>
+              )}
+            </>
+          ) : (
+            isAdmin && (
+              <>
+                <button
+                  onClick={() => goedkeuren(mod)}
+                  disabled={bezig === mod.id}
+                  className="rounded-md bg-groen px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:shadow-md hover:brightness-105 active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+                >
+                  {t.beheer.goedkeuren}
+                </button>
+                <button
+                  onClick={() => verwijderen(mod)}
+                  disabled={bezig === mod.id}
+                  className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+                >
+                  {t.beheer.weigeren}
+                </button>
+              </>
+            )
+          )}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -55,72 +164,25 @@ export function ModeratorManageList({
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        {moderatoren.map((mod) =>
-          bewerkId === mod.id ? (
-            <ModeratorFormulier
-              key={mod.id}
-              moderator={mod}
-              onKlaar={() => {
-                setBewerkId(null);
-                router.refresh();
-              }}
-              onAnnuleren={() => setBewerkId(null)}
-            />
+      {isAdmin && (
+        <div className="flex flex-col gap-2">
+          <h2 className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-widest text-donker">
+            {t.beheer.nieuweVrijwilligerAanvragen}
+            {wachtend.length > 0 && (
+              <span className="rounded-full bg-rood px-2 py-0.5 text-xs font-bold text-white">
+                {wachtend.length}
+              </span>
+            )}
+          </h2>
+          {wachtend.length === 0 ? (
+            <p className="text-sm text-grijs">{t.beheer.geenNieuweVrijwilligerAanvragen}</p>
           ) : (
-            <div
-              key={mod.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-3.5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]"
-            >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-donker">{mod.naam}</span>
-                  {mod.user_id === huidigUserId && (
-                    <span className="rounded-full bg-[#eff6ff] px-2 py-0.5 text-[0.65rem] font-bold text-blauw-2">
-                      {t.beheer.jijzelf}
-                    </span>
-                  )}
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${
-                      mod.rol === "admin" ? "bg-[#fef3c7] text-[#92400e]" : "bg-[#f1f5f9] text-[#475569]"
-                    }`}
-                  >
-                    {mod.rol === "admin" ? t.beheer.rolAdmin : t.beheer.rolModerator}
-                  </span>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${
-                      mod.bevestigd ? "bg-[#f0fdf4] text-groen" : "bg-[#fef3c7] text-[#92400e]"
-                    }`}
-                  >
-                    {mod.bevestigd ? t.beheer.uitnodigingGeaccepteerd : t.beheer.wachtOpBevestiging}
-                  </span>
-                </div>
-                <div className="text-sm text-grijs">
-                  {mod.email}
-                  {mod.provincie && <> · {vertaalProvincie(mod.provincie, taal)}</>}
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setBewerkId(mod.id)}
-                  className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
-                >
-                  {t.beheer.bewerken}
-                </button>
-                {isAdmin && (
-                  <button
-                    onClick={() => verwijderen(mod)}
-                    disabled={bezig === mod.id}
-                    className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
-                  >
-                    {t.beheer.verwijderen}
-                  </button>
-                )}
-              </div>
-            </div>
-          )
-        )}
-      </div>
+            <div className="flex flex-col gap-2">{wachtend.map(renderRij)}</div>
+          )}
+        </div>
+      )}
+
+      <div className="flex flex-col gap-2">{bevestigd.map(renderRij)}</div>
     </div>
   );
 }

@@ -140,6 +140,17 @@ export async function moderatorWachtwoordBevestigen(): Promise<BeheerActieResult
   return { succes: true };
 }
 
+export async function moderatorGoedkeuren(id: string): Promise<BeheerActieResultaat> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const serviceClient = createServiceRoleClient();
+  const { error } = await serviceClient.from("moderatoren").update({ goedgekeurd: true }).eq("id", id);
+  if (error) return { succes: false, fout: "server_fout" };
+
+  revalidatePath("/beheer/moderatoren");
+  return { succes: true };
+}
+
 export async function moderatorVerwijderen(id: string): Promise<BeheerActieResultaat> {
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
 
