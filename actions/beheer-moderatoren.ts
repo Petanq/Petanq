@@ -34,7 +34,46 @@ export async function moderatorUitnodigen(input: {
 
   if (error || !data.user) {
     if (error?.message.toLowerCase().includes("already been registered")) {
-      return { succes: false, fout: "al_geregistreerd" };
+      // Er bestaat al een auth-account met dit e-mailadres — bv. omdat een eerdere
+      // uitnodiging werd verwijderd uit de lijst zonder het account zelf op te ruimen.
+      // In dat geval maken we gewoon een nieuwe moderatoren-rij + link aan i.p.v. te falen.
+      const { data: lijst } = await serviceClient.auth.admin.listUsers({ perPage: 200 });
+      const bestaandeUser = lijst?.users.find(
+        (u) => u.email?.toLowerCase() === input.email.toLowerCase()
+      );
+      if (!bestaandeUser) return { succes: false, fout: "al_geregistreerd" };
+
+      const { data: bestaandeRij } = await serviceClient
+        .from("moderatoren")
+        .select("id")
+        .eq("user_id", bestaandeUser.id)
+        .maybeSingle();
+      if (bestaandeRij) return { succes: false, fout: "al_geregistreerd" };
+
+      const { error: invoegFout2 } = await serviceClient.from("moderatoren").insert({
+        user_id: bestaandeUser.id,
+        naam: input.naam,
+        email: input.email,
+        rol: input.rol,
+        provincie: input.provincie,
+      });
+      if (invoegFout2) {
+        console.error("Vrijwilliger-rij toevoegen mislukt (bestaande gebruiker):", invoegFout2.message);
+        return { succes: false, fout: "server_fout" };
+      }
+
+      const { data: linkData, error: linkFout } = await serviceClient.auth.admin.generateLink({
+        type: "recovery",
+        email: input.email,
+        options: { redirectTo: `${siteUrl()}/beheer/wachtwoord-resetten` },
+      });
+      if (linkFout || !linkData) {
+        console.error("Link opnieuw genereren mislukt:", linkFout?.message);
+        return { succes: false, fout: "server_fout" };
+      }
+
+      revalidatePath("/beheer/moderatoren");
+      return { succes: true, link: linkData.properties.action_link };
     }
     console.error("Vrijwilliger uitnodigen mislukt:", error?.message);
     return { succes: false, fout: "server_fout" };
@@ -76,8 +115,17 @@ export async function moderatorVerwijderen(id: string): Promise<BeheerActieResul
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = createClient();
+  const { data: mod } = await supabase.from("moderatoren").select("user_id").eq("id", id).single();
   const { error } = await supabase.from("moderatoren").delete().eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
+
+  // Ook het onderliggende auth-account opruimen, anders blijft een nieuwe uitnodiging
+  // naar hetzelfde e-mailadres later vastlopen op "e-mailadres is al geregistreerd".
+  if (mod?.user_id) {
+    const serviceClient = createServiceRoleClient();
+    await serviceClient.auth.admin.deleteUser(mod.user_id);
+  }
+
   revalidatePath("/beheer/moderatoren");
   return { succes: true };
 }
