@@ -28,9 +28,9 @@ export function BeheerNav({
           <Link
             key={link.href}
             href={link.href}
-            className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-sm font-semibold transition-colors ${
+            className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-sm font-semibold transition-all active:scale-95 ${
               pathname === link.href
-                ? "bg-blauw text-white"
+                ? "bg-blauw text-white shadow-sm"
                 : "text-grijs hover:bg-licht hover:text-donker"
             }`}
           >

@@ -39,7 +39,7 @@ export function ModeratorManageList({
         <div>
           <button
             onClick={() => setUitnodigenOpen((v) => !v)}
-            className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white"
+            className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97]"
           >
             {t.beheer.vrijwilligerUitnodigen}
           </button>
@@ -70,7 +70,7 @@ export function ModeratorManageList({
           ) : (
             <div
               key={mod.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-3.5"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-3.5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]"
             >
               <div>
                 <div className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export function ModeratorManageList({
               <div className="flex gap-2">
                 <button
                   onClick={() => setBewerkId(mod.id)}
-                  className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker hover:border-blauw-3"
+                  className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
                 >
                   {t.beheer.bewerken}
                 </button>
@@ -111,7 +111,7 @@ export function ModeratorManageList({
                   <button
                     onClick={() => verwijderen(mod)}
                     disabled={bezig === mod.id}
-                    className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white disabled:opacity-60"
+                    className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
                   >
                     {t.beheer.verwijderen}
                   </button>
@@ -173,13 +173,13 @@ function ModeratorFormulier({
         <button
           onClick={opslaan}
           disabled={bezig || !naam}
-          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
         >
           {t.beheer.opslaan}
         </button>
         <button
           onClick={onAnnuleren}
-          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
         >
           {t.beheer.annuleren}
         </button>
@@ -232,14 +232,14 @@ function UitnodigenFormulier({ onKlaar, onAnnuleren }: { onKlaar: () => void; on
             <input readOnly value={link} className="veld-input flex-1" onClick={(e) => e.currentTarget.select()} />
             <button
               onClick={kopieerLink}
-              className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white"
+              className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97]"
             >
               {gekopieerd ? t.beheer.linkGekopieerd : t.beheer.linkKopieren}
             </button>
           </div>
           <button
             onClick={onKlaar}
-            className="mt-1 self-start rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+            className="mt-1 self-start rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
           >
             {t.beheer.sluiten}
           </button>
@@ -296,13 +296,13 @@ function UitnodigenFormulier({ onKlaar, onAnnuleren }: { onKlaar: () => void; on
             <button
               onClick={uitnodigen}
               disabled={bezig || !naam || !email}
-              className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+              className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
             >
               {t.beheer.uitnodigen}
             </button>
             <button
               onClick={onAnnuleren}
-              className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+              className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
             >
               {t.beheer.annuleren}
             </button>

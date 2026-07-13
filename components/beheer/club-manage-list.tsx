@@ -65,7 +65,7 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
     ) : (
       <div
         key={club.id}
-        className={`flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] bg-white p-3.5 ${
+        className={`flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] bg-white p-3.5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)] ${
           club.actief ? "border-rand" : "border-geel"
         }`}
       >
@@ -97,17 +97,17 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
           </span>
           <button
             onClick={() => setBewerkId(club.id)}
-            className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker hover:border-blauw-3"
+            className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
           >
             {t.beheer.bewerken}
           </button>
           <button
             onClick={() => toggleActief(club)}
             disabled={bezig === club.id}
-            className={`rounded-md px-3 py-1.5 text-sm font-semibold disabled:opacity-60 ${
+            className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-all active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100 ${
               club.actief
-                ? "border border-rand text-donker hover:border-blauw-3"
-                : "bg-groen text-white"
+                ? "border border-rand text-donker hover:border-blauw-3 hover:bg-licht"
+                : "bg-groen text-white shadow-sm hover:shadow-md hover:brightness-105"
             }`}
           >
             {club.actief ? t.beheer.deactiveren : t.beheer.activeren}
@@ -115,7 +115,7 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
           <button
             onClick={() => verwijderen(club.id)}
             disabled={bezig === club.id}
-            className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white disabled:opacity-60"
+            className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
           >
             {t.beheer.verwijderen}
           </button>
@@ -135,7 +135,7 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
       <div className="flex justify-end">
         <button
           onClick={() => setToevoegenOpen((v) => !v)}
-          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white"
+          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97]"
         >
           {t.beheer.nieuweClub}
         </button>
@@ -192,9 +192,9 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
             if (clubsInProvincie.length === 0) return null;
             return (
               <div key={p} className="flex flex-col gap-2">
-                <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blauw-2">
+                <h3 className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-[#b8860b]">
                   {vertaalProvincie(p, taal)}
-                  <span className="rounded-full bg-licht px-2 py-0.5 text-[0.65rem] font-bold text-blauw-2">
+                  <span className="rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.65rem] font-bold text-[#b8860b]">
                     {clubsInProvincie.length}
                   </span>
                 </h3>
@@ -366,13 +366,13 @@ function ClubFormulier({
         <button
           onClick={opslaan}
           disabled={bezig || !naam || !gemeente || !provincie}
-          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
         >
           {bezig ? t.beheer.bezigMetOpslaan : t.beheer.opslaan}
         </button>
         <button
           onClick={onAnnuleren}
-          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
         >
           {t.beheer.annuleren}
         </button>

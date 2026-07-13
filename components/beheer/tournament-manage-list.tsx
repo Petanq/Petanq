@@ -111,7 +111,7 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
         </div>
         <button
           onClick={() => setToevoegenOpen((v) => !v)}
-          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white"
+          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97]"
         >
           {t.beheer.nieuwToernooi}
         </button>
@@ -143,7 +143,7 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
             onAnnuleren={() => setBewerkId(null)}
           />
         ) : (
-          <div key={tn.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-4">
+          <div key={tn.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-4 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]">
             <div>
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blauw-2">
                 {tn.clubnaam}
@@ -162,14 +162,14 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
             <div className="flex gap-2">
               <button
                 onClick={() => setBewerkId(tn.id)}
-                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker hover:border-blauw-3"
+                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
               >
                 {t.beheer.bewerken}
               </button>
               <button
                 onClick={() => verwijderen(tn.id)}
                 disabled={bezig}
-                className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+                className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
               >
                 {t.beheer.verwijderen}
               </button>
@@ -307,8 +307,10 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
           <button
             type="button"
             onClick={() => setOpenToernooi(true)}
-            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
-              openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
+            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-all active:scale-95 ${
+              openToernooi
+                ? "border-blauw bg-blauw text-white shadow-sm"
+                : "border-rand text-grijs hover:border-blauw-3 hover:bg-licht"
             }`}
           >
             {t.form.openToernooi}
@@ -427,10 +429,10 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
               key={sv}
               type="button"
               onClick={() => setSpeelvorm(sv)}
-              className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+              className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-all active:scale-95 ${
                 speelvorm === sv
-                  ? "border-blauw bg-blauw text-white"
-                  : "border-rand text-grijs hover:border-blauw-3"
+                  ? "border-blauw bg-blauw text-white shadow-sm"
+                  : "border-rand text-grijs hover:border-blauw-3 hover:bg-licht"
               }`}
             >
               {t.speelvorm[sv]}
@@ -563,13 +565,13 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
             !categorie ||
             !formule
           }
-          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
         >
           {t.beheer.opslaan}
         </button>
         <button
           onClick={onAnnuleren}
-          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
         >
           {t.beheer.annuleren}
         </button>
@@ -673,8 +675,10 @@ export function EditForm({
           <button
             type="button"
             onClick={() => setOpenToernooi(true)}
-            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
-              openToernooi ? "border-blauw bg-blauw text-white" : "border-rand text-grijs hover:border-blauw-3"
+            className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-all active:scale-95 ${
+              openToernooi
+                ? "border-blauw bg-blauw text-white shadow-sm"
+                : "border-rand text-grijs hover:border-blauw-3 hover:bg-licht"
             }`}
           >
             {t.form.openToernooi}
@@ -781,10 +785,10 @@ export function EditForm({
               key={sv}
               type="button"
               onClick={() => setSpeelvorm(sv)}
-              className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-colors ${
+              className={`rounded-md border-[1.5px] px-3 py-1.5 text-sm font-semibold transition-all active:scale-95 ${
                 speelvorm === sv
-                  ? "border-blauw bg-blauw text-white"
-                  : "border-rand text-grijs hover:border-blauw-3"
+                  ? "border-blauw bg-blauw text-white shadow-sm"
+                  : "border-rand text-grijs hover:border-blauw-3 hover:bg-licht"
               }`}
             >
               {t.speelvorm[sv]}
@@ -907,13 +911,13 @@ export function EditForm({
         <button
           onClick={opslaan}
           disabled={bezig}
-          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
         >
           {t.beheer.opslaan}
         </button>
         <button
           onClick={onAnnuleren}
-          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
         >
           {t.beheer.annuleren}
         </button>

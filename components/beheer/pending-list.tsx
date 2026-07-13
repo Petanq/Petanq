@@ -57,7 +57,7 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
             onAnnuleren={() => setBewerkId(null)}
           />
         ) : (
-        <div key={tn.id} className="rounded-[10px] border-[1.5px] border-rand bg-white p-4">
+        <div key={tn.id} className="rounded-[10px] border-[1.5px] border-rand bg-white p-4 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blauw-2">
@@ -80,28 +80,28 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
             <div className="flex gap-2">
               <button
                 onClick={() => setUitgeklaptId(uitgeklaptId === tn.id ? null : tn.id)}
-                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker hover:border-blauw-3"
+                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
               >
                 {uitgeklaptId === tn.id ? t.beheer.minderDetails : t.beheer.meerDetails}
               </button>
               <button
                 onClick={() => setBewerkId(tn.id)}
                 disabled={bezigId === tn.id}
-                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker hover:border-blauw-3"
+                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
               >
                 {t.beheer.bewerken}
               </button>
               <button
                 onClick={() => goedkeuren(tn.id)}
                 disabled={bezigId === tn.id}
-                className="rounded-md bg-groen px-4 py-2 text-sm font-bold text-white transition-opacity disabled:opacity-60"
+                className="rounded-md bg-groen px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:shadow-md hover:brightness-105 active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
               >
                 {t.beheer.goedkeuren}
               </button>
               <button
                 onClick={() => setWeigerId(tn.id)}
                 disabled={bezigId === tn.id}
-                className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white transition-opacity disabled:opacity-60"
+                className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
               >
                 {t.beheer.weigeren}
               </button>
@@ -158,7 +158,7 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
                       key={snelReden}
                       type="button"
                       onClick={() => setReden(snelReden)}
-                      className="rounded-full border border-rand px-3 py-1 text-xs font-semibold text-grijs hover:border-blauw-3 hover:text-donker"
+                      className="rounded-full border border-rand px-3 py-1 text-xs font-semibold text-grijs transition-all hover:border-blauw-3 hover:bg-licht hover:text-donker active:scale-95"
                     >
                       {snelReden}
                     </button>
@@ -176,13 +176,13 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
                 <button
                   onClick={weigerenBevestigen}
                   disabled={bezigId === tn.id || !reden.trim()}
-                  className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+                  className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
                 >
                   {t.beheer.bevestigen}
                 </button>
                 <button
                   onClick={() => setWeigerId(null)}
-                  className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+                  className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
                 >
                   {t.beheer.annuleren}
                 </button>
