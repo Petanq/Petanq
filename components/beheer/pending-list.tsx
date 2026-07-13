@@ -7,9 +7,16 @@ import { Toernooi } from "@/lib/types";
 import { vertaalProvincie } from "@/lib/provincies";
 import { formatUur } from "@/lib/datum";
 import { toernooiGoedkeuren, toernooiWeigeren } from "@/actions/beheer-toernooien";
+import { vindMogelijkeDubbels } from "@/lib/dubbels";
 import { EditForm } from "./tournament-manage-list";
 
-export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
+export function PendingList({
+  toernooien,
+  goedgekeurdeToernooien = [],
+}: {
+  toernooien: Toernooi[];
+  goedgekeurdeToernooien?: Toernooi[];
+}) {
   const { t, taal } = useTranslation();
   const router = useRouter();
   const [weigerId, setWeigerId] = useState<string | null>(null);
@@ -17,6 +24,8 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
   const [bezigId, setBezigId] = useState<string | null>(null);
   const [uitgeklaptId, setUitgeklaptId] = useState<string | null>(null);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
+
+  const alleVoorVergelijking = [...toernooien, ...goedgekeurdeToernooien];
 
   async function goedkeuren(id: string) {
     setBezigId(id);
@@ -58,6 +67,23 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
           />
         ) : (
         <div key={tn.id} className="rounded-[10px] border-[1.5px] border-rand bg-white p-4 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]">
+          {(() => {
+            const dubbels = vindMogelijkeDubbels(tn, alleVoorVergelijking);
+            if (dubbels.length === 0) return null;
+            return (
+              <div className="mb-3 rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
+                <span className="font-bold">{t.beheer.mogelijkDubbel}</span> —{" "}
+                {dubbels
+                  .map(
+                    (d) =>
+                      `${d.clubnaam} · ${d.naam_nl}${
+                        d.status === "in_behandeling" ? ` (${t.beheer.inBehandeling.toLowerCase()})` : ""
+                      }`
+                  )
+                  .join(", ")}
+              </div>
+            );
+          })()}
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blauw-2">

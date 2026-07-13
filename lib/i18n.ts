@@ -296,6 +296,7 @@ const nl = {
       "Je account is aangemaakt, maar een beheerder moet je nog goedkeuren voor je toegang krijgt tot het beheerpaneel.",
     nieuweVrijwilligerAanvragen: "Nieuwe aanvragen",
     geenNieuweVrijwilligerAanvragen: "Geen nieuwe aanvragen.",
+    mogelijkDubbel: "Mogelijk dubbel",
   },
 };
 
@@ -595,6 +596,7 @@ const fr: typeof nl = {
       "Votre compte a été créé, mais un administrateur doit encore vous approuver avant que vous n'ayez accès au panneau d'administration.",
     nieuweVrijwilligerAanvragen: "Nouvelles demandes",
     geenNieuweVrijwilligerAanvragen: "Aucune nouvelle demande.",
+    mogelijkDubbel: "Doublon possible",
   },
 };
 
