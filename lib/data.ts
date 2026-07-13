@@ -97,6 +97,25 @@ export async function getModeratoren(): Promise<Moderator[]> {
   return data as Moderator[];
 }
 
+export type ModeratorMetStatus = Moderator & { bevestigd: boolean };
+
+export async function getModeratorenMetStatus(): Promise<ModeratorMetStatus[]> {
+  const moderatoren = await getModeratoren();
+  if (moderatoren.length === 0) return [];
+
+  const serviceClient = createServiceRoleClient();
+  const { data: gebruikersData, error } = await serviceClient.auth.admin.listUsers({ perPage: 200 });
+  if (error) {
+    console.error("Kon gebruikersstatus niet ophalen:", error.message);
+    return moderatoren.map((mod) => ({ ...mod, bevestigd: false }));
+  }
+
+  return moderatoren.map((mod) => {
+    const gebruiker = gebruikersData.users.find((g) => g.id === mod.user_id);
+    return { ...mod, bevestigd: !!gebruiker?.last_sign_in_at };
+  });
+}
+
 export async function getHuidigeModerator(): Promise<Moderator | null> {
   const supabase = createClient();
   const {

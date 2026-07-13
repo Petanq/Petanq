@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Moderator, ModeratorRol } from "@/lib/types";
+import { ModeratorMetStatus } from "@/lib/data";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { moderatorBewerken, moderatorVerwijderen, moderatorUitnodigen } from "@/actions/beheer-moderatoren";
 
@@ -12,7 +13,7 @@ export function ModeratorManageList({
   huidigUserId,
   isAdmin,
 }: {
-  moderatoren: Moderator[];
+  moderatoren: ModeratorMetStatus[];
   huidigUserId: string | null;
   isAdmin: boolean;
 }) {
@@ -85,6 +86,13 @@ export function ModeratorManageList({
                     }`}
                   >
                     {mod.rol === "admin" ? t.beheer.rolAdmin : t.beheer.rolModerator}
+                  </span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide ${
+                      mod.bevestigd ? "bg-[#f0fdf4] text-groen" : "bg-[#fef3c7] text-[#92400e]"
+                    }`}
+                  >
+                    {mod.bevestigd ? t.beheer.uitnodigingGeaccepteerd : t.beheer.wachtOpBevestiging}
                   </span>
                 </div>
                 <div className="text-sm text-grijs">
