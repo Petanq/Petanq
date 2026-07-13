@@ -62,7 +62,17 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
       const haystack = `${tn.clubnaam} ${tn.gemeente} ${tn.naam_nl} ${tn.naam_fr} ${tn.datum}`.toLowerCase();
       return haystack.includes(zoekTerm);
     })
-    .sort((a, b) => (a.datum + a.uur).localeCompare(b.datum + b.uur));
+    .sort((a, b) => {
+      // Aankomende toernooien eerst (dichtstbijzijnde bovenaan), al afgelopen
+      // toernooien daaronder (meest recente eerst) — zo blijft het overzichtelijk
+      // wat er nog moet komen zonder oude toernooien helemaal te verbergen.
+      const vandaag = new Date().toISOString().slice(0, 10);
+      const aKomt = a.datum >= vandaag;
+      const bKomt = b.datum >= vandaag;
+      if (aKomt !== bKomt) return aKomt ? -1 : 1;
+      const volgorde = (a.datum + a.uur).localeCompare(b.datum + b.uur);
+      return aKomt ? volgorde : -volgorde;
+    });
 
   return (
     <div className="flex flex-col gap-3">
