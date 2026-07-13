@@ -508,7 +508,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
         />
         <p className="text-xs text-grijs">{t.form.afficheHint}</p>
         {afficheBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
-        {aiBezig && <p className="text-xs font-semibold text-blauw-2">{t.form.afficheAnalyseren}</p>}
+        {aiBezig && <p className="text-xs font-semibold text-[#b8860b]">{t.form.afficheAnalyseren}</p>}
         {afficheFout && <p className="text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
         {autoIngevuld && !aiBezig && (
           <p className="text-xs font-semibold text-groen">{t.form.afficheAutoIngevuld}</p>

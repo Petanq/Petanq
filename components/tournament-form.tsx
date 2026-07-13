@@ -55,6 +55,11 @@ export function TournamentForm() {
   const [afficheFout, setAfficheFout] = useState(false);
   const [aiBezig, setAiBezig] = useState(false);
   const [autoIngevuld, setAutoIngevuld] = useState(false);
+  const [verzendPoging, setVerzendPoging] = useState(false);
+
+  function veldFout(waarde: string): string {
+    return verzendPoging && !waarde ? "!border-rood-2" : "";
+  }
 
   function vulVeldenInVanAffiche(velden: AfficheVelden) {
     if (velden.datum) setDatum(velden.datum);
@@ -112,6 +117,23 @@ export function TournamentForm() {
 
   async function versturen(e: React.FormEvent) {
     e.preventDefault();
+
+    const verplichteVelden = [
+      datum,
+      uur,
+      clubnaam,
+      naamNl,
+      gemeente,
+      provincie,
+      categorie,
+      formule,
+      speelvorm === "rondes" ? aantalRonden : aantalPoules,
+    ];
+    if (verplichteVelden.some((veld) => !veld)) {
+      setVerzendPoging(true);
+      return;
+    }
+
     setStatus("bezig");
 
     const resultaat = await toernooiIndienen(
@@ -161,7 +183,7 @@ export function TournamentForm() {
       <h1 className="mb-2 font-titel text-4xl tracking-wide text-blauw">{t.form.titel}</h1>
       <p className="mb-8 text-sm text-grijs">{t.form.beschrijving}</p>
 
-      <form onSubmit={versturen} className="flex flex-col gap-6">
+      <form onSubmit={versturen} noValidate className="flex flex-col gap-6">
         <fieldset className="flex flex-col gap-4 rounded-lg border-[1.5px] border-dashed border-blauw-3 bg-blauw-3/5 p-4">
           <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
             {t.form.affiche}
@@ -178,7 +200,7 @@ export function TournamentForm() {
               <p className="mt-1 text-xs font-semibold text-donker">{afficheNaam}</p>
             )}
             {afficheBezig && <p className="mt-1 text-xs font-semibold text-blauw-2">{t.form.afficheUploaden}</p>}
-            {aiBezig && <p className="mt-1 text-xs font-semibold text-blauw-2">{t.form.afficheAnalyseren}</p>}
+            {aiBezig && <p className="mt-1 text-xs font-semibold text-[#b8860b]">{t.form.afficheAnalyseren}</p>}
             {afficheFout && <p className="mt-1 text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
             {autoIngevuld && !aiBezig && (
               <p className="mt-1 text-xs font-semibold text-groen">{t.form.afficheAutoIngevuld}</p>
@@ -197,7 +219,7 @@ export function TournamentForm() {
                 required
                 value={datum}
                 onChange={(e) => setDatum(e.target.value)}
-                className="veld-input"
+                className={`veld-input ${veldFout(datum)}`}
               />
             </Veld>
             <Veld label={t.form.uur} verplicht>
@@ -206,7 +228,7 @@ export function TournamentForm() {
                 required
                 value={uur}
                 onChange={(e) => setUur(e.target.value)}
-                className="veld-input"
+                className={`veld-input ${veldFout(uur)}`}
               />
             </Veld>
           </div>
@@ -241,7 +263,7 @@ export function TournamentForm() {
               required
               value={clubnaam}
               onChange={(e) => setClubnaam(e.target.value)}
-              className="veld-input"
+              className={`veld-input ${veldFout(clubnaam)}`}
             />
           </Veld>
           <Veld label={t.form.naamToernooi} verplicht>
@@ -252,7 +274,7 @@ export function TournamentForm() {
                 setNaamNl(e.target.value);
                 setNaamFr(e.target.value);
               }}
-              className="veld-input"
+              className={`veld-input ${veldFout(naamNl)}`}
             />
           </Veld>
           <Veld label={`${t.form.adres} (${t.form.optioneel})`}>
@@ -264,7 +286,7 @@ export function TournamentForm() {
                 required
                 value={gemeente}
                 onChange={(e) => setGemeente(e.target.value)}
-                className="veld-input"
+                className={`veld-input ${veldFout(gemeente)}`}
               />
             </Veld>
             <Veld label={t.form.provincie} verplicht>
@@ -272,7 +294,7 @@ export function TournamentForm() {
                 required
                 value={provincie}
                 onChange={(e) => setProvincie(e.target.value as Provincie)}
-                className="veld-input"
+                className={`veld-input ${veldFout(provincie)}`}
               >
                 <option value="" disabled>
                   {t.form.kiesProvincie}
@@ -297,7 +319,7 @@ export function TournamentForm() {
                 required
                 value={categorie}
                 onChange={(e) => setCategorie(e.target.value as Categorie)}
-                className="veld-input"
+                className={`veld-input ${veldFout(categorie)}`}
               >
                 <option value="" disabled>
                   {t.form.kiesCategorie}
@@ -314,7 +336,7 @@ export function TournamentForm() {
                 required
                 value={formule}
                 onChange={(e) => setFormule(e.target.value as Formule)}
-                className="veld-input"
+                className={`veld-input ${veldFout(formule)}`}
               >
                 <option value="" disabled>
                   {t.form.kiesFormule}
@@ -356,7 +378,7 @@ export function TournamentForm() {
                   required
                   value={aantalRonden}
                   onChange={(e) => setAantalRonden(e.target.value)}
-                  className="veld-input"
+                  className={`veld-input ${veldFout(aantalRonden)}`}
                 />
                 <label className="mt-2 flex items-center gap-2 text-sm font-medium text-donker">
                   <input
@@ -377,7 +399,7 @@ export function TournamentForm() {
                   required
                   value={aantalPoules}
                   onChange={(e) => setAantalPoules(e.target.value)}
-                  className="veld-input"
+                  className={`veld-input ${veldFout(aantalPoules)}`}
                 />
               </Veld>
             )}
@@ -444,6 +466,19 @@ export function TournamentForm() {
             />
           </Veld>
         </fieldset>
+
+        {verzendPoging &&
+          [
+            datum,
+            uur,
+            clubnaam,
+            naamNl,
+            gemeente,
+            provincie,
+            categorie,
+            formule,
+            speelvorm === "rondes" ? aantalRonden : aantalPoules,
+          ].some((v) => !v) && <p className="text-sm font-medium text-rood-2">{t.form.foutVerplichteVelden}</p>}
 
         {status === "fout" && (
           <p className="text-sm font-medium text-rood-2">
