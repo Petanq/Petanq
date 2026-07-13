@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
@@ -10,6 +10,7 @@ import { moderatorWachtwoordBevestigen } from "@/actions/beheer-moderatoren";
 export function WachtwoordResettenForm() {
   const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [wachtwoord, setWachtwoord] = useState("");
   const [status, setStatus] = useState<"idle" | "bezig" | "gelukt" | "te_kort" | "fout">("idle");
   const [foutDetail, setFoutDetail] = useState<string | null>(null);
@@ -24,25 +25,19 @@ export function WachtwoordResettenForm() {
     setFoutDetail(null);
     const supabase = createClient();
 
-    // De uitnodigings-/herstellink zet het inlog-token in het #-gedeelte van de URL
-    // (access_token/refresh_token). Onze standaardclient is ingesteld op de nieuwere
-    // "pkce"-flow (met ?code=...) en herkent dit oudere linktype niet automatisch,
-    // dus lezen we de token zelf uit de URL en zetten we de sessie expliciet in.
-    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    const accessToken = hashParams.get("access_token");
-    const refreshToken = hashParams.get("refresh_token");
-    if (accessToken && refreshToken) {
-      const { error: sessieFout } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
+    // De link bevat het token als gewone queryparameter (i.p.v. in het #-gedeelte
+    // van de URL) — dat overleeft betrouwbaar elke omleiding, ook binnen in-app
+    // browsers zoals WhatsApp, die het #-gedeelte soms laten wegvallen.
+    const tokenHash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+    if (tokenHash && (type === "invite" || type === "recovery")) {
+      const { error: sessieFout } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
       if (sessieFout) {
         console.error("Sessie instellen mislukt:", sessieFout.message);
         setFoutDetail(sessieFout.message);
         setStatus("fout");
         return;
       }
-      window.history.replaceState(null, "", window.location.pathname);
     }
 
     const { error } = await supabase.auth.updateUser({ password: wachtwoord });

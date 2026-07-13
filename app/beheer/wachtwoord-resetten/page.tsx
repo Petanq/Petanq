@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { WachtwoordResettenForm } from "@/components/beheer/wachtwoord-resetten-form";
 
 export const metadata: Metadata = {
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function WachtwoordResettenPagina() {
-  return <WachtwoordResettenForm />;
+  return (
+    <Suspense>
+      <WachtwoordResettenForm />
+    </Suspense>
+  );
 }

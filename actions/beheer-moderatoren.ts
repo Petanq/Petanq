@@ -14,6 +14,16 @@ export type UitnodigenResultaat =
 
 const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
 
+// Supabase's eigen action_link laat de browser via een cross-domain omleiding
+// het token in het #-gedeelte van de URL zetten. Sommige in-app browsers
+// (bv. WhatsApp) laten dat #-gedeelte onderweg wegvallen, waardoor de sessie
+// nooit tot stand komt. Door zelf een link naar onze eigen pagina te bouwen met
+// het token als gewone queryparameter, is er geen cross-domain omleiding meer
+// nodig en overleeft het token elke omleiding betrouwbaar.
+function wachtwoordLink(hashedToken: string, type: "invite" | "recovery") {
+  return `${siteUrl()}/beheer/wachtwoord-resetten?token_hash=${hashedToken}&type=${type}`;
+}
+
 export async function moderatorUitnodigen(input: {
   email: string;
   naam: string;
@@ -74,7 +84,7 @@ export async function moderatorUitnodigen(input: {
       }
 
       revalidatePath("/beheer/moderatoren");
-      return { succes: true, link: await maakKorteLink(linkData.properties.action_link) };
+      return { succes: true, link: await maakKorteLink(wachtwoordLink(linkData.properties.hashed_token, "recovery")) };
     }
     console.error("Vrijwilliger uitnodigen mislukt:", error?.message);
     return { succes: false, fout: "server_fout" };
@@ -96,7 +106,7 @@ export async function moderatorUitnodigen(input: {
   }
 
   revalidatePath("/beheer/moderatoren");
-  return { succes: true, link: await maakKorteLink(data.properties.action_link) };
+  return { succes: true, link: await maakKorteLink(wachtwoordLink(data.properties.hashed_token, "invite")) };
 }
 
 export async function moderatorBewerken(
