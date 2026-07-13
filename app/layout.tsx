@@ -29,12 +29,14 @@ export const metadata: Metadata = {
     locale: "nl_BE",
     alternateLocale: "fr_BE",
     type: "website",
+    images: [{ url: "/images/logo-bron-volledig.png", width: 1536, height: 1024, alt: "Petanque13" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Petanque13 — De Belgische Petanquekalender",
     description:
       "De centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel.",
+    images: ["/images/logo-bron-volledig.png"],
   },
 };
 
