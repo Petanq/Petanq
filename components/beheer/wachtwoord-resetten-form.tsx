@@ -23,9 +23,28 @@ export function WachtwoordResettenForm() {
     setStatus("bezig");
     setFoutDetail(null);
     const supabase = createClient();
-    // De link zet het inlog-token in de URL; de client moet dat eerst zelf verwerken
-    // (asynchroon, bij het aanmaken van de client) voordat updateUser() een sessie heeft.
-    await supabase.auth.getSession();
+
+    // De uitnodigings-/herstellink zet het inlog-token in het #-gedeelte van de URL
+    // (access_token/refresh_token). Onze standaardclient is ingesteld op de nieuwere
+    // "pkce"-flow (met ?code=...) en herkent dit oudere linktype niet automatisch,
+    // dus lezen we de token zelf uit de URL en zetten we de sessie expliciet in.
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const accessToken = hashParams.get("access_token");
+    const refreshToken = hashParams.get("refresh_token");
+    if (accessToken && refreshToken) {
+      const { error: sessieFout } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      if (sessieFout) {
+        console.error("Sessie instellen mislukt:", sessieFout.message);
+        setFoutDetail(sessieFout.message);
+        setStatus("fout");
+        return;
+      }
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+
     const { error } = await supabase.auth.updateUser({ password: wachtwoord });
     if (error) {
       console.error("Wachtwoord instellen mislukt:", error.message);
