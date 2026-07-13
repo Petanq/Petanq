@@ -7,6 +7,9 @@ import { Provincie } from "@/lib/provincies";
 import { isModerator, isAdmin } from "@/lib/auth-helpers";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
+export type UitnodigenResultaat =
+  | { succes: true; link: string }
+  | { succes: false; fout: string };
 
 const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
 
@@ -15,12 +18,18 @@ export async function moderatorUitnodigen(input: {
   naam: string;
   rol: ModeratorRol;
   provincie: Provincie | null;
-}): Promise<BeheerActieResultaat> {
+}): Promise<UitnodigenResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const serviceClient = createServiceRoleClient();
-  const { data, error } = await serviceClient.auth.admin.inviteUserByEmail(input.email, {
-    redirectTo: `${siteUrl()}/beheer/wachtwoord-resetten`,
+  // generateLink (i.p.v. inviteUserByEmail) maakt de gebruiker aan zonder zelf een
+  // e-mail te versturen — we tonen de link in het beheerpaneel zodat de admin die
+  // zelf kan doorsturen (WhatsApp, sms, ...), voor het geval Supabase's gratis
+  // e-maildienst niet aankomt bij de ontvanger.
+  const { data, error } = await serviceClient.auth.admin.generateLink({
+    type: "invite",
+    email: input.email,
+    options: { redirectTo: `${siteUrl()}/beheer/wachtwoord-resetten` },
   });
 
   if (error || !data.user) {
@@ -47,7 +56,7 @@ export async function moderatorUitnodigen(input: {
   }
 
   revalidatePath("/beheer/moderatoren");
-  return { succes: true };
+  return { succes: true, link: data.properties.action_link };
 }
 
 export async function moderatorBewerken(

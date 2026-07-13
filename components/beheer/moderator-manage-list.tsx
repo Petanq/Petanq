@@ -196,7 +196,8 @@ function UitnodigenFormulier({ onKlaar, onAnnuleren }: { onKlaar: () => void; on
   const [provincie, setProvincie] = useState<Provincie | "">("");
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<string | null>(null);
-  const [gelukt, setGelukt] = useState(false);
+  const [link, setLink] = useState<string | null>(null);
+  const [gekopieerd, setGekopieerd] = useState(false);
 
   async function uitnodigen() {
     setBezig(true);
@@ -212,14 +213,37 @@ function UitnodigenFormulier({ onKlaar, onAnnuleren }: { onKlaar: () => void; on
       setFout(resultaat.fout);
       return;
     }
-    setGelukt(true);
-    setTimeout(onKlaar, 1200);
+    setLink(resultaat.link);
+  }
+
+  async function kopieerLink() {
+    if (!link) return;
+    await navigator.clipboard.writeText(link);
+    setGekopieerd(true);
   }
 
   return (
     <div className="mt-3 rounded-[10px] border-[1.5px] border-blauw-3 bg-white p-4">
-      {gelukt ? (
-        <p className="text-sm font-semibold text-groen">{t.beheer.uitnodigingVerstuurd}</p>
+      {link ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm font-semibold text-groen">{t.beheer.uitnodigingAangemaakt}</p>
+          <p className="text-xs text-grijs">{t.beheer.uitnodigingLinkUitleg}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <input readOnly value={link} className="veld-input flex-1" onClick={(e) => e.currentTarget.select()} />
+            <button
+              onClick={kopieerLink}
+              className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white"
+            >
+              {gekopieerd ? t.beheer.linkGekopieerd : t.beheer.linkKopieren}
+            </button>
+          </div>
+          <button
+            onClick={onKlaar}
+            className="mt-1 self-start rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker"
+          >
+            {t.beheer.sluiten}
+          </button>
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
