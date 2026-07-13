@@ -551,7 +551,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
   );
 }
 
-function EditForm({
+export function EditForm({
   toernooi,
   onKlaar,
   onAnnuleren,

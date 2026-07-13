@@ -7,6 +7,7 @@ import { Toernooi } from "@/lib/types";
 import { vertaalProvincie } from "@/lib/provincies";
 import { formatUur } from "@/lib/datum";
 import { toernooiGoedkeuren, toernooiWeigeren } from "@/actions/beheer-toernooien";
+import { EditForm } from "./tournament-manage-list";
 
 export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
   const { t, taal } = useTranslation();
@@ -15,6 +16,7 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
   const [reden, setReden] = useState("");
   const [bezigId, setBezigId] = useState<string | null>(null);
   const [uitgeklaptId, setUitgeklaptId] = useState<string | null>(null);
+  const [bewerkId, setBewerkId] = useState<string | null>(null);
 
   async function goedkeuren(id: string) {
     setBezigId(id);
@@ -43,7 +45,18 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {toernooien.map((tn) => (
+      {toernooien.map((tn) =>
+        bewerkId === tn.id ? (
+          <EditForm
+            key={tn.id}
+            toernooi={tn}
+            onKlaar={() => {
+              setBewerkId(null);
+              router.refresh();
+            }}
+            onAnnuleren={() => setBewerkId(null)}
+          />
+        ) : (
         <div key={tn.id} className="rounded-[10px] border-[1.5px] border-rand bg-white p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
@@ -70,6 +83,13 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
                 className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker hover:border-blauw-3"
               >
                 {uitgeklaptId === tn.id ? t.beheer.minderDetails : t.beheer.meerDetails}
+              </button>
+              <button
+                onClick={() => setBewerkId(tn.id)}
+                disabled={bezigId === tn.id}
+                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker hover:border-blauw-3"
+              >
+                {t.beheer.bewerken}
               </button>
               <button
                 onClick={() => goedkeuren(tn.id)}
@@ -170,7 +190,8 @@ export function PendingList({ toernooien }: { toernooien: Toernooi[] }) {
             </div>
           )}
         </div>
-      ))}
+        )
+      )}
     </div>
   );
 }
