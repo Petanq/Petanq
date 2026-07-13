@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Categorie, Formule, Speelvorm, Toernooi } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
-import { formatUur, maandJaarKey } from "@/lib/datum";
+import { formatUur, maandJaarKey, maandVolledig, parseDatum, dagVanWeekKort, dagNummer, maandKort } from "@/lib/datum";
 import { toernooiBewerken, toernooiToevoegenAlsAdmin, toernooiVerwijderen } from "@/actions/beheer-toernooien";
 import { uploadAffiche } from "@/lib/upload-affiche";
 import { uploadNaarStorage } from "@/lib/upload-bestand";
@@ -13,6 +13,7 @@ import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
 import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
 import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
 import { MonthPills } from "@/components/month-pills";
+import { CATEGORIE_STREEP, CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
@@ -73,6 +74,16 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
       const volgorde = (a.datum + a.uur).localeCompare(b.datum + b.uur);
       return aKomt ? volgorde : -volgorde;
     });
+
+  const groepen = useMemo(() => {
+    const map = new Map<string, Toernooi[]>();
+    for (const tn of zichtbareToernooien) {
+      const sleutel = maandJaarKey(tn.datum);
+      if (!map.has(sleutel)) map.set(sleutel, []);
+      map.get(sleutel)!.push(tn);
+    }
+    return Array.from(map.entries());
+  }, [zichtbareToernooien]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -141,52 +152,108 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
         />
       )}
 
-      {zichtbareToernooien.map((tn) =>
-        bewerkId === tn.id ? (
-          <EditForm
-            key={tn.id}
-            toernooi={tn}
-            onKlaar={() => {
-              setBewerkId(null);
-              router.refresh();
-            }}
-            onAnnuleren={() => setBewerkId(null)}
-          />
-        ) : (
-          <div key={tn.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-4 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blauw-2">
-                {tn.clubnaam}
-                {tn.open_toernooi && (
-                  <span className="rounded-full bg-[#f0fdfa] px-2 py-0.5 text-[0.65rem] font-bold text-[#0d9488]">
-                    {t.lijst.openBadge}
-                  </span>
-                )}
-              </div>
-              <div className="font-bold text-donker">{tn.naam_nl}</div>
-              <div className="text-sm text-grijs">
-                {tn.datum} · {formatUur(tn.uur)} · {tn.gemeente}, {vertaalProvincie(tn.provincie, taal)}
-                {tn.finale && ` · ${t.lijst.metFinale}`}
-              </div>
+      {groepen.length === 0 && (
+        <p className="rounded-lg border border-rand bg-white p-6 text-center text-sm text-grijs">
+          {t.lijst.geenResultaten}
+        </p>
+      )}
+
+      {groepen.map(([sleutel, lijst]) => {
+        const [jaar] = sleutel.split("-");
+        const maandIndex = parseDatum(`${sleutel}-01`).getMonth();
+        return (
+          <div key={sleutel}>
+            <div className="my-2 flex items-center gap-3 rounded-md bg-blauw px-4 py-2 font-titel text-lg tracking-widest text-white first:mt-0">
+              📅 <span className="text-geel">{maandVolledig(maandIndex, taal).toUpperCase()}</span> {jaar}
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setBewerkId(tn.id)}
-                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
-              >
-                {t.beheer.bewerken}
-              </button>
-              <button
-                onClick={() => verwijderen(tn.id)}
-                disabled={bezig}
-                className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
-              >
-                {t.beheer.verwijderen}
-              </button>
+            <div className="flex flex-col gap-2">
+              {lijst.map((tn) =>
+                bewerkId === tn.id ? (
+                  <EditForm
+                    key={tn.id}
+                    toernooi={tn}
+                    onKlaar={() => {
+                      setBewerkId(null);
+                      router.refresh();
+                    }}
+                    onAnnuleren={() => setBewerkId(null)}
+                  />
+                ) : (
+                  <div
+                    key={tn.id}
+                    className="group relative grid grid-cols-[56px_1fr_auto] items-center gap-4 overflow-hidden rounded-2xl border-[1.5px] border-rand bg-white p-4 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]"
+                  >
+                    <span
+                      className={`absolute left-0 top-3 h-[calc(100%-24px)] w-1 rounded-full ${CATEGORIE_STREEP[tn.categorie]}`}
+                    />
+
+                    <div className="rounded-xl bg-donker px-0.5 py-2 text-center">
+                      <div className="font-body text-[0.58rem] font-bold uppercase tracking-wide text-white/50">
+                        {dagVanWeekKort(tn.datum, taal)}
+                      </div>
+                      <div className="font-titel text-2xl leading-none text-geel">{dagNummer(tn.datum)}</div>
+                      <div className="font-body text-[0.58rem] font-bold uppercase tracking-wider text-white/50">
+                        {maandKort(tn.datum, taal)}
+                      </div>
+                    </div>
+
+                    <div className="min-w-0">
+                      <div className="mb-0.5 flex items-center gap-1.5 truncate text-[0.72rem] font-bold uppercase tracking-wide text-blauw-2">
+                        <span className="truncate">{tn.clubnaam}</span>
+                        {tn.open_toernooi && (
+                          <span className="whitespace-nowrap rounded-full bg-[#f0fdfa] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-[#0d9488]">
+                            {t.lijst.openBadge}
+                          </span>
+                        )}
+                      </div>
+                      <div className="mb-1 truncate text-[0.88rem] font-bold leading-tight text-donker">
+                        {tn.naam_nl}
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        <span className="text-[0.74rem] text-grijs">
+                          📍 {tn.gemeente}, {vertaalProvincie(tn.provincie, taal)}
+                        </span>
+                        <span className="text-[0.74rem] text-grijs">🕐 {formatUur(tn.uur)}</span>
+                        {tn.finale && <span className="text-[0.74rem] text-grijs">{t.lijst.metFinale}</span>}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1.5">
+                      <div className="flex gap-1">
+                        <span
+                          className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide ${FORMULE_BADGE[tn.formule]}`}
+                        >
+                          {t.formule[tn.formule]}
+                        </span>
+                        <span
+                          className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide ${CATEGORIE_BADGE[tn.categorie]}`}
+                        >
+                          {t.categorie[tn.categorie]}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setBewerkId(tn.id)}
+                          className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+                        >
+                          {t.beheer.bewerken}
+                        </button>
+                        <button
+                          onClick={() => verwijderen(tn.id)}
+                          disabled={bezig}
+                          className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+                        >
+                          {t.beheer.verwijderen}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )}
             </div>
           </div>
-        )
-      )}
+        );
+      })}
     </div>
   );
 }
