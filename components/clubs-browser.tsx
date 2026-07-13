@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { Club } from "@/lib/types";
-import { ALLE_PROVINCIES, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
+import { ALLE_PROVINCIES, Provincie, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
 import { ClubCard } from "./club-card";
 import { AddClubCard } from "./add-club-card";
 
@@ -14,6 +14,28 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
   const { t, taal } = useTranslation();
   const [zoek, setZoek] = useState("");
   const [regioFilter, setRegioFilter] = useState<Regio | null>(null);
+  const [opengeklapt, setOpengeklapt] = useState<Set<Provincie>>(new Set());
+
+  useEffect(() => {
+    function klapOpenVoorHash() {
+      const hash = window.location.hash.replace("#", "") as Provincie;
+      if (ALLE_PROVINCIES.includes(hash)) {
+        setOpengeklapt((prev) => new Set(prev).add(hash));
+      }
+    }
+    klapOpenVoorHash();
+    window.addEventListener("hashchange", klapOpenVoorHash);
+    return () => window.removeEventListener("hashchange", klapOpenVoorHash);
+  }, []);
+
+  function toggleProvincie(p: Provincie) {
+    setOpengeklapt((prev) => {
+      const next = new Set(prev);
+      if (next.has(p)) next.delete(p);
+      else next.add(p);
+      return next;
+    });
+  }
 
   const gefilterd = useMemo(() => {
     const term = zoek.trim().toLowerCase();
@@ -110,17 +132,34 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
             </h2>
             {zichtbareProvincies.map((provincie) => {
               const clubsInProvincie = gefilterd.filter((c) => c.provincie === provincie);
+              const uitgeklapt = zoek.trim().length > 0 || opengeklapt.has(provincie);
               return (
-                <div key={provincie} id={provincie} className="mb-6 scroll-mt-20">
-                  <h3 className="mb-2.5 text-[0.7rem] font-extrabold uppercase tracking-widest text-[#94a3b8]">
-                    {vertaalProvincie(provincie, taal)}
-                  </h3>
-                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-                    {clubsInProvincie.map((club) => (
-                      <ClubCard key={club.id} club={club} />
-                    ))}
-                    <AddClubCard provincie={provincie} />
-                  </div>
+                <div key={provincie} id={provincie} className="mb-3 scroll-mt-20">
+                  <button
+                    onClick={() => toggleProvincie(provincie)}
+                    className="mb-2.5 flex w-full items-center gap-2 text-left"
+                  >
+                    <span
+                      className={`text-[#94a3b8] transition-transform ${uitgeklapt ? "rotate-90" : ""}`}
+                      aria-hidden="true"
+                    >
+                      ›
+                    </span>
+                    <span className="text-[0.7rem] font-extrabold uppercase tracking-widest text-[#94a3b8]">
+                      {vertaalProvincie(provincie, taal)}
+                    </span>
+                    <span className="text-[0.7rem] font-bold text-[#94a3b8] opacity-70">
+                      {clubsInProvincie.length}
+                    </span>
+                  </button>
+                  {uitgeklapt && (
+                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+                      {clubsInProvincie.map((club) => (
+                        <ClubCard key={club.id} club={club} />
+                      ))}
+                      <AddClubCard provincie={provincie} />
+                    </div>
+                  )}
                 </div>
               );
             })}
