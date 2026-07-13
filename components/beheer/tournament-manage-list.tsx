@@ -1,17 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Categorie, Formule, Speelvorm, Toernooi } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
-import { formatUur } from "@/lib/datum";
+import { formatUur, maandJaarKey } from "@/lib/datum";
 import { toernooiBewerken, toernooiToevoegenAlsAdmin, toernooiVerwijderen } from "@/actions/beheer-toernooien";
 import { uploadAffiche } from "@/lib/upload-affiche";
 import { uploadNaarStorage } from "@/lib/upload-bestand";
 import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
 import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
 import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
+import { MonthPills } from "@/components/month-pills";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
@@ -33,6 +34,8 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
   const [filterCategorie, setFilterCategorie] = useState<Categorie | "">("");
   const [filterProvincie, setFilterProvincie] = useState<Provincie | "">("");
   const [filterType, setFilterType] = useState<"" | "open" | "officieel">("");
+  const [zoek, setZoek] = useState("");
+  const [actieveMaand, setActieveMaand] = useState<string | null>(null);
 
   async function verwijderen(id: string) {
     if (!window.confirm("Weet je zeker dat je dit toernooi wil verwijderen?")) return;
@@ -42,16 +45,36 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
     router.refresh();
   }
 
+  const maandSleutels = useMemo(() => {
+    const sleutels = new Set(toernooien.map((tn) => maandJaarKey(tn.datum)));
+    return Array.from(sleutels).sort();
+  }, [toernooien]);
+
+  const zoekTerm = zoek.trim().toLowerCase();
+
   const zichtbareToernooien = toernooien
     .filter((tn) => !filterCategorie || tn.categorie === filterCategorie)
     .filter((tn) => !filterProvincie || tn.provincie === filterProvincie)
     .filter((tn) => !filterType || (filterType === "open" ? tn.open_toernooi : !tn.open_toernooi))
+    .filter((tn) => !actieveMaand || maandJaarKey(tn.datum) === actieveMaand)
+    .filter((tn) => {
+      if (!zoekTerm) return true;
+      const haystack = `${tn.clubnaam} ${tn.gemeente} ${tn.naam_nl} ${tn.naam_fr} ${tn.datum}`.toLowerCase();
+      return haystack.includes(zoekTerm);
+    })
     .sort((a, b) => (a.datum + a.uur).localeCompare(b.datum + b.uur));
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
+          <input
+            type="text"
+            value={zoek}
+            onChange={(e) => setZoek(e.target.value)}
+            placeholder={t.filters.zoekPlaceholder}
+            className="veld-input w-auto"
+          />
           <select
             value={filterCategorie}
             onChange={(e) => setFilterCategorie(e.target.value as Categorie | "")}
@@ -92,6 +115,10 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
         >
           {t.beheer.nieuwToernooi}
         </button>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <MonthPills maandSleutels={maandSleutels} actieveMaand={actieveMaand} setActieveMaand={setActieveMaand} />
       </div>
 
       {toevoegenOpen && (
