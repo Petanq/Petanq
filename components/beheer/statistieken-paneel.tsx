@@ -9,9 +9,11 @@ const MEDAILLES = ["🥇", "🥈", "🥉"];
 export function StatistiekenPaneel({
   bezoeken,
   toernooien,
+  isAdmin,
 }: {
   bezoeken: BezoekStatistieken;
   toernooien: ToernooiStatistieken;
+  isAdmin: boolean;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -51,7 +53,7 @@ export function StatistiekenPaneel({
             <StatKaart label={t.beheer.actieveClubsLabel} waarde={toernooien.actieveClubs} />
           </div>
 
-          {toernooien.perModerator.length > 0 && (
+          {isAdmin && toernooien.perModerator.length > 0 && (
             <div className="border-t border-rand pt-4">
               <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-donker">
                 {t.beheer.moderatorRanglijst}

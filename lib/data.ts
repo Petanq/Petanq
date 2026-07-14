@@ -153,24 +153,31 @@ export async function getToernooiStatistieken(): Promise<ToernooiStatistieken> {
   maandStart.setHours(0, 0, 0, 0);
   const maandStartIso = maandStart.toISOString();
 
-  const [totaalRes, aanvragenRes, goedgekeurdRes, geweigerdRes, clubsRes, perModeratorRes] = await Promise.all([
-    supabase.from("toernooien").select("id", { count: "exact", head: true }).eq("status", "goedgekeurd"),
-    supabase.from("toernooien").select("id", { count: "exact", head: true }).gte("aangemaakt_op", maandStartIso),
-    supabase
-      .from("toernooien")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "goedgekeurd")
-      .gte("goedgekeurd_op", maandStartIso),
-    supabase
-      .from("toernooien")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "geweigerd")
-      .gte("goedgekeurd_op", maandStartIso),
-    supabase.from("clubs").select("id", { count: "exact", head: true }).eq("actief", true),
-    supabase.from("toernooien").select("goedgekeurd_door").eq("status", "goedgekeurd").not("goedgekeurd_door", "is", null),
-  ]);
+  const [totaalRes, aanvragenRes, goedgekeurdRes, geweigerdRes, clubsRes, perModeratorRes, moderatorenRes] =
+    await Promise.all([
+      supabase.from("toernooien").select("id", { count: "exact", head: true }).eq("status", "goedgekeurd"),
+      supabase.from("toernooien").select("id", { count: "exact", head: true }).gte("aangemaakt_op", maandStartIso),
+      supabase
+        .from("toernooien")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "goedgekeurd")
+        .gte("goedgekeurd_op", maandStartIso),
+      supabase
+        .from("toernooien")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "geweigerd")
+        .gte("goedgekeurd_op", maandStartIso),
+      supabase.from("clubs").select("id", { count: "exact", head: true }).eq("actief", true),
+      supabase.from("toernooien").select("goedgekeurd_door").eq("status", "goedgekeurd").not("goedgekeurd_door", "is", null),
+      supabase.from("moderatoren").select("naam"),
+    ]);
 
+  // Start met alle vrijwilligers op 0, zodat ook wie nog niets goedkeurde
+  // gewoon in de lijst verschijnt in plaats van stilzwijgend te ontbreken.
   const tellingen = new Map<string, number>();
+  for (const mod of moderatorenRes.data ?? []) {
+    tellingen.set((mod as { naam: string }).naam, 0);
+  }
   for (const rij of perModeratorRes.data ?? []) {
     const naam = (rij as { goedgekeurd_door: string }).goedgekeurd_door;
     tellingen.set(naam, (tellingen.get(naam) ?? 0) + 1);
