@@ -14,6 +14,7 @@ import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
 import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
 import { MonthPills } from "@/components/month-pills";
 import { CATEGORIE_STREEP, CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
+import { vindMogelijkeDubbelsVoorVelden } from "@/lib/dubbels";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
@@ -149,6 +150,7 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
 
       {toevoegenOpen && (
         <AddForm
+          bestaandeToernooien={toernooien}
           onKlaar={() => {
             setToevoegenOpen(false);
             router.refresh();
@@ -265,7 +267,15 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
   );
 }
 
-function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: () => void }) {
+function AddForm({
+  bestaandeToernooien,
+  onKlaar,
+  onAnnuleren,
+}: {
+  bestaandeToernooien: Toernooi[];
+  onKlaar: () => void;
+  onAnnuleren: () => void;
+}) {
   const { t, taal } = useTranslation();
   const [openToernooi, setOpenToernooi] = useState(false);
   const [clubnaam, setClubnaam] = useState("");
@@ -296,6 +306,11 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
   const [wachtrij, setWachtrij] = useState<AfficheVelden[]>([]);
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<string | null>(null);
+
+  const dubbels = useMemo(
+    () => vindMogelijkeDubbelsVoorVelden(datum, gemeente, bestaandeToernooien),
+    [datum, gemeente, bestaandeToernooien]
+  );
 
   function resetVelden() {
     setOpenToernooi(false);
@@ -423,6 +438,12 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
 
   return (
     <div className="rounded-[10px] border-[1.5px] border-blauw-3 bg-white p-4">
+      {dubbels.length > 0 && (
+        <div className="mb-3 rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
+          <span className="font-bold">{t.beheer.mogelijkDubbel}</span> —{" "}
+          {dubbels.map((d) => `${d.clubnaam} · ${d.naam_nl}`).join(", ")}
+        </div>
+      )}
       <div className="mb-3 flex flex-col gap-1.5">
         <span className="text-xs font-bold text-donker">{t.form.tornooiType}</span>
         <div className="flex gap-2">
