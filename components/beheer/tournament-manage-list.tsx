@@ -181,45 +181,47 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
                 ) : (
                   <div
                     key={tn.id}
-                    className="group relative grid grid-cols-[56px_1fr_auto] items-center gap-4 overflow-hidden rounded-2xl border-[1.5px] border-rand bg-white p-4 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]"
+                    className="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border-[1.5px] border-rand bg-white p-4 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)] sm:grid sm:grid-cols-[56px_1fr_auto] sm:items-center sm:gap-4"
                   >
                     <span
                       className={`absolute left-0 top-3 h-[calc(100%-24px)] w-1 rounded-full ${CATEGORIE_STREEP[tn.categorie]}`}
                     />
 
-                    <div className="rounded-xl bg-donker px-0.5 py-2 text-center">
-                      <div className="font-body text-[0.58rem] font-bold uppercase tracking-wide text-white/50">
-                        {dagVanWeekKort(tn.datum, taal)}
+                    <div className="flex items-center gap-3 sm:contents">
+                      <div className="w-14 shrink-0 rounded-xl bg-donker px-0.5 py-2 text-center">
+                        <div className="font-body text-[0.58rem] font-bold uppercase tracking-wide text-white/50">
+                          {dagVanWeekKort(tn.datum, taal)}
+                        </div>
+                        <div className="font-titel text-2xl leading-none text-geel">{dagNummer(tn.datum)}</div>
+                        <div className="font-body text-[0.58rem] font-bold uppercase tracking-wider text-white/50">
+                          {maandKort(tn.datum, taal)}
+                        </div>
                       </div>
-                      <div className="font-titel text-2xl leading-none text-geel">{dagNummer(tn.datum)}</div>
-                      <div className="font-body text-[0.58rem] font-bold uppercase tracking-wider text-white/50">
-                        {maandKort(tn.datum, taal)}
-                      </div>
-                    </div>
 
-                    <div className="min-w-0">
-                      <div className="mb-0.5 flex items-center gap-1.5 truncate text-[0.72rem] font-bold uppercase tracking-wide text-blauw-2">
-                        <span className="truncate">{tn.clubnaam}</span>
-                        {tn.open_toernooi && (
-                          <span className="whitespace-nowrap rounded-full bg-[#f0fdfa] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-[#0d9488]">
-                            {t.lijst.openBadge}
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-0.5 flex items-center gap-1.5 truncate text-[0.72rem] font-bold uppercase tracking-wide text-blauw-2">
+                          <span className="truncate">{tn.clubnaam}</span>
+                          {tn.open_toernooi && (
+                            <span className="whitespace-nowrap rounded-full bg-[#f0fdfa] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-[#0d9488]">
+                              {t.lijst.openBadge}
+                            </span>
+                          )}
+                        </div>
+                        <div className="mb-1 truncate text-[0.88rem] font-bold leading-tight text-donker">
+                          {tn.naam_nl}
+                        </div>
+                        <div className="flex flex-wrap gap-3">
+                          <span className="text-[0.74rem] text-grijs">
+                            📍 {tn.gemeente}, {vertaalProvincie(tn.provincie, taal)}
                           </span>
-                        )}
-                      </div>
-                      <div className="mb-1 truncate text-[0.88rem] font-bold leading-tight text-donker">
-                        {tn.naam_nl}
-                      </div>
-                      <div className="flex flex-wrap gap-3">
-                        <span className="text-[0.74rem] text-grijs">
-                          📍 {tn.gemeente}, {vertaalProvincie(tn.provincie, taal)}
-                        </span>
-                        <span className="text-[0.74rem] text-grijs">🕐 {formatUur(tn.uur)}</span>
-                        {tn.finale && <span className="text-[0.74rem] text-grijs">{t.lijst.metFinale}</span>}
+                          <span className="text-[0.74rem] text-grijs">🕐 {formatUur(tn.uur)}</span>
+                          {tn.finale && <span className="text-[0.74rem] text-grijs">{t.lijst.metFinale}</span>}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-end gap-1.5">
-                      <div className="flex gap-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2 sm:flex-col sm:items-end sm:justify-center sm:gap-1.5">
+                      <div className="flex flex-wrap gap-1">
                         <span
                           className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide ${FORMULE_BADGE[tn.formule]}`}
                         >
