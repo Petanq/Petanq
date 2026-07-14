@@ -195,7 +195,11 @@ const nl = {
       "Petanque13 is de centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel. Geen verspreide Facebookposts en clubwebsites meer: alle toernooien op één plaats, per provincie ingedeeld.",
     alinea2:
       "Elk toernooi wordt gecontroleerd door een team vrijwilligers voordat het op de site verschijnt. Organiseer je zelf een toernooi? Meld het gratis aan via het formulier.",
+    alinea3:
+      "Wil je zelf helpen als vrijwilliger? We kunnen altijd extra handen gebruiken om toernooien te controleren — je bent welkom.",
+    vrijwilligerKnop: "Vrijwilliger worden",
     contact: "Vragen of opmerkingen? Mail naar",
+    ofBel: "of bel naar",
   },
   provinciesPagina: {
     titel: "Provincies",
@@ -495,7 +499,11 @@ const fr: typeof nl = {
       "Petanque13 est le calendrier central des tournois de pétanque en Flandre, en Wallonie et à Bruxelles. Fini les posts Facebook et sites de clubs dispersés : tous les tournois au même endroit, classés par province.",
     alinea2:
       "Chaque tournoi est vérifié par une équipe de bénévoles avant d'apparaître sur le site. Vous organisez un tournoi ? Ajoutez-le gratuitement via le formulaire.",
+    alinea3:
+      "Vous voulez nous aider en tant que bénévole ? Nous cherchons toujours des mains supplémentaires pour vérifier les tournois — vous êtes le/la bienvenu(e).",
+    vrijwilligerKnop: "Devenir bénévole",
     contact: "Des questions ou remarques ? Envoyez un e-mail à",
+    ofBel: "ou appelez le",
   },
   provinciesPagina: {
     titel: "Provinces",
