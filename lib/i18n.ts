@@ -304,6 +304,11 @@ const nl = {
     nieuweVrijwilligerAanvragen: "Nieuwe aanvragen",
     geenNieuweVrijwilligerAanvragen: "Geen nieuwe aanvragen.",
     mogelijkDubbel: "Mogelijk dubbel",
+    affichesWachtrij: (n: number) =>
+      n === 1
+        ? "Nog 1 toernooi van deze affiche te verwerken."
+        : `Nog ${n} toernooien van deze affiche te verwerken.`,
+    opslaanEnVolgende: (n: number) => `Opslaan en volgende (${n} nog te gaan)`,
   },
 };
 
@@ -611,6 +616,11 @@ const fr: typeof nl = {
     nieuweVrijwilligerAanvragen: "Nouvelles demandes",
     geenNieuweVrijwilligerAanvragen: "Aucune nouvelle demande.",
     mogelijkDubbel: "Doublon possible",
+    affichesWachtrij: (n: number) =>
+      n === 1
+        ? "Encore 1 tournoi de cette affiche a traiter."
+        : `Encore ${n} tournois de cette affiche a traiter.`,
+    opslaanEnVolgende: (n: number) => `Enregistrer et suivant (${n} restants)`,
   },
 };
 

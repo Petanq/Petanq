@@ -110,9 +110,11 @@ export function TournamentForm() {
 
     setAiBezig(true);
     const base64 = await bestandNaarBase64(verwerkt);
-    const velden = await afficheAnalyseren(base64, verwerkt.type);
+    const resultaten = await afficheAnalyseren(base64, verwerkt.type);
     setAiBezig(false);
-    if (velden) vulVeldenInVanAffiche(velden);
+    // Als de affiche meerdere toernooien toont (bv. kwalificaties + finale),
+    // vult dit formulier enkel het eerste in — de rest dient de indiener apart in.
+    if (resultaten && resultaten.length > 0) vulVeldenInVanAffiche(resultaten[0]);
   }
 
   async function versturen(e: React.FormEvent) {

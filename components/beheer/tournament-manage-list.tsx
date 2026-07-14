@@ -288,8 +288,34 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
   const [afficheFout, setAfficheFout] = useState(false);
   const [aiBezig, setAiBezig] = useState(false);
   const [autoIngevuld, setAutoIngevuld] = useState(false);
+  const [wachtrij, setWachtrij] = useState<AfficheVelden[]>([]);
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<string | null>(null);
+
+  function resetVelden() {
+    setOpenToernooi(false);
+    setClubnaam("");
+    setNaamNl("");
+    setNaamFr("");
+    setDatum("");
+    setUur("");
+    setGemeente("");
+    setAdres("");
+    setProvincie("");
+    setCategorie("");
+    setFormule("");
+    setSpeelvorm("rondes");
+    setAantalRonden("4");
+    setAantalPoules("4");
+    setFinale(false);
+    setContactEmail("");
+    setGratis(false);
+    setInschrijvingsprijs("");
+    setMaxPloegen("");
+    setLinkInschrijving("");
+    setOpmerking("");
+    setAutoIngevuld(false);
+  }
 
   function vulVeldenInVanAffiche(velden: AfficheVelden) {
     if (velden.datum) setDatum(velden.datum);
@@ -338,9 +364,14 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
 
     setAiBezig(true);
     const base64 = await bestandNaarBase64(verwerkt);
-    const velden = await afficheAnalyseren(base64, verwerkt.type);
+    const resultaten = await afficheAnalyseren(base64, verwerkt.type);
     setAiBezig(false);
-    if (velden) vulVeldenInVanAffiche(velden);
+    if (resultaten && resultaten.length > 0) {
+      vulVeldenInVanAffiche(resultaten[0]);
+      // Sommige affiches tonen meerdere speeldata (kwalificaties + finale, of
+      // meerdere dagen) — die verwerken we één voor één na elkaar opslaan.
+      setWachtrij(resultaten.slice(1));
+    }
   }
 
   async function toevoegen() {
@@ -371,11 +402,18 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
       finale,
     });
     setBezig(false);
-    if (resultaat.succes) {
-      onKlaar();
-    } else {
+    if (!resultaat.succes) {
       setFout(resultaat.fout);
+      return;
     }
+    if (wachtrij.length > 0) {
+      const [volgende, ...rest] = wachtrij;
+      resetVelden();
+      vulVeldenInVanAffiche(volgende);
+      setWachtrij(rest);
+      return;
+    }
+    onKlaar();
   }
 
   return (
@@ -621,6 +659,11 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
         {autoIngevuld && !aiBezig && (
           <p className="text-xs font-semibold text-groen">{t.form.afficheAutoIngevuld}</p>
         )}
+        {wachtrij.length > 0 && (
+          <p className="text-xs font-semibold text-[#b8860b]">
+            {t.beheer.affichesWachtrij(wachtrij.length)}
+          </p>
+        )}
       </div>
 
       {fout && (
@@ -646,7 +689,7 @@ function AddForm({ onKlaar, onAnnuleren }: { onKlaar: () => void; onAnnuleren: (
           }
           className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
         >
-          {t.beheer.opslaan}
+          {wachtrij.length > 0 ? t.beheer.opslaanEnVolgende(wachtrij.length) : t.beheer.opslaan}
         </button>
         <button
           onClick={onAnnuleren}
