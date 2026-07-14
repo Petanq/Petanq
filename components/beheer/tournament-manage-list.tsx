@@ -47,7 +47,12 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
   }
 
   const maandSleutels = useMemo(() => {
-    const sleutels = new Set(toernooien.map((tn) => maandJaarKey(tn.datum)));
+    // Enkel maanden met nog aankomende toernooien tonen als filterknop — een
+    // maand die volledig achter de rug is, hoeft niemand nog te doorzoeken.
+    const vandaag = new Date().toISOString().slice(0, 10);
+    const sleutels = new Set(
+      toernooien.filter((tn) => tn.datum >= vandaag).map((tn) => maandJaarKey(tn.datum))
+    );
     return Array.from(sleutels).sort();
   }, [toernooien]);
 
