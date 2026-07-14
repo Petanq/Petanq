@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
+const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
 export async function maakKorteLink(doelLink: string): Promise<string> {
   const serviceClient = createServiceRoleClient();

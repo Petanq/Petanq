@@ -120,7 +120,7 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
         </div>
 
         <a
-          href={`mailto:info@petanq.be?subject=${encodeURIComponent(
+          href={`mailto:info@petanque13.be?subject=${encodeURIComponent(
             `Melding fout bij toernooi: ${naam}`
           )}`}
           className="mt-4 inline-block text-xs font-semibold text-grijs underline hover:text-donker"

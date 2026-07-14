@@ -20,8 +20,8 @@ export function OverOnsContent() {
       <p className="mb-6 text-sm leading-relaxed text-donker">{t.overOnsPagina.alinea2}</p>
       <p className="text-sm text-grijs">
         {t.overOnsPagina.contact}{" "}
-        <a href="mailto:info@petanq.be" className="text-rood hover:underline">
-          info@petanq.be
+        <a href="mailto:info@petanque13.be" className="text-rood hover:underline">
+          info@petanque13.be
         </a>
       </p>
     </div>

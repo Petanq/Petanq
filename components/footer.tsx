@@ -16,7 +16,7 @@ export function Footer() {
       />
       <span>
         {t.footer.tekst}{" "}
-        <a href="mailto:info@petanq.be" className="text-rood no-underline hover:underline">
+        <a href="mailto:info@petanque13.be" className="text-rood no-underline hover:underline">
           {t.footer.link}
         </a>
       </span>

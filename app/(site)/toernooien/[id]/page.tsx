@@ -27,7 +27,7 @@ export default async function ToernooiDetailPagina({ params }: Props) {
   const toernooi = await getToernooiById(params.id);
   if (!toernooi) notFound();
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
   const startDatum = `${toernooi.datum}T${toernooi.uur}:00+02:00`;
 
   const jsonLd = {

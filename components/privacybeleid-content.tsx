@@ -10,7 +10,7 @@ const inhoud = {
       {
         kop: "1. Wie is verantwoordelijk voor je gegevens?",
         alineas: [
-          "Petanque13 is een vrijwilligersinitiatief dat een centrale toernooikalender voor petanque in België aanbiedt. Voor vragen over dit privacybeleid of je persoonsgegevens kan je terecht op info@petanq.be.",
+          "Petanque13 is een vrijwilligersinitiatief dat een centrale toernooikalender voor petanque in België aanbiedt. Voor vragen over dit privacybeleid of je persoonsgegevens kan je terecht op info@petanque13.be.",
         ],
       },
       {
@@ -52,7 +52,7 @@ const inhoud = {
       {
         kop: "6. Hoe lang bewaren we je gegevens?",
         alineas: [
-          "Toernooi- en clubgegevens bewaren we zolang ze relevant zijn voor de kalender, of tot je vraagt om ze te verwijderen. Nieuwsbriefgegevens bewaren we tot je je uitschrijft. Je kan altijd vragen om je gegevens te laten verwijderen via info@petanq.be.",
+          "Toernooi- en clubgegevens bewaren we zolang ze relevant zijn voor de kalender, of tot je vraagt om ze te verwijderen. Nieuwsbriefgegevens bewaren we tot je je uitschrijft. Je kan altijd vragen om je gegevens te laten verwijderen via info@petanque13.be.",
         ],
       },
       {
@@ -64,7 +64,7 @@ const inhoud = {
       {
         kop: "8. Jouw rechten",
         alineas: [
-          "Je hebt steeds het recht om je gegevens in te kijken, te laten verbeteren of verwijderen, de verwerking ervan te beperken, je gegevens over te laten dragen, of je toestemming (bv. voor de nieuwsbrief) in te trekken. Neem hiervoor contact op via info@petanq.be. Je kan ook een klacht indienen bij de Belgische Gegevensbeschermingsautoriteit (www.gegevensbeschermingsautoriteit.be).",
+          "Je hebt steeds het recht om je gegevens in te kijken, te laten verbeteren of verwijderen, de verwerking ervan te beperken, je gegevens over te laten dragen, of je toestemming (bv. voor de nieuwsbrief) in te trekken. Neem hiervoor contact op via info@petanque13.be. Je kan ook een klacht indienen bij de Belgische Gegevensbeschermingsautoriteit (www.gegevensbeschermingsautoriteit.be).",
         ],
       },
     ],
@@ -78,7 +78,7 @@ const inhoud = {
       {
         kop: "1. Qui est responsable de vos données ?",
         alineas: [
-          "Petanque13 est une initiative bénévole qui propose un calendrier central des tournois de pétanque en Belgique. Pour toute question concernant cette politique de confidentialité ou vos données personnelles, contactez info@petanq.be.",
+          "Petanque13 est une initiative bénévole qui propose un calendrier central des tournois de pétanque en Belgique. Pour toute question concernant cette politique de confidentialité ou vos données personnelles, contactez info@petanque13.be.",
         ],
       },
       {
@@ -120,7 +120,7 @@ const inhoud = {
       {
         kop: "6. Combien de temps conservons-nous vos données ?",
         alineas: [
-          "Les données de tournois et de clubs sont conservées tant qu'elles sont pertinentes pour le calendrier, ou jusqu'à ce que vous demandiez leur suppression. Les données de la newsletter sont conservées jusqu'à votre désinscription. Vous pouvez toujours demander la suppression de vos données via info@petanq.be.",
+          "Les données de tournois et de clubs sont conservées tant qu'elles sont pertinentes pour le calendrier, ou jusqu'à ce que vous demandiez leur suppression. Les données de la newsletter sont conservées jusqu'à votre désinscription. Vous pouvez toujours demander la suppression de vos données via info@petanque13.be.",
         ],
       },
       {
@@ -132,7 +132,7 @@ const inhoud = {
       {
         kop: "8. Vos droits",
         alineas: [
-          "Vous avez le droit de consulter, corriger ou supprimer vos données, d'en limiter le traitement, de demander leur portabilité, ou de retirer votre consentement (par ex. pour la newsletter). Contactez-nous via info@petanq.be. Vous pouvez également déposer une plainte auprès de l'Autorité belge de protection des données (www.autoriteprotectiondonnees.be).",
+          "Vous avez le droit de consulter, corriger ou supprimer vos données, d'en limiter le traitement, de demander leur portabilité, ou de retirer votre consentement (par ex. pour la newsletter). Contactez-nous via info@petanque13.be. Vous pouvez également déposer une plainte auprès de l'Autorité belge de protection des données (www.autoriteprotectiondonnees.be).",
         ],
       },
     ],

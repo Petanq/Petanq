@@ -11,7 +11,7 @@ import {
 
 export type ClubActieResultaat = { succes: true } | { succes: false; fout: string };
 
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
+const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
 export async function clubVoorstellen(
   input: unknown,

@@ -12,7 +12,7 @@ export type UitnodigenResultaat =
   | { succes: true; link: string }
   | { succes: false; fout: string };
 
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
+const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
 // Supabase's eigen action_link laat de browser via een cross-domain omleiding
 // het token in het #-gedeelte van de URL zetten. Sommige in-app browsers

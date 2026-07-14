@@ -15,7 +15,7 @@ import { isModerator } from "@/lib/auth-helpers";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanq.be";
+const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
 async function huidigeModeratorNaam(): Promise<string | null> {
   const supabase = createClient();
