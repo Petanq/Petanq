@@ -63,17 +63,9 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
       const haystack = `${tn.clubnaam} ${tn.gemeente} ${tn.naam_nl} ${tn.naam_fr} ${tn.datum}`.toLowerCase();
       return haystack.includes(zoekTerm);
     })
-    .sort((a, b) => {
-      // Aankomende toernooien eerst (dichtstbijzijnde bovenaan), al afgelopen
-      // toernooien daaronder (meest recente eerst) — zo blijft het overzichtelijk
-      // wat er nog moet komen zonder oude toernooien helemaal te verbergen.
-      const vandaag = new Date().toISOString().slice(0, 10);
-      const aKomt = a.datum >= vandaag;
-      const bKomt = b.datum >= vandaag;
-      if (aKomt !== bKomt) return aKomt ? -1 : 1;
-      const volgorde = (a.datum + a.uur).localeCompare(b.datum + b.uur);
-      return aKomt ? volgorde : -volgorde;
-    });
+    // Binnen een maand altijd gewoon chronologisch oplopend — anders springen de
+    // data's heen en weer zodra eenzelfde maand zowel verleden als toekomst bevat.
+    .sort((a, b) => (a.datum + a.uur).localeCompare(b.datum + b.uur));
 
   const groepen = useMemo(() => {
     const map = new Map<string, Toernooi[]>();
@@ -82,7 +74,15 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
       if (!map.has(sleutel)) map.set(sleutel, []);
       map.get(sleutel)!.push(tn);
     }
-    return Array.from(map.entries());
+    // De maand-secties zelf tonen aankomende maanden eerst (dichtstbijzijnde
+    // bovenaan), al afgelopen maanden daaronder (meest recente eerst).
+    const huidigeMaand = maandJaarKey(new Date().toISOString().slice(0, 10));
+    return Array.from(map.entries()).sort(([a], [b]) => {
+      const aKomt = a >= huidigeMaand;
+      const bKomt = b >= huidigeMaand;
+      if (aKomt !== bKomt) return aKomt ? -1 : 1;
+      return aKomt ? a.localeCompare(b) : b.localeCompare(a);
+    });
   }, [zichtbareToernooien]);
 
   return (
