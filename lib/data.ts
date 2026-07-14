@@ -137,6 +137,58 @@ export async function getBezoekStatistieken(): Promise<BezoekStatistieken> {
   return { totaal, dezeMaand };
 }
 
+export type ToernooiStatistieken = {
+  totaalGoedgekeurd: number;
+  aanvragenDezeMaand: number;
+  goedgekeurdDezeMaand: number;
+  geweigerdDezeMaand: number;
+  actieveClubs: number;
+  perModerator: { naam: string; aantal: number }[];
+};
+
+export async function getToernooiStatistieken(): Promise<ToernooiStatistieken> {
+  const supabase = createServiceRoleClient();
+  const maandStart = new Date();
+  maandStart.setDate(1);
+  maandStart.setHours(0, 0, 0, 0);
+  const maandStartIso = maandStart.toISOString();
+
+  const [totaalRes, aanvragenRes, goedgekeurdRes, geweigerdRes, clubsRes, perModeratorRes] = await Promise.all([
+    supabase.from("toernooien").select("id", { count: "exact", head: true }).eq("status", "goedgekeurd"),
+    supabase.from("toernooien").select("id", { count: "exact", head: true }).gte("aangemaakt_op", maandStartIso),
+    supabase
+      .from("toernooien")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "goedgekeurd")
+      .gte("goedgekeurd_op", maandStartIso),
+    supabase
+      .from("toernooien")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "geweigerd")
+      .gte("goedgekeurd_op", maandStartIso),
+    supabase.from("clubs").select("id", { count: "exact", head: true }).eq("actief", true),
+    supabase.from("toernooien").select("goedgekeurd_door").eq("status", "goedgekeurd").not("goedgekeurd_door", "is", null),
+  ]);
+
+  const tellingen = new Map<string, number>();
+  for (const rij of perModeratorRes.data ?? []) {
+    const naam = (rij as { goedgekeurd_door: string }).goedgekeurd_door;
+    tellingen.set(naam, (tellingen.get(naam) ?? 0) + 1);
+  }
+  const perModerator = Array.from(tellingen.entries())
+    .map(([naam, aantal]) => ({ naam, aantal }))
+    .sort((a, b) => b.aantal - a.aantal);
+
+  return {
+    totaalGoedgekeurd: totaalRes.count ?? 0,
+    aanvragenDezeMaand: aanvragenRes.count ?? 0,
+    goedgekeurdDezeMaand: goedgekeurdRes.count ?? 0,
+    geweigerdDezeMaand: geweigerdRes.count ?? 0,
+    actieveClubs: clubsRes.count ?? 0,
+    perModerator,
+  };
+}
+
 export async function getActieveClubs(): Promise<Club[]> {
   const supabase = createClient();
   const { data, error } = await supabase
