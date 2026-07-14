@@ -196,6 +196,20 @@ export async function getToernooiStatistieken(): Promise<ToernooiStatistieken> {
   };
 }
 
+export async function getAantalActieveModeratoren(): Promise<number> {
+  const supabase = createServiceRoleClient();
+  const { count, error } = await supabase
+    .from("moderatoren")
+    .select("id", { count: "exact", head: true })
+    .eq("goedgekeurd", true);
+
+  if (error) {
+    console.error("Kon aantal moderatoren niet ophalen:", error.message);
+    return 0;
+  }
+  return count ?? 0;
+}
+
 export async function getActieveClubs(): Promise<Club[]> {
   const supabase = createClient();
   const { data, error } = await supabase

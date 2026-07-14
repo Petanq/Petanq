@@ -7,9 +7,10 @@ import { Knop } from "@/components/ui/knop";
 type HeroProps = {
   aantalToernooien: number;
   aantalClubs: number;
+  aantalControleurs: number;
 };
 
-export function Hero({ aantalToernooien, aantalClubs }: HeroProps) {
+export function Hero({ aantalToernooien, aantalClubs, aantalControleurs }: HeroProps) {
   const { t } = useTranslation();
 
   return (
@@ -58,7 +59,7 @@ export function Hero({ aantalToernooien, aantalClubs }: HeroProps) {
             <Stat href="#toernooien" waarde={`${aantalToernooien}+`} label={t.hero.statToernooien} />
             <Stat href="/clubs" waarde={`${aantalClubs}+`} label={t.hero.statClubs} />
             <Stat href="/provincies" waarde="11" label={t.hero.statProvincies} />
-            <Stat href="/over-ons" waarde="8" label={t.hero.statControleurs} />
+            <Stat href="/over-ons" waarde={`${aantalControleurs}`} label={t.hero.statControleurs} />
           </div>
         </div>
       </div>
