@@ -64,6 +64,9 @@ const nl = {
     weergaveLijst: "Lijst",
     weergaveKalender: "Kalender",
     meldFout: "Klopt hier iets niet? Meld het ons →",
+    voegToeAanAgenda: "Voeg toe aan agenda",
+    googleAgenda: "Google Agenda",
+    icsBestand: "Andere agenda (.ics)",
   },
   categorie: {
     heren: "Heren / H/HG",
@@ -368,6 +371,9 @@ const fr: typeof nl = {
     weergaveLijst: "Liste",
     weergaveKalender: "Calendrier",
     meldFout: "Une erreur ici ? Signalez-le nous →",
+    voegToeAanAgenda: "Ajouter a l'agenda",
+    googleAgenda: "Google Agenda",
+    icsBestand: "Autre agenda (.ics)",
   },
   categorie: {
     heren: "Messieurs / H/HG",

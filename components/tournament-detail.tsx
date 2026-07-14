@@ -7,6 +7,7 @@ import { dagVanWeekKort, dagNummer, maandVolledig, formatUur, countdownTekst, pa
 import { vertaalProvincie } from "@/lib/provincies";
 import { CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
 import { Knop } from "@/components/ui/knop";
+import { googleAgendaLink, downloadIcs } from "@/lib/agenda";
 
 export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
   const { t, taal } = useTranslation();
@@ -117,6 +118,24 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
               {toernooi.contact_email}
             </a>
           )}
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+          <span className="font-semibold text-grijs">{t.lijst.voegToeAanAgenda}:</span>
+          <a
+            href={googleAgendaLink(toernooi, naam)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-blauw-2 underline hover:text-donker"
+          >
+            {t.lijst.googleAgenda}
+          </a>
+          <button
+            onClick={() => downloadIcs(toernooi, naam)}
+            className="font-semibold text-blauw-2 underline hover:text-donker"
+          >
+            {t.lijst.icsBestand}
+          </button>
         </div>
 
         <a
