@@ -101,16 +101,16 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
             <div className="flex overflow-hidden rounded-full border border-rand">
               <button
                 onClick={() => setWeergave("lijst")}
-                className={`px-3 py-1.5 text-xs font-bold transition-colors ${
-                  weergave === "lijst" ? "bg-blauw text-white" : "text-grijs hover:bg-licht"
+                className={`px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+                  weergave === "lijst" ? "bg-geel text-donker" : "text-grijs hover:bg-[#fdf3d9] hover:text-[#b8860b]"
                 }`}
               >
                 {t.lijst.weergaveLijst}
               </button>
               <button
                 onClick={() => setWeergave("kalender")}
-                className={`px-3 py-1.5 text-xs font-bold transition-colors ${
-                  weergave === "kalender" ? "bg-blauw text-white" : "text-grijs hover:bg-licht"
+                className={`px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+                  weergave === "kalender" ? "bg-geel text-donker" : "text-grijs hover:bg-[#fdf3d9] hover:text-[#b8860b]"
                 }`}
               >
                 {t.lijst.weergaveKalender}

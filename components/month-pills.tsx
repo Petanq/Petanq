@@ -28,10 +28,10 @@ export function MonthPills({
           <button
             key={sleutel}
             onClick={() => setActieveMaand(sleutel)}
-            className={`rounded-full border-[1.5px] px-3.5 py-[0.3rem] text-[0.75rem] font-semibold transition-colors ${
+            className={`rounded-full border-[1.5px] px-3.5 py-[0.3rem] text-[0.75rem] font-semibold transition-all active:scale-95 ${
               actieveMaand === sleutel
-                ? "border-blauw bg-blauw text-white"
-                : "border-rand bg-white text-grijs hover:border-blauw-3"
+                ? "border-geel bg-geel text-donker shadow-sm"
+                : "border-rand bg-white text-grijs hover:border-geel/60 hover:bg-[#fdf3d9] hover:text-[#b8860b]"
             }`}
           >
             {maandVolledig(maandIndex, taal)}
@@ -41,10 +41,10 @@ export function MonthPills({
       })}
       <button
         onClick={() => setActieveMaand(null)}
-        className={`rounded-full border-[1.5px] px-3.5 py-[0.3rem] text-[0.75rem] font-semibold transition-colors ${
+        className={`rounded-full border-[1.5px] px-3.5 py-[0.3rem] text-[0.75rem] font-semibold transition-all active:scale-95 ${
           actieveMaand === null
-            ? "border-blauw bg-blauw text-white"
-            : "border-rand bg-white text-grijs hover:border-blauw-3"
+            ? "border-geel bg-geel text-donker shadow-sm"
+            : "border-rand bg-white text-grijs hover:border-geel/60 hover:bg-[#fdf3d9] hover:text-[#b8860b]"
         }`}
       >
         {t.lijst.alle}
