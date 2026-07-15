@@ -6,6 +6,7 @@ const nl = {
     toernooien: "Toernooien",
     provincies: "Provincies",
     clubs: "Clubs",
+    reizen: "Petanque-reizen",
     overOns: "Over ons",
     toernooiToevoegen: "+ Toernooi toevoegen",
     login: "Login",
@@ -204,6 +205,18 @@ const nl = {
     contact: "Vragen of opmerkingen? Mail naar",
     ofBel: "of bel naar",
   },
+  reizenPagina: {
+    titel: "Petanque-reizen",
+    intro:
+      "Petanque en vakantie combineren? Petank'Events is de enige Belgische organisator van internationale petanque-reisweken: een week op de Costa Brava, Corsica of zelfs Thailand, met tornooien, coaching van gekende spelers en een verblijf inbegrepen.",
+    uniekeBadge: "Enige Belgische organisator van dit soort petanque-reizen",
+    organisatorLabel: "Organisator",
+    periodeLabel: "Periode",
+    locatieLabel: "Locatie",
+    prijsVanafLabel: "Vanaf",
+    infoKnop: "Meer info & inschrijven",
+    contactTekst: "Interesse of vragen? Contacteer Claudy Weibel rechtstreeks.",
+  },
   provinciesPagina: {
     titel: "Provincies",
     beschrijving: "Klik op een provincie om de clubs daar te bekijken.",
@@ -325,6 +338,7 @@ const fr: typeof nl = {
     toernooien: "Tournois",
     provincies: "Provinces",
     clubs: "Clubs",
+    reizen: "Voyages pétanque",
     overOns: "À propos",
     toernooiToevoegen: "+ Ajouter un tournoi",
     login: "Connexion",
@@ -522,6 +536,18 @@ const fr: typeof nl = {
     vrijwilligerKnop: "Devenir bénévole",
     contact: "Des questions ou remarques ? Envoyez un e-mail à",
     ofBel: "ou appelez le",
+  },
+  reizenPagina: {
+    titel: "Voyages pétanque",
+    intro:
+      "Envie de combiner pétanque et vacances ? Petank'Events est le seul organisateur belge de séjours pétanque internationaux : une semaine sur la Costa Brava, en Corse ou même en Thaïlande, avec concours, coaching par des joueurs reconnus et hébergement inclus.",
+    uniekeBadge: "Seul organisateur belge de ce type de voyages pétanque",
+    organisatorLabel: "Organisateur",
+    periodeLabel: "Période",
+    locatieLabel: "Lieu",
+    prijsVanafLabel: "À partir de",
+    infoKnop: "Plus d'infos & inscription",
+    contactTekst: "Intéressé(e) ou des questions ? Contactez directement Claudy Weibel.",
   },
   provinciesPagina: {
     titel: "Provinces",

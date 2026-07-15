@@ -35,6 +35,9 @@ export function Nav() {
           <Link href="/clubs" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.clubs}
           </Link>
+          <Link href="/petanque-reizen" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
+            {t.nav.reizen}
+          </Link>
           <Link href="/over-ons" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.overOns}
           </Link>
@@ -90,6 +93,13 @@ export function Nav() {
             className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >
             {t.nav.clubs}
+          </Link>
+          <Link
+            href="/petanque-reizen"
+            onClick={() => setMenuOpen(false)}
+            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
+          >
+            {t.nav.reizen}
           </Link>
           <Link
             href="/over-ons"
