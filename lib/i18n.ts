@@ -6,7 +6,7 @@ const nl = {
     toernooien: "Toernooien",
     provincies: "Provincies",
     clubs: "Clubs",
-    reizen: "Petanque-reizen",
+    reizen: "Op reis met Claudy",
     overOns: "Over ons",
     toernooiToevoegen: "+ Toernooi toevoegen",
     login: "Login",
@@ -206,7 +206,7 @@ const nl = {
     ofBel: "of bel naar",
   },
   reizenPagina: {
-    titel: "Petanque-reizen",
+    titel: "Op reis met Claudy Weibel",
     intro:
       "Petanque en vakantie combineren? Ontdek hier internationale petanque-reisweken: een week op de Costa Brava, Corsica of zelfs Thailand, met tornooien, coaching van gekende spelers en een verblijf inbegrepen.",
     organisatorLabel: "Organisator",
@@ -338,7 +338,7 @@ const fr: typeof nl = {
     toernooien: "Tournois",
     provincies: "Provinces",
     clubs: "Clubs",
-    reizen: "Voyages pétanque",
+    reizen: "En voyage avec Claudy",
     overOns: "À propos",
     toernooiToevoegen: "+ Ajouter un tournoi",
     login: "Connexion",
@@ -538,7 +538,7 @@ const fr: typeof nl = {
     ofBel: "ou appelez le",
   },
   reizenPagina: {
-    titel: "Voyages pétanque",
+    titel: "En voyage avec Claudy Weibel",
     intro:
       "Envie de combiner pétanque et vacances ? Découvrez ici des séjours pétanque internationaux : une semaine sur la Costa Brava, en Corse ou même en Thaïlande, avec concours, coaching par des joueurs reconnus et hébergement inclus.",
     organisatorLabel: "Organisateur",
