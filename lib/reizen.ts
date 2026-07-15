@@ -130,4 +130,22 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     link: "mailto:petank.events@gmail.com",
     afficheUrl: "/images/reizen/men-tour.jpg",
   },
+  {
+    id: "open-claudy-weibel-2026",
+    naam: "Open Claudy Weibel",
+    organisatorNl: "Club de Pétanque de Saint-Hubert",
+    organisatorFr: "Club de Pétanque de Saint-Hubert",
+    periodeNl: "Zondag 2 augustus 2026",
+    periodeFr: "Dimanche 2 août 2026",
+    locatieNl: "Saint-Hubert (Luxemburg)",
+    locatieFr: "Saint-Hubert (Luxembourg)",
+    prijsVanafNl: "€ 10 per speler",
+    prijsVanafFr: "€ 10 par joueur",
+    beschrijvingNl:
+      "Het eendaags toernooi waar het allemaal begon voor Claudy: triplette, 5 tours, open voor iedereen (licentiehouders en niet-licentiehouders), beperkt tot 40 ploegen.",
+    beschrijvingFr:
+      "Le tournoi d'un jour où tout a commencé pour Claudy : triplette, 5 tours, ouvert à tous (licenciés et non-licenciés), limité à 40 équipes.",
+    link: "mailto:clubpetanquedesainthubert@gmail.com",
+    afficheUrl: "/images/reizen/open-claudy-weibel.jpg",
+  },
 ];
