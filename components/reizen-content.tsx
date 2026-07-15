@@ -33,7 +33,7 @@ export function ReizenContent() {
         <div className="flex flex-col gap-4">
           {PETANQUE_REIZEN.map((reis) => {
             const email = reis.link.replace("mailto:", "");
-            const affiche = taal === "nl" && reis.afficheUrlNl ? reis.afficheUrlNl : reis.afficheUrl;
+            const affiches = (taal === "nl" && reis.afficheUrlsNl ? reis.afficheUrlsNl : reis.afficheUrls) ?? [];
             return (
               <div
                 key={reis.id}
@@ -44,20 +44,25 @@ export function ReizenContent() {
                 </div>
                 <h2 className="mb-3 font-titel text-xl tracking-wide text-donker">{reis.naam}</h2>
 
-                {affiche && (
-                  <button
-                    type="button"
-                    onClick={() => setGeopendeAffiche({ url: affiche, alt: reis.naam })}
-                    className="group mb-4 inline-block cursor-zoom-in rounded-lg border-[3px] border-white bg-white shadow-[0_4px_20px_rgba(11,31,58,0.18)] ring-1 ring-rand transition-transform hover:-translate-y-0.5"
-                  >
-                    <Image
-                      src={affiche}
-                      alt={reis.naam}
-                      width={800}
-                      height={1130}
-                      className="h-auto w-full max-w-xs rounded-[5px] object-contain"
-                    />
-                  </button>
+                {affiches.length > 0 && (
+                  <div className="mb-4 flex flex-wrap gap-3">
+                    {affiches.map((affiche, i) => (
+                      <button
+                        key={affiche}
+                        type="button"
+                        onClick={() => setGeopendeAffiche({ url: affiche, alt: `${reis.naam} (${i + 1}/${affiches.length})` })}
+                        className="group inline-block cursor-zoom-in rounded-lg border-[3px] border-white bg-white shadow-[0_4px_20px_rgba(11,31,58,0.18)] ring-1 ring-rand transition-transform hover:-translate-y-0.5"
+                      >
+                        <Image
+                          src={affiche}
+                          alt={`${reis.naam} (${i + 1}/${affiches.length})`}
+                          width={800}
+                          height={1130}
+                          className="h-auto w-full max-w-[9.5rem] rounded-[5px] object-contain sm:max-w-[11rem]"
+                        />
+                      </button>
+                    ))}
+                  </div>
                 )}
 
                 <p className="mb-3 text-sm leading-relaxed text-grijs">

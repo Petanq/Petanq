@@ -12,11 +12,11 @@ export type PetanqueReis = {
   beschrijvingNl: string;
   beschrijvingFr: string;
   link: string;
-  // Pad naar de affiche in /public/images/reizen. afficheUrl is de standaard
-  // (meestal de Franse versie); afficheUrlNl overschrijft die enkel als er
-  // ook echt een aparte Nederlandse affiche bestaat.
-  afficheUrl?: string;
-  afficheUrlNl?: string;
+  // Paden naar de affichepagina's in /public/images/reizen (meestal 2: voorkant
+  // + prijzen/details). afficheUrls is de standaard (meestal Frans);
+  // afficheUrlsNl overschrijft die enkel als er ook een NL-versie bestaat.
+  afficheUrls?: string[];
+  afficheUrlsNl?: string[];
 };
 
 // Manueel bijgehouden lijst — Claudy Weibel (Petank'Events) en partners sturen
@@ -39,8 +39,11 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "13 jours en Thaïlande avec visite du Mondial de Pétanque à Khon Kaen, culture, temples, tuk-tuk et gastronomie locale. Extensions possibles vers Pattaya ou Chiang Mai.",
     link: "mailto:mondialpetanque2026@outlook.com",
-    afficheUrl: "/images/reizen/thailande-jamain-voyages.jpg",
-    afficheUrlNl: "/images/reizen/thailande-jamain-voyages-nl.png",
+    afficheUrls: ["/images/reizen/thailande-jamain-voyages.jpg", "/images/reizen/thailande-jamain-voyages-2.jpg"],
+    afficheUrlsNl: [
+      "/images/reizen/thailande-jamain-voyages-nl.png",
+      "/images/reizen/thailande-jamain-voyages-nl-2.png",
+    ],
   },
   {
     id: "combat-des-teams-2026",
@@ -58,7 +61,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Choisissez votre équipe favorite (France, Belgique, Internationale ou Corso-Marseillaise) et jouez pendant trois jours aux côtés de champions reconnus.",
     link: "mailto:petank.events@gmail.com",
-    afficheUrl: "/images/reizen/combat-des-teams.jpg",
+    afficheUrls: ["/images/reizen/combat-des-teams.jpg", "/images/reizen/combat-des-teams-2.jpg"],
   },
   {
     id: "champions-family-corsica-2026",
@@ -76,7 +79,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Séjour pétanque festif au bord de mer en Corse, avec des concours quotidiens et l'assurance de jouer au moins une fois avec un champion.",
     link: "mailto:petank.events@gmail.com",
-    afficheUrl: "/images/reizen/champions-family.jpg",
+    afficheUrls: ["/images/reizen/champions-family.jpg", "/images/reizen/champions-family-2.jpg"],
   },
   {
     id: "the-warrior-2027",
@@ -94,7 +97,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Stage de pétanque par équipes : 4 tribus s'affrontent pendant 3 jours pour remporter le totem final, encadrées par des joueurs français reconnus.",
     link: "mailto:petank.events@gmail.com",
-    afficheUrl: "/images/reizen/the-warrior.jpg",
+    afficheUrls: ["/images/reizen/the-warrior.jpg", "/images/reizen/the-warrior-2.jpg"],
   },
   {
     id: "women-tour-2027",
@@ -112,7 +115,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Tournoi de pétanque exclusivement féminin, avec 9 000 € de prix, un classement individuel et un séjour en hôtel 4 étoiles.",
     link: "mailto:petank.events@gmail.com",
-    afficheUrl: "/images/reizen/women-tour.jpg",
+    afficheUrls: ["/images/reizen/women-tour.jpg", "/images/reizen/women-tour-2.jpg"],
   },
   {
     id: "men-tour-2027",
@@ -130,7 +133,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Première édition du tournoi masculin, organisé en parallèle du Women Tour, avec 9 000 € de prix et une place pour tous les niveaux.",
     link: "mailto:petank.events@gmail.com",
-    afficheUrl: "/images/reizen/men-tour.jpg",
+    afficheUrls: ["/images/reizen/men-tour.jpg", "/images/reizen/men-tour-2.jpg"],
   },
   {
     id: "thailande-travel-claudy-2027",
@@ -148,7 +151,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "15 jours en Thaïlande à Rawai (Phuket), avec Claudy comme guide : stage de pétanque avec un champion thaïlandais, scooter, tuk-tuk, marché de nuit, balade en bateau et pool party. Des vacances entre amis, pas un séjour tour operator.",
     link: "mailto:petank.events@gmail.com",
-    afficheUrl: "/images/reizen/thailande-travel-claudy.jpg",
+    afficheUrls: ["/images/reizen/thailande-travel-claudy.jpg"],
   },
   {
     id: "open-claudy-weibel-2026",
@@ -166,6 +169,6 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Le tournoi d'un jour où tout a commencé pour Claudy : triplette, 5 tours, ouvert à tous (licenciés et non-licenciés), limité à 40 équipes.",
     link: "mailto:clubpetanquedesainthubert@gmail.com",
-    afficheUrl: "/images/reizen/open-claudy-weibel.jpg",
+    afficheUrls: ["/images/reizen/open-claudy-weibel.jpg"],
   },
 ];
