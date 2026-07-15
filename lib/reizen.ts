@@ -12,6 +12,10 @@ export type PetanqueReis = {
   beschrijvingNl: string;
   beschrijvingFr: string;
   link: string;
+  // Pad naar de affiche in /public/images/reizen — nog toe te voegen zodra
+  // Frederic de effectieve afbeeldingsbestanden doorstuurt (niet enkel een
+  // in de chat geplakte screenshot, die hier niet automatisch opgeslagen wordt).
+  afficheUrl?: string;
 };
 
 // Manueel bijgehouden lijst — Claudy Weibel (Petank'Events) en partners sturen

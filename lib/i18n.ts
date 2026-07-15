@@ -208,13 +208,13 @@ const nl = {
   reizenPagina: {
     titel: "Petanque-reizen",
     intro:
-      "Petanque en vakantie combineren? Petank'Events is de enige Belgische organisator van internationale petanque-reisweken: een week op de Costa Brava, Corsica of zelfs Thailand, met tornooien, coaching van gekende spelers en een verblijf inbegrepen.",
-    uniekeBadge: "Enige Belgische organisator van dit soort petanque-reizen",
+      "Petanque en vakantie combineren? Ontdek hier internationale petanque-reisweken: een week op de Costa Brava, Corsica of zelfs Thailand, met tornooien, coaching van gekende spelers en een verblijf inbegrepen.",
     organisatorLabel: "Organisator",
     periodeLabel: "Periode",
     locatieLabel: "Locatie",
     prijsVanafLabel: "Vanaf",
     infoKnop: "Meer info & inschrijven",
+    mailKnop: "Mail naar",
     contactTekst: "Interesse of vragen? Contacteer Claudy Weibel rechtstreeks.",
   },
   provinciesPagina: {
@@ -540,13 +540,13 @@ const fr: typeof nl = {
   reizenPagina: {
     titel: "Voyages pétanque",
     intro:
-      "Envie de combiner pétanque et vacances ? Petank'Events est le seul organisateur belge de séjours pétanque internationaux : une semaine sur la Costa Brava, en Corse ou même en Thaïlande, avec concours, coaching par des joueurs reconnus et hébergement inclus.",
-    uniekeBadge: "Seul organisateur belge de ce type de voyages pétanque",
+      "Envie de combiner pétanque et vacances ? Découvrez ici des séjours pétanque internationaux : une semaine sur la Costa Brava, en Corse ou même en Thaïlande, avec concours, coaching par des joueurs reconnus et hébergement inclus.",
     organisatorLabel: "Organisateur",
     periodeLabel: "Période",
     locatieLabel: "Lieu",
     prijsVanafLabel: "À partir de",
     infoKnop: "Plus d'infos & inscription",
+    mailKnop: "Envoyer un e-mail à",
     contactTekst: "Intéressé(e) ou des questions ? Contactez directement Claudy Weibel.",
   },
   provinciesPagina: {
