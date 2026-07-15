@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { useTranslation } from "@/lib/language-context";
 import { PETANQUE_REIZEN } from "@/lib/reizen";
 
 export function ReizenContent() {
   const { t, taal } = useTranslation();
+  const [geopendeAffiche, setGeopendeAffiche] = useState<{ url: string; alt: string } | null>(null);
 
   return (
     <div>
@@ -43,7 +45,11 @@ export function ReizenContent() {
                 <h2 className="mb-3 font-titel text-xl tracking-wide text-donker">{reis.naam}</h2>
 
                 {affiche && (
-                  <div className="mb-4 inline-block rounded-lg border-[3px] border-white bg-white shadow-[0_4px_20px_rgba(11,31,58,0.18)] ring-1 ring-rand">
+                  <button
+                    type="button"
+                    onClick={() => setGeopendeAffiche({ url: affiche, alt: reis.naam })}
+                    className="group mb-4 inline-block cursor-zoom-in rounded-lg border-[3px] border-white bg-white shadow-[0_4px_20px_rgba(11,31,58,0.18)] ring-1 ring-rand transition-transform hover:-translate-y-0.5"
+                  >
                     <Image
                       src={affiche}
                       alt={reis.naam}
@@ -51,7 +57,7 @@ export function ReizenContent() {
                       height={1130}
                       className="h-auto w-full max-w-xs rounded-[5px] object-contain"
                     />
-                  </div>
+                  </button>
                 )}
 
                 <p className="mb-3 text-sm leading-relaxed text-grijs">
@@ -91,6 +97,29 @@ export function ReizenContent() {
 
         <p className="mt-8 text-sm text-grijs">{t.reizenPagina.contactTekst}</p>
       </div>
+
+      {geopendeAffiche && (
+        <div
+          onClick={() => setGeopendeAffiche(null)}
+          className="fixed inset-0 z-[400] flex cursor-zoom-out items-center justify-center bg-donker/90 p-6"
+        >
+          <button
+            type="button"
+            onClick={() => setGeopendeAffiche(null)}
+            aria-label="Sluiten"
+            className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white transition-colors hover:bg-white/20"
+          >
+            ×
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={geopendeAffiche.url}
+            alt={geopendeAffiche.alt}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[90vh] max-w-full cursor-default rounded-lg object-contain shadow-2xl"
+          />
+        </div>
+      )}
     </div>
   );
 }
