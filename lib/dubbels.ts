@@ -1,5 +1,14 @@
 import { Toernooi } from "@/lib/types";
 
+// "Flémalle" en "FLEMALLE" verwijzen naar dezelfde gemeente, maar blijven na
+// .toLowerCase() alleen nog verschillende strings door het accent. Accenten
+// wegnemen voorkomt dat zo'n schrijfvariant een echte dubbel laat ontsnappen.
+const DIAKRITISCHE_TEKENS = new RegExp("[\\u0300-\\u036f]", "g");
+
+function normaliseer(tekst: string): string {
+  return tekst.trim().toLowerCase().normalize("NFD").replace(DIAKRITISCHE_TEKENS, "");
+}
+
 // Mensen die hetzelfde toernooi indienen, typen de clubnaam/toernooinaam zelden
 // exact hetzelfde (andere schrijfwijze, hoofdletters, afkortingen...). Dezelfde
 // datum + gemeente is een veel betrouwbaardere aanwijzing dat het om hetzelfde
@@ -17,8 +26,8 @@ export function vindMogelijkeDubbelsVoorVelden(
   eigenId?: string
 ): Toernooi[] {
   if (!datum || !gemeente.trim()) return [];
-  const gemeenteNorm = gemeente.trim().toLowerCase();
+  const gemeenteNorm = normaliseer(gemeente);
   return alleAndere.filter(
-    (t) => t.id !== eigenId && t.datum === datum && t.gemeente.trim().toLowerCase() === gemeenteNorm
+    (t) => t.id !== eigenId && t.datum === datum && normaliseer(t.gemeente) === gemeenteNorm
   );
 }
