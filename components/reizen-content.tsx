@@ -45,23 +45,36 @@ export function ReizenContent() {
                 <h2 className="mb-3 font-titel text-xl tracking-wide text-donker">{reis.naam}</h2>
 
                 {affiches.length > 0 && (
-                  <div className="mb-4 flex flex-wrap gap-3">
-                    {affiches.map((affiche, i) => (
-                      <button
-                        key={affiche}
-                        type="button"
-                        onClick={() => setGeopendeAffiche({ url: affiche, alt: `${reis.naam} (${i + 1}/${affiches.length})` })}
-                        className="group inline-block cursor-zoom-in rounded-lg border-[3px] border-white bg-white shadow-[0_4px_20px_rgba(11,31,58,0.18)] ring-1 ring-rand transition-transform hover:-translate-y-0.5"
-                      >
-                        <Image
-                          src={affiche}
-                          alt={`${reis.naam} (${i + 1}/${affiches.length})`}
-                          width={800}
-                          height={1130}
-                          className="h-auto w-full max-w-[9.5rem] rounded-[5px] object-contain sm:max-w-[11rem]"
-                        />
-                      </button>
-                    ))}
+                  <div className="relative mb-4 overflow-hidden rounded-lg bg-licht">
+                    <div
+                      className="pointer-events-none absolute inset-0 opacity-[0.06]"
+                      style={{
+                        backgroundImage: "url('/images/logo-icon.png')",
+                        backgroundSize: "150px",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "center",
+                      }}
+                    />
+                    <div className="relative flex flex-wrap justify-center gap-3 p-4">
+                      {affiches.map((affiche, i) => (
+                        <button
+                          key={affiche}
+                          type="button"
+                          onClick={() =>
+                            setGeopendeAffiche({ url: affiche, alt: `${reis.naam} (${i + 1}/${affiches.length})` })
+                          }
+                          className="group inline-block cursor-zoom-in rounded-lg border-[3px] border-white bg-white shadow-[0_4px_20px_rgba(11,31,58,0.18)] ring-1 ring-rand transition-transform hover:-translate-y-0.5"
+                        >
+                          <Image
+                            src={affiche}
+                            alt={`${reis.naam} (${i + 1}/${affiches.length})`}
+                            width={800}
+                            height={1130}
+                            className="h-auto w-full max-w-[9.5rem] rounded-[5px] object-contain sm:max-w-[11rem]"
+                          />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
 
