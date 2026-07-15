@@ -72,10 +72,10 @@ export function ModeratorManageList({
     return (
       <div
         key={mod.id}
-        className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-3.5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]"
+        className="flex flex-col gap-3 rounded-[10px] border-[1.5px] border-rand bg-white p-3.5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]"
       >
-        <div>
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="font-bold text-donker">{mod.naam}</span>
             {mod.user_id === huidigUserId && (
               <span className="rounded-full bg-[#eff6ff] px-2 py-0.5 text-[0.65rem] font-bold text-blauw-2">
@@ -99,31 +99,41 @@ export function ModeratorManageList({
               </span>
             )}
           </div>
-          <div className="text-sm text-grijs">
-            {mod.email}
-            {mod.provincie && <> · {vertaalProvincie(mod.provincie, taal)}</>}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-sm text-grijs">{mod.email}</span>
+            {mod.provincie ? (
+              <span className="rounded-full bg-[#eff6ff] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-blauw-2">
+                📍 {vertaalProvincie(mod.provincie, taal)}
+              </span>
+            ) : (
+              mod.rol !== "admin" && (
+                <span className="rounded-full bg-[#fef2f2] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-rood-2">
+                  {t.beheer.geenProvincie}
+                </span>
+              )
+            )}
             {mod.rol !== "admin" && mod.mag_heel_belgie && (
-              <span className="ml-1.5 rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.65rem] font-bold text-[#b8860b]">
-                {t.beheer.magHeelBelgie}
+              <span className="rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[#b8860b]">
+                🇧🇪 {t.beheer.magHeelBelgie}
               </span>
             )}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {mod.goedgekeurd ? (
             <>
               {isAdmin && mod.rol !== "admin" && (
                 <button
                   onClick={() => regioToegangWijzigen(mod)}
                   disabled={bezig === mod.id}
-                  className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97] disabled:opacity-60"
+                  className="whitespace-nowrap rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97] disabled:opacity-60"
                 >
                   {mod.mag_heel_belgie ? t.beheer.beperkTotEigenProvincie : t.beheer.geefHeelBelgieToegang}
                 </button>
               )}
               <button
                 onClick={() => setBewerkId(mod.id)}
-                className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+                className="whitespace-nowrap rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
               >
                 {t.beheer.bewerken}
               </button>
@@ -131,7 +141,7 @@ export function ModeratorManageList({
                 <button
                   onClick={() => verwijderen(mod)}
                   disabled={bezig === mod.id}
-                  className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+                  className="whitespace-nowrap rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
                 >
                   {t.beheer.verwijderen}
                 </button>
