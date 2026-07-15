@@ -38,6 +38,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "13 jours en Thaïlande avec visite du Mondial de Pétanque à Khon Kaen, culture, temples, tuk-tuk et gastronomie locale. Extensions possibles vers Pattaya ou Chiang Mai.",
     link: "mailto:mondialpetanque2026@outlook.com",
+    afficheUrl: "/images/reizen/thailande-jamain-voyages.jpg",
   },
   {
     id: "combat-des-teams-2026",
@@ -55,6 +56,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Choisissez votre équipe favorite (France, Belgique, Internationale ou Corso-Marseillaise) et jouez pendant trois jours aux côtés de champions reconnus.",
     link: "mailto:petank.events@gmail.com",
+    afficheUrl: "/images/reizen/combat-des-teams.jpg",
   },
   {
     id: "champions-family-corsica-2026",
@@ -72,6 +74,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Séjour pétanque festif au bord de mer en Corse, avec des concours quotidiens et l'assurance de jouer au moins une fois avec un champion.",
     link: "mailto:petank.events@gmail.com",
+    afficheUrl: "/images/reizen/champions-family.jpg",
   },
   {
     id: "the-warrior-2027",
@@ -89,6 +92,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Stage de pétanque par équipes : 4 tribus s'affrontent pendant 3 jours pour remporter le totem final, encadrées par des joueurs français reconnus.",
     link: "mailto:petank.events@gmail.com",
+    afficheUrl: "/images/reizen/the-warrior.jpg",
   },
   {
     id: "women-tour-2027",
@@ -106,6 +110,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Tournoi de pétanque exclusivement féminin, avec 9 000 € de prix, un classement individuel et un séjour en hôtel 4 étoiles.",
     link: "mailto:petank.events@gmail.com",
+    afficheUrl: "/images/reizen/women-tour.jpg",
   },
   {
     id: "men-tour-2027",
@@ -123,5 +128,6 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     beschrijvingFr:
       "Première édition du tournoi masculin, organisé en parallèle du Women Tour, avec 9 000 € de prix et une place pour tous les niveaux.",
     link: "mailto:petank.events@gmail.com",
+    afficheUrl: "/images/reizen/men-tour.jpg",
   },
 ];
