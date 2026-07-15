@@ -8,70 +8,89 @@ export function ReizenContent() {
   const { t, taal } = useTranslation();
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16 lg:px-10">
-      <h1 className="mb-4 font-titel text-4xl tracking-wide text-blauw">{t.reizenPagina.titel}</h1>
-      <p className="mb-10 max-w-2xl text-sm leading-relaxed text-donker">{t.reizenPagina.intro}</p>
-
-      <div className="flex flex-col gap-4">
-        {PETANQUE_REIZEN.map((reis) => {
-          const email = reis.link.replace("mailto:", "");
-          const affiche = taal === "nl" && reis.afficheUrlNl ? reis.afficheUrlNl : reis.afficheUrl;
-          return (
-            <div
-              key={reis.id}
-              className="rounded-[10px] border-[1.5px] border-rand bg-white p-5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]"
-            >
-              <div className="mb-2 text-xs font-bold uppercase tracking-wide text-blauw-2">
-                {t.reizenPagina.organisatorLabel}: {taal === "fr" ? reis.organisatorFr : reis.organisatorNl}
-              </div>
-              <h2 className="mb-3 font-titel text-xl tracking-wide text-donker">{reis.naam}</h2>
-
-              {affiche && (
-                <Image
-                  src={affiche}
-                  alt={reis.naam}
-                  width={800}
-                  height={1130}
-                  className="mb-3 h-auto w-full max-w-xs rounded-md border border-rand object-contain"
-                />
-              )}
-
-              <p className="mb-3 text-sm leading-relaxed text-grijs">
-                {taal === "fr" ? reis.beschrijvingFr : reis.beschrijvingNl}
-              </p>
-              <dl className="mb-4 grid grid-cols-1 gap-x-6 gap-y-1.5 text-sm sm:grid-cols-3">
-                <div>
-                  <dt className="text-xs font-bold text-donker">{t.reizenPagina.periodeLabel}</dt>
-                  <dd className="text-grijs">{taal === "fr" ? reis.periodeFr : reis.periodeNl}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-bold text-donker">{t.reizenPagina.locatieLabel}</dt>
-                  <dd className="text-grijs">{taal === "fr" ? reis.locatieFr : reis.locatieNl}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-bold text-donker">{t.reizenPagina.prijsVanafLabel}</dt>
-                  <dd className="font-semibold text-[#b8860b]">
-                    {taal === "fr" ? reis.prijsVanafFr : reis.prijsVanafNl}
-                  </dd>
-                </div>
-              </dl>
-              <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href={reis.link}
-                  className="inline-flex items-center gap-2 rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white transition-all hover:bg-blauw-2 active:scale-[0.97]"
-                >
-                  {t.reizenPagina.infoKnop} →
-                </a>
-                <a href={reis.link} className="text-sm text-grijs underline hover:text-blauw">
-                  {t.reizenPagina.mailKnop} {email}
-                </a>
-              </div>
-            </div>
-          );
-        })}
+    <div>
+      <div className="relative overflow-hidden bg-blauw">
+        <div
+          className="animatie-inzoomen pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            backgroundImage: "url('/images/reizen/claudy-hero.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center 30%",
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-blauw via-blauw/80 to-blauw/40" />
+        <div className="relative z-[2] mx-auto max-w-4xl px-6 py-20 lg:px-10">
+          <h1 className="mb-4 font-titel text-4xl tracking-wide text-white sm:text-5xl">
+            {t.reizenPagina.titel}
+          </h1>
+          <p className="max-w-2xl text-sm leading-relaxed text-white/75">{t.reizenPagina.intro}</p>
+        </div>
       </div>
 
-      <p className="mt-8 text-sm text-grijs">{t.reizenPagina.contactTekst}</p>
+      <div className="mx-auto max-w-4xl px-6 py-12 lg:px-10">
+        <div className="flex flex-col gap-4">
+          {PETANQUE_REIZEN.map((reis) => {
+            const email = reis.link.replace("mailto:", "");
+            const affiche = taal === "nl" && reis.afficheUrlNl ? reis.afficheUrlNl : reis.afficheUrl;
+            return (
+              <div
+                key={reis.id}
+                className="rounded-[10px] border-[1.5px] border-rand bg-white p-5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)]"
+              >
+                <div className="mb-2 text-xs font-bold uppercase tracking-wide text-blauw-2">
+                  {t.reizenPagina.organisatorLabel}: {taal === "fr" ? reis.organisatorFr : reis.organisatorNl}
+                </div>
+                <h2 className="mb-3 font-titel text-xl tracking-wide text-donker">{reis.naam}</h2>
+
+                {affiche && (
+                  <div className="mb-4 inline-block rounded-lg border-[3px] border-white bg-white shadow-[0_4px_20px_rgba(11,31,58,0.18)] ring-1 ring-rand">
+                    <Image
+                      src={affiche}
+                      alt={reis.naam}
+                      width={800}
+                      height={1130}
+                      className="h-auto w-full max-w-xs rounded-[5px] object-contain"
+                    />
+                  </div>
+                )}
+
+                <p className="mb-3 text-sm leading-relaxed text-grijs">
+                  {taal === "fr" ? reis.beschrijvingFr : reis.beschrijvingNl}
+                </p>
+                <dl className="mb-4 grid grid-cols-1 gap-x-6 gap-y-1.5 text-sm sm:grid-cols-3">
+                  <div>
+                    <dt className="text-xs font-bold text-donker">{t.reizenPagina.periodeLabel}</dt>
+                    <dd className="text-grijs">{taal === "fr" ? reis.periodeFr : reis.periodeNl}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-bold text-donker">{t.reizenPagina.locatieLabel}</dt>
+                    <dd className="text-grijs">{taal === "fr" ? reis.locatieFr : reis.locatieNl}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-bold text-donker">{t.reizenPagina.prijsVanafLabel}</dt>
+                    <dd className="font-semibold text-[#b8860b]">
+                      {taal === "fr" ? reis.prijsVanafFr : reis.prijsVanafNl}
+                    </dd>
+                  </div>
+                </dl>
+                <div className="flex flex-wrap items-center gap-3">
+                  <a
+                    href={reis.link}
+                    className="inline-flex items-center gap-2 rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white transition-all hover:bg-blauw-2 active:scale-[0.97]"
+                  >
+                    {t.reizenPagina.infoKnop} →
+                  </a>
+                  <a href={reis.link} className="text-sm text-grijs underline hover:text-blauw">
+                    {t.reizenPagina.mailKnop} {email}
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="mt-8 text-sm text-grijs">{t.reizenPagina.contactTekst}</p>
+      </div>
     </div>
   );
 }

@@ -13,3 +13,16 @@ body {
 .veld-input {
   @apply rounded-md border-[1.5px] border-rand bg-white px-3 py-2.5 font-body text-sm text-donker outline-none transition-colors focus:border-blauw-3;
 }
+
+@keyframes langzaam-inzoomen {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+.animatie-inzoomen {
+  animation: langzaam-inzoomen 18s ease-in-out infinite alternate;
+}
