@@ -15,6 +15,7 @@ export function ReizenContent() {
       <div className="flex flex-col gap-4">
         {PETANQUE_REIZEN.map((reis) => {
           const email = reis.link.replace("mailto:", "");
+          const affiche = taal === "nl" && reis.afficheUrlNl ? reis.afficheUrlNl : reis.afficheUrl;
           return (
             <div
               key={reis.id}
@@ -25,9 +26,9 @@ export function ReizenContent() {
               </div>
               <h2 className="mb-3 font-titel text-xl tracking-wide text-donker">{reis.naam}</h2>
 
-              {reis.afficheUrl && (
+              {affiche && (
                 <Image
-                  src={reis.afficheUrl}
+                  src={affiche}
                   alt={reis.naam}
                   width={800}
                   height={1130}

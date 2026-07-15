@@ -12,10 +12,11 @@ export type PetanqueReis = {
   beschrijvingNl: string;
   beschrijvingFr: string;
   link: string;
-  // Pad naar de affiche in /public/images/reizen — nog toe te voegen zodra
-  // Frederic de effectieve afbeeldingsbestanden doorstuurt (niet enkel een
-  // in de chat geplakte screenshot, die hier niet automatisch opgeslagen wordt).
+  // Pad naar de affiche in /public/images/reizen. afficheUrl is de standaard
+  // (meestal de Franse versie); afficheUrlNl overschrijft die enkel als er
+  // ook echt een aparte Nederlandse affiche bestaat.
   afficheUrl?: string;
+  afficheUrlNl?: string;
 };
 
 // Manueel bijgehouden lijst — Claudy Weibel (Petank'Events) en partners sturen
@@ -39,6 +40,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
       "13 jours en Thaïlande avec visite du Mondial de Pétanque à Khon Kaen, culture, temples, tuk-tuk et gastronomie locale. Extensions possibles vers Pattaya ou Chiang Mai.",
     link: "mailto:mondialpetanque2026@outlook.com",
     afficheUrl: "/images/reizen/thailande-jamain-voyages.jpg",
+    afficheUrlNl: "/images/reizen/thailande-jamain-voyages-nl.png",
   },
   {
     id: "combat-des-teams-2026",
