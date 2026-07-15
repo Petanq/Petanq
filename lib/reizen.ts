@@ -131,6 +131,24 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     afficheUrl: "/images/reizen/men-tour.jpg",
   },
   {
+    id: "thailande-travel-claudy-2027",
+    naam: "Thaïlande Travel by Claudy Weibel",
+    organisatorNl: "Claudy Weibel (persoonlijk begeleid)",
+    organisatorFr: "Claudy Weibel (accompagnement personnel)",
+    periodeNl: "26 april - 10 mei 2027",
+    periodeFr: "26 avril - 10 mai 2027",
+    locatieNl: "Rawai, Phuket (Thailand)",
+    locatieFr: "Rawai, Phuket (Thaïlande)",
+    prijsVanafNl: "€ 1.300 solo / € 1.800 per koppel",
+    prijsVanafFr: "€ 1 300 en solo / € 1 800 en couple",
+    beschrijvingNl:
+      "15 dagen Thailand in Rawai (Phuket), met Claudy zelf als gids: petanquestage met een Thaise topspeler, scooterverhuur, tuk-tuk, nachtmarkt, boottocht en pool party. Vakantie tussen vrienden, geen touroperator.",
+    beschrijvingFr:
+      "15 jours en Thaïlande à Rawai (Phuket), avec Claudy comme guide : stage de pétanque avec un champion thaïlandais, scooter, tuk-tuk, marché de nuit, balade en bateau et pool party. Des vacances entre amis, pas un séjour tour operator.",
+    link: "mailto:petank.events@gmail.com",
+    afficheUrl: "/images/reizen/thailande-travel-claudy.jpg",
+  },
+  {
     id: "open-claudy-weibel-2026",
     naam: "Open Claudy Weibel",
     organisatorNl: "Club de Pétanque de Saint-Hubert",
