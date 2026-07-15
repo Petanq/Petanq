@@ -2,21 +2,25 @@
 
 import { useState } from "react";
 import { useTranslation } from "@/lib/language-context";
-import { BezoekStatistieken, ToernooiStatistieken } from "@/lib/data";
+import { BezoekStatistieken, BezoekPerProvincie, ToernooiStatistieken } from "@/lib/data";
+import { Provincie, vertaalProvincie } from "@/lib/provincies";
 
 const MEDAILLES = ["🥇", "🥈", "🥉"];
 
 export function StatistiekenPaneel({
   bezoeken,
+  bezoekenPerProvincie,
   toernooien,
   isAdmin,
 }: {
   bezoeken: BezoekStatistieken;
+  bezoekenPerProvincie: BezoekPerProvincie[];
   toernooien: ToernooiStatistieken;
   isAdmin: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, taal } = useTranslation();
   const [open, setOpen] = useState(false);
+  const maxBezoekProvincie = Math.max(1, ...bezoekenPerProvincie.map((p) => p.aantal));
 
   return (
     <div
@@ -72,6 +76,33 @@ export function StatistiekenPaneel({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {isAdmin && bezoekenPerProvincie.length > 0 && (
+            <div className="border-t border-rand pt-4">
+              <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-donker">
+                {t.beheer.bezoekenPerProvincie}
+              </h3>
+              <div className="flex flex-col gap-1.5">
+                {bezoekenPerProvincie.map((rij) => (
+                  <div key={rij.provincie} className="flex items-center gap-2 text-sm">
+                    <span className="w-28 shrink-0 truncate text-donker">
+                      {rij.provincie === "onbekend"
+                        ? t.beheer.onbekendeLocatie
+                        : vertaalProvincie(rij.provincie as Provincie, taal)}
+                    </span>
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-licht">
+                      <div
+                        className="h-full rounded-full bg-geel"
+                        style={{ width: `${Math.max(4, (rij.aantal / maxBezoekProvincie) * 100)}%` }}
+                      />
+                    </div>
+                    <span className="w-8 shrink-0 text-right font-bold text-[#b8860b]">{rij.aantal}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2 text-xs text-grijs">{t.beheer.bezoekenPerProvincieUitleg}</p>
             </div>
           )}
         </div>

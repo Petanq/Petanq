@@ -1,6 +1,7 @@
 import {
   getInBehandelingToernooien,
   getBezoekStatistieken,
+  getBezoekenPerProvincie,
   getToernooiStatistieken,
   getAlleGoedgekeurdeToernooienVoorBeheer,
   getHuidigeModerator,
@@ -10,15 +11,23 @@ import { PendingList } from "@/components/beheer/pending-list";
 import { StatistiekenPaneel } from "@/components/beheer/statistieken-paneel";
 
 export default async function BeheerDashboardPagina() {
-  const [toernooien, bezoekStatistieken, toernooiStatistieken, goedgekeurdeToernooien, magAdminZien, huidigeModerator] =
-    await Promise.all([
-      getInBehandelingToernooien(),
-      getBezoekStatistieken(),
-      getToernooiStatistieken(),
-      getAlleGoedgekeurdeToernooienVoorBeheer(),
-      isAdmin(),
-      getHuidigeModerator(),
-    ]);
+  const [
+    toernooien,
+    bezoekStatistieken,
+    bezoekenPerProvincie,
+    toernooiStatistieken,
+    goedgekeurdeToernooien,
+    magAdminZien,
+    huidigeModerator,
+  ] = await Promise.all([
+    getInBehandelingToernooien(),
+    getBezoekStatistieken(),
+    getBezoekenPerProvincie(),
+    getToernooiStatistieken(),
+    getAlleGoedgekeurdeToernooienVoorBeheer(),
+    isAdmin(),
+    getHuidigeModerator(),
+  ]);
 
   // Een gewone moderator ziet enkel toernooien uit zijn eigen provincie, tenzij
   // een admin hem toegang tot heel België gaf — zo keurt altijd de juiste
@@ -30,7 +39,12 @@ export default async function BeheerDashboardPagina() {
 
   return (
     <>
-      <StatistiekenPaneel bezoeken={bezoekStatistieken} toernooien={toernooiStatistieken} isAdmin={magAdminZien} />
+      <StatistiekenPaneel
+        bezoeken={bezoekStatistieken}
+        bezoekenPerProvincie={bezoekenPerProvincie}
+        toernooien={toernooiStatistieken}
+        isAdmin={magAdminZien}
+      />
       <PendingList toernooien={zichtbareToernooien} goedgekeurdeToernooien={goedgekeurdeToernooien} />
     </>
   );

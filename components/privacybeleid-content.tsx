@@ -5,7 +5,7 @@ import { useTranslation } from "@/lib/language-context";
 const inhoud = {
   nl: {
     titel: "Privacybeleid",
-    bijgewerkt: "Laatst bijgewerkt: 8 juli 2026",
+    bijgewerkt: "Laatst bijgewerkt: 15 juli 2026",
     secties: [
       {
         kop: "1. Wie is verantwoordelijk voor je gegevens?",
@@ -59,6 +59,7 @@ const inhoud = {
         kop: "7. Cookies en lokale opslag",
         alineas: [
           "Petanque13 gebruikt geen advertentie- of trackingcookies. Je taalvoorkeur (NL/FR) wordt lokaal in je browser opgeslagen (localStorage) en nooit naar onze servers verzonden. Als je inlogt als moderator, gebruikt Supabase een noodzakelijk inlogcookie om je sessie te onthouden.",
+          "We houden een eenvoudige bezoekersteller bij (totaal aantal bezoeken per dag) en, op basis van een schatting via je IP-adres, een geaggregeerd totaal per provincie (bv. \"120 bezoeken uit Antwerpen deze maand\"). We bewaren hierbij nooit je IP-adres zelf, enkel het opgetelde totaal.",
         ],
       },
       {
@@ -73,7 +74,7 @@ const inhoud = {
   },
   fr: {
     titel: "Politique de confidentialité",
-    bijgewerkt: "Dernière mise à jour : 8 juillet 2026",
+    bijgewerkt: "Dernière mise à jour : 15 juillet 2026",
     secties: [
       {
         kop: "1. Qui est responsable de vos données ?",
@@ -127,6 +128,7 @@ const inhoud = {
         kop: "7. Cookies et stockage local",
         alineas: [
           "Petanque13 n'utilise aucun cookie publicitaire ou de suivi. Votre préférence linguistique (NL/FR) est enregistrée localement dans votre navigateur (localStorage) et n'est jamais envoyée à nos serveurs. Si vous vous connectez en tant que modérateur, Supabase utilise un cookie de connexion nécessaire pour mémoriser votre session.",
+          "Nous tenons un compteur de visites simple (nombre total de visites par jour) et, sur base d'une estimation via votre adresse IP, un total agrégé par province (par ex. « 120 visites depuis Anvers ce mois-ci »). Nous ne conservons jamais votre adresse IP elle-même, uniquement le total additionné.",
         ],
       },
       {

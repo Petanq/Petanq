@@ -137,6 +137,27 @@ export async function getBezoekStatistieken(): Promise<BezoekStatistieken> {
   return { totaal, dezeMaand };
 }
 
+export type BezoekPerProvincie = { provincie: string; aantal: number };
+
+export async function getBezoekenPerProvincie(): Promise<BezoekPerProvincie[]> {
+  const supabase = createServiceRoleClient();
+  const { data, error } = await supabase.from("bezoeken_provincie").select("provincie, aantal");
+
+  if (error || !data) {
+    console.error("Kon bezoeken per provincie niet ophalen:", error?.message);
+    return [];
+  }
+
+  const totalen = new Map<string, number>();
+  for (const rij of data as { provincie: string; aantal: number }[]) {
+    totalen.set(rij.provincie, (totalen.get(rij.provincie) ?? 0) + rij.aantal);
+  }
+
+  return Array.from(totalen.entries())
+    .map(([provincie, aantal]) => ({ provincie, aantal }))
+    .sort((a, b) => b.aantal - a.aantal);
+}
+
 export type ToernooiStatistieken = {
   totaalGoedgekeurd: number;
   aanvragenDezeMaand: number;

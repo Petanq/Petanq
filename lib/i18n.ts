@@ -280,6 +280,10 @@ const nl = {
     goedgekeurdDezeMaandLabel: "Goedgekeurd deze maand",
     geweigerdDezeMaandLabel: "Geweigerd deze maand",
     actieveClubsLabel: "Actieve clubs",
+    bezoekenPerProvincie: "Bezoeken per provincie",
+    onbekendeLocatie: "Onbekend",
+    bezoekenPerProvincieUitleg:
+      "Geschat op basis van IP-locatie (geen IP-adressen bewaard) — enkel een indicatie, geen exacte meting.",
     moderatorRanglijst: "Goedgekeurd per vrijwilliger",
     nieuweClubaanvragen: "Nieuwe clubaanvragen",
     geenNieuweClubaanvragen: "Geen nieuwe clubaanvragen.",
@@ -616,6 +620,10 @@ const fr: typeof nl = {
     goedgekeurdDezeMaandLabel: "Approuves ce mois-ci",
     geweigerdDezeMaandLabel: "Refuses ce mois-ci",
     actieveClubsLabel: "Clubs actifs",
+    bezoekenPerProvincie: "Visites par province",
+    onbekendeLocatie: "Inconnu",
+    bezoekenPerProvincieUitleg:
+      "Estimation basée sur la localisation IP (aucune adresse IP conservée) — une indication, pas une mesure exacte.",
     moderatorRanglijst: "Approuves par benevole",
     nieuweClubaanvragen: "Nouvelles demandes de club",
     geenNieuweClubaanvragen: "Aucune nouvelle demande de club.",
