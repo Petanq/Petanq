@@ -94,5 +94,8 @@ export const vrijwilligerAanmeldenSchema = z.object({
   naam: z.string().trim().min(2).max(100),
   email: z.string().trim().email(),
   wachtwoord: z.string().min(8).max(72),
-  provincie: provincieEnum.nullable(),
+  // Verplicht (i.t.t. het admin-uitnodigingsformulier): een vrijwilliger kan
+  // enkel toernooien in zijn eigen provincie goedkeuren, dus zonder provincie
+  // zou een nieuwe aanmelding meteen niets kunnen goedkeuren.
+  provincie: provincieEnum,
 });

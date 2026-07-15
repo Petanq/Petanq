@@ -11,6 +11,7 @@ import {
   moderatorVerwijderen,
   moderatorUitnodigen,
   moderatorGoedkeuren,
+  moderatorRegioToegangWijzigen,
 } from "@/actions/beheer-moderatoren";
 
 export function ModeratorManageList({
@@ -42,6 +43,13 @@ export function ModeratorManageList({
   async function goedkeuren(mod: Moderator) {
     setBezig(mod.id);
     await moderatorGoedkeuren(mod.id);
+    setBezig(null);
+    router.refresh();
+  }
+
+  async function regioToegangWijzigen(mod: Moderator) {
+    setBezig(mod.id);
+    await moderatorRegioToegangWijzigen(mod.id, !mod.mag_heel_belgie);
     setBezig(null);
     router.refresh();
   }
@@ -94,11 +102,25 @@ export function ModeratorManageList({
           <div className="text-sm text-grijs">
             {mod.email}
             {mod.provincie && <> · {vertaalProvincie(mod.provincie, taal)}</>}
+            {mod.rol !== "admin" && mod.mag_heel_belgie && (
+              <span className="ml-1.5 rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.65rem] font-bold text-[#b8860b]">
+                {t.beheer.magHeelBelgie}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex gap-2">
           {mod.goedgekeurd ? (
             <>
+              {isAdmin && mod.rol !== "admin" && (
+                <button
+                  onClick={() => regioToegangWijzigen(mod)}
+                  disabled={bezig === mod.id}
+                  className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97] disabled:opacity-60"
+                >
+                  {mod.mag_heel_belgie ? t.beheer.beperkTotEigenProvincie : t.beheer.geefHeelBelgieToegang}
+                </button>
+              )}
               <button
                 onClick={() => setBewerkId(mod.id)}
                 className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"

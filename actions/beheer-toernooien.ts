@@ -31,10 +31,41 @@ async function huidigeModeratorNaam(): Promise<string | null> {
   return data?.naam ?? user.email ?? null;
 }
 
+type ModeratorScope = { rol: "moderator" | "admin"; provincie: string | null; mag_heel_belgie: boolean };
+
+async function huidigeModeratorScope(): Promise<ModeratorScope | null> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase
+    .from("moderatoren")
+    .select("rol, provincie, mag_heel_belgie")
+    .eq("user_id", user.id)
+    .single();
+  return (data as ModeratorScope) ?? null;
+}
+
+// Buiten hun eigen provincie mag een gewone moderator niets goed- of afkeuren,
+// tenzij een admin hen expliciet toegang tot heel België gaf (mag_heel_belgie).
+// Dit is een extra check bovenop de RLS-policy, zodat de foutmelding hier
+// specifiek genoeg is om in de UI uit te leggen waarom het niet lukte.
+function magToernooiBeheren(scope: ModeratorScope, toernooiProvincie: string): boolean {
+  if (scope.rol === "admin" || scope.mag_heel_belgie) return true;
+  return scope.provincie === toernooiProvincie;
+}
+
 export async function toernooiGoedkeuren(id: string): Promise<BeheerActieResultaat> {
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = createClient();
+  const scope = await huidigeModeratorScope();
+  const { data: bestaand } = await supabase.from("toernooien").select("provincie").eq("id", id).single();
+  if (!scope || !bestaand || !magToernooiBeheren(scope, bestaand.provincie)) {
+    return { succes: false, fout: "niet_geautoriseerd_regio" };
+  }
+
   const moderatorNaam = await huidigeModeratorNaam();
 
   const { data: toernooi, error } = await supabase
@@ -131,6 +162,12 @@ export async function toernooiWeigeren(id: string, reden: string | null): Promis
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = createClient();
+  const scope = await huidigeModeratorScope();
+  const { data: bestaand } = await supabase.from("toernooien").select("provincie").eq("id", id).single();
+  if (!scope || !bestaand || !magToernooiBeheren(scope, bestaand.provincie)) {
+    return { succes: false, fout: "niet_geautoriseerd_regio" };
+  }
+
   const moderatorNaam = await huidigeModeratorNaam();
 
   const { data: toernooi, error } = await supabase

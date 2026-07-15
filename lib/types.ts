@@ -93,4 +93,5 @@ export type Moderator = {
   rol: ModeratorRol;
   wachtwoord_ingesteld: boolean;
   goedgekeurd: boolean;
+  mag_heel_belgie: boolean;
 };

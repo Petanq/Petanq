@@ -290,6 +290,9 @@ const nl = {
     rolModerator: "Moderator",
     jijzelf: "Jij",
     geenProvincie: "Geen specifieke provincie",
+    magHeelBelgie: "Heel België",
+    geefHeelBelgieToegang: "Geef toegang tot heel België",
+    beperkTotEigenProvincie: "Beperk tot eigen provincie",
     enkelEigenGegevens: "Als moderator zie je hier enkel je eigen gegevens, niet die van andere vrijwilligers.",
     verwijderenBevestiging: "Weet je zeker dat je deze vrijwilliger wil verwijderen?",
     bezigMetOpslaan: "Bezig met opslaan...",
@@ -315,6 +318,7 @@ const nl = {
     aanmeldenBeschrijving:
       "Vraag toegang aan tot het beheerpaneel. Een beheerder moet je aanvraag nog goedkeuren voor je kan inloggen.",
     kiesWachtwoord: "Kies een wachtwoord",
+    provincieUitleg: "Bepaalt welke toernooien je straks kan goedkeuren.",
     aanmeldenKnop: "Aanvraag versturen",
     aanmeldingVerzonden:
       "Aanvraag verstuurd. Een beheerder moet dit nog goedkeuren — vraag het gerust na.",
@@ -622,6 +626,9 @@ const fr: typeof nl = {
     rolModerator: "Modérateur",
     jijzelf: "Toi",
     geenProvincie: "Aucune province spécifique",
+    magHeelBelgie: "Toute la Belgique",
+    geefHeelBelgieToegang: "Donner accès à toute la Belgique",
+    beperkTotEigenProvincie: "Limiter à sa propre province",
     enkelEigenGegevens: "En tant que modérateur, vous ne voyez ici que vos propres données, pas celles des autres bénévoles.",
     verwijderenBevestiging: "Voulez-vous vraiment supprimer ce bénévole ?",
     bezigMetOpslaan: "Enregistrement...",
@@ -647,6 +654,7 @@ const fr: typeof nl = {
     aanmeldenBeschrijving:
       "Demandez l'accès au panneau d'administration. Un administrateur doit encore approuver votre demande avant que vous puissiez vous connecter.",
     kiesWachtwoord: "Choisissez un mot de passe",
+    provincieUitleg: "Détermine quels tournois vous pourrez approuver.",
     aanmeldenKnop: "Envoyer la demande",
     aanmeldingVerzonden:
       "Demande envoyée. Un administrateur doit encore l'approuver — n'hésitez pas à en reparler.",

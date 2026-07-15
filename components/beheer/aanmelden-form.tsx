@@ -27,7 +27,7 @@ export function AanmeldenForm() {
       naam,
       email,
       wachtwoord,
-      provincie: provincie || null,
+      provincie,
     });
     if (!resultaat.succes) {
       setFoutCode(resultaat.fout);
@@ -83,21 +83,23 @@ export function AanmeldenForm() {
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-[0.8rem] font-bold text-donker">
-            {t.clubForm.provincie} ({t.form.optioneel})
-          </span>
+          <span className="text-[0.8rem] font-bold text-donker">{t.clubForm.provincie}</span>
           <select
+            required
             value={provincie}
             onChange={(e) => setProvincie(e.target.value as Provincie)}
             className="veld-input"
           >
-            <option value="">{t.beheer.geenProvincie}</option>
+            <option value="" disabled>
+              {t.form.kiesProvincie}
+            </option>
             {ALLE_PROVINCIES.map((p) => (
               <option key={p} value={p}>
                 {vertaalProvincie(p, taal)}
               </option>
             ))}
           </select>
+          <span className="text-xs text-grijs">{t.beheer.provincieUitleg}</span>
         </label>
         {status === "te_kort" && <p className="text-sm font-medium text-rood-2">{t.beheer.wachtwoordTeKort}</p>}
         {status === "fout" && (

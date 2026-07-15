@@ -10,7 +10,7 @@ export async function vrijwilligerAanmelden(input: {
   naam: string;
   email: string;
   wachtwoord: string;
-  provincie: Provincie | null;
+  provincie: Provincie | null | "";
 }): Promise<VrijwilligerAanmeldenResultaat> {
   const parsed = vrijwilligerAanmeldenSchema.safeParse(input);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
