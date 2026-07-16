@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/jaaroverzicht",
+      "schedule": "0 8 1 1 *"
+    }
+  ]
+}
