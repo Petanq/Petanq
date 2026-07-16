@@ -281,6 +281,7 @@ const nl = {
     geweigerdDezeMaandLabel: "Geweigerd deze maand",
     actieveClubsLabel: "Actieve clubs",
     bezoekenPerProvincie: "Bezoeken per provincie",
+    reizenPaginaBezoekenLabel: "Bezoeken 'Op reis met Claudy'",
     onbekendeLocatie: "Onbekend",
     bezoekenPerProvincieUitleg:
       "Geschat op basis van IP-locatie (geen IP-adressen bewaard) — enkel een indicatie, geen exacte meting.",
@@ -621,6 +622,7 @@ const fr: typeof nl = {
     geweigerdDezeMaandLabel: "Refuses ce mois-ci",
     actieveClubsLabel: "Clubs actifs",
     bezoekenPerProvincie: "Visites par province",
+    reizenPaginaBezoekenLabel: "Visites « En voyage avec Claudy »",
     onbekendeLocatie: "Inconnu",
     bezoekenPerProvincieUitleg:
       "Estimation basée sur la localisation IP (aucune adresse IP conservée) — une indication, pas une mesure exacte.",

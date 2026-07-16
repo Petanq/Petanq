@@ -10,11 +10,13 @@ const MEDAILLES = ["🥇", "🥈", "🥉"];
 export function StatistiekenPaneel({
   bezoeken,
   bezoekenPerProvincie,
+  reizenPaginaBezoeken,
   toernooien,
   isAdmin,
 }: {
   bezoeken: BezoekStatistieken;
   bezoekenPerProvincie: BezoekPerProvincie[];
+  reizenPaginaBezoeken: number;
   toernooien: ToernooiStatistieken;
   isAdmin: boolean;
 }) {
@@ -55,6 +57,9 @@ export function StatistiekenPaneel({
             <StatKaart label={t.beheer.goedgekeurdDezeMaandLabel} waarde={toernooien.goedgekeurdDezeMaand} kleur="text-groen" />
             <StatKaart label={t.beheer.geweigerdDezeMaandLabel} waarde={toernooien.geweigerdDezeMaand} kleur="text-rood" />
             <StatKaart label={t.beheer.actieveClubsLabel} waarde={toernooien.actieveClubs} />
+            {isAdmin && (
+              <StatKaart label={t.beheer.reizenPaginaBezoekenLabel} waarde={reizenPaginaBezoeken} />
+            )}
           </div>
 
           {isAdmin && toernooien.perModerator.length > 0 && (

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useTranslation } from "@/lib/language-context";
 import { PETANQUE_REIZEN } from "@/lib/reizen";
+import { PaginaBezoekTeller } from "@/components/pagina-bezoek-teller";
 
 export function ReizenContent() {
   const { t, taal } = useTranslation();
@@ -11,6 +12,7 @@ export function ReizenContent() {
 
   return (
     <div>
+      <PaginaBezoekTeller pad="/petanque-reizen" />
       <div className="relative overflow-hidden bg-blauw">
         <div
           className="animatie-inzoomen pointer-events-none absolute inset-0 opacity-70"

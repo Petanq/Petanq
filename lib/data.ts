@@ -158,6 +158,18 @@ export async function getBezoekenPerProvincie(): Promise<BezoekPerProvincie[]> {
     .sort((a, b) => b.aantal - a.aantal);
 }
 
+export async function getPaginaBezoekTotaal(pad: string): Promise<number> {
+  const supabase = createServiceRoleClient();
+  const { data, error } = await supabase.from("pagina_bezoeken").select("aantal").eq("pad", pad);
+
+  if (error || !data) {
+    console.error("Kon paginabezoeken niet ophalen:", error?.message);
+    return 0;
+  }
+
+  return data.reduce((som: number, rij: { aantal: number }) => som + rij.aantal, 0);
+}
+
 export type ToernooiStatistieken = {
   totaalGoedgekeurd: number;
   aanvragenDezeMaand: number;
