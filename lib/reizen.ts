@@ -62,6 +62,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
       "Choisissez votre équipe favorite (France, Belgique, Internationale ou Corso-Marseillaise) et jouez pendant trois jours aux côtés de champions reconnus.",
     link: "mailto:petank.events@gmail.com",
     afficheUrls: ["/images/reizen/combat-des-teams.jpg", "/images/reizen/combat-des-teams-2.jpg"],
+    afficheUrlsNl: ["/images/reizen/combat-des-teams-nl.png"],
   },
   {
     id: "champions-family-corsica-2026",
@@ -80,6 +81,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
       "Séjour pétanque festif au bord de mer en Corse, avec des concours quotidiens et l'assurance de jouer au moins une fois avec un champion.",
     link: "mailto:petank.events@gmail.com",
     afficheUrls: ["/images/reizen/champions-family.jpg", "/images/reizen/champions-family-2.jpg"],
+    afficheUrlsNl: ["/images/reizen/champions-family-nl.png", "/images/reizen/champions-family-nl-2.png"],
   },
   {
     id: "the-warrior-2027",
