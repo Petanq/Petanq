@@ -26,3 +26,43 @@ body {
 .animatie-inzoomen {
   animation: langzaam-inzoomen 18s ease-in-out infinite alternate;
 }
+
+@keyframes confetti-val {
+  from {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+.animatie-confetti {
+  animation-name: confetti-val;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+@keyframes toast-in-uit {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.animatie-toast {
+  animation: toast-in-uit 2.8s ease-in-out forwards;
+}

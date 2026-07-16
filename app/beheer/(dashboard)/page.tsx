@@ -6,10 +6,12 @@ import {
   getToernooiStatistieken,
   getAlleGoedgekeurdeToernooienVoorBeheer,
   getHuidigeModerator,
+  getVrijwilligerVanDeMaand,
 } from "@/lib/data";
 import { isAdmin } from "@/lib/auth-helpers";
 import { PendingList } from "@/components/beheer/pending-list";
 import { StatistiekenPaneel } from "@/components/beheer/statistieken-paneel";
+import { VrijwilligerWelkom } from "@/components/beheer/vrijwilliger-welkom";
 
 export default async function BeheerDashboardPagina() {
   const [
@@ -21,6 +23,7 @@ export default async function BeheerDashboardPagina() {
     goedgekeurdeToernooien,
     magAdminZien,
     huidigeModerator,
+    vrijwilligerVanDeMaand,
   ] = await Promise.all([
     getInBehandelingToernooien(),
     getBezoekStatistieken(),
@@ -30,6 +33,7 @@ export default async function BeheerDashboardPagina() {
     getAlleGoedgekeurdeToernooienVoorBeheer(),
     isAdmin(),
     getHuidigeModerator(),
+    getVrijwilligerVanDeMaand(),
   ]);
 
   // Een gewone moderator ziet enkel toernooien uit zijn eigen provincie, tenzij
@@ -40,8 +44,20 @@ export default async function BeheerDashboardPagina() {
     ? toernooien
     : toernooien.filter((tn) => tn.provincie === huidigeModerator?.provincie);
 
+  const eigenAantal = huidigeModerator
+    ? toernooiStatistieken.perModerator.find((mod) => mod.naam === huidigeModerator.naam)?.aantal ?? 0
+    : 0;
+
   return (
     <>
+      {huidigeModerator && (
+        <VrijwilligerWelkom
+          naam={huidigeModerator.naam}
+          aangemaaktOp={huidigeModerator.aangemaakt_op}
+          eigenAantal={eigenAantal}
+          vrijwilligerVanDeMaand={vrijwilligerVanDeMaand}
+        />
+      )}
       <StatistiekenPaneel
         bezoeken={bezoekStatistieken}
         bezoekenPerProvincie={bezoekenPerProvincie}

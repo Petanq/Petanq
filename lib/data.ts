@@ -229,6 +229,34 @@ export async function getToernooiStatistieken(): Promise<ToernooiStatistieken> {
   };
 }
 
+export async function getVrijwilligerVanDeMaand(): Promise<{ naam: string; aantal: number } | null> {
+  const supabase = createServiceRoleClient();
+  const maandStart = new Date();
+  maandStart.setDate(1);
+  maandStart.setHours(0, 0, 0, 0);
+
+  const { data, error } = await supabase
+    .from("toernooien")
+    .select("goedgekeurd_door")
+    .eq("status", "goedgekeurd")
+    .not("goedgekeurd_door", "is", null)
+    .gte("goedgekeurd_op", maandStart.toISOString());
+
+  if (error || !data || data.length === 0) return null;
+
+  const tellingen = new Map<string, number>();
+  for (const rij of data as { goedgekeurd_door: string }[]) {
+    tellingen.set(rij.goedgekeurd_door, (tellingen.get(rij.goedgekeurd_door) ?? 0) + 1);
+  }
+
+  const [naam, aantal] = Array.from(tellingen.entries()).sort((a, b) => b[1] - a[1])[0];
+  // Bij een gelijkspel tonen we niemand specifiek, om geen scheve indruk te geven.
+  const isGelijkspel = Array.from(tellingen.values()).filter((n) => n === aantal).length > 1;
+  if (isGelijkspel) return null;
+
+  return { naam, aantal };
+}
+
 export async function getAantalActieveModeratoren(): Promise<number> {
   const supabase = createServiceRoleClient();
   const { count, error } = await supabase

@@ -9,6 +9,7 @@ import { formatUur } from "@/lib/datum";
 import { toernooiGoedkeuren, toernooiWeigeren } from "@/actions/beheer-toernooien";
 import { vindMogelijkeDubbels } from "@/lib/dubbels";
 import { EditForm } from "./tournament-manage-list";
+import { Toast } from "./toast";
 
 export function PendingList({
   toernooien,
@@ -24,13 +25,20 @@ export function PendingList({
   const [bezigId, setBezigId] = useState<string | null>(null);
   const [uitgeklaptId, setUitgeklaptId] = useState<string | null>(null);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
+  const [toastBericht, setToastBericht] = useState<string | null>(null);
 
   const alleVoorVergelijking = [...toernooien, ...goedgekeurdeToernooien];
 
   async function goedkeuren(id: string) {
     setBezigId(id);
-    await toernooiGoedkeuren(id);
+    const resultaat = await toernooiGoedkeuren(id);
     setBezigId(null);
+    if (resultaat.succes) {
+      const berichten = t.beheer.goedkeurenBerichten;
+      const bericht = berichten[Math.floor(Math.random() * berichten.length)];
+      setToastBericht(bericht);
+      setTimeout(() => setToastBericht(null), 2800);
+    }
     router.refresh();
   }
 
@@ -46,9 +54,12 @@ export function PendingList({
 
   if (toernooien.length === 0) {
     return (
-      <p className="rounded-lg border border-rand bg-white p-6 text-center text-sm text-grijs">
-        {t.beheer.geenInBehandeling}
-      </p>
+      <>
+        <p className="rounded-lg border border-rand bg-white p-6 text-center text-sm text-grijs">
+          {t.beheer.geenInBehandeling}
+        </p>
+        {toastBericht && <Toast bericht={toastBericht} />}
+      </>
     );
   }
 
@@ -218,6 +229,7 @@ export function PendingList({
         </div>
         )
       )}
+      {toastBericht && <Toast bericht={toastBericht} />}
     </div>
   );
 }

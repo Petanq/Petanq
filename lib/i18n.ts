@@ -338,6 +338,24 @@ const nl = {
         ? "Nog 1 toernooi van deze affiche te verwerken."
         : `Nog ${n} toernooien van deze affiche te verwerken.`,
     opslaanEnVolgende: (n: number) => `Opslaan en volgende (${n} nog te gaan)`,
+    persoonlijkBedankje: (naam: string, n: number) =>
+      n === 0
+        ? `Welkom ${naam}! Nog geen toernooien goedgekeurd — aan jou de eer om de eerste te zijn.`
+        : `Welkom terug, ${naam}! Jij keurde al ${n} toernooi${n === 1 ? "" : "en"} goed. Bedankt voor je inzet! 🙌`,
+    mijlpaalBericht: (n: number, naam: string) =>
+      `Proficiat ${naam}, dit is al je ${n}e goedgekeurde toernooi! 🎉🥳`,
+    vrijwilligerSinds: (sinds: string) => `Vrijwilliger sinds ${sinds}`,
+    vrijwilligerVanDeMaand: (naam: string, n: number) =>
+      `${naam} is deze maand onze topvrijwilliger met ${n} goedgekeurde toernooien!`,
+    vrijwilligerVanDeMaandZelf: (n: number) =>
+      `Jij bent deze maand onze topvrijwilliger met ${n} goedgekeurde toernooien! Knap werk!`,
+    goedkeurenBerichten: [
+      "Toernooi goedgekeurd, weer eentje erbij! 💪",
+      "Mooi zo! Nog een toernooi de wereld in geholpen. 🎉",
+      "Goedgekeurd! De spelers zullen je dankbaar zijn. 🙌",
+      "Knap werk! Op naar de volgende. ⭐",
+      "En gedaan! Weer een club geholpen. 🙂",
+    ],
   },
 };
 
@@ -679,6 +697,24 @@ const fr: typeof nl = {
         ? "Encore 1 tournoi de cette affiche a traiter."
         : `Encore ${n} tournois de cette affiche a traiter.`,
     opslaanEnVolgende: (n: number) => `Enregistrer et suivant (${n} restants)`,
+    persoonlijkBedankje: (naam: string, n: number) =>
+      n === 0
+        ? `Bienvenue ${naam} ! Aucun tournoi approuvé pour l'instant — à vous l'honneur d'être le premier.`
+        : `Content de vous revoir, ${naam} ! Vous avez déjà approuvé ${n} tournoi${n === 1 ? "" : "s"}. Merci pour votre engagement ! 🙌`,
+    mijlpaalBericht: (n: number, naam: string) =>
+      `Félicitations ${naam}, c'est déjà ton ${n}e tournoi approuvé ! 🎉🥳`,
+    vrijwilligerSinds: (sinds: string) => `Bénévole depuis ${sinds}`,
+    vrijwilligerVanDeMaand: (naam: string, n: number) =>
+      `${naam} est notre meilleur bénévole ce mois-ci avec ${n} tournois approuvés !`,
+    vrijwilligerVanDeMaandZelf: (n: number) =>
+      `Vous êtes notre meilleur bénévole ce mois-ci avec ${n} tournois approuvés ! Bravo !`,
+    goedkeurenBerichten: [
+      "Tournoi approuvé, un de plus ! 💪",
+      "Bien joué ! Un tournoi de plus dans le monde. 🎉",
+      "Approuvé ! Les joueurs vous remercient. 🙌",
+      "Beau travail ! Au suivant. ⭐",
+      "Et voilà ! Un club de plus aidé. 🙂",
+    ],
   },
 };
 

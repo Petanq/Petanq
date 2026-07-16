@@ -94,4 +94,5 @@ export type Moderator = {
   wachtwoord_ingesteld: boolean;
   goedgekeurd: boolean;
   mag_heel_belgie: boolean;
+  aangemaakt_op: string;
 };
