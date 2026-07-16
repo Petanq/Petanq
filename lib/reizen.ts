@@ -152,6 +152,7 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
       "15 jours en Thaïlande à Rawai (Phuket), avec Claudy comme guide : stage de pétanque avec un champion thaïlandais, scooter, tuk-tuk, marché de nuit, balade en bateau et pool party. Des vacances entre amis, pas un séjour tour operator.",
     link: "mailto:petank.events@gmail.com",
     afficheUrls: ["/images/reizen/thailande-travel-claudy.jpg"],
+    afficheUrlsNl: ["/images/reizen/thailande-travel-claudy-nl.png"],
   },
   {
     id: "open-claudy-weibel-2026",
