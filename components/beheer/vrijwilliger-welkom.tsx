@@ -11,12 +11,12 @@ export function VrijwilligerWelkom({
   naam,
   aangemaaktOp,
   eigenAantal,
-  vrijwilligerVanDeMaand,
+  teamAantalDezeMaand,
 }: {
   naam: string;
   aangemaaktOp: string;
   eigenAantal: number;
-  vrijwilligerVanDeMaand: { naam: string; aantal: number } | null;
+  teamAantalDezeMaand: number;
 }) {
   const { t, taal } = useTranslation();
   const isMijlpaal = MIJLPALEN.includes(eigenAantal);
@@ -34,7 +34,6 @@ export function VrijwilligerWelkom({
 
   const sindsDatum = new Date(aangemaaktOp);
   const sindsTekst = `${maandVolledig(sindsDatum.getMonth(), taal)} ${sindsDatum.getFullYear()}`;
-  const isZelfVanDeMaand = vrijwilligerVanDeMaand?.naam === naam;
 
   return (
     <div className="mb-4 rounded-[10px] border-[1.5px] border-geel/60 bg-[#fdf3d9] p-4">
@@ -45,12 +44,9 @@ export function VrijwilligerWelkom({
           : t.beheer.persoonlijkBedankje(naam, eigenAantal)}
       </p>
       <p className="mt-1 text-xs text-[#92742a]">{t.beheer.vrijwilligerSinds(sindsTekst)}</p>
-      {vrijwilligerVanDeMaand && vrijwilligerVanDeMaand.aantal > 0 && (
+      {teamAantalDezeMaand > 0 && (
         <p className="mt-2 border-t border-geel/40 pt-2 text-xs font-semibold text-[#b8860b]">
-          🏆{" "}
-          {isZelfVanDeMaand
-            ? t.beheer.vrijwilligerVanDeMaandZelf(vrijwilligerVanDeMaand.aantal)
-            : t.beheer.vrijwilligerVanDeMaand(vrijwilligerVanDeMaand.naam, vrijwilligerVanDeMaand.aantal)}
+          🤝 {t.beheer.teamBedankje(teamAantalDezeMaand)}
         </p>
       )}
     </div>

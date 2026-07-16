@@ -6,7 +6,6 @@ import {
   getToernooiStatistieken,
   getAlleGoedgekeurdeToernooienVoorBeheer,
   getHuidigeModerator,
-  getVrijwilligerVanDeMaand,
 } from "@/lib/data";
 import { isAdmin } from "@/lib/auth-helpers";
 import { PendingList } from "@/components/beheer/pending-list";
@@ -23,7 +22,6 @@ export default async function BeheerDashboardPagina() {
     goedgekeurdeToernooien,
     magAdminZien,
     huidigeModerator,
-    vrijwilligerVanDeMaand,
   ] = await Promise.all([
     getInBehandelingToernooien(),
     getBezoekStatistieken(),
@@ -33,7 +31,6 @@ export default async function BeheerDashboardPagina() {
     getAlleGoedgekeurdeToernooienVoorBeheer(),
     isAdmin(),
     getHuidigeModerator(),
-    getVrijwilligerVanDeMaand(),
   ]);
 
   // Een gewone moderator ziet enkel toernooien uit zijn eigen provincie, tenzij
@@ -50,12 +47,13 @@ export default async function BeheerDashboardPagina() {
 
   return (
     <>
-      {huidigeModerator && (
+      {/* Enkel voor gewone vrijwilligers, niet voor de admin zelf. */}
+      {huidigeModerator && !magAdminZien && (
         <VrijwilligerWelkom
           naam={huidigeModerator.naam}
           aangemaaktOp={huidigeModerator.aangemaakt_op}
           eigenAantal={eigenAantal}
-          vrijwilligerVanDeMaand={vrijwilligerVanDeMaand}
+          teamAantalDezeMaand={toernooiStatistieken.goedgekeurdDezeMaand}
         />
       )}
       <StatistiekenPaneel

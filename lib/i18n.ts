@@ -345,10 +345,7 @@ const nl = {
     mijlpaalBericht: (n: number, naam: string) =>
       `Proficiat ${naam}, dit is al je ${n}e goedgekeurde toernooi! 🎉🥳`,
     vrijwilligerSinds: (sinds: string) => `Vrijwilliger sinds ${sinds}`,
-    vrijwilligerVanDeMaand: (naam: string, n: number) =>
-      `${naam} is deze maand onze topvrijwilliger met ${n} goedgekeurde toernooien!`,
-    vrijwilligerVanDeMaandZelf: (n: number) =>
-      `Jij bent deze maand onze topvrijwilliger met ${n} goedgekeurde toernooien! Knap werk!`,
+    teamBedankje: (n: number) => `Samen keurden jullie deze maand al ${n} toernooien goed — knap teamwerk!`,
     goedkeurenBerichten: [
       "Toernooi goedgekeurd, weer eentje erbij! 💪",
       "Mooi zo! Nog een toernooi de wereld in geholpen. 🎉",
@@ -704,10 +701,7 @@ const fr: typeof nl = {
     mijlpaalBericht: (n: number, naam: string) =>
       `Félicitations ${naam}, c'est déjà ton ${n}e tournoi approuvé ! 🎉🥳`,
     vrijwilligerSinds: (sinds: string) => `Bénévole depuis ${sinds}`,
-    vrijwilligerVanDeMaand: (naam: string, n: number) =>
-      `${naam} est notre meilleur bénévole ce mois-ci avec ${n} tournois approuvés !`,
-    vrijwilligerVanDeMaandZelf: (n: number) =>
-      `Vous êtes notre meilleur bénévole ce mois-ci avec ${n} tournois approuvés ! Bravo !`,
+    teamBedankje: (n: number) => `Ensemble, vous avez déjà approuvé ${n} tournois ce mois-ci — beau travail d'équipe !`,
     goedkeurenBerichten: [
       "Tournoi approuvé, un de plus ! 💪",
       "Bien joué ! Un tournoi de plus dans le monde. 🎉",
