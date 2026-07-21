@@ -118,6 +118,13 @@ export function ModeratorManageList({
               </span>
             )}
           </div>
+          {isAdmin && (
+            <p className="text-xs text-grijs">
+              {t.beheer.aantalKeerIngelogd(mod.login_aantal)}
+              {mod.laatste_login &&
+                ` · ${t.beheer.laatsteInlog(new Date(mod.laatste_login).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE"))}`}
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           {mod.goedgekeurd ? (

@@ -95,4 +95,6 @@ export type Moderator = {
   goedgekeurd: boolean;
   mag_heel_belgie: boolean;
   aangemaakt_op: string;
+  login_aantal: number;
+  laatste_login: string | null;
 };

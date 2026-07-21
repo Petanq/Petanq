@@ -140,6 +140,29 @@ export async function moderatorWachtwoordBevestigen(): Promise<BeheerActieResult
   return { succes: true };
 }
 
+// Wordt aangeroepen vanuit het loginformulier, meteen na een geslaagde login.
+// Best-effort: als dit faalt mag dat de login zelf nooit blokkeren.
+export async function registreerInlog(): Promise<void> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const serviceClient = createServiceRoleClient();
+  const { data: mod } = await serviceClient
+    .from("moderatoren")
+    .select("login_aantal")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!mod) return;
+
+  await serviceClient
+    .from("moderatoren")
+    .update({ login_aantal: mod.login_aantal + 1, laatste_login: new Date().toISOString() })
+    .eq("user_id", user.id);
+}
+
 export async function moderatorGoedkeuren(id: string): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
