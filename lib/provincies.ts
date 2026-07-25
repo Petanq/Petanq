@@ -68,3 +68,27 @@ export function vertaalProvincie(provincie: Provincie, taal: "nl" | "fr"): strin
 export function vertaalRegio(regio: Regio, taal: "nl" | "fr"): string {
   return REGIO_NAAM[regio][taal];
 }
+
+// Enkel voor de goedkeuringsrechten van moderatoren (moderatoren.toegangsniveau
+// "eigen_regio"): daar telt Brussel mee als Wallonië, in tegenstelling tot de
+// Regio hierboven (gebruikt in bv. statistieken) waar Brussel apart blijft.
+export type ToegangsRegio = "vlaanderen" | "wallonie";
+
+export const PROVINCIE_TOEGANGSREGIO: Record<Provincie, ToegangsRegio> = {
+  antwerpen: "vlaanderen",
+  "oost-vlaanderen": "vlaanderen",
+  "west-vlaanderen": "vlaanderen",
+  limburg: "vlaanderen",
+  "vlaams-brabant": "vlaanderen",
+  henegouwen: "wallonie",
+  luik: "wallonie",
+  namen: "wallonie",
+  "waals-brabant": "wallonie",
+  luxemburg: "wallonie",
+  brussel: "wallonie",
+};
+
+export const TOEGANGSREGIO_NAAM: Record<ToegangsRegio, { nl: string; fr: string }> = {
+  vlaanderen: { nl: "Vlaanderen", fr: "Flandre" },
+  wallonie: { nl: "Wallonië (incl. Brussel)", fr: "Wallonie (Bruxelles incl.)" },
+};

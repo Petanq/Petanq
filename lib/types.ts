@@ -93,7 +93,7 @@ export type Moderator = {
   rol: ModeratorRol;
   wachtwoord_ingesteld: boolean;
   goedgekeurd: boolean;
-  mag_heel_belgie: boolean;
+  toegangsniveau: "eigen_provincie" | "eigen_regio" | "heel_belgie";
   aangemaakt_op: string;
   login_aantal: number;
   laatste_login: string | null;

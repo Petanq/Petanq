@@ -174,13 +174,19 @@ export async function moderatorGoedkeuren(id: string): Promise<BeheerActieResult
   return { succes: true };
 }
 
+export type ModeratorToegangsniveau = "eigen_provincie" | "eigen_regio" | "heel_belgie";
+
 // Admin-only: standaard mag een moderator enkel toernooien in zijn eigen
-// provincie goed- of afkeuren. Deze toggle heft die beperking voor iemand op.
-export async function moderatorRegioToegangWijzigen(id: string, magHeelBelgie: boolean): Promise<BeheerActieResultaat> {
+// provincie goed- of afkeuren. Dit verhoogt/verlaagt die beperking naar
+// heel zijn regio (Vlaanderen of Wallonië incl. Brussel) of heel België.
+export async function moderatorToegangWijzigen(
+  id: string,
+  toegangsniveau: ModeratorToegangsniveau
+): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const serviceClient = createServiceRoleClient();
-  const { error } = await serviceClient.from("moderatoren").update({ mag_heel_belgie: magHeelBelgie }).eq("id", id);
+  const { error } = await serviceClient.from("moderatoren").update({ toegangsniveau }).eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
 
   revalidatePath("/beheer/moderatoren");

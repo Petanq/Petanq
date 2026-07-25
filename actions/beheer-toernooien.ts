@@ -8,7 +8,7 @@ import {
   nieuwToernooiOnderwerp,
 } from "@/lib/emails/nieuw-toernooi-nieuwsbrief";
 import { WeigeringEmail, weigeringOnderwerp } from "@/lib/emails/weigering";
-import { vertaalProvincie } from "@/lib/provincies";
+import { vertaalProvincie, Provincie, PROVINCIE_TOEGANGSREGIO } from "@/lib/provincies";
 import { toernooiSchema, toernooiWijzigenSchema } from "@/lib/validations";
 import { Toernooi } from "@/lib/types";
 import { isModerator } from "@/lib/auth-helpers";
@@ -31,7 +31,11 @@ async function huidigeModeratorNaam(): Promise<string | null> {
   return data?.naam ?? user.email ?? null;
 }
 
-type ModeratorScope = { rol: "moderator" | "admin"; provincie: string | null; mag_heel_belgie: boolean };
+type ModeratorScope = {
+  rol: "moderator" | "admin";
+  provincie: Provincie | null;
+  toegangsniveau: "eigen_provincie" | "eigen_regio" | "heel_belgie";
+};
 
 async function huidigeModeratorScope(): Promise<ModeratorScope | null> {
   const supabase = createClient();
@@ -41,18 +45,22 @@ async function huidigeModeratorScope(): Promise<ModeratorScope | null> {
   if (!user) return null;
   const { data } = await supabase
     .from("moderatoren")
-    .select("rol, provincie, mag_heel_belgie")
+    .select("rol, provincie, toegangsniveau")
     .eq("user_id", user.id)
     .single();
   return (data as ModeratorScope) ?? null;
 }
 
 // Buiten hun eigen provincie mag een gewone moderator niets goed- of afkeuren,
-// tenzij een admin hen expliciet toegang tot heel België gaf (mag_heel_belgie).
-// Dit is een extra check bovenop de RLS-policy, zodat de foutmelding hier
-// specifiek genoeg is om in de UI uit te leggen waarom het niet lukte.
-function magToernooiBeheren(scope: ModeratorScope, toernooiProvincie: string): boolean {
-  if (scope.rol === "admin" || scope.mag_heel_belgie) return true;
+// tenzij een admin hen toegang tot hun eigen regio (heel Vlaanderen, of heel
+// Wallonië incl. Brussel) of tot heel België gaf. Dit is een extra check
+// bovenop de RLS-policy, zodat de foutmelding hier specifiek genoeg is om in
+// de UI uit te leggen waarom het niet lukte.
+function magToernooiBeheren(scope: ModeratorScope, toernooiProvincie: Provincie): boolean {
+  if (scope.rol === "admin" || scope.toegangsniveau === "heel_belgie") return true;
+  if (scope.toegangsniveau === "eigen_regio") {
+    return !!scope.provincie && PROVINCIE_TOEGANGSREGIO[scope.provincie] === PROVINCIE_TOEGANGSREGIO[toernooiProvincie];
+  }
   return scope.provincie === toernooiProvincie;
 }
 

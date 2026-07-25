@@ -8,6 +8,7 @@ import {
   getHuidigeModerator,
 } from "@/lib/data";
 import { isAdmin } from "@/lib/auth-helpers";
+import { PROVINCIE_TOEGANGSREGIO } from "@/lib/provincies";
 import { PendingList } from "@/components/beheer/pending-list";
 import { StatistiekenPaneel } from "@/components/beheer/statistieken-paneel";
 import { VrijwilligerWelkom } from "@/components/beheer/vrijwilliger-welkom";
@@ -34,12 +35,18 @@ export default async function BeheerDashboardPagina() {
   ]);
 
   // Een gewone moderator ziet enkel toernooien uit zijn eigen provincie, tenzij
-  // een admin hem toegang tot heel België gaf — zo keurt altijd de juiste
-  // persoon voor de juiste regio goed.
-  const magHeelBelgieZien = magAdminZien || huidigeModerator?.mag_heel_belgie === true;
-  const zichtbareToernooien = magHeelBelgieZien
-    ? toernooien
-    : toernooien.filter((tn) => tn.provincie === huidigeModerator?.provincie);
+  // een admin hem toegang tot zijn hele regio (Vlaanderen, of Wallonië incl.
+  // Brussel) of tot heel België gaf — zo keurt altijd de juiste persoon voor
+  // de juiste regio goed.
+  const toegangsniveau = huidigeModerator?.toegangsniveau ?? "eigen_provincie";
+  const zichtbareToernooien =
+    magAdminZien || toegangsniveau === "heel_belgie"
+      ? toernooien
+      : toegangsniveau === "eigen_regio" && huidigeModerator?.provincie
+        ? toernooien.filter(
+            (tn) => PROVINCIE_TOEGANGSREGIO[tn.provincie] === PROVINCIE_TOEGANGSREGIO[huidigeModerator.provincie!]
+          )
+        : toernooien.filter((tn) => tn.provincie === huidigeModerator?.provincie);
 
   const eigenAantal = huidigeModerator
     ? toernooiStatistieken.perModerator.find((mod) => mod.naam === huidigeModerator.naam)?.aantal ?? 0

@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Moderator, ModeratorRol } from "@/lib/types";
 import { ModeratorMetStatus } from "@/lib/data";
-import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
+import { ALLE_PROVINCIES, Provincie, vertaalProvincie, PROVINCIE_TOEGANGSREGIO, TOEGANGSREGIO_NAAM } from "@/lib/provincies";
 import {
   moderatorBewerken,
   moderatorVerwijderen,
   moderatorUitnodigen,
   moderatorGoedkeuren,
-  moderatorRegioToegangWijzigen,
+  moderatorToegangWijzigen,
+  ModeratorToegangsniveau,
 } from "@/actions/beheer-moderatoren";
 
 export function ModeratorManageList({
@@ -47,9 +48,9 @@ export function ModeratorManageList({
     router.refresh();
   }
 
-  async function regioToegangWijzigen(mod: Moderator) {
+  async function toegangWijzigen(mod: Moderator, toegangsniveau: ModeratorToegangsniveau) {
     setBezig(mod.id);
-    await moderatorRegioToegangWijzigen(mod.id, !mod.mag_heel_belgie);
+    await moderatorToegangWijzigen(mod.id, toegangsniveau);
     setBezig(null);
     router.refresh();
   }
@@ -112,9 +113,14 @@ export function ModeratorManageList({
                 </span>
               )
             )}
-            {mod.rol !== "admin" && mod.mag_heel_belgie && (
+            {mod.rol !== "admin" && mod.toegangsniveau === "heel_belgie" && (
               <span className="rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[#b8860b]">
                 🇧🇪 {t.beheer.magHeelBelgie}
+              </span>
+            )}
+            {mod.rol !== "admin" && mod.toegangsniveau === "eigen_regio" && mod.provincie && (
+              <span className="rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[#b8860b]">
+                🗺️ {TOEGANGSREGIO_NAAM[PROVINCIE_TOEGANGSREGIO[mod.provincie]][taal]}
               </span>
             )}
           </div>
@@ -130,13 +136,16 @@ export function ModeratorManageList({
           {mod.goedgekeurd ? (
             <>
               {isAdmin && mod.rol !== "admin" && (
-                <button
-                  onClick={() => regioToegangWijzigen(mod)}
+                <select
+                  value={mod.toegangsniveau}
+                  onChange={(e) => toegangWijzigen(mod, e.target.value as ModeratorToegangsniveau)}
                   disabled={bezig === mod.id}
-                  className="whitespace-nowrap rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97] disabled:opacity-60"
+                  className="whitespace-nowrap rounded-md border border-rand px-2 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht disabled:opacity-60"
                 >
-                  {mod.mag_heel_belgie ? t.beheer.beperkTotEigenProvincie : t.beheer.geefHeelBelgieToegang}
-                </button>
+                  <option value="eigen_provincie">{t.beheer.toegangEigenProvincie}</option>
+                  <option value="eigen_regio">{t.beheer.toegangEigenRegio}</option>
+                  <option value="heel_belgie">{t.beheer.toegangHeelBelgie}</option>
+                </select>
               )}
               <button
                 onClick={() => setBewerkId(mod.id)}
