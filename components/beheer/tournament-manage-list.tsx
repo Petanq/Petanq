@@ -16,6 +16,13 @@ import { MonthPills } from "@/components/month-pills";
 import { CATEGORIE_STREEP, CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
 import { vindMogelijkeDubbelsVoorVelden } from "@/lib/dubbels";
 
+function afficheItemLabel(item: AfficheVelden, taal: "nl" | "fr"): string {
+  const datumLabel = item.datum ? `${dagNummer(item.datum)} ${maandKort(item.datum, taal)}` : "?";
+  const uurLabel = item.uur ? ` ${formatUur(item.uur)}` : "";
+  const naam = (taal === "fr" ? item.naam_fr : item.naam_nl) ?? item.clubnaam ?? "?";
+  return `${datumLabel}${uurLabel} — ${naam}`;
+}
+
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
   "tete-a-tete",
@@ -304,6 +311,8 @@ function AddForm({
   const [aiBezig, setAiBezig] = useState(false);
   const [autoIngevuld, setAutoIngevuld] = useState(false);
   const [wachtrij, setWachtrij] = useState<AfficheVelden[]>([]);
+  const [alleAfficheVelden, setAlleAfficheVelden] = useState<AfficheVelden[]>([]);
+  const [huidigeIndex, setHuidigeIndex] = useState(0);
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<string | null>(null);
 
@@ -391,6 +400,8 @@ function AddForm({
       // Sommige affiches tonen meerdere speeldata (kwalificaties + finale, of
       // meerdere dagen) — die verwerken we één voor één na elkaar opslaan.
       setWachtrij(resultaten.slice(1));
+      setAlleAfficheVelden(resultaten);
+      setHuidigeIndex(0);
     }
   }
 
@@ -431,6 +442,7 @@ function AddForm({
       resetVelden();
       vulVeldenInVanAffiche(volgende);
       setWachtrij(rest);
+      setHuidigeIndex((i) => i + 1);
       return;
     }
     onKlaar();
@@ -685,10 +697,18 @@ function AddForm({
         {autoIngevuld && !aiBezig && (
           <p className="text-xs font-semibold text-groen">{t.form.afficheAutoIngevuld}</p>
         )}
-        {wachtrij.length > 0 && (
-          <p className="text-xs font-semibold text-[#b8860b]">
-            {t.beheer.affichesWachtrij(wachtrij.length)}
-          </p>
+        {alleAfficheVelden.length > 1 && (
+          <div className="mt-1 rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
+            <p className="font-bold">{t.beheer.afficheOverzicht(alleAfficheVelden.length)}</p>
+            <ul className="mt-1 flex flex-col gap-0.5">
+              {alleAfficheVelden.map((item, i) => (
+                <li key={i} className={i === huidigeIndex ? "font-bold" : i < huidigeIndex ? "text-groen" : ""}>
+                  {i < huidigeIndex ? "✓ " : i === huidigeIndex ? "→ " : "· "}
+                  {afficheItemLabel(item, taal)}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
 
