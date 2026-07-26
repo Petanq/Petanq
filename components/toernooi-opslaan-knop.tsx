@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { isOpgeslagen, getNotitie, toernooiOpslaan, toernooiVerwijderen, notitieBijwerken } from "@/lib/opgeslagen-toernooien";
 
@@ -8,11 +8,17 @@ export function ToernooiOpslaanKnop({ toernooiId }: { toernooiId: string }) {
   const { t } = useTranslation();
   const [opgeslagen, setOpgeslagen] = useState(false);
   const [notitie, setNotitie] = useState("");
+  const [notitieBewaard, setNotitieBewaard] = useState(false);
+  const bewaardTimer = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     setOpgeslagen(isOpgeslagen(toernooiId));
     setNotitie(getNotitie(toernooiId));
   }, [toernooiId]);
+
+  useEffect(() => {
+    return () => clearTimeout(bewaardTimer.current);
+  }, []);
 
   function toggelen() {
     if (opgeslagen) {
@@ -43,11 +49,17 @@ export function ToernooiOpslaanKnop({ toernooiId }: { toernooiId: string }) {
             onChange={(e) => {
               setNotitie(e.target.value);
               notitieBijwerken(toernooiId, e.target.value);
+              setNotitieBewaard(false);
+              clearTimeout(bewaardTimer.current);
+              bewaardTimer.current = setTimeout(() => setNotitieBewaard(true), 600);
             }}
             placeholder={t.lijst.notitiePlaceholder}
             rows={2}
             className="veld-input w-full resize-none"
           />
+          {notitieBewaard && notitie && (
+            <p className="mt-1 text-xs font-semibold text-groen">✓ {t.lijst.notitieBewaard}</p>
+          )}
         </div>
       )}
     </div>

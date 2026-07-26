@@ -76,6 +76,7 @@ const nl = {
     toernooiOpgeslagen: "Opgeslagen",
     notitieLabel: "Notitie (bv. met wie afgesproken)",
     notitiePlaceholder: "Bv. Afgesproken met Jan en Piet om 13u",
+    notitieBewaard: "Notitie opgeslagen",
     mijnTornooien: "Mijn tornooien",
     mijnTornooienUitleg:
       "Tornooien die je hier opslaat blijven bewaard op dit toestel, ook als je de site later opnieuw bezoekt.",
@@ -445,6 +446,7 @@ const fr: typeof nl = {
     toernooiOpgeslagen: "Enregistré",
     notitieLabel: "Note (ex. avec qui vous avez rendez-vous)",
     notitiePlaceholder: "Ex. Rendez-vous avec Jean et Pierre à 13h",
+    notitieBewaard: "Note enregistrée",
     mijnTornooien: "Mes tournois",
     mijnTornooienUitleg:
       "Les tournois que vous enregistrez ici restent sauvegardés sur cet appareil, même si vous revisitez le site plus tard.",
