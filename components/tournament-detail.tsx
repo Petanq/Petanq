@@ -184,7 +184,7 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
           <span className="font-semibold text-grijs">{t.lijst.deelDitToernooi}:</span>
           <a
-            href={`https://wa.me/?text=${encodeURIComponent(`${naam} — ${toernooi.clubnaam}\n${deelUrl}`)}`}
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${naam} — ${toernooi.clubnaam}\n${deelUrl}`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-blauw-2 underline hover:text-donker"
