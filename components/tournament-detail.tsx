@@ -9,6 +9,7 @@ import { vertaalProvincie } from "@/lib/provincies";
 import { CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
 import { Knop } from "@/components/ui/knop";
 import { googleAgendaLink, downloadIcs } from "@/lib/agenda";
+import { ToernooiOpslaanKnop } from "@/components/toernooi-opslaan-knop";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
@@ -133,6 +134,8 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
             <Detail label={t.form.maxPloegen}>{toernooi.max_ploegen}</Detail>
           )}
         </dl>
+
+        <ToernooiOpslaanKnop toernooiId={toernooi.id} />
 
         {toernooi.opmerking && (
           <p className="mt-6 border-t border-rand pt-6 text-sm text-grijs">{toernooi.opmerking}</p>

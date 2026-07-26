@@ -8,6 +8,7 @@ const nl = {
     clubs: "Clubs",
     reizen: "Op reis met Claudy",
     overOns: "Over ons",
+    mijnTornooien: "Mijn tornooien",
     toernooiToevoegen: "+ Toernooi toevoegen",
     login: "Login",
   },
@@ -71,6 +72,15 @@ const nl = {
     deelDitToernooi: "Delen",
     linkKopieren: "Link kopiëren",
     linkGekopieerd: "Gekopieerd!",
+    toernooiOpslaan: "Opslaan",
+    toernooiOpgeslagen: "Opgeslagen",
+    notitieLabel: "Notitie (bv. met wie afgesproken)",
+    notitiePlaceholder: "Bv. Afgesproken met Jan en Piet om 13u",
+    mijnTornooien: "Mijn tornooien",
+    mijnTornooienUitleg:
+      "Tornooien die je hier opslaat blijven bewaard op dit toestel, ook als je de site later opnieuw bezoekt.",
+    geenOpgeslagenToernooien:
+      "Je hebt nog geen tornooien opgeslagen. Klik op 'Opslaan' bij een tornooi om het hier terug te vinden.",
   },
   categorie: {
     heren: "Heren / H/HG",
@@ -367,6 +377,7 @@ const fr: typeof nl = {
     clubs: "Clubs",
     reizen: "En voyage avec Claudy",
     overOns: "À propos",
+    mijnTornooien: "Mes tournois",
     toernooiToevoegen: "+ Ajouter un tournoi",
     login: "Connexion",
   },
@@ -430,6 +441,15 @@ const fr: typeof nl = {
     deelDitToernooi: "Partager",
     linkKopieren: "Copier le lien",
     linkGekopieerd: "Copié !",
+    toernooiOpslaan: "Enregistrer",
+    toernooiOpgeslagen: "Enregistré",
+    notitieLabel: "Note (ex. avec qui vous avez rendez-vous)",
+    notitiePlaceholder: "Ex. Rendez-vous avec Jean et Pierre à 13h",
+    mijnTornooien: "Mes tournois",
+    mijnTornooienUitleg:
+      "Les tournois que vous enregistrez ici restent sauvegardés sur cet appareil, même si vous revisitez le site plus tard.",
+    geenOpgeslagenToernooien:
+      "Vous n'avez encore enregistré aucun tournoi. Cliquez sur 'Enregistrer' sur un tournoi pour le retrouver ici.",
   },
   categorie: {
     heren: "Messieurs / H/HG",
