@@ -68,6 +68,9 @@ const nl = {
     voegToeAanAgenda: "Voeg toe aan agenda",
     googleAgenda: "Google Agenda",
     icsBestand: "Andere agenda (.ics)",
+    deelDitToernooi: "Delen",
+    linkKopieren: "Link kopiëren",
+    linkGekopieerd: "Gekopieerd!",
   },
   categorie: {
     heren: "Heren / H/HG",
@@ -424,6 +427,9 @@ const fr: typeof nl = {
     voegToeAanAgenda: "Ajouter a l'agenda",
     googleAgenda: "Google Agenda",
     icsBestand: "Autre agenda (.ics)",
+    deelDitToernooi: "Partager",
+    linkKopieren: "Copier le lien",
+    linkGekopieerd: "Copié !",
   },
   categorie: {
     heren: "Messieurs / H/HG",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { Toernooi } from "@/lib/types";
@@ -9,10 +10,24 @@ import { CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
 import { Knop } from "@/components/ui/knop";
 import { googleAgendaLink, downloadIcs } from "@/lib/agenda";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
+
 export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
   const { t, taal } = useTranslation();
+  const [gekopieerd, setGekopieerd] = useState(false);
   const naam = taal === "fr" ? toernooi.naam_fr : toernooi.naam_nl;
   const maandIndex = parseDatum(toernooi.datum).getMonth();
+  const deelUrl = `${SITE_URL}/toernooien/${toernooi.id}`;
+
+  async function linkKopieren() {
+    try {
+      await navigator.clipboard.writeText(deelUrl);
+      setGekopieerd(true);
+      setTimeout(() => setGekopieerd(false), 2000);
+    } catch {
+      window.prompt(t.lijst.linkKopieren, deelUrl);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12 lg:px-10">
@@ -135,6 +150,29 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
             className="font-semibold text-blauw-2 underline hover:text-donker"
           >
             {t.lijst.icsBestand}
+          </button>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+          <span className="font-semibold text-grijs">{t.lijst.deelDitToernooi}:</span>
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(`${naam} — ${toernooi.clubnaam}\n${deelUrl}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-blauw-2 underline hover:text-donker"
+          >
+            WhatsApp
+          </a>
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(deelUrl)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-blauw-2 underline hover:text-donker"
+          >
+            Facebook
+          </a>
+          <button onClick={linkKopieren} className="font-semibold text-blauw-2 underline hover:text-donker">
+            {gekopieerd ? t.lijst.linkGekopieerd : t.lijst.linkKopieren}
           </button>
         </div>
 
