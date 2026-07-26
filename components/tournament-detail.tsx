@@ -89,6 +89,8 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
           {toernooi.clubnaam}
         </p>
 
+        <ToernooiOpslaanKnop toernooiId={toernooi.id} />
+
         <dl className="grid grid-cols-1 gap-4 border-t border-rand pt-6 sm:grid-cols-2">
           <Detail label={t.form.datum}>
             {dagVanWeekKort(toernooi.datum, taal)} {dagNummer(toernooi.datum)}{" "}
@@ -134,8 +136,6 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
             <Detail label={t.form.maxPloegen}>{toernooi.max_ploegen}</Detail>
           )}
         </dl>
-
-        <ToernooiOpslaanKnop toernooiId={toernooi.id} />
 
         {toernooi.opmerking && (
           <p className="mt-6 border-t border-rand pt-6 text-sm text-grijs">{toernooi.opmerking}</p>
