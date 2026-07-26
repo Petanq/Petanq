@@ -19,12 +19,40 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
   const maandIndex = parseDatum(toernooi.datum).getMonth();
   const deelUrl = `${SITE_URL}/toernooien/${toernooi.id}`;
 
+  // In-app browsers zoals die van Facebook/Instagram blokkeren vaak zowel de
+  // moderne Clipboard API als window.prompt. document.execCommand("copy") op
+  // een verborgen tekstveld werkt daar doorgaans wel nog.
+  function kopieerViaVerborgenVeld(): boolean {
+    const veld = document.createElement("textarea");
+    veld.value = deelUrl;
+    veld.style.position = "fixed";
+    veld.style.opacity = "0";
+    document.body.appendChild(veld);
+    veld.focus();
+    veld.select();
+    let gelukt = false;
+    try {
+      gelukt = document.execCommand("copy");
+    } catch {
+      gelukt = false;
+    }
+    document.body.removeChild(veld);
+    return gelukt;
+  }
+
   async function linkKopieren() {
     try {
       await navigator.clipboard.writeText(deelUrl);
       setGekopieerd(true);
       setTimeout(() => setGekopieerd(false), 2000);
+      return;
     } catch {
+      // valt hieronder terug op de oudere methode
+    }
+    if (kopieerViaVerborgenVeld()) {
+      setGekopieerd(true);
+      setTimeout(() => setGekopieerd(false), 2000);
+    } else {
       window.prompt(t.lijst.linkKopieren, deelUrl);
     }
   }
