@@ -2,6 +2,15 @@ import { Club } from "@/lib/types";
 import { avatarTintVoor } from "@/lib/initialen";
 
 export function ClubCard({ club }: { club: Club }) {
+  const adresBevatGemeente = club.adres?.toLowerCase().includes(club.gemeente.toLowerCase());
+  const locatieQuery = club.adres
+    ? adresBevatGemeente
+      ? club.adres
+      : `${club.adres}, ${club.gemeente}`
+    : club.gemeente;
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locatieQuery)}`;
+  const wazeUrl = `https://waze.com/ul?q=${encodeURIComponent(locatieQuery)}&navigate=yes`;
+
   return (
     <div
       title={club.openingsuren ?? undefined}
@@ -26,7 +35,19 @@ export function ClubCard({ club }: { club: Club }) {
       <div className="min-w-0">
         <div className="truncate text-[0.88rem] font-bold text-donker">{club.naam}</div>
         <div className="truncate text-[0.76rem] text-grijs">
-          📍 {club.adres || club.gemeente}
+          📍{" "}
+          <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+            {club.adres || club.gemeente}
+          </a>
+          {" · "}
+          <a
+            href={wazeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blauw-3 hover:underline"
+          >
+            Waze
+          </a>
         </div>
         {club.contact_email && (
           <a
