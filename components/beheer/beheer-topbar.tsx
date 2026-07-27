@@ -36,9 +36,11 @@ export function BeheerTopbar() {
       <div className="flex items-center gap-3">
         <Link
           href="/"
-          className="hidden text-sm font-medium text-white/60 transition-colors hover:text-white sm:inline"
+          className="text-sm font-medium text-white/60 transition-colors hover:text-white"
+          title={t.beheer.naarWebsite}
         >
-          ← {t.beheer.naarWebsite}
+          <span className="sm:hidden">←</span>
+          <span className="hidden sm:inline">← {t.beheer.naarWebsite}</span>
         </Link>
         <LanguageToggle />
         {!isLoginPagina && (
