@@ -1,16 +1,8 @@
 import { Club } from "@/lib/types";
 import { avatarTintVoor } from "@/lib/initialen";
+import { googleMapsUrl, wazeUrl } from "@/lib/locatie";
 
 export function ClubCard({ club }: { club: Club }) {
-  const adresBevatGemeente = club.adres?.toLowerCase().includes(club.gemeente.toLowerCase());
-  const locatieQuery = club.adres
-    ? adresBevatGemeente
-      ? club.adres
-      : `${club.adres}, ${club.gemeente}`
-    : club.gemeente;
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locatieQuery)}`;
-  const wazeUrl = `https://waze.com/ul?q=${encodeURIComponent(locatieQuery)}&navigate=yes`;
-
   return (
     <div
       title={club.openingsuren ?? undefined}
@@ -36,17 +28,22 @@ export function ClubCard({ club }: { club: Club }) {
         <div className="truncate text-[0.88rem] font-bold text-donker">{club.naam}</div>
         <div className="truncate text-[0.76rem] text-grijs">
           📍{" "}
-          <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
-            {club.adres || club.gemeente}
-          </a>
-          {" · "}
           <a
-            href={wazeUrl}
+            href={googleMapsUrl(club.adres, club.gemeente)}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blauw-3 hover:underline"
+            className="hover:underline"
           >
-            Waze
+            {club.adres || club.gemeente}
+          </a>{" "}
+          <a
+            href={wazeUrl(club.adres, club.gemeente)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Waze"
+            aria-label="Waze"
+          >
+            🚗
           </a>
         </div>
         {club.contact_email && (

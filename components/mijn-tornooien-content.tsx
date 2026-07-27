@@ -8,6 +8,7 @@ import { Toernooi } from "@/lib/types";
 import { dagVanWeekKort, dagNummer, maandVolledig, formatUur, countdownTekst, parseDatum } from "@/lib/datum";
 import { vertaalProvincie } from "@/lib/provincies";
 import { getOpgeslagenToernooien, toernooiVerwijderen, notitieBijwerken, OpgeslagenToernooi } from "@/lib/opgeslagen-toernooien";
+import { googleMapsUrl, wazeUrl } from "@/lib/locatie";
 
 export function MijnTornooienContent() {
   const { t, taal } = useTranslation();
@@ -78,6 +79,26 @@ export function MijnTornooienContent() {
                     {t.beheer.verwijderen}
                   </button>
                 </div>
+                <p className="mt-1 text-sm text-grijs">
+                  📍{" "}
+                  <a
+                    href={googleMapsUrl(tn.adres, tn.gemeente)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-donker"
+                  >
+                    {tn.adres || tn.gemeente}
+                  </a>{" "}
+                  <a
+                    href={wazeUrl(tn.adres, tn.gemeente)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Waze"
+                    aria-label="Waze"
+                  >
+                    🚗
+                  </a>
+                </p>
                 <textarea
                   value={notitie}
                   onChange={(e) => notitieWijzigen(tn.id, e.target.value)}
