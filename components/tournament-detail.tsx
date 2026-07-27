@@ -10,7 +10,8 @@ import { CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
 import { Knop } from "@/components/ui/knop";
 import { googleAgendaLink, downloadIcs } from "@/lib/agenda";
 import { ToernooiOpslaanKnop } from "@/components/toernooi-opslaan-knop";
-import { googleMapsUrl, wazeUrl } from "@/lib/locatie";
+import { googleMapsUrl } from "@/lib/locatie";
+import { WazeLink } from "@/components/waze-link";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
@@ -112,15 +113,7 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
               toernooi.gemeente
             )}
             , {vertaalProvincie(toernooi.provincie, taal)}{" "}
-            <a
-              href={wazeUrl(toernooi.adres, toernooi.gemeente)}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Waze"
-              aria-label="Waze"
-            >
-              🚗
-            </a>
+            <WazeLink adres={toernooi.adres} gemeente={toernooi.gemeente} />
           </Detail>
           {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
             <Detail label={t.form.aantalRonden}>

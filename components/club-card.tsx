@@ -1,6 +1,7 @@
 import { Club } from "@/lib/types";
 import { avatarTintVoor } from "@/lib/initialen";
-import { googleMapsUrl, wazeUrl } from "@/lib/locatie";
+import { googleMapsUrl } from "@/lib/locatie";
+import { WazeLink } from "@/components/waze-link";
 
 export function ClubCard({ club }: { club: Club }) {
   return (
@@ -36,15 +37,7 @@ export function ClubCard({ club }: { club: Club }) {
           >
             {club.adres || club.gemeente}
           </a>{" "}
-          <a
-            href={wazeUrl(club.adres, club.gemeente)}
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Waze"
-            aria-label="Waze"
-          >
-            🚗
-          </a>
+          <WazeLink adres={club.adres} gemeente={club.gemeente} />
         </div>
         {club.contact_email && (
           <a

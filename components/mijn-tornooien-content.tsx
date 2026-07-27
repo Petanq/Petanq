@@ -8,7 +8,8 @@ import { Toernooi } from "@/lib/types";
 import { dagVanWeekKort, dagNummer, maandVolledig, formatUur, countdownTekst, parseDatum } from "@/lib/datum";
 import { vertaalProvincie } from "@/lib/provincies";
 import { getOpgeslagenToernooien, toernooiVerwijderen, notitieBijwerken, OpgeslagenToernooi } from "@/lib/opgeslagen-toernooien";
-import { googleMapsUrl, wazeUrl } from "@/lib/locatie";
+import { googleMapsUrl } from "@/lib/locatie";
+import { WazeLink } from "@/components/waze-link";
 
 export function MijnTornooienContent() {
   const { t, taal } = useTranslation();
@@ -89,15 +90,7 @@ export function MijnTornooienContent() {
                   >
                     {tn.adres || tn.gemeente}
                   </a>{" "}
-                  <a
-                    href={wazeUrl(tn.adres, tn.gemeente)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="Waze"
-                    aria-label="Waze"
-                  >
-                    🚗
-                  </a>
+                  <WazeLink adres={tn.adres} gemeente={tn.gemeente} />
                 </p>
                 <textarea
                   value={notitie}
