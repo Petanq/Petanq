@@ -19,6 +19,13 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
   const naam = taal === "fr" ? toernooi.naam_fr : toernooi.naam_nl;
   const maandIndex = parseDatum(toernooi.datum).getMonth();
   const deelUrl = `${SITE_URL}/toernooien/${toernooi.id}`;
+  const adresBevatGemeente = toernooi.adres?.toLowerCase().includes(toernooi.gemeente.toLowerCase());
+  const locatieQuery = toernooi.adres
+    ? adresBevatGemeente
+      ? toernooi.adres
+      : `${toernooi.adres}, ${toernooi.gemeente}`
+    : toernooi.gemeente;
+  const wazeUrl = `https://waze.com/ul?q=${encodeURIComponent(locatieQuery)}&navigate=yes`;
 
   // In-app browsers zoals die van Facebook/Instagram blokkeren vaak zowel de
   // moderne Clipboard API als window.prompt. document.execCommand("copy") op
@@ -100,9 +107,7 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
           <Detail label={t.form.gemeente}>
             {toernooi.adres ? (
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  `${toernooi.adres}, ${toernooi.gemeente}`
-                )}`}
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locatieQuery)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline hover:text-donker"
@@ -113,6 +118,15 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
               toernooi.gemeente
             )}
             , {vertaalProvincie(toernooi.provincie, taal)}
+            {" · "}
+            <a
+              href={wazeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-blauw-2 underline hover:text-donker"
+            >
+              Waze
+            </a>
           </Detail>
           {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
             <Detail label={t.form.aantalRonden}>
