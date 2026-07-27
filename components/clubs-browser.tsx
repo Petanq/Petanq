@@ -7,6 +7,7 @@ import { Club } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
 import { ClubCard } from "./club-card";
 import { AddClubCard } from "./add-club-card";
+import { BelgiumMap } from "./belgium-map";
 
 const REGIOS: Regio[] = ["vlaanderen", "wallonie", "brussel"];
 
@@ -15,6 +16,7 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
   const [zoek, setZoek] = useState("");
   const [regioFilter, setRegioFilter] = useState<Regio | null>(null);
   const [opengeklapt, setOpengeklapt] = useState<Set<Provincie>>(new Set());
+  const [kaartTonen, setKaartTonen] = useState(false);
 
   useEffect(() => {
     function klapOpenVoorHash() {
@@ -36,6 +38,23 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
       return next;
     });
   }
+
+  function kiesProvincieOpKaart(p: Provincie) {
+    setRegioFilter(null);
+    setZoek("");
+    setOpengeklapt((prev) => new Set(prev).add(p));
+    requestAnimationFrame(() => {
+      document.getElementById(p)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  const aantalPerProvincie = useMemo(() => {
+    const tellingen: Record<string, number> = {};
+    for (const club of clubs) {
+      tellingen[club.provincie] = (tellingen[club.provincie] ?? 0) + 1;
+    }
+    return tellingen;
+  }, [clubs]);
 
   const gefilterd = useMemo(() => {
     const term = zoek.trim().toLowerCase();
@@ -70,6 +89,20 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
             {t.lijst.meldFout}
           </a>
         </div>
+      </div>
+
+      <div className="mb-8">
+        <button
+          onClick={() => setKaartTonen((v) => !v)}
+          className="rounded-full border-[1.5px] border-rand bg-white px-4 py-2 text-sm font-semibold text-grijs transition-colors hover:border-blauw-3 hover:text-donker"
+        >
+          🗺️ {kaartTonen ? t.clubsPagina.verbergKaart : t.clubsPagina.toonKaart}
+        </button>
+        {kaartTonen && (
+          <div className="mt-4 rounded-2xl border-[1.5px] border-rand bg-white p-6">
+            <BelgiumMap aantalPerProvincie={aantalPerProvincie} onProvincieKiezen={kiesProvincieOpKaart} />
+          </div>
+        )}
       </div>
 
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

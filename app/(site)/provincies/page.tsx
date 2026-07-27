@@ -1,18 +1,7 @@
-import type { Metadata } from "next";
-import { getActieveClubs } from "@/lib/data";
-import { ProvinciesContent } from "@/components/provincies-content";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Provincies",
-  description: "Klik op een provincie op de kaart van België om de petanqueclubs daar te bekijken.",
-};
-
-export default async function ProvinciesPagina() {
-  const clubs = await getActieveClubs();
-  const aantalPerProvincie: Record<string, number> = {};
-  for (const club of clubs) {
-    aantalPerProvincie[club.provincie] = (aantalPerProvincie[club.provincie] ?? 0) + 1;
-  }
-
-  return <ProvinciesContent aantalPerProvincie={aantalPerProvincie} />;
+// De kaart van België staat sinds kort bovenaan de Clubs-pagina zelf i.p.v.
+// op een aparte route — oude links naar /provincies blijven zo toch werken.
+export default function ProvinciesPagina() {
+  redirect("/clubs");
 }

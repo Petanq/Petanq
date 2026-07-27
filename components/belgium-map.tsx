@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Provincie, PROVINCIE_REGIO, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
 import { PROVINCIE_VLAKKEN } from "@/lib/belgium-map-data";
@@ -24,14 +23,15 @@ const PROVINCIE_KLEUR: Record<Provincie, { normaal: string; actief: string; scha
   brussel: { normaal: "#6B3FA0", actief: "#8a5ec2", schaduw: "rgba(107,63,160,0.55)" },
 };
 
-export function BelgiumMap({ aantalPerProvincie }: { aantalPerProvincie: Record<string, number> }) {
+export function BelgiumMap({
+  aantalPerProvincie,
+  onProvincieKiezen,
+}: {
+  aantalPerProvincie: Record<string, number>;
+  onProvincieKiezen: (provincie: Provincie) => void;
+}) {
   const { t, taal } = useTranslation();
-  const router = useRouter();
   const [hover, setHover] = useState<Provincie | null>(null);
-
-  function ga(provincie: Provincie) {
-    router.push(`/clubs#${provincie}`);
-  }
 
   return (
     <div className="relative flex flex-col items-center gap-4">
@@ -77,7 +77,7 @@ export function BelgiumMap({ aantalPerProvincie }: { aantalPerProvincie: Record<
             <polygon
               key={provincie}
               points={points}
-              onClick={() => ga(provincie)}
+              onClick={() => onProvincieKiezen(provincie)}
               onMouseEnter={() => setHover(provincie)}
               onMouseLeave={() => setHover(null)}
               fill={actief ? kleur.actief : kleur.normaal}
@@ -155,7 +155,7 @@ export function BelgiumMap({ aantalPerProvincie }: { aantalPerProvincie: Record<
                 <button
                   key={v.provincie}
                   type="button"
-                  onClick={() => ga(v.provincie)}
+                  onClick={() => onProvincieKiezen(v.provincie)}
                   onMouseEnter={() => setHover(v.provincie)}
                   onMouseLeave={() => setHover(null)}
                   className="flex items-center gap-1.5 rounded-full border border-rand bg-[#faf9f7] px-2.5 py-1 text-[0.7rem] font-semibold text-donker transition-colors hover:border-blauw-3"

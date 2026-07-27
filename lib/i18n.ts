@@ -4,7 +4,6 @@ const nl = {
   nav: {
     subtitel: "De Belgische Petanquekalender",
     toernooien: "Toernooien",
-    provincies: "Provincies",
     clubs: "Clubs",
     reizen: "Op reis met Claudy",
     overOns: "Over ons",
@@ -139,6 +138,8 @@ const nl = {
     alleRegios: "Alle regio's",
     clubToevoegen: "+ Club toevoegen",
     geenResultaten: "Geen clubs gevonden.",
+    toonKaart: "Toon kaart van België",
+    verbergKaart: "Verberg kaart",
   },
   clubForm: {
     titel: "Club voorstellen",
@@ -236,12 +237,9 @@ const nl = {
     contactTekst: "Interesse of vragen? Contacteer Claudy Weibel rechtstreeks.",
   },
   provinciesPagina: {
-    titel: "Provincies",
-    beschrijving: "Klik op een provincie om de clubs daar te bekijken.",
     hint: "Beweeg over de kaart of tik op een provincie.",
     klikOm: "klik om clubs te bekijken →",
     clubsInProvincie: "clubs",
-    bron: "Kaart gebaseerd op werk van TUBS (Wikimedia Commons), gelicentieerd onder",
   },
   beheer: {
     inloggen: "Inloggen",
@@ -378,7 +376,6 @@ const fr: typeof nl = {
   nav: {
     subtitel: "Le calendrier belge de pétanque",
     toernooien: "Tournois",
-    provincies: "Provinces",
     clubs: "Clubs",
     reizen: "En voyage avec Claudy",
     overOns: "À propos",
@@ -513,6 +510,8 @@ const fr: typeof nl = {
     alleRegios: "Toutes les régions",
     clubToevoegen: "+ Ajouter un club",
     geenResultaten: "Aucun club trouvé.",
+    toonKaart: "Afficher la carte de la Belgique",
+    verbergKaart: "Masquer la carte",
   },
   clubForm: {
     titel: "Proposer un club",
@@ -610,12 +609,9 @@ const fr: typeof nl = {
     contactTekst: "Intéressé(e) ou des questions ? Contactez directement Claudy Weibel.",
   },
   provinciesPagina: {
-    titel: "Provinces",
-    beschrijving: "Cliquez sur une province pour voir les clubs qui s'y trouvent.",
     hint: "Survolez la carte ou touchez une province.",
     klikOm: "cliquez pour voir les clubs →",
     clubsInProvincie: "clubs",
-    bron: "Carte basée sur le travail de TUBS (Wikimedia Commons), sous licence",
   },
   beheer: {
     inloggen: "Connexion",
