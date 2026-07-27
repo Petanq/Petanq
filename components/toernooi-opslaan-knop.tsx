@@ -46,10 +46,10 @@ export function ToernooiOpslaanKnop({ toernooiId }: { toernooiId: string }) {
         </div>
         <button
           onClick={toggelen}
-          className={`shrink-0 whitespace-nowrap rounded-lg px-5 py-2.5 text-sm font-bold shadow-sm transition-all active:scale-95 ${
+          className={`shrink-0 whitespace-nowrap rounded-lg px-5 py-2.5 text-sm font-bold shadow-[0_4px_16px_rgba(244,196,48,0.4)] transition-all active:scale-95 ${
             opgeslagen
-              ? "border-[1.5px] border-geel bg-white text-[#92742a] hover:bg-[#fdf3d9]"
-              : "bg-blauw text-white hover:bg-blauw-2"
+              ? "border-[1.5px] border-geel bg-white text-[#92742a] shadow-none hover:bg-[#fdf3d9]"
+              : "bg-geel text-donker hover:brightness-105"
           }`}
         >
           {opgeslagen ? t.lijst.toernooiVerwijderenUitLijst : `☆ ${t.lijst.toernooiOpslaan}`}
