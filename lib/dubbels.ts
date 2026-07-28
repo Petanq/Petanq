@@ -5,7 +5,7 @@ import { Toernooi } from "@/lib/types";
 // wegnemen voorkomt dat zo'n schrijfvariant een echte dubbel laat ontsnappen.
 const DIAKRITISCHE_TEKENS = new RegExp("[\\u0300-\\u036f]", "g");
 
-function normaliseer(tekst: string): string {
+export function normaliseer(tekst: string): string {
   return tekst.trim().toLowerCase().normalize("NFD").replace(DIAKRITISCHE_TEKENS, "");
 }
 

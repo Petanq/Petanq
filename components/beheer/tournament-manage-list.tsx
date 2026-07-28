@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
-import { Categorie, Formule, Speelvorm, Toernooi } from "@/lib/types";
+import { Categorie, Formule, Speelvorm, Toernooi, Club } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { formatUur, maandJaarKey, maandVolledig, parseDatum, dagVanWeekKort, dagNummer, maandKort } from "@/lib/datum";
 import { toernooiBewerken, toernooiToevoegenAlsAdmin, toernooiVerwijderen } from "@/actions/beheer-toernooien";
@@ -15,6 +15,8 @@ import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
 import { MonthPills } from "@/components/month-pills";
 import { CATEGORIE_STREEP, CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
 import { vindMogelijkeDubbelsVoorVelden } from "@/lib/dubbels";
+import { vindClubBijNaam } from "@/lib/club-opzoeken";
+import { createClient } from "@/lib/supabase/client";
 
 function afficheItemLabel(item: AfficheVelden, taal: "nl" | "fr"): string {
   const datumLabel = item.datum ? `${dagNummer(item.datum)} ${maandKort(item.datum, taal)}` : "?";
@@ -315,6 +317,27 @@ function AddForm({
   const [huidigeIndex, setHuidigeIndex] = useState(0);
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<string | null>(null);
+  const [clubs, setClubs] = useState<Club[]>([]);
+  const [adresVanClub, setAdresVanClub] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("clubs")
+      .select("*")
+      .eq("actief", true)
+      .then(({ data }) => setClubs((data as Club[]) ?? []));
+  }, []);
+
+  function vulAdresInVanClub() {
+    if (adres || gemeente || provincie) return;
+    const club = vindClubBijNaam(clubnaam, clubs);
+    if (!club) return;
+    if (club.adres) setAdres(club.adres);
+    setGemeente(club.gemeente);
+    setProvincie(club.provincie);
+    setAdresVanClub(true);
+  }
 
   const dubbels = useMemo(
     () => vindMogelijkeDubbelsVoorVelden(datum, gemeente, bestaandeToernooien),
@@ -485,7 +508,13 @@ function AddForm({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {openToernooi ? t.form.organisator : t.form.clubnaam}
-          <input value={clubnaam} onChange={(e) => setClubnaam(e.target.value)} className="veld-input" />
+          <input
+            value={clubnaam}
+            onChange={(e) => setClubnaam(e.target.value)}
+            onBlur={vulAdresInVanClub}
+            className="veld-input"
+          />
+          {adresVanClub && <span className="text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</span>}
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.contactEmail}

@@ -198,6 +198,7 @@ const nl = {
     afficheAnalyseren: "De affiche wordt gelezen...",
     afficheAutoIngevuld:
       "We hebben op basis van de affiche alvast enkele velden ingevuld — controleer ze zeker voor je verstuurt.",
+    adresVanClubIngevuld: "Adres, gemeente en provincie automatisch ingevuld op basis van deze club.",
     linkInschrijving: "Link naar inschrijving",
     opmerking: "Opmerking",
     verplicht: "verplicht",
@@ -570,6 +571,7 @@ const fr: typeof nl = {
     afficheAnalyseren: "Lecture de l'affiche en cours...",
     afficheAutoIngevuld:
       "Nous avons déjà rempli certains champs à partir de l'affiche — vérifiez-les bien avant d'envoyer.",
+    adresVanClubIngevuld: "Adresse, commune et province automatiquement remplies à partir de ce club.",
     linkInschrijving: "Lien d'inscription",
     opmerking: "Remarque",
     verplicht: "obligatoire",

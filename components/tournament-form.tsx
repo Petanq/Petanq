@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
-import { Categorie, Formule, Speelvorm } from "@/lib/types";
+import { Categorie, Formule, Speelvorm, Club } from "@/lib/types";
 import { toernooiIndienen } from "@/actions/toernooien";
 import { uploadNaarStorage } from "@/lib/upload-bestand";
 import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
 import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
 import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
 import { Knop } from "@/components/ui/knop";
+import { createClient } from "@/lib/supabase/client";
+import { vindClubBijNaam } from "@/lib/club-opzoeken";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
@@ -56,6 +58,27 @@ export function TournamentForm() {
   const [aiBezig, setAiBezig] = useState(false);
   const [autoIngevuld, setAutoIngevuld] = useState(false);
   const [verzendPoging, setVerzendPoging] = useState(false);
+  const [clubs, setClubs] = useState<Club[]>([]);
+  const [adresVanClub, setAdresVanClub] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("clubs")
+      .select("*")
+      .eq("actief", true)
+      .then(({ data }) => setClubs((data as Club[]) ?? []));
+  }, []);
+
+  function vulAdresInVanClub() {
+    if (adres || gemeente || provincie) return;
+    const club = vindClubBijNaam(clubnaam, clubs);
+    if (!club) return;
+    if (club.adres) setAdres(club.adres);
+    setGemeente(club.gemeente);
+    setProvincie(club.provincie);
+    setAdresVanClub(true);
+  }
 
   function veldFout(waarde: string): string {
     return verzendPoging && !waarde ? "!border-rood-2" : "";
@@ -265,8 +288,10 @@ export function TournamentForm() {
               required
               value={clubnaam}
               onChange={(e) => setClubnaam(e.target.value)}
+              onBlur={vulAdresInVanClub}
               className={`veld-input ${veldFout(clubnaam)}`}
             />
+            {adresVanClub && <p className="mt-1 text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</p>}
           </Veld>
           <Veld label={t.form.naamToernooi} verplicht>
             <input
