@@ -126,9 +126,9 @@ export function ModeratorManageList({
           </div>
           {isAdmin && (
             <p className="text-xs text-grijs">
-              {t.beheer.aantalKeerIngelogd(mod.login_aantal)}
-              {mod.laatste_login &&
-                ` · ${t.beheer.laatsteInlog(new Date(mod.laatste_login).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE"))}`}
+              {t.beheer.aantalKeerBezocht(mod.bezoek_aantal)}
+              {mod.laatste_bezoek &&
+                ` · ${t.beheer.laatsteBezoek(new Date(mod.laatste_bezoek).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE"))}`}
             </p>
           )}
         </div>

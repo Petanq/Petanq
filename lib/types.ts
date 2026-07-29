@@ -95,6 +95,6 @@ export type Moderator = {
   goedgekeurd: boolean;
   toegangsniveau: "eigen_provincie" | "eigen_regio" | "heel_belgie";
   aangemaakt_op: string;
-  login_aantal: number;
-  laatste_login: string | null;
+  bezoek_aantal: number;
+  laatste_bezoek: string | null;
 };

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
-import { registreerInlog } from "@/actions/beheer-moderatoren";
 
 export function LoginForm() {
   const { t } = useTranslation();
@@ -26,7 +25,6 @@ export function LoginForm() {
       setFout(true);
       return;
     }
-    registreerInlog().catch(() => {});
     router.push("/beheer");
     router.refresh();
   }

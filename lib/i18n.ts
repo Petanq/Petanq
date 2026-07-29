@@ -361,8 +361,8 @@ const nl = {
       `Proficiat ${naam}, dit is al je ${n}e goedgekeurde toernooi! 🎉🥳`,
     vrijwilligerSinds: (sinds: string) => `Vrijwilliger sinds ${sinds}`,
     teamBedankje: (n: number) => `Samen keurden jullie deze maand al ${n} toernooien goed — knap teamwerk!`,
-    aantalKeerIngelogd: (n: number) => (n === 0 ? "Nog nooit ingelogd" : `🔑 ${n}x ingelogd`),
-    laatsteInlog: (datum: string) => `laatst: ${datum}`,
+    aantalKeerBezocht: (n: number) => (n === 0 ? "Nog niet op bezoek geweest" : `👀 ${n}x bezocht`),
+    laatsteBezoek: (datum: string) => `laatst: ${datum}`,
     goedkeurenBerichten: [
       "Toernooi goedgekeurd, weer eentje erbij! 💪",
       "Mooi zo! Nog een toernooi de wereld in geholpen. 🎉",
@@ -734,8 +734,8 @@ const fr: typeof nl = {
       `Félicitations ${naam}, c'est déjà ton ${n}e tournoi approuvé ! 🎉🥳`,
     vrijwilligerSinds: (sinds: string) => `Bénévole depuis ${sinds}`,
     teamBedankje: (n: number) => `Ensemble, vous avez déjà approuvé ${n} tournois ce mois-ci — beau travail d'équipe !`,
-    aantalKeerIngelogd: (n: number) => (n === 0 ? "Jamais connecté" : `🔑 ${n}x connecté`),
-    laatsteInlog: (datum: string) => `dernière fois : ${datum}`,
+    aantalKeerBezocht: (n: number) => (n === 0 ? "Pas encore venu consulter" : `👀 ${n}x consulté`),
+    laatsteBezoek: (datum: string) => `dernière fois : ${datum}`,
     goedkeurenBerichten: [
       "Tournoi approuvé, un de plus ! 💪",
       "Bien joué ! Un tournoi de plus dans le monde. 🎉",

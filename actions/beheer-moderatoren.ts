@@ -140,9 +140,11 @@ export async function moderatorWachtwoordBevestigen(): Promise<BeheerActieResult
   return { succes: true };
 }
 
-// Wordt aangeroepen vanuit het loginformulier, meteen na een geslaagde login.
-// Best-effort: als dit faalt mag dat de login zelf nooit blokkeren.
-export async function registreerInlog(): Promise<void> {
+// Wordt aangeroepen vanuit het beheerpaneel zelf, 1x per browsersessie
+// (zie ModeratorBezoekTeller) — telt dus effectieve bezoeken aan het paneel,
+// niet enkel het invullen van het loginformulier (dat door lang geldige
+// sessies zelden opnieuw gebeurt). Best-effort: mag nooit de pagina breken.
+export async function registreerBeheerBezoek(): Promise<void> {
   const supabase = createClient();
   const {
     data: { user },
@@ -152,14 +154,14 @@ export async function registreerInlog(): Promise<void> {
   const serviceClient = createServiceRoleClient();
   const { data: mod } = await serviceClient
     .from("moderatoren")
-    .select("login_aantal")
+    .select("bezoek_aantal")
     .eq("user_id", user.id)
     .maybeSingle();
   if (!mod) return;
 
   await serviceClient
     .from("moderatoren")
-    .update({ login_aantal: mod.login_aantal + 1, laatste_login: new Date().toISOString() })
+    .update({ bezoek_aantal: mod.bezoek_aantal + 1, laatste_bezoek: new Date().toISOString() })
     .eq("user_id", user.id);
 }
 
