@@ -114,31 +114,31 @@ export function PendingList({
                 {tn.contact_email || t.beheer.geenEmailOpgegeven}
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setUitgeklaptId(uitgeklaptId === tn.id ? null : tn.id)}
-                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+                className="whitespace-nowrap rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
               >
                 {uitgeklaptId === tn.id ? t.beheer.minderDetails : t.beheer.meerDetails}
               </button>
               <button
                 onClick={() => setBewerkId(tn.id)}
                 disabled={bezigId === tn.id}
-                className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+                className="whitespace-nowrap rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
               >
                 {t.beheer.bewerken}
               </button>
               <button
                 onClick={() => goedkeuren(tn.id)}
                 disabled={bezigId === tn.id}
-                className="rounded-md bg-groen px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:shadow-md hover:brightness-105 active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+                className="whitespace-nowrap rounded-md bg-groen px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:shadow-md hover:brightness-105 active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
               >
                 {t.beheer.goedkeuren}
               </button>
               <button
                 onClick={() => setWeigerId(tn.id)}
                 disabled={bezigId === tn.id}
-                className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+                className="whitespace-nowrap rounded-md bg-rood px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
               >
                 {t.beheer.weigeren}
               </button>
@@ -209,7 +209,7 @@ export function PendingList({
                 className="veld-input resize-none"
               />
               {!reden.trim() && <p className="text-xs text-grijs">{t.beheer.redenVerplicht}</p>}
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={weigerenBevestigen}
                   disabled={bezigId === tn.id || !reden.trim()}

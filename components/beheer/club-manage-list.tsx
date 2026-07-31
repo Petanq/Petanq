@@ -97,7 +97,7 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
             {club.telefoon && <div className="text-xs text-grijs">📞 {club.telefoon}</div>}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span
             className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
               club.actief ? "bg-[#ecfdf5] text-groen" : "bg-[#fffbeb] text-[#b45309]"
@@ -107,14 +107,14 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
           </span>
           <button
             onClick={() => setBewerkId(club.id)}
-            className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+            className="whitespace-nowrap rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
           >
             {t.beheer.bewerken}
           </button>
           <button
             onClick={() => toggleActief(club)}
             disabled={bezig === club.id}
-            className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-all active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100 ${
+            className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-semibold transition-all active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100 ${
               club.actief
                 ? "border border-rand text-donker hover:border-blauw-3 hover:bg-licht"
                 : "bg-groen text-white shadow-sm hover:shadow-md hover:brightness-105"
@@ -125,7 +125,7 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
           <button
             onClick={() => verwijderen(club.id)}
             disabled={bezig === club.id}
-            className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+            className="whitespace-nowrap rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
           >
             {t.beheer.verwijderen}
           </button>

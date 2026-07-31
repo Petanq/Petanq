@@ -249,7 +249,7 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
                           {t.categorie[tn.categorie]}
                         </span>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => setBewerkId(tn.id)}
                           className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
@@ -481,7 +481,7 @@ function AddForm({
       )}
       <div className="mb-3 flex flex-col gap-1.5">
         <span className="text-xs font-bold text-donker">{t.form.tornooiType}</span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => setOpenToernooi(true)}
@@ -607,7 +607,7 @@ function AddForm({
 
       <div className="mt-3 flex flex-col gap-1.5">
         <span className="text-xs font-bold text-donker">{t.form.speelvorm}</span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(["rondes", "poules"] as Speelvorm[]).map((sv) => (
             <button
               key={sv}
@@ -868,7 +868,7 @@ export function EditForm({
     <div className="rounded-[10px] border-[1.5px] border-blauw-3 bg-white p-4">
       <div className="mb-3 flex flex-col gap-1.5">
         <span className="text-xs font-bold text-donker">{t.form.tornooiType}</span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => setOpenToernooi(true)}
@@ -976,7 +976,7 @@ export function EditForm({
 
       <div className="mt-3 flex flex-col gap-1.5">
         <span className="text-xs font-bold text-donker">{t.form.speelvorm}</span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(["rondes", "poules"] as Speelvorm[]).map((sv) => (
             <button
               key={sv}
