@@ -11,6 +11,7 @@ import { ClubCard } from "./club-card";
 import { MonthCalendar } from "./month-calendar";
 import { NewsletterBlock } from "./newsletter-block";
 import { CtaBlock } from "./cta-block";
+import { ZoekIcoon } from "./ui/zoek-icoon";
 
 const LEGE_FILTERS: FilterState = {
   zoek: "",
@@ -137,9 +138,10 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
         ) : (
           <div className="flex flex-col gap-2">
             {groepen.length === 0 && (
-              <p className="rounded-lg border border-rand bg-white p-6 text-center text-sm text-grijs">
+              <div className="flex flex-col items-center gap-2 rounded-lg border border-rand bg-white p-8 text-center text-sm text-grijs">
+                <ZoekIcoon />
                 {t.lijst.geenResultaten}
-              </p>
+              </div>
             )}
             {groepen.map(([sleutel, lijst]) => {
               const [jaar] = sleutel.split("-");

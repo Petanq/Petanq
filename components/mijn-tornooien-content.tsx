@@ -54,7 +54,10 @@ export function MijnTornooienContent() {
       <p className="mb-8 text-sm text-grijs">{t.lijst.mijnTornooienUitleg}</p>
 
       {laden ? null : gesorteerd.length === 0 ? (
-        <p className="text-sm text-grijs">{t.lijst.geenOpgeslagenToernooien}</p>
+        <div className="flex flex-col items-center gap-2 rounded-lg border border-rand bg-white p-8 text-center text-sm text-grijs">
+          <span className="text-4xl">☆</span>
+          {t.lijst.geenOpgeslagenToernooien}
+        </div>
       ) : (
         <div className="flex flex-col gap-4">
           {gesorteerd.map((tn) => {

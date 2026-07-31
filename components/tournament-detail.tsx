@@ -167,45 +167,52 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
           )}
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-          <span className="font-semibold text-grijs">{t.lijst.voegToeAanAgenda}:</span>
-          <a
-            href={googleAgendaLink(toernooi, naam)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-blauw-2 underline hover:text-donker"
-          >
-            {t.lijst.googleAgenda}
-          </a>
-          <button
-            onClick={() => downloadIcs(toernooi, naam)}
-            className="font-semibold text-blauw-2 underline hover:text-donker"
-          >
-            {t.lijst.icsBestand}
-          </button>
+        <div className="mt-4 flex flex-col gap-2">
+          <span className="text-xs font-bold uppercase tracking-wide text-grijs">{t.lijst.voegToeAanAgenda}</span>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={googleAgendaLink(toernooi, naam)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+            >
+              📅 {t.lijst.googleAgenda}
+            </a>
+            <button
+              onClick={() => downloadIcs(toernooi, naam)}
+              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+            >
+              📄 {t.lijst.icsBestand}
+            </button>
+          </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-          <span className="font-semibold text-grijs">{t.lijst.deelDitToernooi}:</span>
-          <a
-            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${naam} — ${toernooi.clubnaam}\n${deelUrl}`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-blauw-2 underline hover:text-donker"
-          >
-            WhatsApp
-          </a>
-          <a
-            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(deelUrl)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-blauw-2 underline hover:text-donker"
-          >
-            Facebook
-          </a>
-          <button onClick={linkKopieren} className="font-semibold text-blauw-2 underline hover:text-donker">
-            {gekopieerd ? t.lijst.linkGekopieerd : t.lijst.linkKopieren}
-          </button>
+        <div className="mt-4 flex flex-col gap-2">
+          <span className="text-xs font-bold uppercase tracking-wide text-grijs">{t.lijst.deelDitToernooi}</span>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${naam} — ${toernooi.clubnaam}\n${deelUrl}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+            >
+              💬 WhatsApp
+            </a>
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(deelUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+            >
+              📘 Facebook
+            </a>
+            <button
+              onClick={linkKopieren}
+              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+            >
+              {gekopieerd ? `✓ ${t.lijst.linkGekopieerd}` : `🔗 ${t.lijst.linkKopieren}`}
+            </button>
+          </div>
         </div>
 
         <a

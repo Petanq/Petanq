@@ -8,6 +8,7 @@ import { ALLE_PROVINCIES, Provincie, Regio, vertaalProvincie, vertaalRegio } fro
 import { ClubCard } from "./club-card";
 import { AddClubCard } from "./add-club-card";
 import { BelgiumMap } from "./belgium-map";
+import { ZoekIcoon } from "./ui/zoek-icoon";
 
 const REGIOS: Regio[] = ["vlaanderen", "wallonie", "brussel"];
 
@@ -144,9 +145,10 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
       </div>
 
       {gefilterd.length === 0 && (
-        <p className="rounded-lg border border-rand bg-white p-6 text-center text-sm text-grijs">
+        <div className="flex flex-col items-center gap-2 rounded-lg border border-rand bg-white p-8 text-center text-sm text-grijs">
+          <ZoekIcoon />
           {t.clubsPagina.geenResultaten}
-        </p>
+        </div>
       )}
 
       {regiosMetData.map((regio) => {

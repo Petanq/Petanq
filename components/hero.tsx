@@ -58,7 +58,7 @@ export function Hero({ aantalToernooien, aantalClubs, aantalControleurs }: HeroP
           <div className="flex flex-wrap gap-8 border-t border-white/10 pt-6">
             <Stat href="#toernooien" waarde={`${aantalToernooien}+`} label={t.hero.statToernooien} />
             <Stat href="/clubs" waarde={`${aantalClubs}+`} label={t.hero.statClubs} />
-            <Stat href="/provincies" waarde="11" label={t.hero.statProvincies} />
+            <Stat href="/clubs" waarde="11" label={t.hero.statProvincies} />
             <Stat href="/over-ons" waarde={`${aantalControleurs}`} label={t.hero.statControleurs} />
           </div>
         </div>
