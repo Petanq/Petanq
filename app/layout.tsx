@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
@@ -38,6 +38,19 @@ export const metadata: Metadata = {
       "De centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel.",
     images: ["/images/logo-bron-volledig.png"],
   },
+  manifest: "/manifest.webmanifest",
+  icons: {
+    apple: "/icon-192.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Petanque13",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1F1F1F",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

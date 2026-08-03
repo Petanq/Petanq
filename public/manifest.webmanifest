@@ -1,0 +1,16 @@
+{
+  "name": "Petanque13 — De Belgische Petanquekalender",
+  "short_name": "Petanque13",
+  "description": "De centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1F1F1F",
+  "theme_color": "#1F1F1F",
+  "lang": "nl-BE",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
