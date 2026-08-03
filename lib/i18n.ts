@@ -298,6 +298,7 @@ const nl = {
     geweigerdDezeMaandLabel: "Geweigerd deze maand",
     actieveClubsLabel: "Actieve clubs",
     bezoekenPerProvincie: "Bezoeken per provincie",
+    bezoekenPerDag: "Bezoeken per dag (laatste 14 dagen)",
     reizenPaginaBezoekenLabel: "Bezoeken 'Op reis met Claudy'",
     onbekendeLocatie: "Onbekend",
     bezoekenPerProvincieUitleg:
@@ -671,6 +672,7 @@ const fr: typeof nl = {
     geweigerdDezeMaandLabel: "Refuses ce mois-ci",
     actieveClubsLabel: "Clubs actifs",
     bezoekenPerProvincie: "Visites par province",
+    bezoekenPerDag: "Visites par jour (14 derniers jours)",
     reizenPaginaBezoekenLabel: "Visites « En voyage avec Claudy »",
     onbekendeLocatie: "Inconnu",
     bezoekenPerProvincieUitleg:

@@ -2,6 +2,7 @@ import {
   getInBehandelingToernooien,
   getBezoekStatistieken,
   getBezoekenPerProvincie,
+  getBezoekenPerDag,
   getPaginaBezoekTotaal,
   getToernooiStatistieken,
   getAlleGoedgekeurdeToernooienVoorBeheer,
@@ -18,6 +19,7 @@ export default async function BeheerDashboardPagina() {
     toernooien,
     bezoekStatistieken,
     bezoekenPerProvincie,
+    bezoekenPerDag,
     reizenPaginaBezoeken,
     toernooiStatistieken,
     goedgekeurdeToernooien,
@@ -27,6 +29,7 @@ export default async function BeheerDashboardPagina() {
     getInBehandelingToernooien(),
     getBezoekStatistieken(),
     getBezoekenPerProvincie(),
+    getBezoekenPerDag(14),
     getPaginaBezoekTotaal("/petanque-reizen"),
     getToernooiStatistieken(),
     getAlleGoedgekeurdeToernooienVoorBeheer(),
@@ -66,6 +69,7 @@ export default async function BeheerDashboardPagina() {
       <StatistiekenPaneel
         bezoeken={bezoekStatistieken}
         bezoekenPerProvincie={bezoekenPerProvincie}
+        bezoekenPerDag={bezoekenPerDag}
         reizenPaginaBezoeken={reizenPaginaBezoeken}
         toernooien={toernooiStatistieken}
         isAdmin={magAdminZien}

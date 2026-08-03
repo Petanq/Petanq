@@ -137,6 +137,37 @@ export async function getBezoekStatistieken(): Promise<BezoekStatistieken> {
   return { totaal, dezeMaand };
 }
 
+export type BezoekPerDag = { dag: string; aantal: number };
+
+export async function getBezoekenPerDag(aantalDagen: number): Promise<BezoekPerDag[]> {
+  const supabase = createServiceRoleClient();
+  const vanaf = new Date();
+  vanaf.setDate(vanaf.getDate() - (aantalDagen - 1));
+  const vanafIso = vanaf.toISOString().slice(0, 10);
+
+  const { data, error } = await supabase
+    .from("site_bezoeken")
+    .select("dag, aantal")
+    .gte("dag", vanafIso)
+    .order("dag", { ascending: true });
+
+  if (error || !data) {
+    console.error("Kon bezoeken per dag niet ophalen:", error?.message);
+    return [];
+  }
+
+  // Ook dagen zonder bezoek tonen (aantal 0), zodat de reeks nooit gaten heeft.
+  const perDag = new Map<string, number>(data.map((rij: BezoekPerDag) => [rij.dag, rij.aantal]));
+  const reeks: BezoekPerDag[] = [];
+  for (let i = 0; i < aantalDagen; i++) {
+    const datum = new Date(vanaf);
+    datum.setDate(vanaf.getDate() + i);
+    const sleutel = datum.toISOString().slice(0, 10);
+    reeks.push({ dag: sleutel, aantal: perDag.get(sleutel) ?? 0 });
+  }
+  return reeks;
+}
+
 export type BezoekPerProvincie = { provincie: string; aantal: number };
 
 export async function getBezoekenPerProvincie(): Promise<BezoekPerProvincie[]> {

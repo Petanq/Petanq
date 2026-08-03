@@ -2,20 +2,23 @@
 
 import { useState } from "react";
 import { useTranslation } from "@/lib/language-context";
-import { BezoekStatistieken, BezoekPerProvincie, ToernooiStatistieken } from "@/lib/data";
+import { BezoekStatistieken, BezoekPerProvincie, BezoekPerDag, ToernooiStatistieken } from "@/lib/data";
 import { Provincie, vertaalProvincie } from "@/lib/provincies";
+import { dagVanWeekKort, dagNummer, maandKort } from "@/lib/datum";
 
 const MEDAILLES = ["🥇", "🥈", "🥉"];
 
 export function StatistiekenPaneel({
   bezoeken,
   bezoekenPerProvincie,
+  bezoekenPerDag,
   reizenPaginaBezoeken,
   toernooien,
   isAdmin,
 }: {
   bezoeken: BezoekStatistieken;
   bezoekenPerProvincie: BezoekPerProvincie[];
+  bezoekenPerDag: BezoekPerDag[];
   reizenPaginaBezoeken: number;
   toernooien: ToernooiStatistieken;
   isAdmin: boolean;
@@ -23,6 +26,7 @@ export function StatistiekenPaneel({
   const { t, taal } = useTranslation();
   const [open, setOpen] = useState(false);
   const maxBezoekProvincie = Math.max(1, ...bezoekenPerProvincie.map((p) => p.aantal));
+  const maxBezoekDag = Math.max(1, ...bezoekenPerDag.map((d) => d.aantal));
 
   return (
     <div
@@ -108,6 +112,30 @@ export function StatistiekenPaneel({
                 ))}
               </div>
               <p className="mt-2 text-xs text-grijs">{t.beheer.bezoekenPerProvincieUitleg}</p>
+            </div>
+          )}
+
+          {isAdmin && bezoekenPerDag.length > 0 && (
+            <div className="border-t border-rand pt-4">
+              <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-donker">
+                {t.beheer.bezoekenPerDag}
+              </h3>
+              <div className="flex flex-col gap-1.5">
+                {bezoekenPerDag.map((rij) => (
+                  <div key={rij.dag} className="flex items-center gap-2 text-sm">
+                    <span className="w-16 shrink-0 text-donker">
+                      {dagVanWeekKort(rij.dag, taal)} {dagNummer(rij.dag)} {maandKort(rij.dag, taal)}
+                    </span>
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-licht">
+                      <div
+                        className="h-full rounded-full bg-blauw-3"
+                        style={{ width: `${Math.max(4, (rij.aantal / maxBezoekDag) * 100)}%` }}
+                      />
+                    </div>
+                    <span className="w-8 shrink-0 text-right font-bold text-blauw-3">{rij.aantal}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
