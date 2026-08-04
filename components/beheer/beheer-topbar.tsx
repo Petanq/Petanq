@@ -36,8 +36,8 @@ export function BeheerTopbar() {
       <div className="flex items-center gap-3">
         <Link
           href="/"
-          className="text-sm font-medium text-white/60 transition-colors hover:text-white"
           title={t.beheer.naarWebsite}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-lg text-white transition-colors active:scale-95 sm:h-auto sm:w-auto sm:rounded-md sm:bg-transparent sm:px-3 sm:py-2 sm:text-sm sm:font-medium sm:text-white/60 sm:hover:bg-white/[0.08] sm:hover:text-white"
         >
           <span className="sm:hidden">←</span>
           <span className="hidden sm:inline">← {t.beheer.naarWebsite}</span>
