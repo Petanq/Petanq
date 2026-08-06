@@ -43,6 +43,31 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
     return gelukt;
   }
 
+  // Opent rechtstreeks Messenger (mobiele app) om de link door te sturen,
+  // in plaats van naar de Facebook-pagina te gaan. Als de Messenger-app niet
+  // opent (bv. op desktop, of niet geïnstalleerd), valt dit terug op de
+  // gewone Facebook-deelvenster na een korte timeout.
+  function deelViaMessenger() {
+    const messengerLink = `fb-messenger://share/?link=${encodeURIComponent(deelUrl)}`;
+    const fallbackLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(deelUrl)}`;
+    // Een window.open() in de setTimeout zou als pop-up geblokkeerd worden
+    // omdat die niet meer synchroon bij de klik gebeurt — de huidige pagina
+    // laten navigeren via location.href valt daar niet onder.
+    const timer = setTimeout(() => {
+      if (!document.hidden) {
+        window.location.href = fallbackLink;
+      }
+    }, 900);
+    window.addEventListener(
+      "visibilitychange",
+      () => {
+        if (document.hidden) clearTimeout(timer);
+      },
+      { once: true }
+    );
+    window.location.href = messengerLink;
+  }
+
   async function linkKopieren() {
     try {
       await navigator.clipboard.writeText(deelUrl);
@@ -198,14 +223,12 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
             >
               💬 WhatsApp
             </a>
-            <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(deelUrl)}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={deelViaMessenger}
               className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
             >
-              📘 Facebook
-            </a>
+              💬 Messenger
+            </button>
             <button
               onClick={linkKopieren}
               className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"

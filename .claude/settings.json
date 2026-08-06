@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_screenshot",
+      "Bash(cd \"/c/Users/Frederic/Desktop/web petanque\" && npx tsc --noEmit *)",
+      "mcp__Claude_Browser__read_page",
+      "mcp__Claude_Browser__get_page_text",
+      "mcp__Claude_Browser__read_console_messages",
+      "mcp__Claude_Browser__preview_logs",
+      "Bash(cd \"/c/Users/Frederic/Desktop/web petanque\" && export PATH=\"/c/Program Files/nodejs:$PATH\" && ./node_modules/.bin/tsc --noEmit -p . ; echo \"EXIT:$?\")",
+      "mcp__Claude_Preview__preview_logs",
+      "mcp__Claude_Browser__read_network_requests",
+      "mcp__Claude_Preview__preview_snapshot",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "mcp__Claude_Preview__preview_list",
+      "mcp__Claude_Preview__preview_console_logs",
+      "mcp__Claude_Browser__find",
+      "mcp__Claude_Preview__preview_inspect",
+      "mcp__Claude_Browser__tabs_context",
+      "mcp__Claude_Browser__preview_list",
+      "mcp__claude-in-chrome__read_network_requests",
+      "mcp__claude-in-chrome__find",
+      "Bash(command -v node 2>&1 && node -v 2>&1; command -v npm 2>&1 && npm -v 2>&1)"
+    ]
+  }
+}
