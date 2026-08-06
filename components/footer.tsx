@@ -10,7 +10,7 @@ export function Footer() {
     <div className="mt-3 border-t border-rand px-6 py-6 text-center text-[0.77rem] text-grijs">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/images/logo-wordmark.png"
+        src="/images/logo-volledig.png"
         alt="Petanque13"
         className="mx-auto mb-3 h-10 w-auto"
       />
