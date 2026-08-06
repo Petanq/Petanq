@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
-import { Logo } from "@/components/logo";
 import { LanguageToggle } from "@/components/language-toggle";
 
 export function BeheerTopbar() {
@@ -23,11 +23,8 @@ export function BeheerTopbar() {
   return (
     <nav className="flex h-16 items-center justify-between border-b border-white/10 bg-donker px-6 lg:px-10">
       <div className="flex items-center gap-3">
-        <Link href="/beheer" className="flex items-center gap-2.5">
-          <Logo className="h-14 w-14" />
-          <span className="flex items-center font-titel text-xl font-extrabold tracking-tight text-white">
-            Petanque13
-          </span>
+        <Link href="/beheer" className="flex items-center">
+          <Image src="/images/logo-volledig.png" alt="Petanque13" width={1526} height={344} priority className="h-11 w-auto" />
         </Link>
         <span className="rounded-full border border-geel/40 bg-geel/10 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-widest text-geel">
           {t.beheer.dashboard}

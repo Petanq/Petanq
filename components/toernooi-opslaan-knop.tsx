@@ -9,7 +9,9 @@ export function ToernooiOpslaanKnop({ toernooiId }: { toernooiId: string }) {
   const [opgeslagen, setOpgeslagen] = useState(false);
   const [notitie, setNotitie] = useState("");
   const [notitieBewaard, setNotitieBewaard] = useState(false);
+  const [melding, setMelding] = useState("");
   const bewaardTimer = useRef<ReturnType<typeof setTimeout>>();
+  const meldingTimer = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     setOpgeslagen(isOpgeslagen(toernooiId));
@@ -17,17 +19,28 @@ export function ToernooiOpslaanKnop({ toernooiId }: { toernooiId: string }) {
   }, [toernooiId]);
 
   useEffect(() => {
-    return () => clearTimeout(bewaardTimer.current);
+    return () => {
+      clearTimeout(bewaardTimer.current);
+      clearTimeout(meldingTimer.current);
+    };
   }, []);
+
+  function toonMelding(tekst: string) {
+    setMelding(tekst);
+    clearTimeout(meldingTimer.current);
+    meldingTimer.current = setTimeout(() => setMelding(""), 2500);
+  }
 
   function toggelen() {
     if (opgeslagen) {
       toernooiVerwijderen(toernooiId);
       setOpgeslagen(false);
       setNotitie("");
+      toonMelding(t.lijst.toernooiVerwijderdMelding);
     } else {
       toernooiOpslaan(toernooiId);
       setOpgeslagen(true);
+      toonMelding(t.lijst.toernooiToegevoegdMelding);
     }
   }
 
@@ -55,6 +68,7 @@ export function ToernooiOpslaanKnop({ toernooiId }: { toernooiId: string }) {
           {opgeslagen ? t.lijst.toernooiVerwijderenUitLijst : `☆ ${t.lijst.toernooiOpslaan}`}
         </button>
       </div>
+      {melding && <p className="mt-2 text-xs font-semibold text-groen">✓ {melding}</p>}
       {opgeslagen && (
         <div className="mt-4 border-t border-geel/40 pt-4">
           <label className="mb-1 block text-xs font-bold text-grijs">{t.lijst.notitieLabel}</label>

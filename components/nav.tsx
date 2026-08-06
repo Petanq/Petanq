@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslation } from "@/lib/language-context";
-import { Logo } from "./logo";
 import { LanguageToggle } from "./language-toggle";
 
 export function Nav() {
@@ -14,11 +14,15 @@ export function Nav() {
     <nav className="sticky top-0 z-[300] border-b border-white/[0.07] bg-blauw">
       <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-10">
         <Link href="/" className="flex items-center gap-1.5 sm:gap-2.5">
-          <Logo className="h-10 w-10 sm:h-14 sm:w-14" />
           <div className="flex flex-col leading-none">
-            <span className="flex items-center font-titel text-lg font-extrabold tracking-tight text-white sm:text-2xl">
-              Petanque13
-            </span>
+            <Image
+              src="/images/logo-volledig.png"
+              alt="Petanque13"
+              width={1526}
+              height={344}
+              priority
+              className="h-9 w-auto sm:h-12"
+            />
             <span className="hidden text-[0.6rem] font-semibold uppercase tracking-widest text-white/40 min-[420px]:block">
               {t.nav.subtitel}
             </span>

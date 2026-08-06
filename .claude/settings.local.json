@@ -160,7 +160,11 @@
       "Bash(perl fix_deductions2.pl)",
       "Bash(perl fix_deductions3.pl)",
       "Bash(perl fix_big_section.pl)",
-      "Bash(find \"C:/Users/Frederic/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin\" -iname \"merge_runs.py\" 2>&1)"
+      "Bash(find \"C:/Users/Frederic/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin\" -iname \"merge_runs.py\" 2>&1)",
+      "Bash(perl translate.pl)",
+      "Bash(perl -CSD -pi -e 's/xml:space=\"preserve\">Paars <\\\\/w:t>/xml:space=\"preserve\">Violet<\\\\/w:t>/' unpacked/word/document.xml)",
+      "Bash(perl -pe 's/<[^>]*>//g')",
+      "Bash(unzip -l \"/c/Users/Frederic/AppData/Local/Temp/claude/C--Users-Frederic-Desktop-web-petanque/1590c97b-b655-4ddf-b87e-fad4404cee03/scratchpad/ni033_audit/FIXED.docx\")"
     ]
   }
 }
