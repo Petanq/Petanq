@@ -157,7 +157,10 @@
       "Bash(perl parse_key.pl)",
       "Bash(perl fix_q8.pl)",
       "Bash(perl fix_deductions.pl)",
-      "Bash(perl fix_deductions2.pl)"
+      "Bash(perl fix_deductions2.pl)",
+      "Bash(perl fix_deductions3.pl)",
+      "Bash(perl fix_big_section.pl)",
+      "Bash(find \"C:/Users/Frederic/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin\" -iname \"merge_runs.py\" 2>&1)"
     ]
   }
 }
