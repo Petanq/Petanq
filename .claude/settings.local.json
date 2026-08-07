@@ -164,7 +164,13 @@
       "Bash(perl translate.pl)",
       "Bash(perl -CSD -pi -e 's/xml:space=\"preserve\">Paars <\\\\/w:t>/xml:space=\"preserve\">Violet<\\\\/w:t>/' unpacked/word/document.xml)",
       "Bash(perl -pe 's/<[^>]*>//g')",
-      "Bash(unzip -l \"/c/Users/Frederic/AppData/Local/Temp/claude/C--Users-Frederic-Desktop-web-petanque/1590c97b-b655-4ddf-b87e-fad4404cee03/scratchpad/ni033_audit/FIXED.docx\")"
+      "Bash(unzip -l \"/c/Users/Frederic/AppData/Local/Temp/claude/C--Users-Frederic-Desktop-web-petanque/1590c97b-b655-4ddf-b87e-fad4404cee03/scratchpad/ni033_audit/FIXED.docx\")",
+      "Bash(rm -rf xlsx_check2)",
+      "Bash(mkdir xlsx_check2)",
+      "Bash(unzip -o -q \"/c/Users/Frederic/Desktop/Nitra Audit Examens/Audit_Examens.xlsx\" -d xlsx_check2)",
+      "Bash(rm -rf xlsx_check3)",
+      "Bash(mkdir xlsx_check3)",
+      "Bash(unzip -o -q \"/c/Users/Frederic/Desktop/Nitra Audit Examens/Audit_Examens.xlsx\" -d xlsx_check3)"
     ]
   }
 }
