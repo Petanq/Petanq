@@ -91,7 +91,7 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
       <main>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-titel text-2xl tracking-wide text-blauw">{t.lijst.titel}</h2>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {weergave === "lijst" && (
               <MonthPills
                 maandSleutels={maandSleutels}
@@ -99,7 +99,7 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
                 setActieveMaand={setActieveMaand}
               />
             )}
-            <div className="flex overflow-hidden rounded-full border border-rand">
+            <div className="flex shrink-0 overflow-hidden rounded-full border border-rand">
               <button
                 onClick={() => setWeergave("lijst")}
                 className={`px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
