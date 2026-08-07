@@ -170,7 +170,12 @@
       "Bash(unzip -o -q \"/c/Users/Frederic/Desktop/Nitra Audit Examens/Audit_Examens.xlsx\" -d xlsx_check2)",
       "Bash(rm -rf xlsx_check3)",
       "Bash(mkdir xlsx_check3)",
-      "Bash(unzip -o -q \"/c/Users/Frederic/Desktop/Nitra Audit Examens/Audit_Examens.xlsx\" -d xlsx_check3)"
+      "Bash(unzip -o -q \"/c/Users/Frederic/Desktop/Nitra Audit Examens/Audit_Examens.xlsx\" -d xlsx_check3)",
+      "Read(//c/Program Files \\\\\\(x86\\\\\\)/**)",
+      "Bash(where.exe winword *)",
+      "Read(//c/Program Files/Microsoft Office/**)",
+      "Read(//c/Program Files/Microsoft Office 15/**)",
+      "Bash(tasklist)"
     ]
   }
 }
