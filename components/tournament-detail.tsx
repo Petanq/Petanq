@@ -184,6 +184,12 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
                 >
                   {dagVanWeekKort(schifting.datum, taal)} {dagNummer(schifting.datum)}{" "}
                   {maandVolledig(parseDatum(schifting.datum).getMonth(), taal)}
+                  {(schifting.uur ?? toernooi.kwalificatie_uur) && (
+                    <span className="text-donker/60">
+                      {" "}
+                      · {formatUur((schifting.uur ?? toernooi.kwalificatie_uur) as string)}
+                    </span>
+                  )}
                 </a>
               ))}
             </div>
