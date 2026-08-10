@@ -309,6 +309,7 @@ function AddForm({
   const [linkInschrijving, setLinkInschrijving] = useState("");
   const [opmerking, setOpmerking] = useState("");
   const [kwalificatieData, setKwalificatieData] = useState<string[]>([]);
+  const [kwalificatieUur, setKwalificatieUur] = useState("");
   const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
   const [afficheBezig, setAfficheBezig] = useState(false);
   const [afficheFout, setAfficheFout] = useState(false);
@@ -369,6 +370,7 @@ function AddForm({
     setLinkInschrijving("");
     setOpmerking("");
     setKwalificatieData([]);
+    setKwalificatieUur("");
     setAutoIngevuld(false);
   }
 
@@ -455,6 +457,7 @@ function AddForm({
       link_inschrijving: linkInschrijving || null,
       opmerking: opmerking || null,
       kwalificatiedata: kwalificatieData.filter(Boolean),
+      kwalificatie_uur: kwalificatieUur || null,
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
       finale,
@@ -712,7 +715,12 @@ function AddForm({
       </label>
 
       <div className="mt-3">
-        <KwalificatieDataVeld waarden={kwalificatieData} onChange={setKwalificatieData} />
+        <KwalificatieDataVeld
+          waarden={kwalificatieData}
+          onChange={setKwalificatieData}
+          uur={kwalificatieUur}
+          onUurChange={setKwalificatieUur}
+        />
       </div>
 
       <div className="mt-3 flex flex-col gap-1.5">
@@ -817,6 +825,7 @@ export function EditForm({
   const [linkInschrijving, setLinkInschrijving] = useState(toernooi.link_inschrijving ?? "");
   const [opmerking, setOpmerking] = useState(toernooi.opmerking ?? "");
   const [kwalificatieData, setKwalificatieData] = useState<string[]>(toernooi.kwalificatiedata ?? []);
+  const [kwalificatieUur, setKwalificatieUur] = useState(toernooi.kwalificatie_uur ?? "");
   const [vol, setVol] = useState(toernooi.vol);
   const [afficheUrl, setAfficheUrl] = useState(toernooi.affiche_url);
   const [afficheBezig, setAfficheBezig] = useState(false);
@@ -861,6 +870,7 @@ export function EditForm({
       link_inschrijving: linkInschrijving || null,
       opmerking: opmerking || null,
       kwalificatiedata: kwalificatieData.filter(Boolean),
+      kwalificatie_uur: kwalificatieUur || null,
       vol,
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
@@ -1092,7 +1102,12 @@ export function EditForm({
       </label>
 
       <div className="mt-3">
-        <KwalificatieDataVeld waarden={kwalificatieData} onChange={setKwalificatieData} />
+        <KwalificatieDataVeld
+          waarden={kwalificatieData}
+          onChange={setKwalificatieData}
+          uur={kwalificatieUur}
+          onUurChange={setKwalificatieUur}
+        />
       </div>
 
       <div className="mt-3 flex flex-col gap-1.5">

@@ -5,9 +5,13 @@ import { useTranslation } from "@/lib/language-context";
 export function KwalificatieDataVeld({
   waarden,
   onChange,
+  uur,
+  onUurChange,
 }: {
   waarden: string[];
   onChange: (waarden: string[]) => void;
+  uur: string;
+  onUurChange: (uur: string) => void;
 }) {
   const { t } = useTranslation();
 
@@ -25,6 +29,17 @@ export function KwalificatieDataVeld({
     <div className="flex flex-col gap-1.5">
       <span className="text-xs font-bold text-donker">{t.form.kwalificatieData}</span>
       <p className="text-xs text-grijs">{t.form.kwalificatieDataUitleg}</p>
+      {waarden.length > 0 && (
+        <label className="mb-1 flex items-center gap-2 text-xs font-semibold text-donker">
+          {t.form.kwalificatieUur}
+          <input
+            type="time"
+            value={uur}
+            onChange={(e) => onUurChange(e.target.value)}
+            className="veld-input w-auto"
+          />
+        </label>
+      )}
       {waarden.map((waarde, index) => (
         <div key={index} className="flex items-center gap-2">
           <input

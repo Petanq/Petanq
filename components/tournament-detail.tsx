@@ -171,7 +171,7 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
               {toernooi.kwalificatiedata.map((kwalificatieDatum) => (
                 <a
                   key={kwalificatieDatum}
-                  href={googleAgendaLink(toernooi, naam, kwalificatieDatum)}
+                  href={googleAgendaLink(toernooi, naam, kwalificatieDatum, toernooi.kwalificatie_uur ?? undefined)}
                   target="_blank"
                   rel="noopener noreferrer"
                   title={t.lijst.kwalificatieDatumToevoegenAanAgenda}

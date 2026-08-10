@@ -53,6 +53,7 @@ export function TournamentForm() {
   const [linkInschrijving, setLinkInschrijving] = useState("");
   const [opmerking, setOpmerking] = useState("");
   const [kwalificatieData, setKwalificatieData] = useState<string[]>([]);
+  const [kwalificatieUur, setKwalificatieUur] = useState("");
   const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
   const [afficheNaam, setAfficheNaam] = useState<string | null>(null);
   const [afficheBezig, setAfficheBezig] = useState(false);
@@ -185,6 +186,7 @@ export function TournamentForm() {
         link_inschrijving: linkInschrijving || null,
         opmerking: opmerking || null,
         kwalificatiedata: kwalificatieData.filter(Boolean),
+        kwalificatie_uur: kwalificatieUur || null,
         affiche_url: afficheUrl || null,
         open_toernooi: openToernooi,
         finale,
@@ -496,7 +498,12 @@ export function TournamentForm() {
             />
           </Veld>
 
-          <KwalificatieDataVeld waarden={kwalificatieData} onChange={setKwalificatieData} />
+          <KwalificatieDataVeld
+            waarden={kwalificatieData}
+            onChange={setKwalificatieData}
+            uur={kwalificatieUur}
+            onUurChange={setKwalificatieUur}
+          />
         </fieldset>
 
         {verzendPoging &&
