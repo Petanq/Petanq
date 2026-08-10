@@ -100,6 +100,7 @@ export async function toernooiGoedkeuren(id: string): Promise<BeheerActieResulta
 
   revalidatePath("/beheer");
   revalidatePath("/beheer/toernooien");
+  revalidatePath("/beheer/schiftingen");
   revalidatePath("/");
   return { succes: true };
 }
@@ -167,6 +168,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
   }
 
   revalidatePath("/beheer/toernooien");
+  revalidatePath("/beheer/schiftingen");
   revalidatePath("/");
   return { succes: true };
 }
@@ -220,6 +222,7 @@ export async function toernooiVerwijderen(id: string): Promise<BeheerActieResult
   const { error } = await supabase.from("toernooien").delete().eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
   revalidatePath("/beheer/toernooien");
+  revalidatePath("/beheer/schiftingen");
   revalidatePath("/");
   return { succes: true };
 }
@@ -265,10 +268,12 @@ export async function toernooiBewerken(
   const supabase = createClient();
   const { error } = await supabase.from("toernooien").update(parsed.data).eq("id", id);
   if (error) {
+    console.error("Toernooi bewerken mislukt:", error.message);
     if (error.code === "23505") return { succes: false, fout: "dubbel_toernooi" };
     return { succes: false, fout: "server_fout" };
   }
   revalidatePath("/beheer/toernooien");
+  revalidatePath("/beheer/schiftingen");
   revalidatePath("/");
   return { succes: true };
 }
