@@ -4,6 +4,10 @@
 export type OpgeslagenToernooi = { id: string; notitie: string; opgeslagenOp: string };
 
 const SLEUTEL = "p13_opgeslagen_toernooien";
+// Eigen event-naam: het "storage"-event van de browser vuurt enkel in ANDERE
+// tabs, niet in de tab die de wijziging zelf deed — dit laat de navbadge
+// meteen bijwerken zonder dat de pagina herladen moet worden.
+export const OPGESLAGEN_WIJZIGING_EVENT = "p13-opgeslagen-wijziging";
 
 function alles(): OpgeslagenToernooi[] {
   if (typeof window === "undefined") return [];
@@ -17,10 +21,15 @@ function alles(): OpgeslagenToernooi[] {
 
 function bewaar(lijst: OpgeslagenToernooi[]) {
   localStorage.setItem(SLEUTEL, JSON.stringify(lijst));
+  window.dispatchEvent(new Event(OPGESLAGEN_WIJZIGING_EVENT));
 }
 
 export function getOpgeslagenToernooien(): OpgeslagenToernooi[] {
   return alles();
+}
+
+export function getAantalOpgeslagen(): number {
+  return alles().length;
 }
 
 export function isOpgeslagen(id: string): boolean {

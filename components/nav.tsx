@@ -1,14 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { Logo } from "./logo";
 import { LanguageToggle } from "./language-toggle";
+import { getAantalOpgeslagen, OPGESLAGEN_WIJZIGING_EVENT } from "@/lib/opgeslagen-toernooien";
 
 export function Nav() {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [aantalOpgeslagen, setAantalOpgeslagen] = useState(0);
+
+  useEffect(() => {
+    function bijwerken() {
+      setAantalOpgeslagen(getAantalOpgeslagen());
+    }
+    bijwerken();
+    window.addEventListener(OPGESLAGEN_WIJZIGING_EVENT, bijwerken);
+    window.addEventListener("storage", bijwerken);
+    return () => {
+      window.removeEventListener(OPGESLAGEN_WIJZIGING_EVENT, bijwerken);
+      window.removeEventListener("storage", bijwerken);
+    };
+  }, []);
 
   return (
     <nav className="sticky top-0 z-[300] border-b border-white/[0.07] bg-blauw">
@@ -35,8 +50,13 @@ export function Nav() {
           <Link href="/petanque-reizen" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.reizen}
           </Link>
-          <Link href="/mijn-tornooien" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
+          <Link href="/mijn-tornooien" className="relative rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.mijnTornooien}
+            {aantalOpgeslagen > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-rood px-1 text-[0.6rem] font-bold text-white">
+                {aantalOpgeslagen}
+              </span>
+            )}
           </Link>
           <Link href="/over-ons" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.overOns}
@@ -73,11 +93,14 @@ export function Nav() {
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Menu"
             aria-expanded={menuOpen}
-            className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-md transition-colors hover:bg-white/[0.08] md:hidden"
+            className="relative flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-md transition-colors hover:bg-white/[0.08] md:hidden"
           >
             <span className={`h-0.5 w-5 rounded-full bg-white transition-transform ${menuOpen ? "translate-y-2 rotate-45" : ""}`} />
             <span className={`h-0.5 w-5 rounded-full bg-white transition-opacity ${menuOpen ? "opacity-0" : ""}`} />
             <span className={`h-0.5 w-5 rounded-full bg-white transition-transform ${menuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
+            {!menuOpen && aantalOpgeslagen > 0 && (
+              <span className="absolute right-1 top-1 h-2 w-2 rounded-full border border-blauw bg-rood" />
+            )}
           </button>
         </div>
       </div>
@@ -108,9 +131,14 @@ export function Nav() {
           <Link
             href="/mijn-tornooien"
             onClick={() => setMenuOpen(false)}
-            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
+            className="flex items-center gap-2 rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >
             {t.nav.mijnTornooien}
+            {aantalOpgeslagen > 0 && (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-rood px-1 text-[0.65rem] font-bold text-white">
+                {aantalOpgeslagen}
+              </span>
+            )}
           </Link>
           <Link
             href="/over-ons"
