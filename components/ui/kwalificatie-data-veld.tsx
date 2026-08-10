@@ -2,17 +2,22 @@
 
 import { useTranslation } from "@/lib/language-context";
 import { KwalificatieDatum } from "@/lib/types";
+import { formatDatumKort, formatUur } from "@/lib/datum";
 
 export function KwalificatieDataVeld({
   waarden,
   onChange,
   uur,
   onUurChange,
+  hoofdDatum,
+  hoofdUur,
 }: {
   waarden: KwalificatieDatum[];
   onChange: (waarden: KwalificatieDatum[]) => void;
   uur: string;
   onUurChange: (uur: string) => void;
+  hoofdDatum: string;
+  hoofdUur: string;
 }) {
   const { t } = useTranslation();
 
@@ -36,6 +41,14 @@ export function KwalificatieDataVeld({
     <div className="flex flex-col gap-1.5">
       <span className="text-xs font-bold text-donker">{t.form.kwalificatieData}</span>
       <p className="text-xs text-grijs">{t.form.kwalificatieDataUitleg}</p>
+      {waarden.length > 0 && hoofdDatum && hoofdUur && (
+        <div className="mb-1 flex items-center gap-2 rounded-md border-[1.5px] border-geel bg-[#fdf8ec] px-3 py-1.5 text-xs font-bold text-[#8a6d1f]">
+          🏆 {t.form.kwalificatieFinaleLabel}
+          <span className="font-normal">
+            {formatDatumKort(hoofdDatum)} · {formatUur(hoofdUur)}
+          </span>
+        </div>
+      )}
       {waarden.length > 0 && (
         <label className="mb-1 flex items-center gap-2 text-xs font-semibold text-donker">
           {t.form.kwalificatieUur}

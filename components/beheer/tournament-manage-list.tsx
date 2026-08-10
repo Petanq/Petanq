@@ -728,6 +728,8 @@ function AddForm({
           onChange={setKwalificatieData}
           uur={kwalificatieUur}
           onUurChange={setKwalificatieUur}
+          hoofdDatum={datum}
+          hoofdUur={uur}
         />
       </div>
 
@@ -1115,6 +1117,8 @@ export function EditForm({
           onChange={setKwalificatieData}
           uur={kwalificatieUur}
           onUurChange={setKwalificatieUur}
+          hoofdDatum={datum}
+          hoofdUur={uur}
         />
       </div>
 

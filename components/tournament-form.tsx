@@ -511,6 +511,8 @@ export function TournamentForm() {
             onChange={setKwalificatieData}
             uur={kwalificatieUur}
             onUurChange={setKwalificatieUur}
+            hoofdDatum={datum}
+            hoofdUur={uur}
           />
         </fieldset>
 
