@@ -113,14 +113,8 @@ export function FilterSidebar({
         actiefLabel={filters.kwalificatie ? t.filters.metKwalificatiedata : null}
       >
         <FilterItem
-          actief={filters.kwalificatie === null}
-          onClick={() => setFilters({ ...filters, kwalificatie: null })}
-          label={t.filters.alleTypes}
-          aantal={tel("kwalificatie", () => true)}
-        />
-        <FilterItem
           actief={filters.kwalificatie === true}
-          onClick={() => setFilters({ ...filters, kwalificatie: true })}
+          onClick={() => setFilters({ ...filters, kwalificatie: filters.kwalificatie === true ? null : true })}
           label={t.filters.metKwalificatiedata}
           aantal={tel("kwalificatie", heeftKwalificatiedata)}
         />
