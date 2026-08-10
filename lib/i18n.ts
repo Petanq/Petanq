@@ -7,7 +7,7 @@ const nl = {
     clubs: "Clubs",
     reizen: "Op reis met Claudy",
     overOns: "Over ons",
-    mijnTornooien: "Mijn tornooien",
+    mijnTornooien: "Mijn agenda",
     toernooiToevoegen: "+ Toernooi toevoegen",
     login: "Login",
   },
@@ -82,7 +82,7 @@ const nl = {
     notitieLabel: "Notitie (bv. met wie afgesproken)",
     notitiePlaceholder: "Bv. Afgesproken met Jan en Piet om 13u",
     notitieBewaard: "Notitie opgeslagen",
-    mijnTornooien: "Mijn tornooien",
+    mijnTornooien: "Mijn agenda",
     mijnTornooienUitleg:
       "Tornooien die je hier opslaat blijven bewaard op dit toestel, ook als je de site later opnieuw bezoekt.",
     geenOpgeslagenToernooien:
@@ -383,7 +383,7 @@ const fr: typeof nl = {
     clubs: "Clubs",
     reizen: "En voyage avec Claudy",
     overOns: "À propos",
-    mijnTornooien: "Mes tournois",
+    mijnTornooien: "Mon agenda",
     toernooiToevoegen: "+ Ajouter un tournoi",
     login: "Connexion",
   },
@@ -458,7 +458,7 @@ const fr: typeof nl = {
     notitieLabel: "Note (ex. avec qui vous avez rendez-vous)",
     notitiePlaceholder: "Ex. Rendez-vous avec Jean et Pierre à 13h",
     notitieBewaard: "Note enregistrée",
-    mijnTornooien: "Mes tournois",
+    mijnTornooien: "Mon agenda",
     mijnTornooienUitleg:
       "Les tournois que vous enregistrez ici restent sauvegardés sur cet appareil, même si vous revisitez le site plus tard.",
     geenOpgeslagenToernooien:
