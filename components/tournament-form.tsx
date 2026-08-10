@@ -115,6 +115,14 @@ export function TournamentForm() {
     if (velden.max_ploegen) setMaxPloegen(String(velden.max_ploegen));
     if (velden.link_inschrijving) setLinkInschrijving(velden.link_inschrijving);
     if (velden.opmerking) setOpmerking(velden.opmerking);
+    if (velden.kwalificatiedata && velden.kwalificatiedata.length > 0) {
+      setKwalificatieData(
+        velden.kwalificatiedata
+          .filter((k): k is { datum: string; uur: string | null } => !!k.datum)
+          .map((k) => ({ datum: k.datum, uur: k.uur ?? null }))
+      );
+    }
+    if (velden.kwalificatie_uur) setKwalificatieUur(velden.kwalificatie_uur);
     setAutoIngevuld(true);
   }
 

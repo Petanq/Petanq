@@ -23,6 +23,8 @@ export type AfficheVelden = {
   max_ploegen: number | null;
   link_inschrijving: string | null;
   opmerking: string | null;
+  kwalificatiedata: { datum: string | null; uur: string | null }[] | null;
+  kwalificatie_uur: string | null;
 };
 
 const CATEGORIEEN = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
@@ -69,6 +71,27 @@ const TOERNOOI_ITEM_SCHEMA = {
       type: ["string", "null"],
       description: "Overige relevante info op de affiche die nergens anders past",
     },
+    kwalificatiedata: {
+      type: ["array", "null"],
+      description:
+        "Enkel bij een schiftingensysteem: de datums van de schiftingen/kwalificaties die naar de finale leiden (de finale zelf hoort NIET in deze lijst, die staat in datum/uur). Null of leeg als er geen schiftingensysteem is.",
+      items: {
+        type: "object",
+        properties: {
+          datum: { type: ["string", "null"], description: "ISO-formaat JJJJ-MM-DD" },
+          uur: {
+            type: ["string", "null"],
+            description: "24-uursformaat UU:MM, enkel invullen als deze datum een ander uur heeft dan de meeste schiftingen (zie kwalificatie_uur), anders null",
+          },
+        },
+        required: ["datum", "uur"],
+      },
+    },
+    kwalificatie_uur: {
+      type: ["string", "null"],
+      description:
+        "Enkel bij een schiftingensysteem: het uur (24-uursformaat UU:MM) dat voor de meeste/alle schiftingen geldt. Null als er geen schiftingensysteem is.",
+    },
   },
   required: [
     "datum",
@@ -90,6 +113,8 @@ const TOERNOOI_ITEM_SCHEMA = {
     "max_ploegen",
     "link_inschrijving",
     "opmerking",
+    "kwalificatiedata",
+    "kwalificatie_uur",
   ],
 };
 
@@ -129,10 +154,13 @@ export async function afficheAnalyseren(
               type: "text",
               text: `Dit is een affiche voor een petanquetoernooi in België. Lees de tekst op de affiche en vul het formulier zo goed mogelijk in. Vandaag is het ${vandaag} — als het jaartal op de affiche ontbreekt, kies dan het eerstvolgende jaar waarin die datum in de toekomst valt. Vul een veld in met null als je het echt niet met voldoende zekerheid uit de affiche kan halen. Verzin niets.
 
-Let op: veel affiches tonen in werkelijkheid meerdere afzonderlijke concours die apart moeten worden ingediend, niet slechts één toernooi. Dit gebeurt op twee manieren, die je allebei moet herkennen:
-1. Meerdere datums — bv. een reeks kwalificatierondes met telkens een andere datum gevolgd door één finaledag, of een toernooi over meerdere dagen met elke dag een andere speelvorm (bv. dag 1 doublette, dag 2 triplette).
-2. Meerdere concours op dezelfde datum — bv. een dagprogramma met 's ochtends een damesconcours en apart een herenconcours (elk met eigen uur, categorie, formule, inschrijvingsprijs of prijzenpot), of een jeugd- en seniorenconcours op dezelfde dag.
-Geef in beide gevallen elk concours als een apart item in de lijst terug, met dezelfde club/locatiegegevens maar elk met zijn eigen datum, uur, categorie, formule en overige details die voor dat specifieke concours gelden. Verwerk het onderscheid ook in naam_nl/naam_fr, bv. "Grote Zomerpot - Kwalificatie 3" en "Grote Zomerpot - Finale", "Toernooi - Dag 1" en "Toernooi - Dag 2", of "Toernooi - Dames" en "Toernooi - Heren". Toont de affiche maar één concours op één datum, geef dan gewoon één item terug.`,
+Let op — er zijn twee verschillende situaties met meerdere datums op een affiche, die je niet mag verwarren:
+
+A. Schiftingensysteem: een reeks schiftings-/kwalificatiedatums die ALLEMAAL naar dezelfde ÉÉN finale leiden (je herkent dit meestal aan woorden als "schifting(en)", "kwalificatie(s)", "éliminatoire(s)" gevolgd door één "finale"-datum). Dit is GEEN aparte inzending per datum — geef dit terug als ÉÉN enkel item: datum/uur = de finaledatum en -uur, kwalificatiedata = de overige schiftingsdatums (elk met hun eigen uur enkel als dat afwijkt van de rest), kwalificatie_uur = het uur dat voor de meeste schiftingen geldt. Vermeld in opmerking eventuele bijzonderheden (bv. als een bepaalde schiftingsdatum enkel toegankelijk is voor al geplaatste ploegen).
+
+B. Losse, onafhankelijke concours: meerdere ECHT verschillende toernooien die niets met elkaar te maken hebben, elk met een eigen doel — bv. een dagprogramma met 's ochtends een damesconcours en apart een herenconcours, een jeugd- en seniorenconcours op dezelfde dag, of een toernooi over meerdere dagen met elke dag een andere speelvorm (dag 1 doublette, dag 2 triplette). Geef elk van deze als een APART item terug (elk met eigen datum, uur, categorie, formule, en kwalificatiedata/kwalificatie_uur op null). Verwerk het onderscheid ook in naam_nl/naam_fr, bv. "Toernooi - Dag 1" en "Toernooi - Dag 2", of "Toernooi - Dames" en "Toernooi - Heren".
+
+Toont de affiche maar één concours op één datum zonder schiftingensysteem, geef dan gewoon één item terug met kwalificatiedata/kwalificatie_uur op null.`,
             },
           ],
         },
