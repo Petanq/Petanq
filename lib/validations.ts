@@ -15,6 +15,11 @@ const datumVeld = z
     return jaar >= huidigJaar - 1 && jaar <= huidigJaar + 5;
   }, "Ongeldig jaartal");
 
+const kwalificatieDatumVeld = z.object({
+  datum: datumVeld,
+  uur: z.string().trim().max(5).nullable().optional().or(z.literal("")),
+});
+
 const toernooiBaseSchema = z.object({
   datum: datumVeld,
   uur: z.string().min(1),
@@ -46,7 +51,7 @@ const toernooiBaseSchema = z.object({
   affiche_url: z.string().trim().url().nullable().optional().or(z.literal("")),
   open_toernooi: z.boolean().optional().default(false),
   finale: z.boolean().optional().default(false),
-  kwalificatiedata: z.array(datumVeld).max(15).nullable().optional(),
+  kwalificatiedata: z.array(kwalificatieDatumVeld).max(15).nullable().optional(),
   kwalificatie_uur: z.string().trim().max(5).nullable().optional().or(z.literal("")),
 });
 

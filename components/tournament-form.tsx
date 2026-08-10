@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
-import { Categorie, Formule, Speelvorm, Club } from "@/lib/types";
+import { Categorie, Formule, Speelvorm, Club, KwalificatieDatum } from "@/lib/types";
 import { toernooiIndienen } from "@/actions/toernooien";
 import { uploadNaarStorage } from "@/lib/upload-bestand";
 import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
@@ -52,7 +52,7 @@ export function TournamentForm() {
   const [maxPloegen, setMaxPloegen] = useState("");
   const [linkInschrijving, setLinkInschrijving] = useState("");
   const [opmerking, setOpmerking] = useState("");
-  const [kwalificatieData, setKwalificatieData] = useState<string[]>([]);
+  const [kwalificatieData, setKwalificatieData] = useState<KwalificatieDatum[]>([]);
   const [kwalificatieUur, setKwalificatieUur] = useState("");
   const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
   const [afficheNaam, setAfficheNaam] = useState<string | null>(null);
@@ -185,7 +185,7 @@ export function TournamentForm() {
         max_ploegen: maxPloegen || null,
         link_inschrijving: linkInschrijving || null,
         opmerking: opmerking || null,
-        kwalificatiedata: kwalificatieData.filter(Boolean),
+        kwalificatiedata: kwalificatieData.filter((k) => k.datum),
         kwalificatie_uur: kwalificatieUur || null,
         affiche_url: afficheUrl || null,
         open_toernooi: openToernooi,

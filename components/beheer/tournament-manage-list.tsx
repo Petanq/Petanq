@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
-import { Categorie, Formule, Speelvorm, Toernooi, Club } from "@/lib/types";
+import { Categorie, Formule, Speelvorm, Toernooi, Club, KwalificatieDatum } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { formatUur, maandJaarKey, maandVolledig, parseDatum, dagVanWeekKort, dagNummer, maandKort } from "@/lib/datum";
 import { toernooiBewerken, toernooiToevoegenAlsAdmin, toernooiVerwijderen } from "@/actions/beheer-toernooien";
@@ -308,7 +308,7 @@ function AddForm({
   const [maxPloegen, setMaxPloegen] = useState("");
   const [linkInschrijving, setLinkInschrijving] = useState("");
   const [opmerking, setOpmerking] = useState("");
-  const [kwalificatieData, setKwalificatieData] = useState<string[]>([]);
+  const [kwalificatieData, setKwalificatieData] = useState<KwalificatieDatum[]>([]);
   const [kwalificatieUur, setKwalificatieUur] = useState("");
   const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
   const [afficheBezig, setAfficheBezig] = useState(false);
@@ -456,7 +456,7 @@ function AddForm({
       max_ploegen: maxPloegen || null,
       link_inschrijving: linkInschrijving || null,
       opmerking: opmerking || null,
-      kwalificatiedata: kwalificatieData.filter(Boolean),
+      kwalificatiedata: kwalificatieData.filter((k) => k.datum),
       kwalificatie_uur: kwalificatieUur || null,
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
@@ -824,7 +824,7 @@ export function EditForm({
   const [maxPloegen, setMaxPloegen] = useState(String(toernooi.max_ploegen ?? ""));
   const [linkInschrijving, setLinkInschrijving] = useState(toernooi.link_inschrijving ?? "");
   const [opmerking, setOpmerking] = useState(toernooi.opmerking ?? "");
-  const [kwalificatieData, setKwalificatieData] = useState<string[]>(toernooi.kwalificatiedata ?? []);
+  const [kwalificatieData, setKwalificatieData] = useState<KwalificatieDatum[]>(toernooi.kwalificatiedata ?? []);
   const [kwalificatieUur, setKwalificatieUur] = useState(toernooi.kwalificatie_uur ?? "");
   const [vol, setVol] = useState(toernooi.vol);
   const [afficheUrl, setAfficheUrl] = useState(toernooi.affiche_url);
@@ -869,7 +869,7 @@ export function EditForm({
       max_ploegen: Number(maxPloegen) || null,
       link_inschrijving: linkInschrijving || null,
       opmerking: opmerking || null,
-      kwalificatiedata: kwalificatieData.filter(Boolean),
+      kwalificatiedata: kwalificatieData.filter((k) => k.datum),
       kwalificatie_uur: kwalificatieUur || null,
       vol,
       affiche_url: afficheUrl,

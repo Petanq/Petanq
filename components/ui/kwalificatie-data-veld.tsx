@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/lib/language-context";
+import { KwalificatieDatum } from "@/lib/types";
 
 export function KwalificatieDataVeld({
   waarden,
@@ -8,8 +9,8 @@ export function KwalificatieDataVeld({
   uur,
   onUurChange,
 }: {
-  waarden: string[];
-  onChange: (waarden: string[]) => void;
+  waarden: KwalificatieDatum[];
+  onChange: (waarden: KwalificatieDatum[]) => void;
   uur: string;
   onUurChange: (uur: string) => void;
 }) {
@@ -17,7 +18,13 @@ export function KwalificatieDataVeld({
 
   function datumWijzigen(index: number, waarde: string) {
     const nieuw = [...waarden];
-    nieuw[index] = waarde;
+    nieuw[index] = { ...nieuw[index], datum: waarde };
+    onChange(nieuw);
+  }
+
+  function eigenUurWijzigen(index: number, waarde: string) {
+    const nieuw = [...waarden];
+    nieuw[index] = { ...nieuw[index], uur: waarde || null };
     onChange(nieuw);
   }
 
@@ -44,9 +51,17 @@ export function KwalificatieDataVeld({
         <div key={index} className="flex items-center gap-2">
           <input
             type="date"
-            value={waarde}
+            value={waarde.datum}
             onChange={(e) => datumWijzigen(index, e.target.value)}
             className="veld-input"
+          />
+          <input
+            type="time"
+            value={waarde.uur ?? ""}
+            onChange={(e) => eigenUurWijzigen(index, e.target.value)}
+            title={t.form.kwalificatieEigenUur}
+            placeholder={uur || "--:--"}
+            className="veld-input w-28"
           />
           <button
             type="button"
@@ -60,7 +75,7 @@ export function KwalificatieDataVeld({
       ))}
       <button
         type="button"
-        onClick={() => onChange([...waarden, ""])}
+        onClick={() => onChange([...waarden, { datum: "", uur: null }])}
         className="mt-1 self-start rounded-md border-[1.5px] border-dashed border-blauw-3 px-3 py-1.5 text-xs font-semibold text-blauw-2 transition-colors hover:bg-blauw-3/10"
       >
         + {t.form.kwalificatieDatumToevoegen}

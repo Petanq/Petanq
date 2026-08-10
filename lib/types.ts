@@ -19,6 +19,8 @@ export type ModeratorRol = "moderator" | "admin";
 
 export type NieuwsbriefTaal = "nl" | "fr";
 
+export type KwalificatieDatum = { datum: string; uur: string | null };
+
 export type Toernooi = {
   id: string;
   aangemaakt_op: string;
@@ -46,7 +48,7 @@ export type Toernooi = {
   contact_email: string | null;
   link_inschrijving: string | null;
   opmerking: string | null;
-  kwalificatiedata: string[] | null;
+  kwalificatiedata: KwalificatieDatum[] | null;
   kwalificatie_uur: string | null;
   status: ToernooiStatus;
   ingediend_door: string | null;

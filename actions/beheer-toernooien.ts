@@ -112,6 +112,9 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
     return { succes: false, fout: "ongeldige_invoer" };
   }
   const data = parsed.data;
+  const kwalificatiedata = (data.kwalificatiedata ?? [])
+    .filter((k) => k.datum)
+    .map((k) => ({ datum: k.datum, uur: k.uur || null }));
 
   const supabase = createClient();
   const moderatorNaam = await huidigeModeratorNaam();
@@ -141,7 +144,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
       affiche_url: data.affiche_url || null,
       open_toernooi: data.open_toernooi ?? false,
       finale: data.speelvorm === "rondes" ? data.finale ?? false : false,
-      kwalificatiedata: data.kwalificatiedata?.length ? data.kwalificatiedata : null,
+      kwalificatiedata: kwalificatiedata.length ? kwalificatiedata : null,
       kwalificatie_uur: data.kwalificatie_uur || null,
       status: "goedgekeurd",
       ingediend_door: data.contact_email || null,
