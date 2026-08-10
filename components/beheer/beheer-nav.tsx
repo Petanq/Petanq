@@ -17,6 +17,7 @@ export function BeheerNav({
   const links = [
     { href: "/beheer", label: t.beheer.inBehandeling, badge: wachtendeToernooien },
     { href: "/beheer/toernooien", label: t.beheer.alleToernooien, badge: 0 },
+    { href: "/beheer/schiftingen", label: t.beheer.schiftingen, badge: 0 },
     { href: "/beheer/clubs", label: t.beheer.clubsBeheer, badge: wachtendeClubs },
     { href: "/beheer/moderatoren", label: t.beheer.vrijwilligers, badge: 0 },
   ];
