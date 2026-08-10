@@ -14,7 +14,12 @@ export type FilterState = {
   formule: Formule | null;
   inschrijving: "gratis" | "betalend" | null;
   type: "officieel" | "open" | null;
+  kwalificatie: boolean | null;
 };
+
+function heeftKwalificatiedata(tn: Toernooi): boolean {
+  return !!tn.kwalificatiedata && tn.kwalificatiedata.length > 0;
+}
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
@@ -83,6 +88,7 @@ export function FilterSidebar({
     if (exclusief !== "formule" && filters.formule && tn.formule !== filters.formule) return false;
     if (exclusief !== "type" && filters.type === "open" && !tn.open_toernooi) return false;
     if (exclusief !== "type" && filters.type === "officieel" && tn.open_toernooi) return false;
+    if (exclusief !== "kwalificatie" && filters.kwalificatie === true && !heeftKwalificatiedata(tn)) return false;
     return true;
   }
 
@@ -101,6 +107,24 @@ export function FilterSidebar({
           className="w-full rounded-md border-[1.5px] border-rand bg-licht px-3 py-2 font-body text-[0.85rem] outline-none transition-colors focus:border-geel focus:bg-white"
         />
       </div>
+
+      <FilterCard
+        titel={t.filters.kwalificatie}
+        actiefLabel={filters.kwalificatie ? t.filters.metKwalificatiedata : null}
+      >
+        <FilterItem
+          actief={filters.kwalificatie === null}
+          onClick={() => setFilters({ ...filters, kwalificatie: null })}
+          label={t.filters.alleTypes}
+          aantal={tel("kwalificatie", () => true)}
+        />
+        <FilterItem
+          actief={filters.kwalificatie === true}
+          onClick={() => setFilters({ ...filters, kwalificatie: true })}
+          label={t.filters.metKwalificatiedata}
+          aantal={tel("kwalificatie", heeftKwalificatiedata)}
+        />
+      </FilterCard>
 
       <FilterCard titel={t.filters.regio} actiefLabel={filters.regio ? vertaalRegio(filters.regio, taal) : null}>
         <FilterItem
