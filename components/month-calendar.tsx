@@ -8,6 +8,8 @@ import { TournamentCard } from "./tournament-card";
 
 const ACHTERGRONDEN = ["/images/boules-vrienden.jpg", "/images/petanque-speler.jpg", "/images/boules-koppel.jpg"];
 
+type DagItem = { toernooi: Toernooi; datum: string; uur: string; isSchifting: boolean };
+
 function datumSleutel(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
@@ -23,11 +25,21 @@ export function MonthCalendar({ toernooien }: { toernooien: Toernooi[] }) {
   const maandIndex = weergegevenMaand.getMonth();
 
   const perDag = useMemo(() => {
-    const map = new Map<string, Toernooi[]>();
-    for (const tn of toernooien) {
-      const sleutel = tn.datum;
+    const map = new Map<string, DagItem[]>();
+    function voegToe(sleutel: string, item: DagItem) {
       if (!map.has(sleutel)) map.set(sleutel, []);
-      map.get(sleutel)!.push(tn);
+      map.get(sleutel)!.push(item);
+    }
+    for (const tn of toernooien) {
+      voegToe(tn.datum, { toernooi: tn, datum: tn.datum, uur: tn.uur, isSchifting: false });
+      for (const schifting of tn.kwalificatiedata ?? []) {
+        voegToe(schifting.datum, {
+          toernooi: tn,
+          datum: schifting.datum,
+          uur: schifting.uur ?? tn.kwalificatie_uur ?? tn.uur,
+          isSchifting: true,
+        });
+      }
     }
     return map;
   }, [toernooien]);
@@ -126,7 +138,15 @@ export function MonthCalendar({ toernooien }: { toernooien: Toernooi[] }) {
             {toernooienVanDag.length === 0 ? (
               <p className="text-center text-sm text-white/60">{t.lijst.geenResultaten}</p>
             ) : (
-              toernooienVanDag.map((tn) => <TournamentCard key={tn.id} toernooi={tn} />)
+              toernooienVanDag.map((item) => (
+                <TournamentCard
+                  key={`${item.toernooi.id}-${item.datum}`}
+                  toernooi={item.toernooi}
+                  datumOverride={item.datum}
+                  uurOverride={item.uur}
+                  schiftingBadge={item.isSchifting}
+                />
+              ))
             )}
           </div>
         )}

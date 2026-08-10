@@ -7,9 +7,21 @@ import { dagVanWeekKort, dagNummer, maandKort, formatUur, countdownTekst } from 
 import { vertaalProvincie } from "@/lib/provincies";
 import { CATEGORIE_STREEP, CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
 
-export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
+export function TournamentCard({
+  toernooi,
+  datumOverride,
+  uurOverride,
+  schiftingBadge,
+}: {
+  toernooi: Toernooi;
+  datumOverride?: string;
+  uurOverride?: string;
+  schiftingBadge?: boolean;
+}) {
   const { t, taal } = useTranslation();
   const naam = taal === "fr" ? toernooi.naam_fr : toernooi.naam_nl;
+  const datum = datumOverride ?? toernooi.datum;
+  const uur = uurOverride ?? toernooi.uur;
 
   return (
     <Link
@@ -23,19 +35,24 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
       <div className="flex items-center gap-3 sm:contents">
         <div className="w-14 shrink-0 rounded-xl bg-donker px-0.5 py-2 text-center">
           <div className="font-body text-[0.58rem] font-bold uppercase tracking-wide text-white/50">
-            {dagVanWeekKort(toernooi.datum, taal)}
+            {dagVanWeekKort(datum, taal)}
           </div>
           <div className="font-titel text-2xl leading-none text-geel">
-            {dagNummer(toernooi.datum)}
+            {dagNummer(datum)}
           </div>
           <div className="font-body text-[0.58rem] font-bold uppercase tracking-wider text-white/50">
-            {maandKort(toernooi.datum, taal)}
+            {maandKort(datum, taal)}
           </div>
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="mb-0.5 flex items-center gap-1.5 truncate text-[0.72rem] font-bold uppercase tracking-wide text-blauw-2">
             <span className="truncate">{toernooi.clubnaam}</span>
+            {schiftingBadge && (
+              <span className="whitespace-nowrap rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-[#8a6d1f]">
+                {t.lijst.schiftingBadge}
+              </span>
+            )}
             {toernooi.open_toernooi && (
               <span className="whitespace-nowrap rounded-full bg-[#f0fdfa] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-[#0d9488]">
                 {t.lijst.openBadge}
@@ -49,14 +66,14 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
             <span className="text-[0.74rem] text-grijs">
               📍 {toernooi.gemeente}, {vertaalProvincie(toernooi.provincie, taal)}
             </span>
-            <span className="text-[0.74rem] text-grijs">🕐 {formatUur(toernooi.uur)}</span>
-            {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
+            <span className="text-[0.74rem] text-grijs">🕐 {formatUur(uur)}</span>
+            {!schiftingBadge && toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
               <span className="text-[0.74rem] text-grijs">
                 {toernooi.aantal_ronden} {t.lijst.ronden}
                 {toernooi.finale && ` ${t.lijst.metFinale}`}
               </span>
             )}
-            {toernooi.speelvorm === "poules" && toernooi.aantal_poules && (
+            {!schiftingBadge && toernooi.speelvorm === "poules" && toernooi.aantal_poules && (
               <span className="text-[0.74rem] text-grijs">
                 {toernooi.aantal_poules} {t.lijst.poules}
               </span>
@@ -82,7 +99,7 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
           {t.categorie[toernooi.categorie]}
         </span>
         <span className="whitespace-nowrap text-[0.68rem] font-semibold text-grijs">
-          {countdownTekst(toernooi.datum, taal)}
+          {countdownTekst(datum, taal)}
         </span>
       </div>
     </Link>
