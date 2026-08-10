@@ -40,6 +40,11 @@ export function maandJaarKey(datum: string): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
+export function formatDatumKort(datum: string): string {
+  const [jaar, maand, dag] = datum.split("-");
+  return `${dag}-${maand}-${jaar}`;
+}
+
 export function formatUur(uur: string): string {
   const [h, m] = uur.split(":");
   return `${parseInt(h, 10)}u${m}`;

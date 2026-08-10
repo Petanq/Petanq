@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Toernooi } from "@/lib/types";
 import { vertaalProvincie } from "@/lib/provincies";
-import { formatUur } from "@/lib/datum";
+import { formatUur, formatDatumKort } from "@/lib/datum";
 import { toernooiGoedkeuren, toernooiWeigeren } from "@/actions/beheer-toernooien";
 import { vindMogelijkeDubbels } from "@/lib/dubbels";
 import { EditForm } from "./tournament-manage-list";
@@ -107,7 +107,7 @@ export function PendingList({
               </div>
               <div className="font-bold text-donker">{tn.naam_nl}</div>
               <div className="text-sm text-grijs">
-                {tn.datum} · {formatUur(tn.uur)} · {tn.gemeente}, {vertaalProvincie(tn.provincie, taal)}
+                {formatDatumKort(tn.datum)} · {formatUur(tn.uur)} · {tn.gemeente}, {vertaalProvincie(tn.provincie, taal)}
                 {tn.finale && ` · ${t.lijst.metFinale}`}
               </div>
               <div className="mt-1 text-xs text-grijs">
