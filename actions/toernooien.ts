@@ -47,6 +47,7 @@ export async function toernooiIndienen(
     affiche_url: data.affiche_url || null,
     open_toernooi: data.open_toernooi ?? false,
     finale: data.speelvorm === "rondes" ? data.finale ?? false : false,
+    kwalificatiedata: data.kwalificatiedata?.length ? data.kwalificatiedata : null,
     status: "in_behandeling",
     ingediend_door: data.contact_email || null,
   });

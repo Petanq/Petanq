@@ -17,6 +17,7 @@ import { CATEGORIE_STREEP, CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen"
 import { vindMogelijkeDubbelsVoorVelden } from "@/lib/dubbels";
 import { vindClubBijNaam } from "@/lib/club-opzoeken";
 import { createClient } from "@/lib/supabase/client";
+import { KwalificatieDataVeld } from "@/components/ui/kwalificatie-data-veld";
 
 function afficheItemLabel(item: AfficheVelden, taal: "nl" | "fr"): string {
   const datumLabel = item.datum ? `${dagNummer(item.datum)} ${maandKort(item.datum, taal)}` : "?";
@@ -307,6 +308,7 @@ function AddForm({
   const [maxPloegen, setMaxPloegen] = useState("");
   const [linkInschrijving, setLinkInschrijving] = useState("");
   const [opmerking, setOpmerking] = useState("");
+  const [kwalificatieData, setKwalificatieData] = useState<string[]>([]);
   const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
   const [afficheBezig, setAfficheBezig] = useState(false);
   const [afficheFout, setAfficheFout] = useState(false);
@@ -366,6 +368,7 @@ function AddForm({
     setMaxPloegen("");
     setLinkInschrijving("");
     setOpmerking("");
+    setKwalificatieData([]);
     setAutoIngevuld(false);
   }
 
@@ -451,6 +454,7 @@ function AddForm({
       max_ploegen: maxPloegen || null,
       link_inschrijving: linkInschrijving || null,
       opmerking: opmerking || null,
+      kwalificatiedata: kwalificatieData.filter(Boolean),
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
       finale,
@@ -707,6 +711,10 @@ function AddForm({
         />
       </label>
 
+      <div className="mt-3">
+        <KwalificatieDataVeld waarden={kwalificatieData} onChange={setKwalificatieData} />
+      </div>
+
       <div className="mt-3 flex flex-col gap-1.5">
         <span className="text-xs font-bold text-donker">{t.form.affiche}</span>
         {afficheUrl && (
@@ -808,6 +816,7 @@ export function EditForm({
   const [maxPloegen, setMaxPloegen] = useState(String(toernooi.max_ploegen ?? ""));
   const [linkInschrijving, setLinkInschrijving] = useState(toernooi.link_inschrijving ?? "");
   const [opmerking, setOpmerking] = useState(toernooi.opmerking ?? "");
+  const [kwalificatieData, setKwalificatieData] = useState<string[]>(toernooi.kwalificatiedata ?? []);
   const [vol, setVol] = useState(toernooi.vol);
   const [afficheUrl, setAfficheUrl] = useState(toernooi.affiche_url);
   const [afficheBezig, setAfficheBezig] = useState(false);
@@ -851,6 +860,7 @@ export function EditForm({
       max_ploegen: Number(maxPloegen) || null,
       link_inschrijving: linkInschrijving || null,
       opmerking: opmerking || null,
+      kwalificatiedata: kwalificatieData.filter(Boolean),
       vol,
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
@@ -1080,6 +1090,10 @@ export function EditForm({
         <input type="checkbox" checked={vol} onChange={(e) => setVol(e.target.checked)} className="h-4 w-4" />
         {t.form.vol}
       </label>
+
+      <div className="mt-3">
+        <KwalificatieDataVeld waarden={kwalificatieData} onChange={setKwalificatieData} />
+      </div>
 
       <div className="mt-3 flex flex-col gap-1.5">
         <span className="text-xs font-bold text-donker">{t.form.affiche}</span>

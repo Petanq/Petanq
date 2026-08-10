@@ -141,6 +141,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
       affiche_url: data.affiche_url || null,
       open_toernooi: data.open_toernooi ?? false,
       finale: data.speelvorm === "rondes" ? data.finale ?? false : false,
+      kwalificatiedata: data.kwalificatiedata?.length ? data.kwalificatiedata : null,
       status: "goedgekeurd",
       ingediend_door: data.contact_email || null,
       goedgekeurd_door: moderatorNaam,
@@ -247,6 +248,7 @@ export async function toernooiBewerken(
       | "affiche_url"
       | "open_toernooi"
       | "finale"
+      | "kwalificatiedata"
     >
   >
 ): Promise<BeheerActieResultaat> {

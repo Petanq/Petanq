@@ -13,6 +13,7 @@ import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
 import { Knop } from "@/components/ui/knop";
 import { createClient } from "@/lib/supabase/client";
 import { vindClubBijNaam } from "@/lib/club-opzoeken";
+import { KwalificatieDataVeld } from "@/components/ui/kwalificatie-data-veld";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
@@ -51,6 +52,7 @@ export function TournamentForm() {
   const [maxPloegen, setMaxPloegen] = useState("");
   const [linkInschrijving, setLinkInschrijving] = useState("");
   const [opmerking, setOpmerking] = useState("");
+  const [kwalificatieData, setKwalificatieData] = useState<string[]>([]);
   const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
   const [afficheNaam, setAfficheNaam] = useState<string | null>(null);
   const [afficheBezig, setAfficheBezig] = useState(false);
@@ -182,6 +184,7 @@ export function TournamentForm() {
         max_ploegen: maxPloegen || null,
         link_inschrijving: linkInschrijving || null,
         opmerking: opmerking || null,
+        kwalificatiedata: kwalificatieData.filter(Boolean),
         affiche_url: afficheUrl || null,
         open_toernooi: openToernooi,
         finale,
@@ -492,6 +495,8 @@ export function TournamentForm() {
               className="veld-input resize-none"
             />
           </Veld>
+
+          <KwalificatieDataVeld waarden={kwalificatieData} onChange={setKwalificatieData} />
         </fieldset>
 
         {verzendPoging &&

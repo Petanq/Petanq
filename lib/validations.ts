@@ -46,6 +46,7 @@ const toernooiBaseSchema = z.object({
   affiche_url: z.string().trim().url().nullable().optional().or(z.literal("")),
   open_toernooi: z.boolean().optional().default(false),
   finale: z.boolean().optional().default(false),
+  kwalificatiedata: z.array(datumVeld).max(15).nullable().optional(),
 });
 
 export const toernooiSchema = toernooiBaseSchema.superRefine((data, ctx) => {

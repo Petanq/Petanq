@@ -46,6 +46,7 @@ export type Toernooi = {
   contact_email: string | null;
   link_inschrijving: string | null;
   opmerking: string | null;
+  kwalificatiedata: string[] | null;
   status: ToernooiStatus;
   ingediend_door: string | null;
   goedgekeurd_door: string | null;

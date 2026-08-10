@@ -163,6 +163,28 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
           )}
         </dl>
 
+        {toernooi.kwalificatiedata && toernooi.kwalificatiedata.length > 0 && (
+          <div className="mt-6 rounded-lg border-[1.5px] border-geel bg-[#fdf8ec] p-4">
+            <p className="text-sm font-bold text-[#8a6d1f]">{t.lijst.kwalificatieTitel}</p>
+            <p className="mt-0.5 text-xs text-[#8a6d1f]">{t.lijst.kwalificatieUitleg}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {toernooi.kwalificatiedata.map((kwalificatieDatum) => (
+                <a
+                  key={kwalificatieDatum}
+                  href={googleAgendaLink(toernooi, naam, kwalificatieDatum)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={t.lijst.kwalificatieDatumToevoegenAanAgenda}
+                  className="rounded-full border-[1.5px] border-geel bg-white px-3.5 py-1.5 text-sm font-semibold text-donker transition-colors hover:bg-[#fdf3d9]"
+                >
+                  {dagVanWeekKort(kwalificatieDatum, taal)} {dagNummer(kwalificatieDatum)}{" "}
+                  {maandVolledig(parseDatum(kwalificatieDatum).getMonth(), taal)}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
         {toernooi.opmerking && (
           <p className="mt-6 border-t border-rand pt-6 text-sm text-grijs">{toernooi.opmerking}</p>
         )}

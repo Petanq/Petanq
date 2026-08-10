@@ -19,8 +19,8 @@ function locatie(toernooi: Toernooi): string {
   return toernooi.adres ? `${toernooi.adres}, ${toernooi.gemeente}` : toernooi.gemeente;
 }
 
-export function googleAgendaLink(toernooi: Toernooi, naam: string): string {
-  const { start, eind } = tijdstippen(toernooi.datum, toernooi.uur, STANDAARD_DUUR_UUR);
+export function googleAgendaLink(toernooi: Toernooi, naam: string, datumOverride?: string): string {
+  const { start, eind } = tijdstippen(datumOverride ?? toernooi.datum, toernooi.uur, STANDAARD_DUUR_UUR);
   const params = new URLSearchParams({
     action: "TEMPLATE",
     text: `${naam} - ${toernooi.clubnaam}`,
