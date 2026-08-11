@@ -22,6 +22,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const opgeslagen = window.localStorage.getItem(OPSLAG_SLEUTEL);
     if (opgeslagen === "nl" || opgeslagen === "fr") {
       setTaalState(opgeslagen);
+      return;
+    }
+    // Nog geen eigen keuze gemaakt: gebruik de taalvoorkeur van de browser
+    // zodat Franstalige bezoekers niet standaard Nederlands te zien krijgen.
+    if (navigator.language.toLowerCase().startsWith("fr")) {
+      setTaalState("fr");
     }
   }, []);
 

@@ -1,5 +1,31 @@
 import { Provincie } from "./provincies";
 
+// Vercel geeft naast de (onnauwkeurige) stadsnaam ook een ISO 3166-2-
+// regiocode mee (header x-vercel-ip-country-region, bv. "VAN" voor
+// Antwerpen) — die dekt alle 11 provincies/Brussel exact, in tegenstelling
+// tot de stad-naar-provincie-lijst hieronder die enkel de grotere steden
+// kent. Dit is daarom de primaire methode; de stadsnaam blijft een terugval
+// voor het (zeldzame) geval dat de regiocode ontbreekt.
+const REGIOCODE_PROVINCIE: Record<string, Provincie> = {
+  VAN: "antwerpen",
+  VOV: "oost-vlaanderen",
+  VWV: "west-vlaanderen",
+  VLI: "limburg",
+  VBR: "vlaams-brabant",
+  WHT: "henegouwen",
+  WLG: "luik",
+  WNA: "namen",
+  WBR: "waals-brabant",
+  WLX: "luxemburg",
+  BRU: "brussel",
+};
+
+export function provincieVoorRegiocode(regiocode: string | null | undefined): Provincie | null {
+  if (!regiocode) return null;
+  const code = regiocode.trim().toUpperCase().replace(/^BE-/, "");
+  return REGIOCODE_PROVINCIE[code] ?? null;
+}
+
 const DIAKRITISCHE_TEKENS = new RegExp("[\\u0300-\\u036f]", "g");
 
 function normaliseer(tekst: string): string {
