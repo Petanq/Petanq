@@ -104,7 +104,7 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
         onClick={terugGaan}
         className="mb-6 inline-block text-sm font-semibold text-blauw-2 hover:underline"
       >
-        ← {t.hero.bekijkAlle}
+        ← {t.lijst.terugNaarLijst}
       </Link>
 
       <div className="rounded-xl border-[1.5px] border-rand bg-white p-8">
