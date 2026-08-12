@@ -115,6 +115,14 @@ export type NieuwsbriefInschrijving = {
   actief: boolean;
 };
 
+export type Idee = {
+  id: string;
+  moderator_naam: string;
+  tekst: string;
+  afgehandeld: boolean;
+  aangemaakt_op: string;
+};
+
 export type Moderator = {
   id: string;
   user_id: string;

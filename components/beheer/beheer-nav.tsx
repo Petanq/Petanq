@@ -24,6 +24,7 @@ export function BeheerNav({
     { href: "/beheer/schiftingen", label: t.beheer.schiftingen, badge: 0 },
     { href: "/beheer/clubs", label: t.beheer.clubsBeheer, badge: wachtendeClubs },
     { href: "/beheer/moderatoren", label: t.beheer.vrijwilligers, badge: 0 },
+    { href: "/beheer/ideeen", label: t.beheer.ideeen, badge: 0 },
     ...(isAdmin
       ? [{ href: "/beheer/verwijderaanvragen", label: t.beheer.verwijderaanvragen, badge: wachtendeVerwijderaanvragen }]
       : []),

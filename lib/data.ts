@@ -1,5 +1,5 @@
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
-import { Club, Moderator, Toernooi } from "@/lib/types";
+import { Club, Idee, Moderator, Toernooi } from "@/lib/types";
 
 export async function getGoedgekeurdeToernooien(): Promise<Toernooi[]> {
   const supabase = createClient();
@@ -333,4 +333,18 @@ export async function getActieveClubs(): Promise<Club[]> {
     return [];
   }
   return data as Club[];
+}
+
+export async function getIdeeen(): Promise<Idee[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("ideeen")
+    .select("*")
+    .order("aangemaakt_op", { ascending: false });
+
+  if (error) {
+    console.error("Kon ideeën niet ophalen:", error.message);
+    return [];
+  }
+  return data as Idee[];
 }
