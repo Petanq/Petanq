@@ -207,7 +207,7 @@ export type ToernooiStatistieken = {
   goedgekeurdDezeMaand: number;
   geweigerdDezeMaand: number;
   actieveClubs: number;
-  perModerator: { naam: string; aantal: number }[];
+  perModerator: { naam: string; aantal: number; laatsteBezoek: string | null }[];
 };
 
 export async function getToernooiStatistieken(): Promise<ToernooiStatistieken> {
@@ -233,21 +233,24 @@ export async function getToernooiStatistieken(): Promise<ToernooiStatistieken> {
         .gte("goedgekeurd_op", maandStartIso),
       supabase.from("clubs").select("id", { count: "exact", head: true }).eq("actief", true),
       supabase.from("toernooien").select("goedgekeurd_door").eq("status", "goedgekeurd").not("goedgekeurd_door", "is", null),
-      supabase.from("moderatoren").select("naam"),
+      supabase.from("moderatoren").select("naam, laatste_bezoek"),
     ]);
 
   // Start met alle vrijwilligers op 0, zodat ook wie nog niets goedkeurde
   // gewoon in de lijst verschijnt in plaats van stilzwijgend te ontbreken.
   const tellingen = new Map<string, number>();
+  const laatsteBezoeken = new Map<string, string | null>();
   for (const mod of moderatorenRes.data ?? []) {
-    tellingen.set((mod as { naam: string }).naam, 0);
+    const { naam, laatste_bezoek } = mod as { naam: string; laatste_bezoek: string | null };
+    tellingen.set(naam, 0);
+    laatsteBezoeken.set(naam, laatste_bezoek);
   }
   for (const rij of perModeratorRes.data ?? []) {
     const naam = (rij as { goedgekeurd_door: string }).goedgekeurd_door;
     tellingen.set(naam, (tellingen.get(naam) ?? 0) + 1);
   }
   const perModerator = Array.from(tellingen.entries())
-    .map(([naam, aantal]) => ({ naam, aantal }))
+    .map(([naam, aantal]) => ({ naam, aantal, laatsteBezoek: laatsteBezoeken.get(naam) ?? null }))
     .sort((a, b) => b.aantal - a.aantal);
 
   return {

@@ -77,9 +77,18 @@ export function StatistiekenPaneel({
                     key={mod.naam}
                     className="flex items-center justify-between rounded-md bg-licht px-3 py-2 text-sm"
                   >
-                    <span className="font-semibold text-donker">
-                      {i < MEDAILLES.length ? `${MEDAILLES[i]} ` : ""}
-                      {mod.naam}
+                    <span className="flex flex-col">
+                      <span className="font-semibold text-donker">
+                        {i < MEDAILLES.length ? `${MEDAILLES[i]} ` : ""}
+                        {mod.naam}
+                      </span>
+                      {mod.laatsteBezoek && (
+                        <span className="text-xs text-grijs">
+                          {t.beheer.laatsteBezoek(
+                            new Date(mod.laatsteBezoek).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE")
+                          )}
+                        </span>
+                      )}
                     </span>
                     <span className="font-bold text-[#b8860b]">{mod.aantal}</span>
                   </div>
