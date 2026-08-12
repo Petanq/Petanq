@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Toernooi } from "@/lib/types";
 import { dagVanWeekKort, dagNummer, maandVolledig, formatUur, countdownTekst, parseDatum } from "@/lib/datum";
@@ -17,7 +18,18 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
 export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
   const { t, taal } = useTranslation();
+  const router = useRouter();
   const [gekopieerd, setGekopieerd] = useState(false);
+
+  // Terug naar de vorige pagina (bv. de lijst, op de scrollpositie/filters
+  // van daarvoor) i.p.v. altijd een verse homepage — enkel als er browser-
+  // geschiedenis is (bv. bij een rechtstreekse link van buitenaf niet).
+  function terugGaan(e: React.MouseEvent) {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      e.preventDefault();
+      router.back();
+    }
+  }
   const naam = taal === "fr" ? toernooi.naam_fr : toernooi.naam_nl;
   const maandIndex = parseDatum(toernooi.datum).getMonth();
   const deelUrl = `${SITE_URL}/toernooien/${toernooi.id}`;
@@ -87,7 +99,11 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12 lg:px-10">
-      <Link href="/" className="mb-6 inline-block text-sm font-semibold text-blauw-2 hover:underline">
+      <Link
+        href="/"
+        onClick={terugGaan}
+        className="mb-6 inline-block text-sm font-semibold text-blauw-2 hover:underline"
+      >
         ← {t.hero.bekijkAlle}
       </Link>
 
