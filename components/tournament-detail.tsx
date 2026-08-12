@@ -248,13 +248,13 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
               href={googleAgendaLink(toernooi, naam)}
               target="_blank"
               rel="noopener noreferrer"
-              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+              className="whitespace-nowrap rounded-md border-[1.5px] border-geel px-4 py-2 text-sm font-semibold text-donker transition-all hover:bg-[#fdf3d9] active:scale-[0.97]"
             >
               📅 {t.lijst.googleAgenda}
             </a>
             <button
               onClick={() => downloadIcs(toernooi, naam)}
-              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+              className="whitespace-nowrap rounded-md border-[1.5px] border-geel px-4 py-2 text-sm font-semibold text-donker transition-all hover:bg-[#fdf3d9] active:scale-[0.97]"
             >
               📄 {t.lijst.icsBestand}
             </button>
@@ -268,19 +268,19 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
               href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${naam} — ${toernooi.clubnaam}\n${deelUrl}`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+              className="whitespace-nowrap rounded-md border-[1.5px] border-geel px-4 py-2 text-sm font-semibold text-donker transition-all hover:bg-[#fdf3d9] active:scale-[0.97]"
             >
               💬 WhatsApp
             </a>
             <button
               onClick={deelViaMessenger}
-              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+              className="whitespace-nowrap rounded-md border-[1.5px] border-geel px-4 py-2 text-sm font-semibold text-donker transition-all hover:bg-[#fdf3d9] active:scale-[0.97]"
             >
               💬 Messenger
             </button>
             <button
               onClick={linkKopieren}
-              className="whitespace-nowrap rounded-md border-[1.5px] border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+              className="whitespace-nowrap rounded-md border-[1.5px] border-geel px-4 py-2 text-sm font-semibold text-donker transition-all hover:bg-[#fdf3d9] active:scale-[0.97]"
             >
               {gekopieerd ? `✓ ${t.lijst.linkGekopieerd}` : `🔗 ${t.lijst.linkKopieren}`}
             </button>
@@ -303,7 +303,7 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-bold uppercase tracking-wide text-grijs">{label}</dt>
+      <dt className="text-xs font-bold uppercase tracking-wide text-[#8a6d1f]">{label}</dt>
       <dd className="mt-0.5 text-sm font-medium text-donker">{children}</dd>
     </div>
   );
