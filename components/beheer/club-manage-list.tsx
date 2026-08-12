@@ -11,9 +11,10 @@ import {
   clubBewerken,
   clubToevoegen,
   clubVerwijderen,
+  clubVerwijderingAanvragen,
 } from "@/actions/beheer-clubs";
 
-export function ClubManageList({ clubs }: { clubs: Club[] }) {
+export function ClubManageList({ clubs, isAdmin = false }: { clubs: Club[]; isAdmin?: boolean }) {
   const { t, taal } = useTranslation();
   const router = useRouter();
   const [toevoegenOpen, setToevoegenOpen] = useState(false);
@@ -22,6 +23,8 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
   const [zoekterm, setZoekterm] = useState("");
   const [melding, setMelding] = useState<string | null>(null);
   const [opengeklapt, setOpengeklapt] = useState<Set<Provincie>>(new Set());
+  const [verwijderAanvraagId, setVerwijderAanvraagId] = useState<string | null>(null);
+  const [verwijderReden, setVerwijderReden] = useState("");
 
   function toggleProvincie(p: Provincie) {
     setOpengeklapt((prev) => {
@@ -60,6 +63,16 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
     router.refresh();
   }
 
+  async function verwijderingAanvragen() {
+    if (!verwijderAanvraagId || !verwijderReden.trim()) return;
+    setBezig(verwijderAanvraagId);
+    await clubVerwijderingAanvragen(verwijderAanvraagId, verwijderReden);
+    setBezig(null);
+    setVerwijderAanvraagId(null);
+    setVerwijderReden("");
+    router.refresh();
+  }
+
   function renderClub(club: Club) {
     return bewerkId === club.id ? (
       <ClubFormulier
@@ -75,10 +88,11 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
     ) : (
       <div
         key={club.id}
-        className={`flex flex-wrap items-center justify-between gap-3 rounded-[10px] border-[1.5px] bg-white p-3.5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)] ${
+        className={`flex flex-col gap-3 rounded-[10px] border-[1.5px] bg-white p-3.5 transition-all hover:border-geel/60 hover:shadow-[0_2px_10px_rgba(244,196,48,0.15)] ${
           club.actief ? "border-rand" : "border-geel"
         }`}
       >
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           {club.foto_url && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -123,13 +137,45 @@ export function ClubManageList({ clubs }: { clubs: Club[] }) {
             {club.actief ? t.beheer.deactiveren : t.beheer.activeren}
           </button>
           <button
-            onClick={() => verwijderen(club.id)}
+            onClick={() => (isAdmin ? verwijderen(club.id) : setVerwijderAanvraagId(club.id))}
             disabled={bezig === club.id}
             className="whitespace-nowrap rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
           >
-            {t.beheer.verwijderen}
+            {isAdmin ? t.beheer.verwijderen : t.beheer.verwijderingAanvragen}
           </button>
         </div>
+      </div>
+
+      {verwijderAanvraagId === club.id && (
+        <div className="flex flex-col gap-2 border-t border-rand pt-3">
+          <label className="text-xs font-bold text-donker">{t.beheer.waaromVerwijderen}</label>
+          <textarea
+            rows={2}
+            value={verwijderReden}
+            onChange={(e) => setVerwijderReden(e.target.value)}
+            className="veld-input resize-none"
+          />
+          {!verwijderReden.trim() && <p className="text-xs text-grijs">{t.beheer.redenVerplicht}</p>}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={verwijderingAanvragen}
+              disabled={bezig === club.id || !verwijderReden.trim()}
+              className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+            >
+              {t.beheer.bevestigen}
+            </button>
+            <button
+              onClick={() => {
+                setVerwijderAanvraagId(null);
+                setVerwijderReden("");
+              }}
+              className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+            >
+              {t.beheer.annuleren}
+            </button>
+          </div>
+        </div>
+      )}
       </div>
     );
   }

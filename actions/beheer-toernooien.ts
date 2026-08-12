@@ -11,7 +11,8 @@ import { WeigeringEmail, weigeringOnderwerp } from "@/lib/emails/weigering";
 import { vertaalProvincie, Provincie, PROVINCIE_TOEGANGSREGIO } from "@/lib/provincies";
 import { toernooiSchema, toernooiWijzigenSchema } from "@/lib/validations";
 import { Toernooi } from "@/lib/types";
-import { isModerator } from "@/lib/auth-helpers";
+import { isModerator, isAdmin } from "@/lib/auth-helpers";
+import { VerwijderAanvraagEmail, verwijderAanvraagOnderwerp } from "@/lib/emails/verwijder-aanvraag";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -215,15 +216,90 @@ export async function toernooiWeigeren(id: string, reden: string | null): Promis
   return { succes: true };
 }
 
+// Enkel admins mogen definitief (zacht) verwijderen. Een gewone vrijwilliger
+// kan enkel een aanvraag met verplichte reden indienen — zie
+// toernooiVerwijderingAanvragen hieronder. "Verwijderen" is altijd zacht:
+// het record blijft in de databank staan (verwijderd_op), dus herstelbaar.
 export async function toernooiVerwijderen(id: string): Promise<BeheerActieResultaat> {
-  if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = createClient();
-  const { error } = await supabase.from("toernooien").delete().eq("id", id);
-  if (error) return { succes: false, fout: "server_fout" };
+  const { error } = await supabase
+    .from("toernooien")
+    .update({ verwijderd_op: new Date().toISOString() })
+    .eq("id", id);
+  if (error) {
+    console.error("Toernooi verwijderen mislukt:", error.message);
+    return { succes: false, fout: "server_fout" };
+  }
   revalidatePath("/beheer/toernooien");
   revalidatePath("/beheer/schiftingen");
+  revalidatePath("/beheer/verwijderaanvragen");
   revalidatePath("/");
+  return { succes: true };
+}
+
+export async function toernooiVerwijderingAanvragen(id: string, reden: string): Promise<BeheerActieResultaat> {
+  if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
+  if (!reden.trim()) return { succes: false, fout: "reden_verplicht" };
+
+  const supabase = createClient();
+  const moderatorNaam = await huidigeModeratorNaam();
+  const { data: toernooi, error } = await supabase
+    .from("toernooien")
+    .update({
+      verwijder_aanvraag_door: moderatorNaam,
+      verwijder_aanvraag_reden: reden.trim(),
+      verwijder_aanvraag_op: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error || !toernooi) {
+    console.error("Verwijderingsaanvraag (toernooi) mislukt:", error?.message);
+    return { succes: false, fout: "server_fout" };
+  }
+
+  try {
+    const serviceClient = createServiceRoleClient();
+    const { data: admins } = await serviceClient.from("moderatoren").select("email").eq("rol", "admin");
+    const adminEmails = (admins ?? []).map((a: { email: string }) => a.email);
+    if (adminEmails.length > 0) {
+      const resend = getResendClient();
+      await resend.emails.send({
+        from: AFZENDER,
+        to: adminEmails,
+        subject: verwijderAanvraagOnderwerp("toernooi"),
+        react: VerwijderAanvraagEmail({
+          soort: "toernooi",
+          naam: `${toernooi.naam_nl} — ${toernooi.clubnaam}`,
+          aanvragerNaam: moderatorNaam ?? "Een vrijwilliger",
+          reden: reden.trim(),
+          beheerLink: `${siteUrl()}/beheer/verwijderaanvragen`,
+        }),
+      });
+    }
+  } catch (mailFout) {
+    console.error("Verwijderaanvraag-mail (toernooi) versturen mislukt:", mailFout);
+  }
+
+  revalidatePath("/beheer/toernooien");
+  revalidatePath("/beheer/verwijderaanvragen");
+  return { succes: true };
+}
+
+export async function toernooiVerwijderAanvraagAfwijzen(id: string): Promise<BeheerActieResultaat> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("toernooien")
+    .update({ verwijder_aanvraag_door: null, verwijder_aanvraag_reden: null, verwijder_aanvraag_op: null })
+    .eq("id", id);
+  if (error) return { succes: false, fout: "server_fout" };
+  revalidatePath("/beheer/verwijderaanvragen");
+  revalidatePath("/beheer/toernooien");
   return { succes: true };
 }
 

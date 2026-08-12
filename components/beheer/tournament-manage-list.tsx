@@ -6,7 +6,12 @@ import { useTranslation } from "@/lib/language-context";
 import { Categorie, Formule, Speelvorm, Toernooi, Club, KwalificatieDatum } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { formatUur, maandJaarKey, maandVolledig, parseDatum, dagVanWeekKort, dagNummer, maandKort } from "@/lib/datum";
-import { toernooiBewerken, toernooiToevoegenAlsAdmin, toernooiVerwijderen } from "@/actions/beheer-toernooien";
+import {
+  toernooiBewerken,
+  toernooiToevoegenAlsAdmin,
+  toernooiVerwijderen,
+  toernooiVerwijderingAanvragen,
+} from "@/actions/beheer-toernooien";
 import { uploadAffiche } from "@/lib/upload-affiche";
 import { uploadNaarStorage } from "@/lib/upload-bestand";
 import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
@@ -37,7 +42,13 @@ const FORMULES: Formule[] = [
   "kleurentornooi",
 ];
 
-export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] }) {
+export function TournamentManageList({
+  toernooien,
+  isAdmin = false,
+}: {
+  toernooien: Toernooi[];
+  isAdmin?: boolean;
+}) {
   const { t, taal } = useTranslation();
   const router = useRouter();
   const [toevoegenOpen, setToevoegenOpen] = useState(false);
@@ -48,12 +59,24 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
   const [filterType, setFilterType] = useState<"" | "open" | "officieel">("");
   const [zoek, setZoek] = useState("");
   const [actieveMaand, setActieveMaand] = useState<string | null>(null);
+  const [verwijderAanvraagId, setVerwijderAanvraagId] = useState<string | null>(null);
+  const [verwijderReden, setVerwijderReden] = useState("");
 
   async function verwijderen(id: string) {
     if (!window.confirm("Weet je zeker dat je dit toernooi wil verwijderen?")) return;
     setBezig(true);
     await toernooiVerwijderen(id);
     setBezig(false);
+    router.refresh();
+  }
+
+  async function verwijderingAanvragen() {
+    if (!verwijderAanvraagId || !verwijderReden.trim()) return;
+    setBezig(true);
+    await toernooiVerwijderingAanvragen(verwijderAanvraagId, verwijderReden);
+    setBezig(false);
+    setVerwijderAanvraagId(null);
+    setVerwijderReden("");
     router.refresh();
   }
 
@@ -258,14 +281,47 @@ export function TournamentManageList({ toernooien }: { toernooien: Toernooi[] })
                           {t.beheer.bewerken}
                         </button>
                         <button
-                          onClick={() => verwijderen(tn.id)}
+                          onClick={() =>
+                            isAdmin ? verwijderen(tn.id) : setVerwijderAanvraagId(tn.id)
+                          }
                           disabled={bezig}
                           className="rounded-md bg-rood px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
                         >
-                          {t.beheer.verwijderen}
+                          {isAdmin ? t.beheer.verwijderen : t.beheer.verwijderingAanvragen}
                         </button>
                       </div>
                     </div>
+
+                    {verwijderAanvraagId === tn.id && (
+                      <div className="col-span-full mt-1 flex flex-col gap-2 border-t border-rand pt-3 sm:col-span-3">
+                        <label className="text-xs font-bold text-donker">{t.beheer.waaromVerwijderen}</label>
+                        <textarea
+                          rows={2}
+                          value={verwijderReden}
+                          onChange={(e) => setVerwijderReden(e.target.value)}
+                          className="veld-input resize-none"
+                        />
+                        {!verwijderReden.trim() && <p className="text-xs text-grijs">{t.beheer.redenVerplicht}</p>}
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={verwijderingAanvragen}
+                            disabled={bezig || !verwijderReden.trim()}
+                            className="rounded-md bg-rood px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-rood-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
+                          >
+                            {t.beheer.bevestigen}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setVerwijderAanvraagId(null);
+                              setVerwijderReden("");
+                            }}
+                            className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+                          >
+                            {t.beheer.annuleren}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )
               )}

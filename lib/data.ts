@@ -51,6 +51,7 @@ export async function getAlleGoedgekeurdeToernooienVoorBeheer(): Promise<Toernoo
     .from("toernooien")
     .select("*")
     .eq("status", "goedgekeurd")
+    .is("verwijderd_op", null)
     .order("datum", { ascending: false });
 
   if (error) {
@@ -62,10 +63,46 @@ export async function getAlleGoedgekeurdeToernooienVoorBeheer(): Promise<Toernoo
 
 export async function getAlleClubsVoorBeheer(): Promise<Club[]> {
   const supabase = createClient();
-  const { data, error } = await supabase.from("clubs").select("*").order("naam", { ascending: true });
+  const { data, error } = await supabase
+    .from("clubs")
+    .select("*")
+    .is("verwijderd_op", null)
+    .order("naam", { ascending: true });
 
   if (error) {
     console.error("Kon clubs niet ophalen:", error.message);
+    return [];
+  }
+  return data as Club[];
+}
+
+export async function getVerwijderAanvragenToernooien(): Promise<Toernooi[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("toernooien")
+    .select("*")
+    .not("verwijder_aanvraag_op", "is", null)
+    .is("verwijderd_op", null)
+    .order("verwijder_aanvraag_op", { ascending: true });
+
+  if (error) {
+    console.error("Kon verwijderaanvragen (toernooien) niet ophalen:", error.message);
+    return [];
+  }
+  return data as Toernooi[];
+}
+
+export async function getVerwijderAanvragenClubs(): Promise<Club[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("clubs")
+    .select("*")
+    .not("verwijder_aanvraag_op", "is", null)
+    .is("verwijderd_op", null)
+    .order("verwijder_aanvraag_op", { ascending: true });
+
+  if (error) {
+    console.error("Kon verwijderaanvragen (clubs) niet ophalen:", error.message);
     return [];
   }
   return data as Club[];
@@ -219,20 +256,26 @@ export async function getToernooiStatistieken(): Promise<ToernooiStatistieken> {
 
   const [totaalRes, aanvragenRes, goedgekeurdRes, geweigerdRes, clubsRes, perModeratorRes, moderatorenRes] =
     await Promise.all([
-      supabase.from("toernooien").select("id", { count: "exact", head: true }).eq("status", "goedgekeurd"),
+      supabase.from("toernooien").select("id", { count: "exact", head: true }).eq("status", "goedgekeurd").is("verwijderd_op", null),
       supabase.from("toernooien").select("id", { count: "exact", head: true }).gte("aangemaakt_op", maandStartIso),
       supabase
         .from("toernooien")
         .select("id", { count: "exact", head: true })
         .eq("status", "goedgekeurd")
+        .is("verwijderd_op", null)
         .gte("goedgekeurd_op", maandStartIso),
       supabase
         .from("toernooien")
         .select("id", { count: "exact", head: true })
         .eq("status", "geweigerd")
         .gte("goedgekeurd_op", maandStartIso),
-      supabase.from("clubs").select("id", { count: "exact", head: true }).eq("actief", true),
-      supabase.from("toernooien").select("goedgekeurd_door").eq("status", "goedgekeurd").not("goedgekeurd_door", "is", null),
+      supabase.from("clubs").select("id", { count: "exact", head: true }).eq("actief", true).is("verwijderd_op", null),
+      supabase
+        .from("toernooien")
+        .select("goedgekeurd_door")
+        .eq("status", "goedgekeurd")
+        .is("verwijderd_op", null)
+        .not("goedgekeurd_door", "is", null),
       supabase.from("moderatoren").select("naam, laatste_bezoek"),
     ]);
 

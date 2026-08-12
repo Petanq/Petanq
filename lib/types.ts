@@ -54,11 +54,24 @@ export type Toernooi = {
   ingediend_door: string | null;
   goedgekeurd_door: string | null;
   goedgekeurd_op: string | null;
+  verwijderd_op: string | null;
+  verwijder_aanvraag_door: string | null;
+  verwijder_aanvraag_reden: string | null;
+  verwijder_aanvraag_op: string | null;
 };
 
 export type NieuwToernooi = Omit<
   Toernooi,
-  "id" | "aangemaakt_op" | "regio" | "status" | "goedgekeurd_door" | "goedgekeurd_op"
+  | "id"
+  | "aangemaakt_op"
+  | "regio"
+  | "status"
+  | "goedgekeurd_door"
+  | "goedgekeurd_op"
+  | "verwijderd_op"
+  | "verwijder_aanvraag_door"
+  | "verwijder_aanvraag_reden"
+  | "verwijder_aanvraag_op"
 >;
 
 export type Club = {
@@ -75,9 +88,23 @@ export type Club = {
   foto_url: string | null;
   aangemaakt_op: string;
   actief: boolean;
+  verwijderd_op: string | null;
+  verwijder_aanvraag_door: string | null;
+  verwijder_aanvraag_reden: string | null;
+  verwijder_aanvraag_op: string | null;
 };
 
-export type NieuweClub = Omit<Club, "id" | "regio" | "aangemaakt_op" | "actief">;
+export type NieuweClub = Omit<
+  Club,
+  | "id"
+  | "regio"
+  | "aangemaakt_op"
+  | "actief"
+  | "verwijderd_op"
+  | "verwijder_aanvraag_door"
+  | "verwijder_aanvraag_reden"
+  | "verwijder_aanvraag_op"
+>;
 
 export type NieuwsbriefInschrijving = {
   id: string;

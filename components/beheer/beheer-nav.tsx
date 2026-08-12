@@ -7,9 +7,13 @@ import { useTranslation } from "@/lib/language-context";
 export function BeheerNav({
   wachtendeToernooien = 0,
   wachtendeClubs = 0,
+  wachtendeVerwijderaanvragen = 0,
+  isAdmin = false,
 }: {
   wachtendeToernooien?: number;
   wachtendeClubs?: number;
+  wachtendeVerwijderaanvragen?: number;
+  isAdmin?: boolean;
 }) {
   const { t } = useTranslation();
   const pathname = usePathname();
@@ -20,6 +24,9 @@ export function BeheerNav({
     { href: "/beheer/schiftingen", label: t.beheer.schiftingen, badge: 0 },
     { href: "/beheer/clubs", label: t.beheer.clubsBeheer, badge: wachtendeClubs },
     { href: "/beheer/moderatoren", label: t.beheer.vrijwilligers, badge: 0 },
+    ...(isAdmin
+      ? [{ href: "/beheer/verwijderaanvragen", label: t.beheer.verwijderaanvragen, badge: wachtendeVerwijderaanvragen }]
+      : []),
   ];
 
   return (
