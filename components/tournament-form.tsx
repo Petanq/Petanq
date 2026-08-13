@@ -531,7 +531,11 @@ export function TournamentForm() {
 
         {status === "fout" && (
           <p className="text-sm font-medium text-rood-2">
-            {foutReden === "dubbel_toernooi" ? t.form.foutDubbel : t.form.fout}
+            {foutReden === "dubbel_toernooi"
+              ? t.form.foutDubbel
+              : foutReden === "ongeldige_invoer"
+              ? t.form.foutOngeldigeInvoer
+              : t.form.fout}
           </p>
         )}
 

@@ -40,6 +40,34 @@ const FORMULES = [
 
 const TOOL_NAAM = "affiche_gegevens";
 
+// Vangnet naast de instructie in de prompt: als het model toch een datum
+// zonder jaartal verkeerd inschat (bv. een jaar in het verleden), duwen we
+// die hier alsnog naar de eerstvolgende toekomstige gelijke dag-en-maand.
+// Onafhankelijk per datum toepassen behoudt de juiste volgorde tussen
+// schiftingsdata en de finale (bv. okt-dec van jaar X, finale jan van X+1
+// blijft kloppen ook na de correctie).
+function naarToekomst(datum: string, vandaag: string): string {
+  const match = datum.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return datum;
+  let jaar = Number(match[1]);
+  const maandDag = `${match[2]}-${match[3]}`;
+  while (`${jaar}-${maandDag}` < vandaag) jaar += 1;
+  return `${jaar}-${maandDag}`;
+}
+
+function corrigeerJaartallen(toernooien: AfficheVelden[], vandaag: string): AfficheVelden[] {
+  return toernooien.map((item) => ({
+    ...item,
+    datum: item.datum ? naarToekomst(item.datum, vandaag) : item.datum,
+    kwalificatiedata: item.kwalificatiedata
+      ? item.kwalificatiedata.map((k) => ({
+          ...k,
+          datum: k.datum ? naarToekomst(k.datum, vandaag) : k.datum,
+        }))
+      : item.kwalificatiedata,
+  }));
+}
+
 let client: Anthropic | null = null;
 function getClient(): Anthropic {
   if (!client) client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -152,7 +180,7 @@ export async function afficheAnalyseren(
             },
             {
               type: "text",
-              text: `Dit is een affiche voor een petanquetoernooi in België. Lees de tekst op de affiche en vul het formulier zo goed mogelijk in. Vandaag is het ${vandaag} — als het jaartal op de affiche ontbreekt, kies dan het eerstvolgende jaar waarin die datum in de toekomst valt. Vul een veld in met null als je het echt niet met voldoende zekerheid uit de affiche kan halen. Verzin niets.
+              text: `Dit is een affiche voor een petanquetoernooi in België. Lees de tekst op de affiche en vul het formulier zo goed mogelijk in. Vandaag is het ${vandaag} — als het jaartal op de affiche ontbreekt, reken dan per datum apart uit wat het eerstvolgende jaar is waarin die dag-en-maand nog in de toekomst valt t.o.v. ${vandaag}. Gebruik NOOIT een datum die al voorbij is — ook niet als de affiche een schifting/kwalificatiereeks toont die een jaargrens overschrijdt (bv. schiftingen in oktober-december gevolgd door een finale in januari: reken dan uit in welk jaar die oktober-december-reeks nog moet komen, en de finale valt in het jaar daarna). Vul een veld in met null als je het echt niet met voldoende zekerheid uit de affiche kan halen. Verzin niets.
 
 Let op — er zijn twee verschillende situaties met meerdere datums op een affiche, die je niet mag verwarren:
 
@@ -191,7 +219,7 @@ Toont de affiche maar één concours op één datum zonder schiftingensysteem, g
 
     const input = toolUse.input as { toernooien: AfficheVelden[] };
     if (!input.toernooien || input.toernooien.length === 0) return null;
-    return input.toernooien;
+    return corrigeerJaartallen(input.toernooien, vandaag);
   } catch (fout) {
     console.error("Affiche analyseren mislukt:", fout);
     return null;

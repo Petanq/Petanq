@@ -825,7 +825,11 @@ function AddForm({
 
       {fout && (
         <p className="mt-3 text-sm font-medium text-rood-2">
-          {fout === "dubbel_toernooi" ? t.form.foutDubbel : t.form.fout}
+          {fout === "dubbel_toernooi"
+            ? t.form.foutDubbel
+            : fout === "ongeldige_invoer"
+            ? t.form.foutOngeldigeInvoer
+            : t.form.fout}
         </p>
       )}
 
@@ -1197,7 +1201,11 @@ export function EditForm({
 
       {fout && (
         <p className="mt-3 text-sm font-medium text-rood-2">
-          {fout === "dubbel_toernooi" ? t.form.foutDubbel : t.form.fout}
+          {fout === "dubbel_toernooi"
+            ? t.form.foutDubbel
+            : fout === "ongeldige_invoer"
+            ? t.form.foutOngeldigeInvoer
+            : t.form.fout}
         </p>
       )}
 
