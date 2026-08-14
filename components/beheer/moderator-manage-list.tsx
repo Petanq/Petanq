@@ -147,12 +147,14 @@ export function ModeratorManageList({
                   <option value="heel_belgie">{t.beheer.toegangHeelBelgie}</option>
                 </select>
               )}
-              <button
-                onClick={() => setBewerkId(mod.id)}
-                className="whitespace-nowrap rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
-              >
-                {t.beheer.bewerken}
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => setBewerkId(mod.id)}
+                  className="whitespace-nowrap rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+                >
+                  {t.beheer.bewerken}
+                </button>
+              )}
               {isAdmin && (
                 <button
                   onClick={() => verwijderen(mod)}

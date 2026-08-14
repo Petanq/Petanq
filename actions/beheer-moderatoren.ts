@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Moderator, ModeratorRol } from "@/lib/types";
 import { Provincie } from "@/lib/provincies";
-import { isModerator, isAdmin } from "@/lib/auth-helpers";
+import { isAdmin } from "@/lib/auth-helpers";
 import { maakKorteLink } from "@/lib/korte-link";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
@@ -113,7 +113,7 @@ export async function moderatorBewerken(
   id: string,
   wijzigingen: Partial<Pick<Moderator, "naam" | "provincie">>
 ): Promise<BeheerActieResultaat> {
-  if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = createClient();
   const { error } = await supabase.from("moderatoren").update(wijzigingen).eq("id", id);
@@ -196,7 +196,7 @@ export async function moderatorToegangWijzigen(
 }
 
 export async function moderatorVerwijderen(id: string): Promise<BeheerActieResultaat> {
-  if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = createClient();
   const { data: mod } = await supabase.from("moderatoren").select("user_id").eq("id", id).single();
