@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 
@@ -8,11 +9,12 @@ export function Footer() {
 
   return (
     <div className="mt-3 border-t border-rand px-6 py-6 text-center text-[0.77rem] text-grijs">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src="/images/logo-volledig.png"
         alt="Petanque13"
-        className="mx-auto mb-3 h-10 w-auto"
+        width={177}
+        height={40}
+        className="mx-auto mb-3"
       />
       <span>
         {t.footer.tekst}{" "}
