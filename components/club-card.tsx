@@ -27,16 +27,15 @@ export function ClubCard({ club }: { club: Club }) {
       )}
       <div className="min-w-0">
         <div className="truncate text-[0.88rem] font-bold text-donker">{club.naam}</div>
-        <div className="truncate text-[0.76rem] text-grijs">
-          📍{" "}
+        <div className="flex items-center gap-1 text-[0.76rem] text-grijs">
           <a
             href={googleMapsUrl(club.adres, club.gemeente)}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:underline"
+            className="min-w-0 truncate hover:underline"
           >
-            {club.adres || club.gemeente}
-          </a>{" "}
+            📍 {club.adres || club.gemeente}
+          </a>
           <WazeLink adres={club.adres} gemeente={club.gemeente} />
         </div>
         {club.contact_email && (
