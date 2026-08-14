@@ -2,6 +2,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { ALLE_PROVINCIES } from "@/lib/provincies";
+import { magAiAfbeeldingAnalyseren } from "@/lib/rate-limit";
 
 export type AfficheVelden = {
   datum: string | null;
@@ -151,6 +152,7 @@ export async function afficheAnalyseren(
   mediaType: string
 ): Promise<AfficheVelden[] | null> {
   if (!process.env.ANTHROPIC_API_KEY) return null;
+  if (!(await magAiAfbeeldingAnalyseren())) return null;
 
   const vandaag = new Date().toISOString().slice(0, 10);
   const GELDIGE_MEDIA_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const;

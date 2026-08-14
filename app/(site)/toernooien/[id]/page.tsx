@@ -28,7 +28,7 @@ export default async function ToernooiDetailPagina({ params }: Props) {
   if (!toernooi) notFound();
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
-  const startDatum = `${toernooi.datum}T${toernooi.uur}:00+02:00`;
+  const startDatum = `${toernooi.datum}T${toernooi.uur.slice(0, 5)}:00+02:00`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -65,7 +65,9 @@ export default async function ToernooiDetailPagina({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        // "<" wordt geëscaped zodat een tornooinaam/adres met "</script>" de
+        // pagina niet kan laten uitvoeren als script (opgeslagen-XSS-risico).
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <TournamentDetail toernooi={toernooi} />
     </>
