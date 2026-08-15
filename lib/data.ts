@@ -154,7 +154,7 @@ export async function getHuidigeModerator(): Promise<Moderator | null> {
   return (data as Moderator) ?? null;
 }
 
-export type BezoekStatistieken = { totaal: number; dezeMaand: number };
+export type BezoekStatistieken = { totaal: number; dezeMaand: number; vandaag: number };
 
 export async function getBezoekStatistieken(): Promise<BezoekStatistieken> {
   const supabase = createServiceRoleClient();
@@ -162,16 +162,18 @@ export async function getBezoekStatistieken(): Promise<BezoekStatistieken> {
 
   if (error || !data) {
     console.error("Kon bezoekstatistieken niet ophalen:", error?.message);
-    return { totaal: 0, dezeMaand: 0 };
+    return { totaal: 0, dezeMaand: 0, vandaag: 0 };
   }
 
-  const huidigeMaand = new Date().toISOString().slice(0, 7);
+  const vandaagIso = new Date().toISOString().slice(0, 10);
+  const huidigeMaand = vandaagIso.slice(0, 7);
   const totaal = data.reduce((som: number, rij: { dag: string; aantal: number }) => som + rij.aantal, 0);
   const dezeMaand = data
     .filter((rij: { dag: string; aantal: number }) => rij.dag.startsWith(huidigeMaand))
     .reduce((som: number, rij: { dag: string; aantal: number }) => som + rij.aantal, 0);
+  const vandaag = data.find((rij: { dag: string; aantal: number }) => rij.dag === vandaagIso)?.aantal ?? 0;
 
-  return { totaal, dezeMaand };
+  return { totaal, dezeMaand, vandaag };
 }
 
 export type BezoekPerDag = { dag: string; aantal: number };

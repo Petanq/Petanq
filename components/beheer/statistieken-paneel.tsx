@@ -56,6 +56,7 @@ export function StatistiekenPaneel({
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <StatKaart label={t.beheer.bezoekersTotaal} waarde={bezoeken.totaal} />
             <StatKaart label={t.beheer.bezoekersDezeMaand} waarde={bezoeken.dezeMaand} />
+            <StatKaart label={t.beheer.bezoekersVandaag} waarde={bezoeken.vandaag} />
             <StatKaart label={t.beheer.toernooienTotaalLabel} waarde={toernooien.totaalGoedgekeurd} />
             <StatKaart label={t.beheer.aanvragenDezeMaandLabel} waarde={toernooien.aanvragenDezeMaand} />
             <StatKaart label={t.beheer.goedgekeurdDezeMaandLabel} waarde={toernooien.goedgekeurdDezeMaand} kleur="text-groen" />
