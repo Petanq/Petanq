@@ -47,7 +47,7 @@ const TOOL_NAAM = "affiche_gegevens";
 // Onafhankelijk per datum toepassen behoudt de juiste volgorde tussen
 // schiftingsdata en de finale (bv. okt-dec van jaar X, finale jan van X+1
 // blijft kloppen ook na de correctie).
-function naarToekomst(datum: string, vandaag: string): string {
+export function naarToekomst(datum: string, vandaag: string): string {
   const match = datum.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!match) return datum;
   let jaar = Number(match[1]);
@@ -56,7 +56,7 @@ function naarToekomst(datum: string, vandaag: string): string {
   return `${jaar}-${maandDag}`;
 }
 
-function corrigeerJaartallen(toernooien: AfficheVelden[], vandaag: string): AfficheVelden[] {
+export function corrigeerJaartallen(toernooien: AfficheVelden[], vandaag: string): AfficheVelden[] {
   return toernooien.map((item) => ({
     ...item,
     datum: item.datum ? naarToekomst(item.datum, vandaag) : item.datum,
