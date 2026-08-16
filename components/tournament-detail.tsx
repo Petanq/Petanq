@@ -108,6 +108,11 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
 
       <div className="rounded-xl border-[1.5px] border-rand bg-white p-8">
         <div className="mb-4 flex flex-wrap gap-2">
+          {toernooi.geannuleerd && (
+            <span className="rounded bg-rood px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">
+              {t.lijst.geannuleerdBadge}
+            </span>
+          )}
           {toernooi.vol && (
             <span className="rounded bg-rood px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">
               {t.lijst.volBadge}

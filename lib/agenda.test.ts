@@ -23,6 +23,7 @@ const basisToernooi: Toernooi = {
   gratis: false,
   max_ploegen: null,
   vol: false,
+  geannuleerd: false,
   open_toernooi: true,
   finale: true,
   affiche_url: null,

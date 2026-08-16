@@ -897,6 +897,7 @@ export function EditForm({
   const [kwalificatieData, setKwalificatieData] = useState<KwalificatieDatum[]>(toernooi.kwalificatiedata ?? []);
   const [kwalificatieUur, setKwalificatieUur] = useState(toernooi.kwalificatie_uur ?? "");
   const [vol, setVol] = useState(toernooi.vol);
+  const [geannuleerd, setGeannuleerd] = useState(toernooi.geannuleerd);
   const [afficheUrl, setAfficheUrl] = useState(toernooi.affiche_url);
   const [afficheBezig, setAfficheBezig] = useState(false);
   const [afficheFout, setAfficheFout] = useState(false);
@@ -942,6 +943,7 @@ export function EditForm({
       kwalificatiedata: kwalificatieData.filter((k) => k.datum),
       kwalificatie_uur: kwalificatieUur || null,
       vol,
+      geannuleerd,
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
       finale,
@@ -1169,6 +1171,16 @@ export function EditForm({
       <label className="mt-3 flex items-center gap-2 text-sm font-medium text-donker">
         <input type="checkbox" checked={vol} onChange={(e) => setVol(e.target.checked)} className="h-4 w-4" />
         {t.form.vol}
+      </label>
+
+      <label className="mt-3 flex items-center gap-2 text-sm font-medium text-donker">
+        <input
+          type="checkbox"
+          checked={geannuleerd}
+          onChange={(e) => setGeannuleerd(e.target.checked)}
+          className="h-4 w-4"
+        />
+        {t.form.geannuleerd}
       </label>
 
       <div className="mt-3">

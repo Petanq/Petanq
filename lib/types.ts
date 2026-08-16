@@ -42,6 +42,7 @@ export type Toernooi = {
   gratis: boolean;
   max_ploegen: number | null;
   vol: boolean;
+  geannuleerd: boolean;
   open_toernooi: boolean;
   finale: boolean;
   affiche_url: string | null;

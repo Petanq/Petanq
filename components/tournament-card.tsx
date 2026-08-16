@@ -61,6 +61,11 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 sm:flex-col sm:items-end sm:gap-1">
+        {toernooi.geannuleerd && (
+          <span className="whitespace-nowrap rounded-full bg-rood px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+            {t.lijst.geannuleerdBadge}
+          </span>
+        )}
         {toernooi.vol && (
           <span className="whitespace-nowrap rounded-full bg-rood px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
             {t.lijst.volBadge}

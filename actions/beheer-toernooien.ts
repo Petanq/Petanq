@@ -310,6 +310,7 @@ export async function toernooiBewerken(
       | "gratis"
       | "max_ploegen"
       | "vol"
+      | "geannuleerd"
       | "contact_email"
       | "link_inschrijving"
       | "opmerking"

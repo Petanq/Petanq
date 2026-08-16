@@ -70,7 +70,9 @@ export type ToernooiFormData = z.infer<typeof toernooiSchema>;
 // meegegeven velden worden gecontroleerd/aangepast). `.partial()` maakt elk
 // veld optioneel zonder de defaults uit de basisschema toe te passen op
 // ontbrekende velden — een niet-meegestuurd veld blijft dus onaangeroerd.
-export const toernooiWijzigenSchema = toernooiBaseSchema.extend({ vol: z.boolean().optional() }).partial();
+export const toernooiWijzigenSchema = toernooiBaseSchema
+  .extend({ vol: z.boolean().optional(), geannuleerd: z.boolean().optional() })
+  .partial();
 
 export const clubSchema = z.object({
   naam: z.string().trim().min(2).max(120),
