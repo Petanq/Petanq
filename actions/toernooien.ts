@@ -8,10 +8,9 @@ import {
   bevestigingIndienerOnderwerp,
 } from "@/lib/emails/bevestiging-indiener";
 import { MeldingModeratorEmail, meldingModeratorOnderwerp } from "@/lib/emails/melding-moderator";
+import { siteUrl } from "@/lib/site-url";
 
 export type ToernooiActieResultaat = { succes: true } | { succes: false; fout: string };
-
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
 export async function toernooiIndienen(
   input: unknown,

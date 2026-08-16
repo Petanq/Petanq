@@ -1,6 +1,5 @@
 import { Body, Container, Head, Heading, Html, Img, Section, Text, Hr } from "@react-email/components";
-
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
+import { siteUrl } from "@/lib/site-url";
 
 export function EmailLayout({
   titel,

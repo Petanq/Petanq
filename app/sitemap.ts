@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getGoedgekeurdeToernooien } from "@/lib/data";
-
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
+import { siteUrl } from "@/lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const toernooien = await getGoedgekeurdeToernooien();

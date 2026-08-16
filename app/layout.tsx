@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/language-context";
+import { siteUrl } from "@/lib/site-url";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -10,10 +11,8 @@ const montserrat = Montserrat({
   variable: "--font-montserrat",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "Petanque13 — De Belgische Petanquekalender",
     template: "%s | Petanque13",
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
     title: "Petanque13 — De Belgische Petanquekalender",
     description:
       "De centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel.",
-    url: siteUrl,
+    url: siteUrl(),
     siteName: "Petanque13",
     locale: "nl_BE",
     alternateLocale: "fr_BE",

@@ -4,21 +4,10 @@ import { revalidatePath } from "next/cache";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { clubSchema, clubWijzigenSchema } from "@/lib/validations";
 import { Club } from "@/lib/types";
-import { isModerator, isAdmin } from "@/lib/auth-helpers";
+import { isModerator, isAdmin, huidigeModeratorNaam } from "@/lib/auth-helpers";
 import { getResendClient, AFZENDER } from "@/lib/resend";
 import { VerwijderAanvraagEmail, verwijderAanvraagOnderwerp } from "@/lib/emails/verwijder-aanvraag";
-
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
-
-async function huidigeModeratorNaam(): Promise<string | null> {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data } = await supabase.from("moderatoren").select("naam").eq("user_id", user.id).single();
-  return data?.naam ?? user.email ?? null;
-}
+import { siteUrl } from "@/lib/site-url";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 

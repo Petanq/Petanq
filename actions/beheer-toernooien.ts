@@ -11,26 +11,11 @@ import { WeigeringEmail, weigeringOnderwerp } from "@/lib/emails/weigering";
 import { vertaalProvincie, Provincie, PROVINCIE_TOEGANGSREGIO } from "@/lib/provincies";
 import { toernooiSchema, toernooiWijzigenSchema } from "@/lib/validations";
 import { Toernooi } from "@/lib/types";
-import { isModerator, isAdmin } from "@/lib/auth-helpers";
+import { isModerator, isAdmin, huidigeModeratorNaam } from "@/lib/auth-helpers";
 import { VerwijderAanvraagEmail, verwijderAanvraagOnderwerp } from "@/lib/emails/verwijder-aanvraag";
+import { siteUrl } from "@/lib/site-url";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
-
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
-
-async function huidigeModeratorNaam(): Promise<string | null> {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data } = await supabase
-    .from("moderatoren")
-    .select("naam")
-    .eq("user_id", user.id)
-    .single();
-  return data?.naam ?? user.email ?? null;
-}
 
 type ModeratorScope = {
   rol: "moderator" | "admin";

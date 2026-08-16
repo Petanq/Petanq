@@ -13,8 +13,7 @@ import { googleAgendaLink, downloadIcs } from "@/lib/agenda";
 import { ToernooiOpslaanKnop } from "@/components/toernooi-opslaan-knop";
 import { googleMapsUrl } from "@/lib/locatie";
 import { WazeLink } from "@/components/waze-link";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
+import { siteUrl } from "@/lib/site-url";
 
 export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
   const { t, taal } = useTranslation();
@@ -32,7 +31,7 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
   }
   const naam = taal === "fr" ? toernooi.naam_fr : toernooi.naam_nl;
   const maandIndex = parseDatum(toernooi.datum).getMonth();
-  const deelUrl = `${SITE_URL}/toernooien/${toernooi.id}`;
+  const deelUrl = `${siteUrl()}/toernooien/${toernooi.id}`;
 
   // In-app browsers zoals die van Facebook/Instagram blokkeren vaak zowel de
   // moderne Clipboard API als window.prompt. document.execCommand("copy") op

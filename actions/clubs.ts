@@ -8,10 +8,9 @@ import {
   BevestigingClubIndienerEmail,
   bevestigingClubIndienerOnderwerp,
 } from "@/lib/emails/bevestiging-club-indiener";
+import { siteUrl } from "@/lib/site-url";
 
 export type ClubActieResultaat = { succes: true } | { succes: false; fout: string };
-
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
 export async function clubVoorstellen(
   input: unknown,

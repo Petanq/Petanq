@@ -6,13 +6,12 @@ import { Moderator, ModeratorRol } from "@/lib/types";
 import { Provincie } from "@/lib/provincies";
 import { isAdmin } from "@/lib/auth-helpers";
 import { maakKorteLink } from "@/lib/korte-link";
+import { siteUrl } from "@/lib/site-url";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 export type UitnodigenResultaat =
   | { succes: true; link: string }
   | { succes: false; fout: string };
-
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
 
 // Supabase's eigen action_link laat de browser via een cross-domain omleiding
 // het token in het #-gedeelte van de URL zetten. Sommige in-app browsers
