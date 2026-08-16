@@ -34,10 +34,10 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="mb-0.5 flex items-center gap-1.5 truncate text-[0.72rem] font-bold uppercase tracking-wide text-blauw-2">
-            <span className="truncate">{toernooi.clubnaam}</span>
+          <div className="mb-0.5 flex items-center gap-1.5 text-[0.72rem] font-bold uppercase tracking-wide text-blauw-2">
+            <span className="min-w-0 truncate">{toernooi.clubnaam}</span>
             {toernooi.open_toernooi && (
-              <span className="whitespace-nowrap rounded-full bg-[#f0fdfa] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-[#0d9488]">
+              <span className="shrink-0 whitespace-nowrap rounded-full bg-[#f0fdfa] px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-[#0d9488]">
                 {t.lijst.openBadge}
               </span>
             )}
