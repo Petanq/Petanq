@@ -32,6 +32,13 @@ const nl = {
       "Misschien is dit toernooi of deze club intussen verwijderd, of klopt de link niet meer.",
     terugNaarKalender: "← Terug naar de toernooienkalender",
   },
+  serverFout: {
+    titel: "Er ging iets mis",
+    beschrijving:
+      "Er liep iets fout bij het laden van deze pagina. Probeer het opnieuw, of kom later terug.",
+    probeerOpnieuw: "Probeer opnieuw",
+    terugNaarKalender: "← Terug naar de toernooienkalender",
+  },
   filters: {
     zoekPlaceholder: "Zoek club of locatie...",
     regio: "Regio",
@@ -447,6 +454,13 @@ const fr: typeof nl = {
     titel: "Cette page n'existe pas (ou plus)",
     beschrijving:
       "Ce tournoi ou ce club a peut-être été supprimé entre-temps, ou le lien n'est plus valide.",
+    terugNaarKalender: "← Retour au calendrier des tournois",
+  },
+  serverFout: {
+    titel: "Une erreur est survenue",
+    beschrijving:
+      "Un problème est survenu lors du chargement de cette page. Réessayez, ou revenez plus tard.",
+    probeerOpnieuw: "Réessayer",
     terugNaarKalender: "← Retour au calendrier des tournois",
   },
   filters: {
