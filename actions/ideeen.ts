@@ -13,7 +13,7 @@ export async function ideeIndienen(tekst: string): Promise<BeheerActieResultaat>
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
   if (!tekst.trim()) return { succes: false, fout: "tekst_verplicht" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const moderatorNaam = (await huidigeModeratorNaam()) ?? "Een vrijwilliger";
   const { error } = await supabase.from("ideeen").insert({
     moderator_naam: moderatorNaam,
@@ -53,7 +53,7 @@ export async function ideeIndienen(tekst: string): Promise<BeheerActieResultaat>
 export async function ideeAfgehandeldZetten(id: string, afgehandeld: boolean): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("ideeen").update({ afgehandeld }).eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
   revalidatePath("/beheer/ideeen");

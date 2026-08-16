@@ -15,7 +15,7 @@ export async function inschrijvenOpNieuwsbrief(input: {
     return { succes: false, fout: "ongeldige_invoer" };
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("nieuwsbrief").insert({
     email: parsed.data.email,
     provincie: parsed.data.provincie ?? null,

@@ -25,7 +25,7 @@ export async function toernooiIndienen(
     .filter((k) => k.datum)
     .map((k) => ({ datum: k.datum, uur: k.uur || null }));
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("toernooien").insert({
     datum: data.datum,
     uur: data.uur,

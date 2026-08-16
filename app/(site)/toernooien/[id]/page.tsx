@@ -5,9 +5,10 @@ import { vertaalProvincie } from "@/lib/provincies";
 import { TournamentDetail } from "@/components/tournament-detail";
 import { siteUrl } from "@/lib/site-url";
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const toernooi = await getToernooiById(params.id);
   if (!toernooi) return { title: "Toernooi niet gevonden" };
 
@@ -24,7 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ToernooiDetailPagina({ params }: Props) {
+export default async function ToernooiDetailPagina(props: Props) {
+  const params = await props.params;
   const toernooi = await getToernooiById(params.id);
   if (!toernooi) notFound();
 

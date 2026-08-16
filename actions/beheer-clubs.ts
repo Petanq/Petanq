@@ -17,7 +17,7 @@ export async function clubToevoegen(input: unknown): Promise<BeheerActieResultaa
   const parsed = clubSchema.safeParse(input);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("clubs").insert({
     naam: parsed.data.naam,
     gemeente: parsed.data.gemeente,
@@ -59,7 +59,7 @@ export async function clubBewerken(
   const parsed = clubWijzigenSchema.safeParse(wijzigingen);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("clubs").update(parsed.data).eq("id", id);
   if (error) return { succes: false, fout: error.message };
   revalidatePath("/beheer/clubs");
@@ -70,7 +70,7 @@ export async function clubBewerken(
 export async function clubActiefZetten(id: string, actief: boolean): Promise<BeheerActieResultaat> {
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("clubs").update({ actief }).eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
   revalidatePath("/beheer/clubs");
@@ -85,7 +85,7 @@ export async function clubActiefZetten(id: string, actief: boolean): Promise<Beh
 export async function clubVerwijderen(id: string): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("clubs").update({ verwijderd_op: new Date().toISOString() }).eq("id", id);
   if (error) {
     console.error("Club verwijderen mislukt:", error.message);
@@ -101,7 +101,7 @@ export async function clubVerwijderingAanvragen(id: string, reden: string): Prom
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
   if (!reden.trim()) return { succes: false, fout: "reden_verplicht" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const moderatorNaam = await huidigeModeratorNaam();
   const { data: club, error } = await supabase
     .from("clubs")
@@ -150,7 +150,7 @@ export async function clubVerwijderingAanvragen(id: string, reden: string): Prom
 export async function clubVerwijderAanvraagAfwijzen(id: string): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from("clubs")
     .update({ verwijder_aanvraag_door: null, verwijder_aanvraag_reden: null, verwijder_aanvraag_op: null })

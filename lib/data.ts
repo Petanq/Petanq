@@ -2,7 +2,7 @@ import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Club, Idee, Moderator, Toernooi } from "@/lib/types";
 
 export async function getGoedgekeurdeToernooien(): Promise<Toernooi[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("toernooien")
     .select("*")
@@ -18,7 +18,7 @@ export async function getGoedgekeurdeToernooien(): Promise<Toernooi[]> {
 }
 
 export async function getToernooiById(id: string): Promise<Toernooi | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("toernooien")
     .select("*")
@@ -31,7 +31,7 @@ export async function getToernooiById(id: string): Promise<Toernooi | null> {
 }
 
 export async function getInBehandelingToernooien(): Promise<Toernooi[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("toernooien")
     .select("*")
@@ -46,7 +46,7 @@ export async function getInBehandelingToernooien(): Promise<Toernooi[]> {
 }
 
 export async function getAlleGoedgekeurdeToernooienVoorBeheer(): Promise<Toernooi[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("toernooien")
     .select("*")
@@ -62,7 +62,7 @@ export async function getAlleGoedgekeurdeToernooienVoorBeheer(): Promise<Toernoo
 }
 
 export async function getAlleClubsVoorBeheer(): Promise<Club[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("clubs")
     .select("*")
@@ -77,7 +77,7 @@ export async function getAlleClubsVoorBeheer(): Promise<Club[]> {
 }
 
 export async function getVerwijderAanvragenToernooien(): Promise<Toernooi[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("toernooien")
     .select("*")
@@ -93,7 +93,7 @@ export async function getVerwijderAanvragenToernooien(): Promise<Toernooi[]> {
 }
 
 export async function getVerwijderAanvragenClubs(): Promise<Club[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("clubs")
     .select("*")
@@ -109,7 +109,7 @@ export async function getVerwijderAanvragenClubs(): Promise<Club[]> {
 }
 
 export async function getWachtendeClubs(): Promise<Club[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("clubs")
     .select("*")
@@ -124,7 +124,7 @@ export async function getWachtendeClubs(): Promise<Club[]> {
 }
 
 export async function getModeratoren(): Promise<Moderator[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase.from("moderatoren").select("*").order("naam", { ascending: true });
 
   if (error) {
@@ -144,7 +144,7 @@ export async function getModeratorenMetStatus(): Promise<ModeratorMetStatus[]> {
 }
 
 export async function getHuidigeModerator(): Promise<Moderator | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -323,7 +323,7 @@ export async function getAantalActieveModeratoren(): Promise<number> {
 }
 
 export async function getActieveClubs(): Promise<Club[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("clubs")
     .select("*")
@@ -338,7 +338,7 @@ export async function getActieveClubs(): Promise<Club[]> {
 }
 
 export async function getIdeeen(): Promise<Idee[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("ideeen")
     .select("*")

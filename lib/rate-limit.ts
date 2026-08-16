@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 
-function clientIp(): string {
-  const forwarded = headers().get("x-forwarded-for");
+async function clientIp(): Promise<string> {
+  const forwarded = (await headers()).get("x-forwarded-for");
   return forwarded?.split(",")[0]?.trim() || "onbekend";
 }
 
@@ -11,7 +11,7 @@ export async function magAiAfbeeldingAnalyseren(): Promise<boolean> {
   const MAX_POGINGEN = 20;
   const VENSTER_MINUTEN = 60;
 
-  const ip = clientIp();
+  const ip = await clientIp();
   const supabase = createServiceRoleClient();
   const sinds = new Date(Date.now() - VENSTER_MINUTEN * 60_000).toISOString();
 

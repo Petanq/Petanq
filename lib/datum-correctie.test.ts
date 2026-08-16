@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { naarToekomst, corrigeerJaartallen, AfficheVelden } from "./affiche-analyseren";
+import { naarToekomst, corrigeerJaartallen, AfficheVelden } from "./datum-correctie";
 
 describe("naarToekomst", () => {
   it("laat een datum die al in de toekomst ligt ongewijzigd", () => {

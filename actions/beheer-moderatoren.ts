@@ -114,7 +114,7 @@ export async function moderatorBewerken(
 ): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("moderatoren").update(wijzigingen).eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
   revalidatePath("/beheer/moderatoren");
@@ -122,7 +122,7 @@ export async function moderatorBewerken(
 }
 
 export async function moderatorWachtwoordBevestigen(): Promise<BeheerActieResultaat> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -144,7 +144,7 @@ export async function moderatorWachtwoordBevestigen(): Promise<BeheerActieResult
 // niet enkel het invullen van het loginformulier (dat door lang geldige
 // sessies zelden opnieuw gebeurt). Best-effort: mag nooit de pagina breken.
 export async function registreerBeheerBezoek(): Promise<void> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -197,7 +197,7 @@ export async function moderatorToegangWijzigen(
 export async function moderatorVerwijderen(id: string): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: mod } = await supabase.from("moderatoren").select("user_id").eq("id", id).single();
   const { error } = await supabase.from("moderatoren").delete().eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };

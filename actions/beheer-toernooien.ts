@@ -24,7 +24,7 @@ type ModeratorScope = {
 };
 
 async function huidigeModeratorScope(): Promise<ModeratorScope | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -53,7 +53,7 @@ function magToernooiBeheren(scope: ModeratorScope, toernooiProvincie: Provincie)
 export async function toernooiGoedkeuren(id: string): Promise<BeheerActieResultaat> {
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const scope = await huidigeModeratorScope();
   const { data: bestaand } = await supabase.from("toernooien").select("provincie").eq("id", id).single();
   if (!scope || !bestaand || !magToernooiBeheren(scope, bestaand.provincie)) {
@@ -103,7 +103,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
     .filter((k) => k.datum)
     .map((k) => ({ datum: k.datum, uur: k.uur || null }));
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const moderatorNaam = await huidigeModeratorNaam();
 
   const { data: toernooi, error } = await supabase
@@ -162,7 +162,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
 export async function toernooiWeigeren(id: string, reden: string | null): Promise<BeheerActieResultaat> {
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const scope = await huidigeModeratorScope();
   const { data: bestaand } = await supabase.from("toernooien").select("provincie").eq("id", id).single();
   if (!scope || !bestaand || !magToernooiBeheren(scope, bestaand.provincie)) {
@@ -208,7 +208,7 @@ export async function toernooiWeigeren(id: string, reden: string | null): Promis
 export async function toernooiVerwijderen(id: string): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from("toernooien")
     .update({ verwijderd_op: new Date().toISOString() })
@@ -228,7 +228,7 @@ export async function toernooiVerwijderingAanvragen(id: string, reden: string): 
   if (!(await isModerator())) return { succes: false, fout: "niet_geautoriseerd" };
   if (!reden.trim()) return { succes: false, fout: "reden_verplicht" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const moderatorNaam = await huidigeModeratorNaam();
   const { data: toernooi, error } = await supabase
     .from("toernooien")
@@ -277,7 +277,7 @@ export async function toernooiVerwijderingAanvragen(id: string, reden: string): 
 export async function toernooiVerwijderAanvraagAfwijzen(id: string): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from("toernooien")
     .update({ verwijder_aanvraag_door: null, verwijder_aanvraag_reden: null, verwijder_aanvraag_op: null })
@@ -326,7 +326,7 @@ export async function toernooiBewerken(
   const parsed = toernooiWijzigenSchema.safeParse(wijzigingen);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("toernooien").update(parsed.data).eq("id", id);
   if (error) {
     console.error("Toernooi bewerken mislukt:", error.message);

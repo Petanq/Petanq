@@ -21,7 +21,7 @@ export async function clubVoorstellen(
     return { succes: false, fout: "ongeldige_invoer" };
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.from("clubs").insert({
     naam: parsed.data.naam,
     gemeente: parsed.data.gemeente,
