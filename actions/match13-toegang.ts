@@ -120,6 +120,30 @@ export async function match13GebruikerUitnodigen(input: {
   return { succes: true, link: await maakKorteLink(wachtwoordLink(data.properties.hashed_token, "invite")) };
 }
 
+// Voor een club die al in de lijst staat: hun link is verlopen (7 dagen) of
+// verbruikt, en de uitnodig-balk bovenaan weigert dat e-mailadres net omdat
+// er al een rij bestaat — dus een apart "stuur nieuwe link"-knopje per rij.
+export async function match13LinkOpnieuwSturen(id: string): Promise<Match13UitnodigenResultaat> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const supabase = await createClient();
+  const { data: gebruiker } = await supabase.from("match13_gebruikers").select("email").eq("id", id).single();
+  if (!gebruiker) return { succes: false, fout: "server_fout" };
+
+  const serviceClient = createServiceRoleClient();
+  const { data: linkData, error } = await serviceClient.auth.admin.generateLink({
+    type: "recovery",
+    email: gebruiker.email,
+    options: { redirectTo: `${siteUrl()}/beheer/wachtwoord-resetten` },
+  });
+  if (error || !linkData) {
+    console.error("Nieuwe link genereren mislukt:", error?.message);
+    return { succes: false, fout: "server_fout" };
+  }
+
+  return { succes: true, link: await maakKorteLink(wachtwoordLink(linkData.properties.hashed_token, "recovery")) };
+}
+
 // Het schakelaartje: toegang tijdelijk afzetten zonder het account te wissen
 // — de club kan later, bv. volgend seizoen, gewoon opnieuw aangezet worden.
 export async function match13ToegangWijzigen(id: string, actief: boolean): Promise<Match13ToegangActieResultaat> {

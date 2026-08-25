@@ -346,7 +346,8 @@
   padding: 0.65rem 0.9rem;
   flex-wrap: wrap;
 }
-.match13-scope .roster-row + .roster-row {
+.match13-scope .roster-row + .roster-row,
+.match13-scope .match13-toegang-rij-wrap + .match13-toegang-rij-wrap {
   border-top: 1px solid var(--border);
 }
 .match13-scope .roster-row .name {
@@ -1194,6 +1195,9 @@
   background: var(--live-bg);
   border: 1px solid var(--live);
   border-radius: 8px;
+}
+.match13-scope .match13-link-box-rij {
+  margin: 0 0.9rem 0.8rem;
 }
 .match13-scope .match13-link-box code {
   display: block;

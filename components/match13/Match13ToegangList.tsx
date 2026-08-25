@@ -7,6 +7,7 @@ import { useTranslation } from "@/lib/language-context";
 import {
   match13GebruikerUitnodigen,
   match13GebruikerVerwijderen,
+  match13LinkOpnieuwSturen,
   match13StatusWijzigen,
   match13ToegangWijzigen,
   type Match13Gebruiker,
@@ -21,6 +22,7 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
   const [fout, setFout] = useState<string | null>(null);
   const [nieuweLink, setNieuweLink] = useState<string | null>(null);
   const [rijBezig, setRijBezig] = useState<string | null>(null);
+  const [rijLinks, setRijLinks] = useState<Record<string, string>>({});
 
   const foutLabels: Record<string, string> = {
     al_geregistreerd: t.match13.foutAlGeregistreerd,
@@ -58,6 +60,15 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
     await match13StatusWijzigen(g.id, g.status === "proef" ? "betalend" : "proef");
     setRijBezig(null);
     router.refresh();
+  }
+
+  async function nieuweLinkSturen(g: Match13Gebruiker) {
+    setRijBezig(g.id);
+    const result = await match13LinkOpnieuwSturen(g.id);
+    setRijBezig(null);
+    if (result.succes) {
+      setRijLinks((prev) => ({ ...prev, [g.id]: result.link }));
+    }
   }
 
   async function verwijderen(g: Match13Gebruiker) {
@@ -124,50 +135,63 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
       ) : (
         <div className="roster">
           {gebruikers.map((g) => (
-            <div className="roster-row match13-toegang-rij" key={g.id}>
-              <div className="match13-toegang-info">
-                <span className="name">
-                  {g.naam}
-                  <span
-                    className="team-num"
-                    style={
-                      g.actief
-                        ? undefined
-                        : { color: "var(--ink-muted)", background: "var(--surface-2)" }
-                    }
-                  >
-                    {g.actief ? t.match13.actief : t.match13.gepauzeerd}
+            <div className="match13-toegang-rij-wrap" key={g.id}>
+              <div className="roster-row match13-toegang-rij">
+                <div className="match13-toegang-info">
+                  <span className="name">
+                    {g.naam}
+                    <span
+                      className="team-num"
+                      style={
+                        g.actief
+                          ? undefined
+                          : { color: "var(--ink-muted)", background: "var(--surface-2)" }
+                      }
+                    >
+                      {g.actief ? t.match13.actief : t.match13.gepauzeerd}
+                    </span>
+                    <span
+                      className="team-num"
+                      style={
+                        g.status === "betalend"
+                          ? { color: "var(--accent-ink)", background: "var(--accent)" }
+                          : undefined
+                      }
+                    >
+                      {g.status === "betalend" ? t.match13.statusBetalend : t.match13.statusProef}
+                    </span>
                   </span>
-                  <span
-                    className="team-num"
-                    style={
-                      g.status === "betalend"
-                        ? { color: "var(--accent-ink)", background: "var(--accent)" }
-                        : undefined
-                    }
-                  >
-                    {g.status === "betalend" ? t.match13.statusBetalend : t.match13.statusProef}
-                  </span>
-                </span>
-                <span className="hint">{g.email}</span>
+                  <span className="hint">{g.email}</span>
+                </div>
+                <div className="roster-actions">
+                  <button className="link-btn" disabled={rijBezig === g.id} onClick={() => nieuweLinkSturen(g)}>
+                    {t.match13.nieuweLinkSturen}
+                  </button>
+                  <button className="link-btn" disabled={rijBezig === g.id} onClick={() => statusToggle(g)}>
+                    {g.status === "proef" ? t.match13.markerenAlsBetalend : t.match13.markerenAlsProef}
+                  </button>
+                  <label className="check">
+                    <input
+                      type="checkbox"
+                      checked={g.actief}
+                      disabled={rijBezig === g.id}
+                      onChange={() => toggle(g)}
+                    />
+                    {t.match13.toegangAanCheck}
+                  </label>
+                  <button className="link-btn" disabled={rijBezig === g.id} onClick={() => verwijderen(g)}>
+                    {t.match13.verwijder}
+                  </button>
+                </div>
               </div>
-              <div className="roster-actions">
-                <button className="link-btn" disabled={rijBezig === g.id} onClick={() => statusToggle(g)}>
-                  {g.status === "proef" ? t.match13.markerenAlsBetalend : t.match13.markerenAlsProef}
-                </button>
-                <label className="check">
-                  <input
-                    type="checkbox"
-                    checked={g.actief}
-                    disabled={rijBezig === g.id}
-                    onChange={() => toggle(g)}
-                  />
-                  {t.match13.toegangAanCheck}
-                </label>
-                <button className="link-btn" disabled={rijBezig === g.id} onClick={() => verwijderen(g)}>
-                  {t.match13.verwijder}
-                </button>
-              </div>
+              {rijLinks[g.id] && (
+                <div className="match13-link-box match13-link-box-rij">
+                  <p className="hint" style={{ marginBottom: "0.4rem" }}>
+                    {t.match13.linkUitleg}
+                  </p>
+                  <code>{rijLinks[g.id]}</code>
+                </div>
+              )}
             </div>
           ))}
         </div>
