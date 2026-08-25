@@ -535,7 +535,7 @@ const nl = {
     // Overzicht- en toegangspagina's
     kiesOfStartNieuw: "Kies een toernooi of start een nieuwe.",
     nieuwToernooi: "+ Nieuw toernooi",
-    toegangBeherenLink: "Toegang voor pilootclubs beheren →",
+    toegangBeherenLink: "Club uitnodigen →",
     nogGeenToernooien: "Nog geen toernooien — maak er hierboven een aan.",
     bijgewerkt: (datum: string) => `bijgewerkt ${datum}`,
     naamloosToernooi: "Naamloos toernooi",
@@ -1100,7 +1100,7 @@ const fr: typeof nl = {
     },
     kiesOfStartNieuw: "Choisissez un tournoi ou démarrez-en un nouveau.",
     nieuwToernooi: "+ Nouveau tournoi",
-    toegangBeherenLink: "Gérer l'accès des clubs pilotes →",
+    toegangBeherenLink: "Inviter un club →",
     nogGeenToernooien: "Pas encore de tournois — créez-en un ci-dessus.",
     bijgewerkt: (datum: string) => `mis à jour ${datum}`,
     naamloosToernooi: "Tournoi sans nom",
