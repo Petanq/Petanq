@@ -16,6 +16,15 @@ export async function isAdmin(): Promise<boolean> {
   return data === true;
 }
 
+// A pilot club contact granted access to Match13 only — deliberately not a
+// moderator, so this never implies access to the rest of /beheer.
+export async function heeftMatch13Toegang(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("heeft_match13_toegang");
+  if (error) return false;
+  return data === true;
+}
+
 export async function huidigeModeratorNaam(): Promise<string | null> {
   const supabase = await createClient();
   const {

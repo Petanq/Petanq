@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { BeheerNav } from "@/components/beheer/beheer-nav";
 import { WachtOpGoedkeuring } from "@/components/beheer/wacht-op-goedkeuring";
 import { ModeratorBezoekTeller } from "@/components/beheer/moderator-bezoek-teller";
@@ -7,10 +8,14 @@ import {
   getVerwijderAanvragenToernooien,
   getVerwijderAanvragenClubs,
 } from "@/lib/data";
-import { isModerator, isAdmin } from "@/lib/auth-helpers";
+import { isModerator, isAdmin, heeftMatch13Toegang } from "@/lib/auth-helpers";
 
 export default async function BeheerDashboardLayout({ children }: { children: React.ReactNode }) {
   if (!(await isModerator())) {
+    // Geen moderator, maar wel een pilootclub met Match13-toegang? Die heeft
+    // hier niets te zoeken (dit is het echte moderatorpaneel) — stuur meteen
+    // door naar het enige waar ze wél bij mogen.
+    if (await heeftMatch13Toegang()) redirect("/beheer/match13");
     return (
       <div className="mx-auto max-w-[1140px] px-6 py-8 lg:px-10">
         <WachtOpGoedkeuring />

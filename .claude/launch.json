@@ -12,6 +12,15 @@
       "runtimeExecutable": "cmd.exe",
       "runtimeArgs": ["/c", "set PATH=C:\\Program Files\\nodejs;%PATH% && npm run start"],
       "port": 3000
+    },
+    {
+      "name": "cochonnet-test",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": [
+        "/c",
+        "set PATH=C:\\Program Files\\nodejs;%PATH% && cd /d \"C:\\Users\\Frederic\\Desktop\\cochonnet-test\" && npm run dev"
+      ],
+      "port": 5173
     }
   ]
 }

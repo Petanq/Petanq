@@ -26,7 +26,18 @@ export function BeheerNav({
     { href: "/beheer/moderatoren", label: t.beheer.vrijwilligers, badge: 0 },
     { href: "/beheer/ideeen", label: t.beheer.ideeen, badge: 0 },
     ...(isAdmin
-      ? [{ href: "/beheer/verwijderaanvragen", label: t.beheer.verwijderaanvragen, badge: wachtendeVerwijderaanvragen }]
+      ? [
+          { href: "/beheer/verwijderaanvragen", label: t.beheer.verwijderaanvragen, badge: wachtendeVerwijderaanvragen },
+          {
+            href: "/beheer/match13",
+            label: (
+              <>
+                Match<span className="text-geel">13</span>
+              </>
+            ),
+            badge: 0,
+          },
+        ]
       : []),
   ];
 
