@@ -16,6 +16,7 @@ export type Match13Status = "proef" | "betalend";
 export interface Match13Gebruiker {
   id: string;
   naam: string;
+  club: string;
   email: string;
   actief: boolean;
   status: Match13Status;
@@ -29,7 +30,7 @@ export async function haalMatch13Gebruikers(): Promise<Match13Gebruiker[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("match13_gebruikers")
-    .select("id, naam, email, actief, status, bevestigd, aangemaakt_op")
+    .select("id, naam, club, email, actief, status, bevestigd, aangemaakt_op")
     .order("aangemaakt_op", { ascending: false });
 
   if (error) {
@@ -49,6 +50,7 @@ function wachtwoordLink(hashedToken: string, type: "invite" | "recovery") {
 export async function match13GebruikerUitnodigen(input: {
   email: string;
   naam: string;
+  club: string;
 }): Promise<Match13UitnodigenResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
@@ -80,6 +82,7 @@ export async function match13GebruikerUitnodigen(input: {
       const { error: invoegFout2 } = await serviceClient.from("match13_gebruikers").insert({
         user_id: bestaandeUser.id,
         naam: input.naam,
+        club: input.club,
         email: input.email,
       });
       if (invoegFout2) {
@@ -107,6 +110,7 @@ export async function match13GebruikerUitnodigen(input: {
   const { error: invoegFout } = await serviceClient.from("match13_gebruikers").insert({
     user_id: data.user.id,
     naam: input.naam,
+    club: input.club,
     email: input.email,
   });
 
@@ -189,12 +193,18 @@ export async function match13StatusWijzigen(id: string, status: Match13Status): 
   return { succes: true };
 }
 
-export async function match13NaamWijzigen(id: string, naam: string): Promise<Match13ToegangActieResultaat> {
+export async function match13GegevensWijzigen(
+  id: string,
+  input: { club: string; naam: string }
+): Promise<Match13ToegangActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
-  if (!naam.trim()) return { succes: false, fout: "server_fout" };
+  if (!input.club.trim() || !input.naam.trim()) return { succes: false, fout: "server_fout" };
 
   const supabase = await createClient();
-  const { error } = await supabase.from("match13_gebruikers").update({ naam: naam.trim() }).eq("id", id);
+  const { error } = await supabase
+    .from("match13_gebruikers")
+    .update({ club: input.club.trim(), naam: input.naam.trim() })
+    .eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
 
   revalidatePath("/beheer/match13/toegang");
@@ -214,7 +224,7 @@ export async function haalMatch13GebruikerMetToernooien(id: string): Promise<Mat
   const supabase = await createClient();
   const { data: gebruiker, error } = await supabase
     .from("match13_gebruikers")
-    .select("id, naam, email, actief, status, bevestigd, aangemaakt_op, user_id")
+    .select("id, naam, club, email, actief, status, bevestigd, aangemaakt_op, user_id")
     .eq("id", id)
     .single();
   if (error || !gebruiker) return null;

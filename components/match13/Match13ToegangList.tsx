@@ -7,8 +7,8 @@ import { useTranslation } from "@/lib/language-context";
 import {
   match13GebruikerUitnodigen,
   match13GebruikerVerwijderen,
+  match13GegevensWijzigen,
   match13LinkOpnieuwSturen,
-  match13NaamWijzigen,
   match13StatusWijzigen,
   match13ToegangWijzigen,
   type Match13Gebruiker,
@@ -17,6 +17,7 @@ import {
 export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruiker[] }) {
   const { t } = useTranslation();
   const router = useRouter();
+  const [club, setClub] = useState("");
   const [naam, setNaam] = useState("");
   const [email, setEmail] = useState("");
   const [bezig, setBezig] = useState(false);
@@ -25,6 +26,7 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
   const [rijBezig, setRijBezig] = useState<string | null>(null);
   const [rijLinks, setRijLinks] = useState<Record<string, string>>({});
   const [bewerkId, setBewerkId] = useState<string | null>(null);
+  const [bewerkClub, setBewerkClub] = useState("");
   const [bewerkNaam, setBewerkNaam] = useState("");
 
   const foutLabels: Record<string, string> = {
@@ -35,17 +37,22 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
 
   async function uitnodigen(e: React.FormEvent) {
     e.preventDefault();
-    if (!naam.trim() || !email.trim()) return;
+    if (!club.trim() || !naam.trim() || !email.trim()) return;
     setBezig(true);
     setFout(null);
     setNieuweLink(null);
-    const result = await match13GebruikerUitnodigen({ naam: naam.trim(), email: email.trim() });
+    const result = await match13GebruikerUitnodigen({
+      club: club.trim(),
+      naam: naam.trim(),
+      email: email.trim(),
+    });
     setBezig(false);
     if (!result.succes) {
       setFout(foutLabels[result.fout] ?? result.fout);
       return;
     }
     setNieuweLink(result.link);
+    setClub("");
     setNaam("");
     setEmail("");
     router.refresh();
@@ -84,14 +91,15 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
 
   function bewerkStarten(g: Match13Gebruiker) {
     setBewerkId(g.id);
+    setBewerkClub(g.club);
     setBewerkNaam(g.naam);
   }
 
   async function bewerkOpslaan(e: React.FormEvent, g: Match13Gebruiker) {
     e.preventDefault();
-    if (!bewerkNaam.trim()) return;
+    if (!bewerkClub.trim() || !bewerkNaam.trim()) return;
     setRijBezig(g.id);
-    await match13NaamWijzigen(g.id, bewerkNaam.trim());
+    await match13GegevensWijzigen(g.id, { club: bewerkClub.trim(), naam: bewerkNaam.trim() });
     setRijBezig(null);
     setBewerkId(null);
     router.refresh();
@@ -118,6 +126,10 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
       <form className="match13-uitnodig-balk" style={{ marginBottom: "1.6rem" }} onSubmit={uitnodigen}>
         <h2>{t.match13.pilootclubToevoegen}</h2>
         <div className="match13-uitnodig-veld">
+          <label>{t.match13.naamClub}</label>
+          <input value={club} onChange={(e) => setClub(e.target.value)} placeholder={t.match13.naamClubPlaceholder} />
+        </div>
+        <div className="match13-uitnodig-veld">
           <label>{t.match13.naamContactpersoon}</label>
           <input value={naam} onChange={(e) => setNaam(e.target.value)} placeholder={t.match13.naamContactpersoonPlaceholder} />
         </div>
@@ -130,7 +142,11 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
             placeholder={t.match13.emailadresPlaceholder}
           />
         </div>
-        <button type="submit" className="cta" disabled={bezig || !naam.trim() || !email.trim()}>
+        <button
+          type="submit"
+          className="cta"
+          disabled={bezig || !club.trim() || !naam.trim() || !email.trim()}
+        >
           {bezig ? t.match13.bezig : t.match13.uitnodigen}
         </button>
         {fout && (
@@ -157,11 +173,17 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
               <div className="roster-row match13-toegang-rij">
                 <div className="match13-toegang-info">
                   {bewerkId === g.id ? (
-                    <form className="name-edit" onSubmit={(e) => bewerkOpslaan(e, g)}>
+                    <form className="match13-bewerk-form" onSubmit={(e) => bewerkOpslaan(e, g)}>
                       <input
                         autoFocus
+                        value={bewerkClub}
+                        onChange={(e) => setBewerkClub(e.target.value)}
+                        placeholder={t.match13.naamClub}
+                      />
+                      <input
                         value={bewerkNaam}
                         onChange={(e) => setBewerkNaam(e.target.value)}
+                        placeholder={t.match13.naamContactpersoon}
                       />
                       <button type="submit" className="link-btn" disabled={rijBezig === g.id}>
                         {t.match13.opslaan}
@@ -171,54 +193,58 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                       </button>
                     </form>
                   ) : (
-                  <span className="name">
-                    <Link href={`/beheer/match13/toegang/${g.id}`} className="match13-toegang-naam-link">
-                      {g.naam}
-                    </Link>
-                    <button type="button" className="link-btn" onClick={() => bewerkStarten(g)}>
-                      {t.match13.bewerken}
-                    </button>
-                    <button
-                      type="button"
-                      className="team-num team-num-toggle"
-                      disabled={rijBezig === g.id}
-                      onClick={() => toggle(g)}
-                      title={t.match13.toegangAanCheck}
-                      style={
-                        g.actief
-                          ? { color: "var(--live)", background: "var(--live-bg)" }
-                          : { color: "var(--ink-muted)", background: "var(--surface-2)" }
-                      }
-                    >
-                      {g.actief ? t.match13.actief : t.match13.gepauzeerd}
-                    </button>
-                    <button
-                      type="button"
-                      className="team-num team-num-toggle"
-                      disabled={rijBezig === g.id}
-                      onClick={() => statusToggle(g)}
-                      title={g.status === "proef" ? t.match13.markerenAlsBetalend : t.match13.markerenAlsProef}
-                      style={
-                        g.status === "betalend"
-                          ? { color: "var(--accent-ink)", background: "var(--accent)" }
-                          : undefined
-                      }
-                    >
-                      {g.status === "betalend" ? t.match13.statusBetalend : t.match13.statusProef}
-                    </button>
-                    <span
-                      className="team-num"
-                      style={
-                        g.bevestigd
-                          ? { color: "var(--live)", background: "var(--live-bg)" }
-                          : { color: "var(--warn)", background: "var(--warn-bg)" }
-                      }
-                    >
-                      {g.bevestigd ? t.match13.ingelogd : t.match13.nogNietIngelogd}
-                    </span>
-                  </span>
+                    <>
+                      <span className="match13-club-rij">
+                        <Link href={`/beheer/match13/toegang/${g.id}`} className="match13-toegang-naam-link">
+                          {g.club}
+                        </Link>
+                        <button type="button" className="link-btn" onClick={() => bewerkStarten(g)}>
+                          {t.match13.bewerken}
+                        </button>
+                      </span>
+                      <span className="match13-badges-rij">
+                        <button
+                          type="button"
+                          className="team-num team-num-toggle"
+                          disabled={rijBezig === g.id}
+                          onClick={() => toggle(g)}
+                          title={t.match13.toegangAanCheck}
+                          style={
+                            g.actief
+                              ? { color: "var(--live)", background: "var(--live-bg)" }
+                              : { color: "var(--ink-muted)", background: "var(--surface-2)" }
+                          }
+                        >
+                          {g.actief ? t.match13.actief : t.match13.gepauzeerd}
+                        </button>
+                        <button
+                          type="button"
+                          className="team-num team-num-toggle"
+                          disabled={rijBezig === g.id}
+                          onClick={() => statusToggle(g)}
+                          title={g.status === "proef" ? t.match13.markerenAlsBetalend : t.match13.markerenAlsProef}
+                          style={
+                            g.status === "betalend"
+                              ? { color: "var(--accent-ink)", background: "var(--accent)" }
+                              : undefined
+                          }
+                        >
+                          {g.status === "betalend" ? t.match13.statusBetalend : t.match13.statusProef}
+                        </button>
+                        <span
+                          className="team-num"
+                          style={
+                            g.bevestigd
+                              ? { color: "var(--live)", background: "var(--live-bg)" }
+                              : { color: "var(--warn)", background: "var(--warn-bg)" }
+                          }
+                        >
+                          {g.bevestigd ? t.match13.ingelogd : t.match13.nogNietIngelogd}
+                        </span>
+                      </span>
+                      <span className="hint">{t.match13.verantwoordelijke(g.naam, g.email)}</span>
+                    </>
                   )}
-                  <span className="hint">{g.email}</span>
                 </div>
                 <div className="roster-actions">
                   <button

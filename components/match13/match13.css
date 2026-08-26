@@ -794,6 +794,34 @@
   text-decoration: underline;
   color: var(--done);
 }
+.match13-scope .match13-club-rij {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.02rem;
+}
+.match13-scope .match13-badges-rij {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.match13-scope .match13-bewerk-form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.match13-scope .match13-bewerk-form input {
+  background: var(--surface-2);
+  border: 1px solid var(--done);
+  border-radius: 6px;
+  padding: 0.35rem 0.6rem;
+  font-family: inherit;
+  font-size: 0.94rem;
+  font-weight: 500;
+  min-width: 10rem;
+}
 .match13-scope .team-num-toggle {
   cursor: pointer;
   font-family: inherit;
