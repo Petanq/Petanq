@@ -139,7 +139,9 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
               <div className="roster-row match13-toegang-rij">
                 <div className="match13-toegang-info">
                   <span className="name">
-                    {g.naam}
+                    <Link href={`/beheer/match13/toegang/${g.id}`} className="match13-toegang-naam-link">
+                      {g.naam}
+                    </Link>
                     <button
                       type="button"
                       className="team-num team-num-toggle"

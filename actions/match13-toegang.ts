@@ -189,6 +189,46 @@ export async function match13StatusWijzigen(id: string, status: Match13Status): 
   return { succes: true };
 }
 
+export async function match13NaamWijzigen(id: string, naam: string): Promise<Match13ToegangActieResultaat> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+  if (!naam.trim()) return { succes: false, fout: "server_fout" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("match13_gebruikers").update({ naam: naam.trim() }).eq("id", id);
+  if (error) return { succes: false, fout: "server_fout" };
+
+  revalidatePath("/beheer/match13/toegang");
+  return { succes: true };
+}
+
+export interface Match13GebruikerMetToernooien extends Match13Gebruiker {
+  toernooien: { id: string; naam: string; bijgewerkt_op: string }[];
+}
+
+// Voor het nakijken: welke toernooien heeft deze pilootclub zelf al
+// aangemaakt/gespeeld? is_admin() in de RLS-policy op match13_toernooien
+// laat de admin sowieso alles zien, ongeacht wie het aanmaakte.
+export async function haalMatch13GebruikerMetToernooien(id: string): Promise<Match13GebruikerMetToernooien | null> {
+  if (!(await isAdmin())) return null;
+
+  const supabase = await createClient();
+  const { data: gebruiker, error } = await supabase
+    .from("match13_gebruikers")
+    .select("id, naam, email, actief, status, bevestigd, aangemaakt_op, user_id")
+    .eq("id", id)
+    .single();
+  if (error || !gebruiker) return null;
+
+  const { data: toernooien } = await supabase
+    .from("match13_toernooien")
+    .select("id, naam, bijgewerkt_op")
+    .eq("aangemaakt_door", gebruiker.user_id)
+    .order("bijgewerkt_op", { ascending: false });
+
+  const { user_id: _userId, ...rest } = gebruiker;
+  return { ...rest, toernooien: toernooien ?? [] };
+}
+
 export async function match13GebruikerVerwijderen(id: string): Promise<Match13ToegangActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
