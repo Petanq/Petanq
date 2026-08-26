@@ -391,9 +391,50 @@
 .match13-scope .roster-actions {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   font-size: 0.85rem;
   color: var(--ink-muted);
+}
+.match13-scope .match13-actie-knop {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.match13-scope .match13-actie-knop:hover {
+  border-color: var(--accent);
+}
+.match13-scope .match13-actie-knop:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.match13-scope .match13-actie-knop.gevaar {
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 40%, var(--border));
+}
+.match13-scope .match13-actie-knop.gevaar:hover {
+  background: var(--warn-bg);
+  border-color: var(--warn);
+}
+.match13-scope .match13-toegang-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
 }
 .match13-scope .check {
   display: flex;

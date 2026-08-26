@@ -160,17 +160,35 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                     >
                       {g.status === "betalend" ? t.match13.statusBetalend : t.match13.statusProef}
                     </span>
+                    <span
+                      className="team-num"
+                      style={
+                        g.bevestigd
+                          ? { color: "var(--live)", background: "var(--live-bg)" }
+                          : { color: "var(--warn)", background: "var(--warn-bg)" }
+                      }
+                    >
+                      {g.bevestigd ? t.match13.ingelogd : t.match13.nogNietIngelogd}
+                    </span>
                   </span>
                   <span className="hint">{g.email}</span>
                 </div>
                 <div className="roster-actions">
-                  <button className="link-btn" disabled={rijBezig === g.id} onClick={() => nieuweLinkSturen(g)}>
+                  <button
+                    className="match13-actie-knop"
+                    disabled={rijBezig === g.id}
+                    onClick={() => nieuweLinkSturen(g)}
+                  >
                     {t.match13.nieuweLinkSturen}
                   </button>
-                  <button className="link-btn" disabled={rijBezig === g.id} onClick={() => statusToggle(g)}>
+                  <button
+                    className="match13-actie-knop"
+                    disabled={rijBezig === g.id}
+                    onClick={() => statusToggle(g)}
+                  >
                     {g.status === "proef" ? t.match13.markerenAlsBetalend : t.match13.markerenAlsProef}
                   </button>
-                  <label className="check">
+                  <label className="match13-toegang-check">
                     <input
                       type="checkbox"
                       checked={g.actief}
@@ -179,7 +197,11 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                     />
                     {t.match13.toegangAanCheck}
                   </label>
-                  <button className="link-btn" disabled={rijBezig === g.id} onClick={() => verwijderen(g)}>
+                  <button
+                    className="match13-actie-knop gevaar"
+                    disabled={rijBezig === g.id}
+                    onClick={() => verwijderen(g)}
+                  >
                     {t.match13.verwijder}
                   </button>
                 </div>

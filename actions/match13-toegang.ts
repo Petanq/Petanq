@@ -19,6 +19,7 @@ export interface Match13Gebruiker {
   email: string;
   actief: boolean;
   status: Match13Status;
+  bevestigd: boolean;
   aangemaakt_op: string;
 }
 
@@ -28,7 +29,7 @@ export async function haalMatch13Gebruikers(): Promise<Match13Gebruiker[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("match13_gebruikers")
-    .select("id, naam, email, actief, status, aangemaakt_op")
+    .select("id, naam, email, actief, status, bevestigd, aangemaakt_op")
     .order("aangemaakt_op", { ascending: false });
 
   if (error) {
@@ -142,6 +143,26 @@ export async function match13LinkOpnieuwSturen(id: string): Promise<Match13Uitno
   }
 
   return { succes: true, link: await maakKorteLink(wachtwoordLink(linkData.properties.hashed_token, "recovery")) };
+}
+
+// Aangeroepen vanuit wachtwoord-resetten-form.tsx zodra iemand daadwerkelijk
+// een wachtwoord instelde — zo weet Frederic wie de link enkel ontving en wie
+// er ook echt mee inlogde. Werkt voor eender welke ingelogde gebruiker (geen
+// gevolgen als ze geen match13_gebruikers-rij hebben, net als de
+// moderator-tegenhanger hiervan).
+export async function match13WachtwoordBevestigen(): Promise<Match13ToegangActieResultaat> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const serviceClient = createServiceRoleClient();
+  const { error } = await serviceClient.from("match13_gebruikers").update({ bevestigd: true }).eq("user_id", user.id);
+  if (error) return { succes: false, fout: "server_fout" };
+
+  revalidatePath("/beheer/match13/toegang");
+  return { succes: true };
 }
 
 // Het schakelaartje: toegang tijdelijk afzetten zonder het account te wissen

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
 import { moderatorWachtwoordBevestigen } from "@/actions/beheer-moderatoren";
+import { match13WachtwoordBevestigen } from "@/actions/match13-toegang";
 
 export function WachtwoordResettenForm() {
   const { t } = useTranslation();
@@ -47,7 +48,10 @@ export function WachtwoordResettenForm() {
       setStatus("fout");
       return;
     }
-    await moderatorWachtwoordBevestigen();
+    // Deze pagina wordt gedeeld door moderator- en Match13-uitnodigingen — we
+    // weten hier niet welke van de twee het is, dus roep gewoon beide aan.
+    // Wie geen rij heeft in die tabel merkt er niets van (0 rijen bijgewerkt).
+    await Promise.all([moderatorWachtwoordBevestigen(), match13WachtwoordBevestigen()]);
     setStatus("gelukt");
     setTimeout(() => router.push("/beheer/login"), 2000);
   }
