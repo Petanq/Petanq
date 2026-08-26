@@ -536,7 +536,7 @@ const nl = {
     // Overzicht- en toegangspagina's
     kiesOfStartNieuw: "Kies een toernooi of start een nieuwe.",
     nieuwToernooi: "+ Nieuw toernooi",
-    toegangBeherenLink: "Club uitnodigen →",
+    toegangBeherenLink: "Club beheer →",
     nogGeenToernooien: "Nog geen toernooien — maak er hierboven een aan.",
     bijgewerkt: (datum: string) => `bijgewerkt ${datum}`,
     naamloosToernooi: "Naamloos toernooi",
@@ -544,7 +544,7 @@ const nl = {
     toegangTitel: "Match13-toegang",
     toegangUitleg:
       "Geef een pilootclub een eigen login die enkel Match13 kan gebruiken — nooit de rest van dit beheerpaneel. Zet het schakelaartje uit om de toegang op elk moment weer te stoppen, zonder hun account te wissen.",
-    pilootclubToevoegen: "+ Pilootclub toevoegen",
+    pilootclubToevoegen: "+ Club uitnodigen",
     naamContactpersoon: "Naam contactpersoon",
     naamContactpersoonPlaceholder: "Bv. Jan Peeters (JC De Vriendschap)",
     emailadres: "E-mailadres",
@@ -1106,7 +1106,7 @@ const fr: typeof nl = {
     },
     kiesOfStartNieuw: "Choisissez un tournoi ou démarrez-en un nouveau.",
     nieuwToernooi: "+ Nouveau tournoi",
-    toegangBeherenLink: "Inviter un club →",
+    toegangBeherenLink: "Gérer les clubs →",
     nogGeenToernooien: "Pas encore de tournois — créez-en un ci-dessus.",
     bijgewerkt: (datum: string) => `mis à jour ${datum}`,
     naamloosToernooi: "Tournoi sans nom",
@@ -1114,7 +1114,7 @@ const fr: typeof nl = {
     toegangTitel: "Accès Match13",
     toegangUitleg:
       "Donnez à un club pilote son propre accès qui n'ouvre que Match13 — jamais le reste de ce panneau de gestion. Désactivez l'interrupteur pour arrêter l'accès à tout moment, sans supprimer leur compte.",
-    pilootclubToevoegen: "+ Ajouter un club pilote",
+    pilootclubToevoegen: "+ Inviter un club",
     naamContactpersoon: "Nom du contact",
     naamContactpersoonPlaceholder: "Ex. Jean Dupont (Club Pétanque Bruxelles)",
     emailadres: "Adresse e-mail",
