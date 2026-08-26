@@ -150,6 +150,7 @@ function BracketColumns({
   editable,
   onScore,
   onClear,
+  onCourtChange,
   accent,
 }: {
   matches: BracketMatch[];
@@ -157,6 +158,7 @@ function BracketColumns({
   editable?: boolean;
   onScore?: (matchId: string, side: "scoreA" | "scoreB", value: string) => void;
   onClear?: (matchId: string) => void;
+  onCourtChange?: (matchId: string, court: number) => void;
   accent?: string;
 }) {
   const { t } = useTranslation();
@@ -178,7 +180,25 @@ function BracketColumns({
                 <div className={"bracket-match" + (done ? " done" : ready ? " ready" : " pending")} key={m.id}>
                   <div className="bracket-match-label">
                     {m.label}
-                    {!bye && m.court ? ` — ${t.match13.plein(m.court)}` : ""}
+                    {!bye && m.court ? (
+                      editable && onCourtChange ? (
+                        <span className="bracket-plein-edit">
+                          {" — "}
+                          {t.match13.pleinLabelKort}{" "}
+                          <input
+                            type="number"
+                            min={1}
+                            className="bracket-plein-input"
+                            value={m.court}
+                            onChange={(e) => onCourtChange(m.id, Math.max(1, Number(e.target.value) || 1))}
+                          />
+                        </span>
+                      ) : (
+                        ` — ${t.match13.plein(m.court)}`
+                      )
+                    ) : (
+                      ""
+                    )}
                   </div>
                   <div className={"bracket-side" + (aWon ? " winner" : bWon ? " loser" : "")}>
                     <span className="bracket-name">{a ? numNameOf(a) : "?"}</span>
@@ -563,6 +583,16 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     });
   }
 
+  // Courts are normally assigned once and never touched again — but a
+  // physical plein can be out of use on the day itself, so let the
+  // organizer override any match's plein by hand if that's ever needed.
+  function updateBracketCourt(which: "poule" | "knockout", matchId: string, court: number) {
+    setState((s) => {
+      const key = which === "poule" ? "pouleBracket" : "knockoutBracket";
+      return { ...s, [key]: s[key].map((m) => (m.id === matchId ? { ...m, court } : m)) };
+    });
+  }
+
   function clearBracketMatch(which: "poule" | "knockout", matchId: string) {
     setState((s) => {
       const key = which === "poule" ? "pouleBracket" : "knockoutBracket";
@@ -608,6 +638,19 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
       const n = value === "" ? undefined : Math.min(13, Math.max(0, Number(value)));
       match[side] = n;
       matches[matchIndex] = match;
+      round.matches = matches;
+      rounds[roundIndex] = round;
+      return { ...s, rounds };
+    });
+  }
+
+  // Same escape hatch as updateBracketCourt, for the fixed-format court grid.
+  function updateCourt(roundIndex: number, matchIndex: number, court: number) {
+    setState((s) => {
+      const rounds = s.rounds.slice();
+      const round = { ...rounds[roundIndex] };
+      const matches = round.matches.slice();
+      matches[matchIndex] = { ...matches[matchIndex], court };
       round.matches = matches;
       rounds[roundIndex] = round;
       return { ...s, rounds };
@@ -1030,6 +1073,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                           editable
                           onScore={(id, side, v) => updateBracketScore("poule", id, side, v)}
                           onClear={(id) => clearBracketMatch("poule", id)}
+                          onCourtChange={(id, court) => updateBracketCourt("poule", id, court)}
                           accent={accent}
                         />
                         {usesBarrageBracket(pouleTeams.length) && (
@@ -1058,6 +1102,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                 editable
                 onScore={(id, side, v) => updateBracketScore("knockout", id, side, v)}
                 onClear={(id) => clearBracketMatch("knockout", id)}
+                onCourtChange={(id, court) => updateBracketCourt("knockout", id, court)}
               />
             )}
           </section>
@@ -1135,7 +1180,20 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                     style={{ "--plein-accent": pouleColor(i) } as CSSProperties}
                   >
                     <div className={"court-label" + (m.teamB === null ? " bye" : "")}>
-                      {m.teamB === null ? t.match13.bye : t.match13.plein(m.court)}
+                      {m.teamB === null ? (
+                        t.match13.bye
+                      ) : (
+                        <span className="court-label-edit">
+                          {t.match13.pleinLabelKort}{" "}
+                          <input
+                            type="number"
+                            min={1}
+                            className="court-label-input"
+                            value={m.court}
+                            onChange={(e) => updateCourt(rounds.length - 1, i, Math.max(1, Number(e.target.value) || 1))}
+                          />
+                        </span>
+                      )}
                     </div>
                     {m.teamB !== null ? (
                       <>

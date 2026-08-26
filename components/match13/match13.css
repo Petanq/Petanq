@@ -466,6 +466,48 @@
   color: var(--warn);
   background: var(--warn-bg);
 }
+.match13-scope .court-label-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.match13-scope .court-label-input {
+  width: 2.4rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  padding: 0.05rem 0.2rem;
+  color: inherit;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.match13-scope .court-label-input:focus {
+  outline: 2px solid var(--plein-accent, var(--done));
+  background: #fff;
+}
+.match13-scope .bracket-plein-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.match13-scope .bracket-plein-input {
+  width: 2.2rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 5px;
+  padding: 0 0.15rem;
+  color: inherit;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.match13-scope .bracket-plein-input:focus {
+  outline: none;
+  border-color: var(--plein-accent, var(--done));
+}
 .match13-scope .match-row {
   display: flex;
   justify-content: space-between;
