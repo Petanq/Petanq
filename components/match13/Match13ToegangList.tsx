@@ -8,6 +8,7 @@ import {
   match13GebruikerUitnodigen,
   match13GebruikerVerwijderen,
   match13LinkOpnieuwSturen,
+  match13NaamWijzigen,
   match13StatusWijzigen,
   match13ToegangWijzigen,
   type Match13Gebruiker,
@@ -23,6 +24,8 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
   const [nieuweLink, setNieuweLink] = useState<string | null>(null);
   const [rijBezig, setRijBezig] = useState<string | null>(null);
   const [rijLinks, setRijLinks] = useState<Record<string, string>>({});
+  const [bewerkId, setBewerkId] = useState<string | null>(null);
+  const [bewerkNaam, setBewerkNaam] = useState("");
 
   const foutLabels: Record<string, string> = {
     al_geregistreerd: t.match13.foutAlGeregistreerd,
@@ -76,6 +79,21 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
     setRijBezig(g.id);
     await match13GebruikerVerwijderen(g.id);
     setRijBezig(null);
+    router.refresh();
+  }
+
+  function bewerkStarten(g: Match13Gebruiker) {
+    setBewerkId(g.id);
+    setBewerkNaam(g.naam);
+  }
+
+  async function bewerkOpslaan(e: React.FormEvent, g: Match13Gebruiker) {
+    e.preventDefault();
+    if (!bewerkNaam.trim()) return;
+    setRijBezig(g.id);
+    await match13NaamWijzigen(g.id, bewerkNaam.trim());
+    setRijBezig(null);
+    setBewerkId(null);
     router.refresh();
   }
 
@@ -138,10 +156,28 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
             <div className="match13-toegang-rij-wrap" key={g.id}>
               <div className="roster-row match13-toegang-rij">
                 <div className="match13-toegang-info">
+                  {bewerkId === g.id ? (
+                    <form className="name-edit" onSubmit={(e) => bewerkOpslaan(e, g)}>
+                      <input
+                        autoFocus
+                        value={bewerkNaam}
+                        onChange={(e) => setBewerkNaam(e.target.value)}
+                      />
+                      <button type="submit" className="link-btn" disabled={rijBezig === g.id}>
+                        {t.match13.opslaan}
+                      </button>
+                      <button type="button" className="link-btn" onClick={() => setBewerkId(null)}>
+                        {t.beheer.annuleren}
+                      </button>
+                    </form>
+                  ) : (
                   <span className="name">
                     <Link href={`/beheer/match13/toegang/${g.id}`} className="match13-toegang-naam-link">
                       {g.naam}
                     </Link>
+                    <button type="button" className="link-btn" onClick={() => bewerkStarten(g)}>
+                      {t.match13.bewerken}
+                    </button>
                     <button
                       type="button"
                       className="team-num team-num-toggle"
@@ -150,7 +186,7 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                       title={t.match13.toegangAanCheck}
                       style={
                         g.actief
-                          ? undefined
+                          ? { color: "var(--live)", background: "var(--live-bg)" }
                           : { color: "var(--ink-muted)", background: "var(--surface-2)" }
                       }
                     >
@@ -181,6 +217,7 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                       {g.bevestigd ? t.match13.ingelogd : t.match13.nogNietIngelogd}
                     </span>
                   </span>
+                  )}
                   <span className="hint">{g.email}</span>
                 </div>
                 <div className="roster-actions">
