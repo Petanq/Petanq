@@ -140,8 +140,12 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                 <div className="match13-toegang-info">
                   <span className="name">
                     {g.naam}
-                    <span
-                      className="team-num"
+                    <button
+                      type="button"
+                      className="team-num team-num-toggle"
+                      disabled={rijBezig === g.id}
+                      onClick={() => toggle(g)}
+                      title={t.match13.toegangAanCheck}
                       style={
                         g.actief
                           ? undefined
@@ -149,9 +153,13 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                       }
                     >
                       {g.actief ? t.match13.actief : t.match13.gepauzeerd}
-                    </span>
-                    <span
-                      className="team-num"
+                    </button>
+                    <button
+                      type="button"
+                      className="team-num team-num-toggle"
+                      disabled={rijBezig === g.id}
+                      onClick={() => statusToggle(g)}
+                      title={g.status === "proef" ? t.match13.markerenAlsBetalend : t.match13.markerenAlsProef}
                       style={
                         g.status === "betalend"
                           ? { color: "var(--accent-ink)", background: "var(--accent)" }
@@ -159,7 +167,7 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                       }
                     >
                       {g.status === "betalend" ? t.match13.statusBetalend : t.match13.statusProef}
-                    </span>
+                    </button>
                     <span
                       className="team-num"
                       style={
@@ -181,22 +189,6 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                   >
                     {t.match13.nieuweLinkSturen}
                   </button>
-                  <button
-                    className="match13-actie-knop"
-                    disabled={rijBezig === g.id}
-                    onClick={() => statusToggle(g)}
-                  >
-                    {g.status === "proef" ? t.match13.markerenAlsBetalend : t.match13.markerenAlsProef}
-                  </button>
-                  <label className="match13-toegang-check">
-                    <input
-                      type="checkbox"
-                      checked={g.actief}
-                      disabled={rijBezig === g.id}
-                      onChange={() => toggle(g)}
-                    />
-                    {t.match13.toegangAanCheck}
-                  </label>
                   <button
                     className="match13-actie-knop gevaar"
                     disabled={rijBezig === g.id}
