@@ -68,6 +68,22 @@ const inhoud = {
           "Je hebt steeds het recht om je gegevens in te kijken, te laten verbeteren of verwijderen, de verwerking ervan te beperken, je gegevens over te laten dragen, of je toestemming (bv. voor de nieuwsbrief) in te trekken. Neem hiervoor contact op via info@petanque13.be. Je kan ook een klacht indienen bij de Belgische Gegevensbeschermingsautoriteit (www.gegevensbeschermingsautoriteit.be).",
         ],
       },
+      {
+        kop: "9. Match13 (pilootproject voor toernooibeheer)",
+        alineas: [
+          "Match13 is een tool waarmee we, na persoonlijke uitnodiging, een beperkt aantal petanqueclubs laten uitproberen om hun eigen toernooien te plannen en scores bij te houden. Match13 is niet publiek toegankelijk en enkel zichtbaar voor clubs die we zelf uitnodigen.",
+        ],
+        lijst: [
+          "Contactgegevens van de uitgenodigde club: naam en e-mailadres van de contactpersoon, gebruikt om toegang te geven en te beheren.",
+          "Toernooigegevens die de club zelf ingeeft: namen van spelers/teams, wedstrijdscores en pleinindeling, gebruikt om het toernooi te plannen en op te volgen.",
+        ],
+      },
+      {
+        kop: "10. Hoe lang bewaren we Match13-gegevens, en hoe verwijder je ze?",
+        alineas: [
+          "We bewaren deze gegevens zolang de club actief deelneemt aan het pilootproject. Een uitgenodigde club kan op elk moment vragen om de toegang stop te zetten en de gegevens te verwijderen via info@petanque13.be — we verwijderen dan zowel het account als de bijhorende toernooigegevens volledig.",
+        ],
+      },
     ],
     disclaimer:
       "Dit is een algemeen privacybeleid opgesteld voor een vrijwilligersproject. Het vervangt geen juridisch advies.",
@@ -135,6 +151,22 @@ const inhoud = {
         kop: "8. Vos droits",
         alineas: [
           "Vous avez le droit de consulter, corriger ou supprimer vos données, d'en limiter le traitement, de demander leur portabilité, ou de retirer votre consentement (par ex. pour la newsletter). Contactez-nous via info@petanque13.be. Vous pouvez également déposer une plainte auprès de l'Autorité belge de protection des données (www.autoriteprotectiondonnees.be).",
+        ],
+      },
+      {
+        kop: "9. Match13 (projet pilote de gestion de tournois)",
+        alineas: [
+          "Match13 est un outil qui permet, sur invitation personnelle, à un nombre limité de clubs de pétanque de tester la planification de leurs propres tournois et le suivi des scores. Match13 n'est pas accessible publiquement et n'est visible que pour les clubs que nous invitons nous-mêmes.",
+        ],
+        lijst: [
+          "Coordonnées du club invité : nom et adresse e-mail de la personne de contact, utilisés pour donner et gérer l'accès.",
+          "Données de tournoi saisies par le club lui-même : noms des joueurs/équipes, scores des matchs et attribution des terrains, utilisés pour planifier et suivre le tournoi.",
+        ],
+      },
+      {
+        kop: "10. Combien de temps conservons-nous les données Match13, et comment les supprimer ?",
+        alineas: [
+          "Nous conservons ces données tant que le club participe activement au projet pilote. Un club invité peut à tout moment demander l'arrêt de l'accès et la suppression des données via info@petanque13.be — nous supprimons alors intégralement le compte et les données de tournoi associées.",
         ],
       },
     ],
