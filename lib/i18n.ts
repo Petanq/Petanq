@@ -444,6 +444,8 @@ const nl = {
     hintAndereFormats:
       "Bepaalt enkel de weergave — de loting werkt hetzelfde voor elk formaat: vaste teams, geen herhaalde tegenstanders. Ronde 1 is een vrije loting; vanaf ronde 2 koppelt de app op stand (winnaars tegen winnaars).",
     speltypeVastgezet: "Kan niet meer gewijzigd worden zolang er teams zijn — verwijder eerst alle teams om dit aan te passen.",
+    opslaanMislukt:
+      "Opslaan mislukt — controleer je internetverbinding. Je laatste wijziging is nog niet bewaard; we proberen het automatisch opnieuw bij je volgende aanpassing.",
     inlegPerTeam: "Inleg per team (€)",
     aantalRondes: "Aantal rondes",
     hintAantalRondes: "Zo weet de tafel bij het onthaal hoeveel rondes er nog moeten volgen.",
@@ -1028,6 +1030,8 @@ const fr: typeof nl = {
     hintAndereFormats:
       "Ne détermine que l'affichage — le tirage fonctionne de la même façon pour chaque format : équipes fixes, pas d'adversaires répétés. La manche 1 est un tirage libre ; à partir de la manche 2, l'app associe selon le classement (vainqueurs contre vainqueurs).",
     speltypeVastgezet: "Ne peut plus être modifié tant qu'il y a des équipes — supprimez d'abord toutes les équipes pour changer ceci.",
+    opslaanMislukt:
+      "Échec de l'enregistrement — vérifiez votre connexion internet. Votre dernière modification n'est pas encore sauvegardée ; nous réessayons automatiquement à votre prochaine action.",
     inlegPerTeam: "Mise par équipe (€)",
     aantalRondes: "Nombre de manches",
     hintAantalRondes: "Ainsi la table d'accueil sait combien de manches restent à jouer.",

@@ -378,13 +378,16 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   // score keystrokes doesn't fire a write per keystroke. Skips the very
   // first render (that's just `initialState` we already fetched from there).
   const isFirstRender = useRef(true);
+  const [opslaanMislukt, setOpslaanMislukt] = useState(false);
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
     const timeout = setTimeout(() => {
-      slaMatch13OpAsync(tournamentId, state);
+      slaMatch13OpAsync(tournamentId, state)
+        .then((result) => setOpslaanMislukt(!result.succes))
+        .catch(() => setOpslaanMislukt(true));
     }, 600);
     return () => clearTimeout(timeout);
   }, [state, tournamentId]);
@@ -980,6 +983,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           </div>
         </div>
       </div>
+
+      {opslaanMislukt && <div className="save-fout-banner">{t.match13.opslaanMislukt}</div>}
 
       <div className="page">
         <nav className="tabs">
