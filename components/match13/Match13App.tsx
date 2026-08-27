@@ -1254,7 +1254,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
               </h2>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                 {playablePoulesMatches.length > 0 && (
-                  <button className="link-btn" onClick={() => window.print()}>
+                  <button className="match13-actie-knop" onClick={() => window.print()}>
                     {t.match13.printKaartjes}
                   </button>
                 )}
@@ -1346,12 +1346,12 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
               <h2>{t.match13.rondeVan(currentRound ? currentRound.number : "—", totalRounds)}</h2>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                 {currentRound && currentRound.matches.some((m) => m.teamB !== null) && (
-                  <button className="link-btn" onClick={() => window.print()}>
+                  <button className="match13-actie-knop" onClick={() => window.print()}>
                     {t.match13.printKaartjes}
                   </button>
                 )}
                 {currentRound && (
-                  <button className="link-btn" onClick={undoLastRound}>
+                  <button className="match13-actie-knop gevaar" onClick={undoLastRound}>
                     {t.match13.rondeOngedaanMaken(rounds.length)}
                   </button>
                 )}
@@ -1550,7 +1550,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
             <div className="zaal-head">
               <h2>{t.match13.klassementTitel}</h2>
               {!isPoules && standings.length > 0 && (
-                <button className="link-btn" onClick={() => window.print()}>
+                <button className="match13-actie-knop" onClick={() => window.print()}>
                   {t.match13.printKlassement}
                 </button>
               )}
