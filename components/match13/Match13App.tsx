@@ -742,7 +742,6 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           .filter((m) => m.teamB !== null)
           .map((m, i) => (
             <article className="mk-kaart" key={i}>
-              <div className="mk-13">13</div>
               <div className="mk-kop">
                 <div className="mk-logo" />
                 <div className="mk-titel">
@@ -824,7 +823,6 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           const teamB = teamOf(bId);
           return (
             <article className="mk-kaart" key={m.id}>
-              <div className="mk-13">13</div>
               <div className="mk-kop">
                 <div className="mk-logo" />
                 <div className="mk-titel">
@@ -928,7 +926,6 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
       <div className="print-klassement-credit">
         www.petanque<span className="m13-gold">13</span>.be
       </div>
-      <div className="print-klassement-13">13</div>
     </div>
   );
 

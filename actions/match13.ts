@@ -48,7 +48,10 @@ export async function haalMatch13Toernooi(id: string): Promise<AppState | null> 
     .eq("id", id)
     .single();
 
-  if (error) return null;
+  if (error) {
+    console.error("Kon Match13-toernooi niet laden:", id, error.message);
+    return null;
+  }
   return data.data as AppState;
 }
 
