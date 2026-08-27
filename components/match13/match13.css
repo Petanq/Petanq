@@ -81,6 +81,23 @@
   color: rgba(255, 255, 255, 0.68);
   font-size: 0.82rem;
 }
+/* Blijft zichtbaar op elk tabblad, zodat je nooit uit het oog verliest
+   welk toernooi je nu precies aan het bewerken bent. */
+.match13-scope .hero-club {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  background: rgba(244, 196, 48, 0.16);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .match13-scope .ghost-btn {
   font-family: inherit;
   font-weight: 600;

@@ -944,7 +944,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                 <div className="tagline">{t.match13.tagline}</div>
               </div>
             </div>
-            <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "0.8rem", alignItems: "center", flexWrap: "wrap" }}>
+              <span className="hero-club">{clubName || t.match13.naamloosToernooi}</span>
               <Link href="/beheer/match13" className="link-btn" style={{ color: "var(--header-ink)" }}>
                 {t.match13.alleToernooien}
               </Link>
