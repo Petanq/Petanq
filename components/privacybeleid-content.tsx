@@ -82,6 +82,7 @@ const inhoud = {
         kop: "10. Hoe lang bewaren we Match13-gegevens, en hoe verwijder je ze?",
         alineas: [
           "We bewaren deze gegevens zolang de club actief deelneemt aan het pilootproject. Een uitgenodigde club kan op elk moment vragen om de toegang stop te zetten en de gegevens te verwijderen via info@petanque13.be — we verwijderen dan zowel het account als de bijhorende toernooigegevens volledig.",
+          "Heb je tijdens het gebruik van Match13 een probleem, een vraag of iets dat niet werkt zoals verwacht? Je mag ons altijd bellen op 0479 49 91 67 of mailen naar info@petanque13.be.",
         ],
       },
     ],
@@ -167,6 +168,7 @@ const inhoud = {
         kop: "10. Combien de temps conservons-nous les données Match13, et comment les supprimer ?",
         alineas: [
           "Nous conservons ces données tant que le club participe activement au projet pilote. Un club invité peut à tout moment demander l'arrêt de l'accès et la suppression des données via info@petanque13.be — nous supprimons alors intégralement le compte et les données de tournoi associées.",
+          "Un problème, une question, ou quelque chose qui ne fonctionne pas comme prévu pendant l'utilisation de Match13 ? Vous pouvez toujours nous appeler au 0479 49 91 67 ou nous écrire à info@petanque13.be.",
         ],
       },
     ],
