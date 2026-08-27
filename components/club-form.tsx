@@ -7,6 +7,7 @@ import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { clubVoorstellen } from "@/actions/clubs";
 import { Knop } from "@/components/ui/knop";
+import { normaliseerUrl } from "@/lib/normaliseer-url";
 
 export function ClubForm() {
   const { t, taal } = useTranslation();
@@ -101,6 +102,7 @@ export function ClubForm() {
             type="url"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
+            onBlur={(e) => setWebsite(normaliseerUrl(e.target.value))}
             placeholder="https://"
             className="veld-input"
           />

@@ -14,6 +14,7 @@ import { Knop } from "@/components/ui/knop";
 import { createClient } from "@/lib/supabase/client";
 import { vindClubBijNaam } from "@/lib/club-opzoeken";
 import { KwalificatieDataVeld } from "@/components/ui/kwalificatie-data-veld";
+import { normaliseerUrl } from "@/lib/normaliseer-url";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
@@ -492,6 +493,7 @@ export function TournamentForm() {
                 placeholder="https://"
                 value={linkInschrijving}
                 onChange={(e) => setLinkInschrijving(e.target.value)}
+                onBlur={(e) => setLinkInschrijving(normaliseerUrl(e.target.value))}
                 className="veld-input"
               />
             </Veld>

@@ -23,6 +23,7 @@ import { vindMogelijkeDubbelsVoorVelden } from "@/lib/dubbels";
 import { vindClubBijNaam } from "@/lib/club-opzoeken";
 import { createClient } from "@/lib/supabase/client";
 import { KwalificatieDataVeld } from "@/components/ui/kwalificatie-data-veld";
+import { normaliseerUrl } from "@/lib/normaliseer-url";
 
 function afficheItemLabel(item: AfficheVelden, taal: "nl" | "fr"): string {
   const datumLabel = item.datum ? `${dagNummer(item.datum)} ${maandKort(item.datum, taal)}` : "?";
@@ -764,6 +765,7 @@ function AddForm({
           placeholder="https://"
           value={linkInschrijving}
           onChange={(e) => setLinkInschrijving(e.target.value)}
+          onBlur={(e) => setLinkInschrijving(normaliseerUrl(e.target.value))}
           className="veld-input"
         />
       </label>
@@ -1154,6 +1156,7 @@ export function EditForm({
           placeholder="https://"
           value={linkInschrijving}
           onChange={(e) => setLinkInschrijving(e.target.value)}
+          onBlur={(e) => setLinkInschrijving(normaliseerUrl(e.target.value))}
           className="veld-input"
         />
       </label>

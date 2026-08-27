@@ -13,6 +13,7 @@ import {
   clubVerwijderen,
   clubVerwijderingAanvragen,
 } from "@/actions/beheer-clubs";
+import { normaliseerUrl } from "@/lib/normaliseer-url";
 
 export function ClubManageList({ clubs, isAdmin = false }: { clubs: Club[]; isAdmin?: boolean }) {
   const { t, taal } = useTranslation();
@@ -394,7 +395,12 @@ function ClubFormulier({
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.clubForm.website}
-          <input value={website} onChange={(e) => setWebsite(e.target.value)} className="veld-input" />
+          <input
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            onBlur={(e) => setWebsite(normaliseerUrl(e.target.value))}
+            className="veld-input"
+          />
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.clubForm.contactEmail}
