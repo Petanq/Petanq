@@ -468,6 +468,8 @@ const nl = {
     hintElkeSpelerVakje:
       'Elke speler in zijn eigen vakje — zo heten teams overal in de app precies hetzelfde, zonder typfouten in "&" of "en".',
     geenSpelersOfTeams: (wat: string) => `Nog geen ${wat} — voeg er hierboven toe.`,
+    teamsGeslotenPoules:
+      "De poulefase is al gestart — een team dat nu nog toekomt, kan hier niet meer aan toegevoegd worden. Zo werkt petanque: wie te laat is, speelt niet meer mee.",
     spelersWoord: "spelers",
     teamsWoord: "teams",
     opslaan: "opslaan",
@@ -1050,6 +1052,8 @@ const fr: typeof nl = {
     hintElkeSpelerVakje:
       "Chaque joueur dans sa propre case — ainsi les équipes s'appellent exactement pareil partout dans l'app, sans fautes de frappe dans « & » ou « et ».",
     geenSpelersOfTeams: (wat: string) => `Pas encore de ${wat} — ajoutez-en ci-dessus.`,
+    teamsGeslotenPoules:
+      "La phase de poules a déjà commencé — une équipe qui arrive maintenant ne peut plus être ajoutée. C'est la règle de la pétanque : qui arrive en retard ne joue plus.",
     spelersWoord: "joueurs",
     teamsWoord: "équipes",
     opslaan: "enregistrer",

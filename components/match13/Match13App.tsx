@@ -1066,7 +1066,9 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
               {!isPoules && <RoundStepper current={rounds.length} total={totalRounds} currentDone={currentRoundComplete} />}
             </div>
 
-            {isMeli ? (
+            {groupStageStarted ? (
+              <p className="hint">{t.match13.teamsGeslotenPoules}</p>
+            ) : isMeli ? (
               <>
                 <form
                   className="add-row"
