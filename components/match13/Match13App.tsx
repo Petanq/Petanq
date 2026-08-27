@@ -799,6 +799,91 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     </div>
   );
 
+  // Poules heeft geen vaste "ronde" — wedstrijden binnen een poule en de
+  // knockout-fase worden vrij gepland. "Nu speelbaar" = beide teams gekend,
+  // geen echte bye, en nog geen score → dat zijn de kaartjes die nu gedrukt
+  // moeten worden.
+  const activePoulesBracket = knockoutStarted ? knockoutBracket : pouleBracket;
+  const playablePoulesMatches = isPoules
+    ? activePoulesBracket.filter((m) => {
+        if (isTrueBye(m)) return false;
+        if (m.scoreA !== undefined && m.scoreB !== undefined) return false;
+        const [a, b] = resolvedTeams(activePoulesBracket, m);
+        return a !== null && b !== null;
+      })
+    : [];
+
+  const printPoulesLabel = (m: BracketMatch) => (m.poule ? t.match13.pouleLabel(m.poule) : m.label);
+
+  const printPoulesKaartjesBlad = playablePoulesMatches.length > 0 && (
+    <div className="print-kaarten-blad">
+      <div className="print-kaarten-grid">
+        {playablePoulesMatches.map((m) => {
+          const [aId, bId] = resolvedTeams(activePoulesBracket, m);
+          const teamA = teamOf(aId);
+          const teamB = teamOf(bId);
+          return (
+            <article className="mk-kaart" key={m.id}>
+              <div className="mk-13">13</div>
+              <div className="mk-kop">
+                <div className="mk-logo" />
+                <div className="mk-titel">
+                  <b>
+                    MATCH<span className="m13-gold">13</span>
+                  </b>
+                  <span>{clubName}</span>
+                </div>
+                <div className="mk-meta mk-meta-tekst">{printPoulesLabel(m)}</div>
+              </div>
+              <div className="mk-teams">
+                <div className="mk-team">
+                  <span className="mk-nr">{teamA?.number ?? "?"}</span>
+                  <div className="mk-namen">{teamA?.name ?? ""}</div>
+                </div>
+                <div className="mk-plein">
+                  {t.match13.pleinLabelKort}
+                  <br />
+                  <b>{m.court ?? "—"}</b>
+                </div>
+                <div className="mk-team">
+                  <span className="mk-nr">{teamB?.number ?? "?"}</span>
+                  <div className="mk-namen">{teamB?.name ?? ""}</div>
+                </div>
+              </div>
+              <div className="mk-score">
+                <ul className="mk-tally">
+                  {Array.from({ length: 13 }).map((_, n) => (
+                    <li key={n} />
+                  ))}
+                </ul>
+                <div className="mk-mid">
+                  <span>{t.match13.printUitslag}</span>
+                  <span className="lijn" />
+                </div>
+                <ul className="mk-tally">
+                  {Array.from({ length: 13 }).map((_, n) => (
+                    <li key={n} />
+                  ))}
+                </ul>
+              </div>
+              <div className="mk-voet">
+                <div className="mk-vak" />
+                <div className="mk-mid2">
+                  <span className="lbl">{t.match13.printTotaal}</span>
+                  <span className="hand">{t.match13.printHandtekening}</span>
+                </div>
+                <div className="mk-vak" />
+              </div>
+              <div className="mk-credit">
+                www.petanque<span className="m13-gold">13</span>.be
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   const printKlassementBlad = (
     <div className="print-klassement-blad">
       <div className="print-klassement-kop">
@@ -1164,12 +1249,21 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                   ? t.match13.groepsfaseKlaar
                   : t.match13.groepsfase}
               </h2>
-              {groupStageDone && !knockoutStarted && (
-                <button className="cta" onClick={startKnockout}>
-                  {t.match13.startKnockout}
-                </button>
-              )}
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                {playablePoulesMatches.length > 0 && (
+                  <button className="link-btn" onClick={() => window.print()}>
+                    {t.match13.printKaartjes}
+                  </button>
+                )}
+                {groupStageDone && !knockoutStarted && (
+                  <button className="cta" onClick={startKnockout}>
+                    {t.match13.startKnockout}
+                  </button>
+                )}
+              </div>
             </div>
+
+            {printPoulesKaartjesBlad}
 
             {presentTeams.length < minToPlay && (
               <p className="hint" style={{ marginTop: "1rem" }}>

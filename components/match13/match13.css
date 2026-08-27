@@ -1453,6 +1453,16 @@
   color: #1f1f1f;
   line-height: 1;
 }
+/* Poules-kaartje: hier staat geen rondenummer maar een tekstlabel
+   ("Poule A", "Kwartfinale"...) — dat kan langer zijn dan 1-2 cijfers. */
+.match13-scope .mk-meta.mk-meta-tekst {
+  font-size: 6.6pt;
+  font-weight: 800;
+  color: #1f1f1f;
+  white-space: normal;
+  max-width: 17mm;
+  line-height: 1.15;
+}
 .match13-scope .mk-teams {
   display: flex;
   align-items: flex-start;
