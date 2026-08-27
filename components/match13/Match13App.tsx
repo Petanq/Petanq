@@ -706,6 +706,141 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     return numNameOf(side === "A" ? m.teamA : m.teamB);
   };
 
+  // Afdrukkaartje voor 1 kant van 1 wedstrijd: bij Meli-Melo een rijtje
+  // losse genummerde bolletjes (elke speler zijn eigen nummer), anders 1
+  // gedeeld teamnummer + de geregistreerde teamnaam.
+  const printTeamHeader = (m: Match, side: "A" | "B"): ReactNode => {
+    const ids = side === "A" ? m.playersA : m.playersB;
+    if (ids) {
+      return (
+        <div className="mk-boule-rij">
+          {ids.map((id) => {
+            const p = teamOf(id);
+            return (
+              <div className="mk-speler" key={id}>
+                <span className="mk-boule">{p?.number ?? "?"}</span>
+                <span className="mk-speler-naam">{p?.name ?? ""}</span>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+    const team = teamOf(side === "A" ? m.teamA : m.teamB);
+    return (
+      <>
+        <span className="mk-nr">{team?.number ?? "?"}</span>
+        <div className="mk-namen">{team?.name ?? ""}</div>
+      </>
+    );
+  };
+
+  const printKaartjesBlad = currentRound && (
+    <div className="print-kaarten-blad">
+      <div className="print-kaarten-grid">
+        {currentRound.matches
+          .filter((m) => m.teamB !== null)
+          .map((m, i) => (
+            <article className="mk-kaart" key={i}>
+              <div className="mk-13">13</div>
+              <div className="mk-kop">
+                <div className="mk-logo" />
+                <div className="mk-titel">
+                  <b>
+                    MATCH<span className="m13-gold">13</span>
+                  </b>
+                  <span>{clubName}</span>
+                </div>
+                <div className="mk-meta">
+                  {t.match13.printRondeKort}
+                  <br />
+                  <b>{currentRound.number}</b>
+                </div>
+              </div>
+              <div className="mk-teams">
+                <div className="mk-team">{printTeamHeader(m, "A")}</div>
+                <div className="mk-plein">
+                  {t.match13.pleinLabelKort}
+                  <br />
+                  <b>{m.court}</b>
+                </div>
+                <div className="mk-team">{printTeamHeader(m, "B")}</div>
+              </div>
+              <div className="mk-score">
+                <ul className="mk-tally">
+                  {Array.from({ length: 13 }).map((_, n) => (
+                    <li key={n} />
+                  ))}
+                </ul>
+                <div className="mk-mid">
+                  <span>{t.match13.printUitslag}</span>
+                  <span className="lijn" />
+                </div>
+                <ul className="mk-tally">
+                  {Array.from({ length: 13 }).map((_, n) => (
+                    <li key={n} />
+                  ))}
+                </ul>
+              </div>
+              <div className="mk-voet">
+                <div className="mk-vak" />
+                <div className="mk-mid2">
+                  <span className="lbl">{t.match13.printTotaal}</span>
+                  <span className="hand">{t.match13.printHandtekening}</span>
+                </div>
+                <div className="mk-vak" />
+              </div>
+              <div className="mk-credit">
+                www.petanque<span className="m13-gold">13</span>.be
+              </div>
+            </article>
+          ))}
+      </div>
+    </div>
+  );
+
+  const printKlassementBlad = (
+    <div className="print-klassement-blad">
+      <div className="print-klassement-kop">
+        <div className="print-klassement-logo" />
+        <div className="print-klassement-titel">
+          <b>
+            MATCH<span className="m13-gold">13</span>
+          </b>
+          <span>{clubName}</span>
+        </div>
+      </div>
+      <table className="print-klassement-tabel">
+        <thead>
+          <tr>
+            <th className="num">{t.match13.printRangKolom}</th>
+            <th>{isMeli ? t.match13.spelerKolom : t.match13.teamKolom}</th>
+            <th className="num">{t.match13.gespeeld}</th>
+            <th className="num">{t.match13.overwinningen}</th>
+            <th className="num">{t.match13.pntVoor}</th>
+            <th className="num">{t.match13.pntTegen}</th>
+            <th className="num">{t.match13.saldo}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {standings.map((row, i) => (
+            <tr key={row.teamId}>
+              <td className="num rank">{i + 1}</td>
+              <td>
+                {row.number}. {row.name}
+              </td>
+              <td className="num">{row.gespeeld}</td>
+              <td className="num">{row.overwinningen}</td>
+              <td className="num">{row.puntenVoor}</td>
+              <td className="num">{row.puntenTegen}</td>
+              <td className="num">{row.saldo > 0 ? `+${row.saldo}` : row.saldo}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <div className="app-shell">
       <Confetti trigger={tournamentComplete} />
@@ -1113,6 +1248,11 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
             <div className="zaal-head">
               <h2>{t.match13.rondeVan(currentRound ? currentRound.number : "—", totalRounds)}</h2>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                {currentRound && currentRound.matches.some((m) => m.teamB !== null) && (
+                  <button className="link-btn" onClick={() => window.print()}>
+                    {t.match13.printKaartjes}
+                  </button>
+                )}
                 {currentRound && (
                   <button className="link-btn" onClick={undoLastRound}>
                     {t.match13.rondeOngedaanMaken(rounds.length)}
@@ -1236,6 +1376,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
               </div>
             )}
 
+            {printKaartjesBlad}
+
             {rounds.length > 1 && (
               <details className="prev-rounds" open>
                 <summary>{t.match13.vorigeRondes(rounds.length - 1)}</summary>
@@ -1308,7 +1450,15 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
 
         {tab === "klassement" && (
           <section className="card fade-in" style={{ overflowX: "auto" }}>
-            <h2>{t.match13.klassementTitel}</h2>
+            <div className="zaal-head">
+              <h2>{t.match13.klassementTitel}</h2>
+              {!isPoules && standings.length > 0 && (
+                <button className="link-btn" onClick={() => window.print()}>
+                  {t.match13.printKlassement}
+                </button>
+              )}
+            </div>
+            {!isPoules && printKlassementBlad}
             {isPoules ? (
               teams.length === 0 ? (
                 <p className="hint">{t.match13.nogGeenTeams}</p>
