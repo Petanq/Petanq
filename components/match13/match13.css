@@ -1657,16 +1657,19 @@
   color: #1f1f1f;
 }
 
-/* Klassement afdrukken: eenvoudige rangschikkingstabel op 1 staand blad. */
+/* Klassement afdrukken: rangschikkingstabel op 1 staand blad, met de
+   Match13-huisstijl (goud + logo) zoals op de wedstrijdkaartjes. */
 .match13-scope .print-klassement-kop {
   display: flex;
   align-items: center;
-  gap: 3mm;
+  gap: 4mm;
+  padding-bottom: 4mm;
   margin-bottom: 6mm;
+  border-bottom: 1mm solid #f4c430;
 }
 .match13-scope .print-klassement-logo {
-  width: 12mm;
-  height: 12mm;
+  width: 16mm;
+  height: 16mm;
   flex: 0 0 auto;
   background-image: url("/images/logo-icon.png");
   background-size: contain;
@@ -1676,16 +1679,40 @@
 .match13-scope .print-klassement-titel b {
   display: block;
   font-family: "Montserrat", sans-serif;
-  font-size: 16pt;
+  font-size: 18pt;
   font-weight: 800;
   color: #1f1f1f;
 }
-.match13-scope .print-klassement-titel span {
+.match13-scope .print-klassement-titel > span {
   display: block;
   font-family: "Montserrat", sans-serif;
-  font-size: 9pt;
+  font-size: 9.5pt;
   font-weight: 700;
   color: #6b665c;
+}
+.match13-scope .print-klassement-blad {
+  position: relative;
+}
+.match13-scope .print-klassement-13 {
+  position: absolute;
+  right: 4mm;
+  bottom: 4mm;
+  font-size: 60pt;
+  font-weight: 900;
+  color: #f4c430;
+  opacity: 0.12;
+  line-height: 1;
+  pointer-events: none;
+}
+.match13-scope .print-klassement-credit {
+  margin-top: 6mm;
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 8pt;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1f1f1f;
 }
 .match13-scope table.print-klassement-tabel {
   width: 100%;
@@ -1695,7 +1722,7 @@
 .match13-scope table.print-klassement-tabel th,
 .match13-scope table.print-klassement-tabel td {
   text-align: left;
-  padding: 2.4mm 2mm;
+  padding: 2.6mm 2mm;
   border-bottom: 0.25mm solid #e2ddd2;
   font-size: 9.5pt;
   color: #1f1f1f;
@@ -1706,14 +1733,48 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: #6b665c;
-  border-bottom: 0.5mm solid #1f1f1f;
+  border-bottom: 0.7mm solid #f4c430;
 }
 .match13-scope table.print-klassement-tabel td.num,
 .match13-scope table.print-klassement-tabel th.num {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+.match13-scope table.print-klassement-tabel tr.podium {
+  background: #fdf6e3;
+}
 .match13-scope table.print-klassement-tabel td.rank {
+  width: 9mm;
+}
+.match13-scope table.print-klassement-tabel .rank-bol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 6.4mm;
+  height: 6.4mm;
+  border-radius: 50%;
   font-weight: 800;
-  width: 8mm;
+  font-size: 8.5pt;
+  font-variant-numeric: tabular-nums;
+  background: #efece3;
+  color: #6b665c;
+}
+.match13-scope table.print-klassement-tabel tr:nth-child(1) .rank-bol {
+  background: #f4c430;
+  color: #1f1f1f;
+}
+.match13-scope table.print-klassement-tabel tr:nth-child(2) .rank-bol {
+  background: #d9d4c4;
+  color: #1f1f1f;
+}
+.match13-scope table.print-klassement-tabel tr:nth-child(3) .rank-bol {
+  background: #d9a96b;
+  color: #1f1f1f;
+}
+.match13-scope table.print-klassement-tabel td.team-naam-print {
+  font-weight: 700;
+}
+.match13-scope table.print-klassement-tabel td.team-naam-print .nr {
+  color: #b8860b;
+  font-weight: 800;
 }

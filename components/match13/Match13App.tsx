@@ -909,10 +909,12 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
         </thead>
         <tbody>
           {standings.map((row, i) => (
-            <tr key={row.teamId}>
-              <td className="num rank">{i + 1}</td>
-              <td>
-                {row.number}. {row.name}
+            <tr key={row.teamId} className={i < 3 ? "podium" : undefined}>
+              <td className="rank">
+                <span className="rank-bol">{i + 1}</span>
+              </td>
+              <td className="team-naam-print">
+                <span className="nr">{row.number}.</span> {row.name}
               </td>
               <td className="num">{row.gespeeld}</td>
               <td className="num">{row.overwinningen}</td>
@@ -923,6 +925,10 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           ))}
         </tbody>
       </table>
+      <div className="print-klassement-credit">
+        www.petanque<span className="m13-gold">13</span>.be
+      </div>
+      <div className="print-klassement-13">13</div>
     </div>
   );
 
