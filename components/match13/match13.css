@@ -98,6 +98,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.match13-scope .hero-formaat {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+  max-width: 160px;
+}
 .match13-scope .ghost-btn {
   font-family: inherit;
   font-weight: 600;
@@ -308,6 +314,22 @@
   background: var(--accent);
   color: var(--accent-ink);
   font-weight: 600;
+}
+/* Zodra er al teams zijn, staat het speltype vast — een formaatwissel
+   halverwege zou bestaande teams/rondes ongeldig maken. */
+.match13-scope .pill-row.locked .pill {
+  cursor: default;
+  opacity: 0.55;
+}
+.match13-scope .pill-row.locked .pill:hover {
+  border-color: var(--border);
+}
+.match13-scope .pill-row.locked .pill.sel {
+  opacity: 1;
+  border-color: var(--accent);
+}
+.match13-scope .pill-row.locked .pill.sel:hover {
+  border-color: var(--accent);
 }
 
 .match13-scope .cta {

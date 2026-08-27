@@ -946,6 +946,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
             </div>
             <div style={{ display: "flex", gap: "0.8rem", alignItems: "center", flexWrap: "wrap" }}>
               <span className="hero-club">{clubName || t.match13.naamloosToernooi}</span>
+              <span className="hero-club hero-formaat">{FORMAT_LABELS[format]}</span>
               <Link href="/beheer/match13" className="link-btn" style={{ color: "var(--header-ink)" }}>
                 {t.match13.alleToernooien}
               </Link>
@@ -985,19 +986,25 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
               </div>
               <div className="field">
                 <label>{t.match13.speltype}</label>
-                <div className="pill-row">
+                <div className={"pill-row" + (teams.length > 0 ? " locked" : "")}>
                   {(Object.keys(FORMAT_LABELS) as Format[]).map((f) => (
                     <span
                       key={f}
                       className={"pill" + (format === f ? " sel" : "")}
-                      onClick={() => setState((s) => ({ ...s, format: f }))}
+                      onClick={() => teams.length === 0 && setState((s) => ({ ...s, format: f }))}
                     >
                       {FORMAT_LABELS[f]}
                     </span>
                   ))}
                 </div>
                 <div className="hint">
-                  {isMeli ? t.match13.hintMeli : isPoules ? t.match13.hintPoules : t.match13.hintAndereFormats}
+                  {teams.length > 0
+                    ? t.match13.speltypeVastgezet
+                    : isMeli
+                    ? t.match13.hintMeli
+                    : isPoules
+                    ? t.match13.hintPoules
+                    : t.match13.hintAndereFormats}
                 </div>
               </div>
               <div className="field">
