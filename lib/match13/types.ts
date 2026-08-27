@@ -19,6 +19,7 @@ export interface Match {
   teamB: string | null; // null = BYE
   scoreA?: number;
   scoreB?: number;
+  finishedAt?: number; // timestamp (ms) when the score was entered
   // Meli-Melo only: the fresh triplet formed for each side this round,
   // as player ids. teamA/teamB are unused ("") for these matches.
   playersA?: string[];
@@ -29,6 +30,7 @@ export interface Round {
   number: number;
   matches: Match[];
   rest?: string[]; // Meli-Melo only: player ids sitting out this round
+  startedAt?: number; // timestamp (ms) when the round was generated
 }
 
 export const FORMAT_LABELS: Record<Format, string> = {

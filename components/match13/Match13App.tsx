@@ -94,6 +94,28 @@ function RoundStepper({
   );
 }
 
+// Live speeltijd per wedstrijd: tikt op (groen) zolang er geen score staat,
+// bevriest (rood) zodra de score volledig is ingevuld.
+function MatchTimer({ startedAt, finishedAt }: { startedAt: number; finishedAt?: number }) {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (finishedAt) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [finishedAt]);
+
+  const totalSeconds = Math.max(0, Math.floor(((finishedAt ?? now) - startedAt) / 1000));
+  const mm = Math.floor(totalSeconds / 60);
+  const ss = totalSeconds % 60;
+
+  return (
+    <span className={"match-timer" + (finishedAt ? " klaar" : " bezig")}>
+      {mm}:{String(ss).padStart(2, "0")}
+    </span>
+  );
+}
+
 // A one-shot confetti burst, replayed whenever `trigger` flips from false to
 // true (i.e. the moment the tournament's last score gets filled in).
 function Confetti({ trigger }: { trigger: boolean }) {
@@ -496,7 +518,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
       const { matches, restIds } = generateMeleeRound(roundNumber, presentTeams, history);
       setState((s) => ({
         ...s,
-        rounds: [...s.rounds, { number: roundNumber, matches, rest: restIds }],
+        rounds: [...s.rounds, { number: roundNumber, matches, rest: restIds, startedAt: Date.now() }],
         teams: s.teams.map((t) => (restIds.includes(t.id) ? { ...t, byes: t.byes + 1 } : t)),
       }));
       setTab("zaal");
@@ -525,7 +547,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
 
     setState((s) => ({
       ...s,
-      rounds: [...s.rounds, { number: roundNumber, matches }],
+      rounds: [...s.rounds, { number: roundNumber, matches, startedAt: Date.now() }],
       teams: s.teams.map((t) => (t.id === byeTeamId ? { ...t, byes: t.byes + 1 } : t)),
     }));
     setTab("zaal");
@@ -637,6 +659,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
       const match = { ...matches[matchIndex] };
       const n = value === "" ? undefined : Math.min(13, Math.max(0, Number(value)));
       match[side] = n;
+      match.finishedAt = isCompleteMatch(match) ? Date.now() : undefined;
       matches[matchIndex] = match;
       round.matches = matches;
       rounds[roundIndex] = round;
@@ -1444,6 +1467,9 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                     </div>
                     {m.teamB !== null ? (
                       <>
+                        {currentRound.startedAt && (
+                          <MatchTimer startedAt={currentRound.startedAt} finishedAt={m.finishedAt} />
+                        )}
                         <div className={"match-row" + (isInvalidMatch(m) ? " invalid" : "")}>
                           <span>{sideLabel(m, "A")}</span>
                           <input

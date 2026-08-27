@@ -546,6 +546,23 @@
   color: var(--warn);
   background: var(--warn-bg);
 }
+.match13-scope .match-timer {
+  display: inline-block;
+  margin: 0.35rem 0 0.15rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.match13-scope .match-timer.bezig {
+  color: var(--live);
+  background: var(--live-bg);
+}
+.match13-scope .match-timer.klaar {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
 .match13-scope .court-label-edit {
   display: inline-flex;
   align-items: center;
