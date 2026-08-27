@@ -405,11 +405,12 @@
 .match13-scope .edit-name-btn {
   font-size: 0.76rem;
   color: var(--ink-muted);
-  opacity: 0;
+  opacity: 0.55;
   transition: opacity 0.15s;
 }
 .match13-scope .roster-row:hover .edit-name-btn,
-.match13-scope .edit-name-btn:focus-visible {
+.match13-scope .edit-name-btn:focus-visible,
+.match13-scope .edit-name-btn:active {
   opacity: 1;
 }
 .match13-scope .name-edit {
