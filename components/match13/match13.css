@@ -1468,10 +1468,7 @@
   width: 8mm;
   height: 8mm;
   flex: 0 0 auto;
-  background-image: url("/images/logo-icon.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  object-fit: contain;
 }
 .match13-scope .mk-titel {
   flex: 1;
@@ -1725,10 +1722,7 @@
   width: 16mm;
   height: 16mm;
   flex: 0 0 auto;
-  background-image: url("/images/logo-icon.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  object-fit: contain;
 }
 .match13-scope .print-klassement-titel b {
   display: block;

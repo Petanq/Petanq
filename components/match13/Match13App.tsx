@@ -769,7 +769,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           .map((m, i) => (
             <article className="mk-kaart" key={i}>
               <div className="mk-kop">
-                <div className="mk-logo" />
+                <img className="mk-logo" src="/images/logo-icon.png" alt="" />
                 <div className="mk-titel">
                   <b>
                     MATCH<span className="m13-gold">13</span>
@@ -850,7 +850,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           return (
             <article className="mk-kaart" key={m.id}>
               <div className="mk-kop">
-                <div className="mk-logo" />
+                <img className="mk-logo" src="/images/logo-icon.png" alt="" />
                 <div className="mk-titel">
                   <b>
                     MATCH<span className="m13-gold">13</span>
@@ -911,7 +911,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   const printKlassementBlad = (
     <div className="print-klassement-blad">
       <div className="print-klassement-kop">
-        <div className="print-klassement-logo" />
+        <img className="print-klassement-logo" src="/images/logo-icon.png" alt="" />
         <div className="print-klassement-titel">
           <b>
             MATCH<span className="m13-gold">13</span>
