@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
 
-export function LoginForm() {
+export function LoginForm({ linkVerlopen = false }: { linkVerlopen?: boolean }) {
   const { t } = useTranslation();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -34,6 +34,11 @@ export function LoginForm() {
       <h1 className="mb-6 text-center font-titel text-3xl tracking-wide text-blauw">
         {t.beheer.inloggen}
       </h1>
+      {linkVerlopen && (
+        <p className="mb-4 rounded-lg border border-rand bg-[#fef3c7] p-3 text-center text-sm font-medium text-[#92400e]">
+          {t.beheer.uitnodigingsLinkVerlopen}
+        </p>
+      )}
       <form onSubmit={inloggen} className="flex flex-col gap-4">
         <label className="flex flex-col gap-1.5">
           <span className="text-[0.8rem] font-bold text-donker">{t.beheer.email}</span>

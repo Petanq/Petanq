@@ -275,6 +275,8 @@ const nl = {
     wachtwoord: "Wachtwoord",
     inloggenKnop: "Inloggen",
     inlogFout: "Ongeldig e-mailadres of wachtwoord.",
+    uitnodigingsLinkVerlopen:
+      "Deze uitnodigingslink is verlopen. Vraag aan wie je uitnodigde om je een nieuwe link te sturen.",
     uitloggen: "Uitloggen",
     naarWebsite: "Naar de website",
     inBehandeling: "In behandeling",
@@ -861,6 +863,8 @@ const fr: typeof nl = {
     wachtwoord: "Mot de passe",
     inloggenKnop: "Se connecter",
     inlogFout: "Adresse e-mail ou mot de passe invalide.",
+    uitnodigingsLinkVerlopen:
+      "Ce lien d'invitation a expiré. Demandez à la personne qui vous a invité de vous envoyer un nouveau lien.",
     uitloggen: "Déconnexion",
     naarWebsite: "Vers le site",
     inBehandeling: "En attente",

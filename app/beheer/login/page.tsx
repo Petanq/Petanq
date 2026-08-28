@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function BeheerLoginPagina() {
-  return <LoginForm />;
+export default async function BeheerLoginPagina({
+  searchParams,
+}: {
+  searchParams: Promise<{ link?: string }>;
+}) {
+  const { link } = await searchParams;
+  return <LoginForm linkVerlopen={link === "verlopen"} />;
 }
