@@ -933,9 +933,9 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
         </thead>
         <tbody>
           {standings.map((row, i) => (
-            <tr key={row.teamId} className={i < 3 ? "podium" : undefined}>
+            <tr key={row.teamId} className={rounds.length > 0 && i < 3 ? "podium" : undefined}>
               <td className="rank">
-                <span className="rank-bol">{i + 1}</span>
+                <span className={"rank-bol" + (rounds.length === 0 ? " geen-podium" : "")}>{i + 1}</span>
               </td>
               <td className="team-naam-print">
                 <span className="nr">{row.number}.</span> {row.name}

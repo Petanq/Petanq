@@ -1811,6 +1811,10 @@
   background: #d9a96b;
   color: #1f1f1f;
 }
+.match13-scope table.print-klassement-tabel .rank-bol.geen-podium {
+  background: #ededed;
+  color: #1f1f1f;
+}
 .match13-scope table.print-klassement-tabel td.team-naam-print {
   font-weight: 700;
 }
