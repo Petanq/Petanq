@@ -360,6 +360,25 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   const [tab, setTab] = useState<Tab>("opzet");
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
 
+  // Volledig scherm: handig om het Zaalscherm groot te tonen op een
+  // projector/tv aan de zaal. Luistert ook naar Esc (of de browser-eigen
+  // "verlaat volledig scherm"-knop), die het scherm buiten onze eigen knop
+  // om kan sluiten.
+  const appShellRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(document.fullscreenElement === appShellRef.current);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+  function toggleFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      appShellRef.current?.requestFullscreen();
+    }
+  }
+
   const { clubName, format, entryFee, totalRounds, teams, rounds, pouleBracket, knockoutBracket } = state;
   const isMeli = format === "meli";
   const isPoules = format === "poules";
@@ -956,7 +975,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   );
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" ref={appShellRef}>
       <Confetti trigger={tournamentComplete} />
       <div className="hero-band">
         <div className="hero-inner">
@@ -976,6 +995,9 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
               <Link href="/beheer/match13" className="link-btn" style={{ color: "var(--header-ink)" }}>
                 {t.match13.alleToernooien}
               </Link>
+              <button className="ghost-btn" onClick={toggleFullscreen}>
+                {isFullscreen ? t.match13.volledigSchermSluiten : t.match13.volledigScherm}
+              </button>
               <button className="ghost-btn" onClick={resetAll}>
                 {t.match13.ditToernooiWissen}
               </button>

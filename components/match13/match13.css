@@ -40,6 +40,10 @@
 .match13-scope .app-shell {
   min-height: 100vh;
 }
+.match13-scope .app-shell:fullscreen {
+  background: var(--bg);
+  overflow-y: auto;
+}
 
 .match13-scope .hero-band {
   background: var(--header-bg);
