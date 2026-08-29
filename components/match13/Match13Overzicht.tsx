@@ -38,6 +38,11 @@ export function Match13Overzicht({
               {t.match13.toegangBeherenLink}
             </Link>
           )}
+          {admin && (
+            <Link href="/beheer/match13/archief" className="match13-toegang-knop">
+              {t.match13.archiefLink}
+            </Link>
+          )}
           <form action={nieuwMatch13Toernooi}>
             <button type="submit" className="match13-nieuw-knop">
               {t.match13.nieuwToernooi}

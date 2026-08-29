@@ -31,7 +31,7 @@ import {
   type BracketMatch,
   type PouleQualifier,
 } from "@/lib/match13/poules";
-import { slaMatch13OpAsync } from "@/actions/match13";
+import { slaMatch13OpAsync, archiveerMatch13Resultaten } from "@/actions/match13";
 import type { AppState } from "@/lib/match13/state";
 
 type Tab = "opzet" | "onthaal" | "zaal" | "klassement";
@@ -711,6 +711,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
 
   function resetAll() {
     if (!window.confirm(t.match13.wisBevestiging)) return;
+    archiveerMatch13Resultaten(tournamentId, state);
     setState((s) => ({ ...s, teams: [], rounds: [], pouleBracket: [], knockoutBracket: [] }));
     setTab("opzet");
   }

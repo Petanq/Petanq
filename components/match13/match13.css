@@ -1246,6 +1246,36 @@
   box-shadow: var(--shadow);
   padding: 1.2rem 1.4rem;
 }
+.match13-scope .archief-tabel {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.match13-scope .archief-tabel th,
+.match13-scope .archief-tabel td {
+  padding: 0.6rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.match13-scope .archief-tabel th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ink-muted);
+}
+.match13-scope .archief-tabel td.rank,
+.match13-scope .archief-tabel th.num,
+.match13-scope .archief-tabel td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.match13-scope .archief-tabel tr:last-child td {
+  border-bottom: none;
+}
 .match13-scope .match13-lijst {
   list-style: none;
   margin: 0;

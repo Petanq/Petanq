@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { isAdmin, heeftMatch13Toegang } from "@/lib/auth-helpers";
 import { defaultAppState, type AppState } from "@/lib/match13/state";
 
@@ -80,6 +80,38 @@ export async function nieuwMatch13Toernooi(): Promise<void> {
   redirect(`/beheer/match13/${data.id}`);
 }
 
+// Bewaart een kopie van de eindstand vóór een club (of de admin) hem wist of
+// verwijdert — enkel als er effectief al gespeeld is, zodat een lege/net
+// aangemaakte toernooitest het archief niet vervuilt. Gebruikt de
+// service-role client zodat dit ook lukt voor een club-gebruiker, die zelf
+// geen rechten heeft op match13_archief (enkel de admin mag dat lezen).
+async function archiveerIndienGespeeld(id: string, state: AppState, reden: "gewist" | "verwijderd") {
+  const heeftGespeeld =
+    state.rounds.length > 0 ||
+    state.pouleBracket.some((m) => m.scoreA !== undefined) ||
+    state.knockoutBracket.some((m) => m.scoreA !== undefined);
+  if (!heeftGespeeld) return;
+
+  const serviceClient = createServiceRoleClient();
+  const { error } = await serviceClient.from("match13_archief").insert({
+    oorspronkelijk_toernooi_id: id,
+    club: state.clubName || "",
+    data: state,
+    reden,
+  });
+  if (error) console.error("Archiveren van Match13-resultaten mislukt:", error.message);
+}
+
+// Aangeroepen vanuit de client vlak vóór "Dit toernooi wissen" de teams,
+// rondes en brackets effectief leegmaakt — dat wissen zelf blijft een lokale
+// state-wijziging (bewaard via de gewone debounced save), dit is enkel de
+// kopie voor het admin-archief.
+export async function archiveerMatch13Resultaten(id: string, state: AppState): Promise<Match13ActieResultaat> {
+  if (!(await magMatch13Gebruiken())) return { succes: false, fout: "niet_geautoriseerd" };
+  await archiveerIndienGespeeld(id, state, "gewist");
+  return { succes: true };
+}
+
 export async function slaMatch13OpAsync(id: string, state: AppState): Promise<Match13ActieResultaat> {
   if (!(await magMatch13Gebruiken())) return { succes: false, fout: "niet_geautoriseerd" };
 
@@ -100,6 +132,9 @@ export async function verwijderMatch13Toernooi(id: string): Promise<Match13Actie
   if (!(await magMatch13Gebruiken())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = await createClient();
+  const { data: rij } = await supabase.from("match13_toernooien").select("data").eq("id", id).single();
+  if (rij) await archiveerIndienGespeeld(id, rij.data as AppState, "verwijderd");
+
   const { error } = await supabase.from("match13_toernooien").delete().eq("id", id);
 
   if (error) return { succes: false, fout: "verwijderen_mislukt" };
