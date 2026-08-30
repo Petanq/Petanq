@@ -575,6 +575,8 @@ const nl = {
     pilootclubToevoegen: "+ Club uitnodigen",
     naamClub: "Clubnaam",
     naamClubPlaceholder: "Bv. JC De Vriendschap",
+    kiesBestaandeClub:
+      "Nodig je een 2e of 3e persoon uit voor dezelfde club? Kies de club hierboven uit de lijst — dan delen ze dezelfde toernooien.",
     naamContactpersoon: "Naam verantwoordelijke",
     naamContactpersoonPlaceholder: "Bv. Jan Peeters",
     emailadres: "E-mailadres",
@@ -1176,6 +1178,8 @@ const fr: typeof nl = {
     pilootclubToevoegen: "+ Inviter un club",
     naamClub: "Nom du club",
     naamClubPlaceholder: "Ex. Club Pétanque Bruxelles",
+    kiesBestaandeClub:
+      "Vous invitez une 2e ou 3e personne pour le même club ? Choisissez le club ci-dessus dans la liste — ils partageront alors les mêmes tournois.",
     naamContactpersoon: "Nom du responsable",
     naamContactpersoonPlaceholder: "Ex. Jean Dupont",
     emailadres: "Adresse e-mail",

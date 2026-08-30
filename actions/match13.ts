@@ -67,9 +67,20 @@ export async function nieuwMatch13Toernooi(): Promise<void> {
   } = await supabase.auth.getUser();
   if (!user) redirect("/beheer");
 
+  // match13_gebruikers is enkel leesbaar voor de admin via de gewone client
+  // (RLS) — de service-role client omzeilt dat om iemand zijn eigen club op
+  // te zoeken. Admins hebben hier geen rij (club blijft dan leeg), maar
+  // is_admin() geeft hen sowieso overal toegang, ongeacht de clubwaarde.
+  const serviceClient = createServiceRoleClient();
+  const { data: gebruikerRij } = await serviceClient
+    .from("match13_gebruikers")
+    .select("club")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
   const { data, error } = await supabase
     .from("match13_toernooien")
-    .insert({ aangemaakt_door: user.id, data: defaultAppState() })
+    .insert({ aangemaakt_door: user.id, club: gebruikerRij?.club ?? "", data: defaultAppState() })
     .select("id")
     .single();
 

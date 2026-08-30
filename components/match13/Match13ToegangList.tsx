@@ -17,6 +17,9 @@ import {
 export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruiker[] }) {
   const { t } = useTranslation();
   const router = useRouter();
+  const bestaandeClubs = Array.from(new Set(gebruikers.map((g) => g.club).filter(Boolean))).sort((a, b) =>
+    a.localeCompare(b)
+  );
   const [club, setClub] = useState("");
   const [naam, setNaam] = useState("");
   const [email, setEmail] = useState("");
@@ -127,7 +130,18 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
         <h2>{t.match13.pilootclubToevoegen}</h2>
         <div className="match13-uitnodig-veld">
           <label>{t.match13.naamClub}</label>
-          <input value={club} onChange={(e) => setClub(e.target.value)} placeholder={t.match13.naamClubPlaceholder} />
+          <input
+            value={club}
+            onChange={(e) => setClub(e.target.value)}
+            placeholder={t.match13.naamClubPlaceholder}
+            list="match13-bestaande-clubs"
+          />
+          <datalist id="match13-bestaande-clubs">
+            {bestaandeClubs.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+          {bestaandeClubs.length > 0 && <p className="hint" style={{ margin: 0 }}>{t.match13.kiesBestaandeClub}</p>}
         </div>
         <div className="match13-uitnodig-veld">
           <label>{t.match13.naamContactpersoon}</label>
@@ -179,6 +193,7 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                         value={bewerkClub}
                         onChange={(e) => setBewerkClub(e.target.value)}
                         placeholder={t.match13.naamClub}
+                        list="match13-bestaande-clubs"
                       />
                       <input
                         value={bewerkNaam}
