@@ -100,7 +100,10 @@ export function TournamentManageList({
     .filter((tn) => !actieveMaand || maandJaarKey(tn.datum) === actieveMaand)
     .filter((tn) => {
       if (!zoekTerm) return true;
-      const haystack = `${tn.clubnaam} ${tn.gemeente} ${tn.naam_nl} ${tn.naam_fr} ${tn.datum}`.toLowerCase();
+      const haystack = `${tn.clubnaam} ${tn.gemeente} ${tn.naam_nl} ${tn.naam_fr} ${tn.datum} ${vertaalProvincie(
+        tn.provincie,
+        taal
+      )} ${t.categorie[tn.categorie]} ${t.formule[tn.formule]}`.toLowerCase();
       return haystack.includes(zoekTerm);
     })
     // Binnen een maand altijd gewoon chronologisch oplopend — anders springen de

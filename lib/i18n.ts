@@ -40,7 +40,7 @@ const nl = {
     terugNaarKalender: "← Terug naar de toernooienkalender",
   },
   filters: {
-    zoekPlaceholder: "Zoek club of locatie...",
+    zoekPlaceholder: "Zoek tornooi, club of locatie...",
     regio: "Regio",
     heelBelgie: "Heel België",
     provincie: "Provincie",
@@ -644,7 +644,7 @@ const fr: typeof nl = {
     terugNaarKalender: "← Retour au calendrier des tournois",
   },
   filters: {
-    zoekPlaceholder: "Rechercher club ou lieu...",
+    zoekPlaceholder: "Rechercher tournoi, club ou lieu...",
     regio: "Région",
     heelBelgie: "Toute la Belgique",
     provincie: "Province",

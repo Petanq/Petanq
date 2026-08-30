@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { Club, Toernooi } from "@/lib/types";
 import { maandJaarKey, maandVolledig, parseDatum } from "@/lib/datum";
+import { vertaalProvincie } from "@/lib/provincies";
 import { FilterSidebar, FilterState } from "./filter-sidebar";
 import { MonthPills } from "./month-pills";
 import { TournamentCard } from "./tournament-card";
@@ -64,7 +65,10 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
       if (filters.kwalificatie === true && !(tn.kwalificatiedata && tn.kwalificatiedata.length > 0)) return false;
       if (actieveMaand && maandJaarKey(tn.datum) !== actieveMaand) return false;
       if (zoekTerm) {
-        const haystack = `${tn.clubnaam} ${tn.gemeente} ${tn.naam_nl} ${tn.naam_fr}`.toLowerCase();
+        const haystack = `${tn.clubnaam} ${tn.gemeente} ${tn.naam_nl} ${tn.naam_fr} ${vertaalProvincie(
+          tn.provincie,
+          taal
+        )} ${t.categorie[tn.categorie]} ${t.formule[tn.formule]}`.toLowerCase();
         if (!haystack.includes(zoekTerm)) return false;
       }
       return true;
