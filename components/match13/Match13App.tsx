@@ -384,6 +384,10 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   const isPoules = format === "poules";
   const teamSize = FORMAT_TEAM_SIZE[format];
   const minToPlay = isMeli ? 6 : isPoules ? 3 : 2;
+  // Verplicht vóór je nog iets kan doen — maar enkel bij de allereerste
+  // start: een toernooi dat al teams heeft (bv. van vóór deze check bestond)
+  // blijft gewoon bruikbaar, ook als de clubnaam toen leeg bleef.
+  const clubNaamVerplicht = !clubName.trim() && teams.length === 0;
 
   const [playerInputs, setPlayerInputs] = useState<string[]>(() => Array(teamSize).fill(""));
   const [newPlayerName, setNewPlayerName] = useState("");
@@ -1015,6 +1019,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
             <button
               key={tabKey}
               className={"tab" + (tab === tabKey ? " active" : "")}
+              disabled={clubNaamVerplicht && tabKey !== "opzet"}
+              title={clubNaamVerplicht && tabKey !== "opzet" ? t.match13.vulEerstClubIn : undefined}
               onClick={() => setTab(tabKey)}
             >
               {tabKey === "opzet" && t.match13.tabOpzet}
@@ -1034,6 +1040,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                   value={clubName}
                   onChange={(e) => setState((s) => ({ ...s, clubName: e.target.value }))}
                 />
+                {clubNaamVerplicht && <p className="hint" style={{ color: "var(--warn)" }}>{t.match13.clubVerplicht}</p>}
               </div>
               <div className="field">
                 <label>{t.match13.speltype}</label>
@@ -1092,7 +1099,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                   {t.match13.teamsSamenvatting(teams.length, presentTeams.length, paidCount)}
                 </div>
               </div>
-              <button className="cta" onClick={() => setTab("onthaal")}>
+              <button className="cta" disabled={clubNaamVerplicht} onClick={() => setTab("onthaal")}>
                 {t.match13.gaNaarOnthaal}
               </button>
             </div>

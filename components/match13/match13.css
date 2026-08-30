@@ -205,6 +205,13 @@
 .match13-scope .tab:hover {
   color: var(--ink);
 }
+.match13-scope .tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.match13-scope .tab:disabled:hover {
+  color: var(--ink-muted);
+}
 .match13-scope .tab.active {
   color: var(--ink);
   border-color: var(--accent);

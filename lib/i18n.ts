@@ -440,6 +440,8 @@ const nl = {
     tabZaal: "Zaalscherm",
     tabKlassement: "Klassement",
     club: "Club",
+    clubVerplicht: "Vul een clubnaam in vooraleer je verder kan.",
+    vulEerstClubIn: "Vul eerst een clubnaam in op Opzet.",
     speltype: "Speltype",
     hintMeli:
       "Bij Meli-Melo krijgt elke speler elke ronde nieuwe ploegmaats: schutter, pointeur en geen-voorkeur worden telkens opnieuw samengesteld, zonder onnodige herhaling.",
@@ -1040,6 +1042,8 @@ const fr: typeof nl = {
     tabZaal: "Écran de salle",
     tabKlassement: "Classement",
     club: "Club",
+    clubVerplicht: "Indiquez un nom de club avant de continuer.",
+    vulEerstClubIn: "Indiquez d'abord un nom de club dans l'onglet Configuration.",
     speltype: "Type de jeu",
     hintMeli:
       "Avec Meli-Melo, chaque joueur reçoit à chaque manche de nouveaux coéquipiers : tireur, pointeur et sans préférence sont recomposés à chaque fois, sans répétition inutile.",
