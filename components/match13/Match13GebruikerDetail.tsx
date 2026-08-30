@@ -9,6 +9,7 @@ import {
   type Match13GebruikerMetToernooien,
   type EchteClub,
 } from "@/actions/match13-toegang";
+import { Match13ClubKiezer } from "@/components/match13/Match13ClubKiezer";
 
 export function Match13GebruikerDetail({
   gebruiker,
@@ -51,20 +52,7 @@ export function Match13GebruikerDetail({
 
         {bewerken ? (
           <form className="match13-bewerk-form" style={{ margin: "0.3rem 0" }} onSubmit={opslaan}>
-            <input
-              autoFocus
-              value={club}
-              onChange={(e) => setClub(e.target.value)}
-              placeholder={t.match13.naamClub}
-              list="match13-detail-echte-clubs"
-            />
-            <datalist id="match13-detail-echte-clubs">
-              {echteClubs.map((c) => (
-                <option key={c.id} value={c.naam}>
-                  {c.gemeente}
-                </option>
-              ))}
-            </datalist>
+            <Match13ClubKiezer value={club} onChange={setClub} echteClubs={echteClubs} />
             <input
               value={naam}
               onChange={(e) => setNaam(e.target.value)}

@@ -14,6 +14,7 @@ import {
   type Match13Gebruiker,
   type EchteClub,
 } from "@/actions/match13-toegang";
+import { Match13ClubKiezer } from "@/components/match13/Match13ClubKiezer";
 
 export function Match13ToegangList({
   gebruikers,
@@ -24,6 +25,11 @@ export function Match13ToegangList({
 }) {
   const { t } = useTranslation();
   const router = useRouter();
+  const aantalPerNaam = new Map<string, number>();
+  for (const g of gebruikers) {
+    const key = g.club.toLowerCase().trim();
+    aantalPerNaam.set(key, (aantalPerNaam.get(key) ?? 0) + 1);
+  }
   const [club, setClub] = useState("");
   const [naam, setNaam] = useState("");
   const [email, setEmail] = useState("");
@@ -134,19 +140,7 @@ export function Match13ToegangList({
         <h2>{t.match13.pilootclubToevoegen}</h2>
         <div className="match13-uitnodig-veld">
           <label>{t.match13.naamClub}</label>
-          <input
-            value={club}
-            onChange={(e) => setClub(e.target.value)}
-            placeholder={t.match13.naamClubPlaceholder}
-            list="match13-bestaande-clubs"
-          />
-          <datalist id="match13-bestaande-clubs">
-            {echteClubs.map((c) => (
-              <option key={c.id} value={c.naam}>
-                {c.gemeente}
-              </option>
-            ))}
-          </datalist>
+          <Match13ClubKiezer value={club} onChange={setClub} echteClubs={echteClubs} aantalPerNaam={aantalPerNaam} />
           <p className="hint" style={{ margin: 0 }}>{t.match13.kiesBestaandeClub}</p>
         </div>
         <div className="match13-uitnodig-veld">
@@ -194,13 +188,7 @@ export function Match13ToegangList({
                 <div className="match13-toegang-info">
                   {bewerkId === g.id ? (
                     <form className="match13-bewerk-form" onSubmit={(e) => bewerkOpslaan(e, g)}>
-                      <input
-                        autoFocus
-                        value={bewerkClub}
-                        onChange={(e) => setBewerkClub(e.target.value)}
-                        placeholder={t.match13.naamClub}
-                        list="match13-bestaande-clubs"
-                      />
+                      <Match13ClubKiezer value={bewerkClub} onChange={setBewerkClub} echteClubs={echteClubs} aantalPerNaam={aantalPerNaam} />
                       <input
                         value={bewerkNaam}
                         onChange={(e) => setBewerkNaam(e.target.value)}
