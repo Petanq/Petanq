@@ -585,6 +585,7 @@ const nl = {
     clubNietInLijst: "Staat de club er niet bij? Typ zelf een naam",
     aantalUitgenodigd: (n: number) =>
       n === 1 ? "al 1 persoon uitgenodigd" : `al ${n} personen uitgenodigd`,
+    voegPersoonToeAanClub: "+ Persoon toevoegen",
     kiesBestaandeClub:
       "Kies de club uit de lijst — zo koppelen we automatisch hun adres/telefoon/uren, en delen meerdere uitgenodigde personen van dezelfde club dezelfde toernooien.",
     clubgegevensTitel: "Clubgegevens (van de website)",
@@ -1205,6 +1206,7 @@ const fr: typeof nl = {
     kiesUitLijst: "Choisir dans la liste",
     clubNietInLijst: "Le club n'y figure pas ? Tapez un nom vous-même",
     aantalUitgenodigd: (n: number) => (n === 1 ? "1 personne déjà invitée" : `${n} personnes déjà invitées`),
+    voegPersoonToeAanClub: "+ Ajouter une personne",
     kiesBestaandeClub:
       "Choisissez le club dans la liste — nous lions ainsi automatiquement son adresse/téléphone/horaires, et plusieurs personnes invitées du même club partagent les mêmes tournois.",
     clubgegevensTitel: "Coordonnées du club (depuis le site)",
