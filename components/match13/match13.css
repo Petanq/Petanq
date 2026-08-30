@@ -231,6 +231,9 @@
   box-shadow: var(--shadow);
   padding: 1.5rem;
 }
+.match13-scope .match13-club-kaart {
+  border: 2px solid var(--accent);
+}
 .match13-scope .muted-card {
   color: var(--ink-muted);
 }

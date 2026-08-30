@@ -237,7 +237,7 @@ export function Match13ToegangList({
       ) : (
         <div className="roster">
           {groepen.map((groep) => (
-            <div className="card" key={groep.key} style={{ marginBottom: "1rem" }}>
+            <div className="card match13-club-kaart" key={groep.key} style={{ marginBottom: "1rem" }}>
               <div className="match13-club-rij" style={{ marginBottom: groep.echteClub ? "0.2rem" : "0.6rem" }}>
                 <Link
                   href={`/beheer/match13/toegang/${groep.leden[0].id}`}
