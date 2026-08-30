@@ -1531,7 +1531,11 @@
   .match13-scope .print-kaarten-blad,
   .match13-scope .print-klassement-blad {
     display: block;
-    position: fixed;
+    /* position: absolute (niet fixed!) — een fixed-element blijft aan één
+       pagina "gepind" en herhaalt zich of knipt af zodra de inhoud niet op
+       één blad past. Absolute laat de inhoud wél normaal doorlopen naar
+       een volgende pagina bij meer dan 6 wedstrijden. */
+    position: absolute;
     inset: 0;
     background: #fff;
     padding: 6mm;
