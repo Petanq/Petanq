@@ -580,14 +580,11 @@ const nl = {
     pilootclubToevoegen: "+ Club uitnodigen",
     naamClub: "Clubnaam",
     naamClubPlaceholder: "Bv. JC De Vriendschap",
-    kiesClubPlaceholder: "— Kies een club —",
-    kiesUitLijst: "Kies uit de lijst",
-    clubNietInLijst: "Staat de club er niet bij? Typ zelf een naam",
     aantalUitgenodigd: (n: number) =>
       n === 1 ? "al 1 persoon uitgenodigd" : `al ${n} personen uitgenodigd`,
     voegPersoonToeAanClub: "+ Persoon toevoegen",
     kiesBestaandeClub:
-      "Kies de club uit de lijst — zo koppelen we automatisch hun adres/telefoon/uren, en delen meerdere uitgenodigde personen van dezelfde club dezelfde toernooien.",
+      "Typ de clubnaam of gemeente om te zoeken en klik de juiste club aan — zo koppelen we automatisch hun adres/telefoon/uren, en delen meerdere uitgenodigde personen van dezelfde club dezelfde toernooien. Staat de club er niet bij, dan blijft gewoon staan wat je typte.",
     clubgegevensTitel: "Clubgegevens (van de website)",
     geenClubGekoppeld:
       "Geen exacte match gevonden met een club op de website. Klik op \"bewerken\" hierboven en kies de juiste club uit de lijst om ze te koppelen.",
@@ -1202,13 +1199,10 @@ const fr: typeof nl = {
     pilootclubToevoegen: "+ Inviter un club",
     naamClub: "Nom du club",
     naamClubPlaceholder: "Ex. Club Pétanque Bruxelles",
-    kiesClubPlaceholder: "— Choisissez un club —",
-    kiesUitLijst: "Choisir dans la liste",
-    clubNietInLijst: "Le club n'y figure pas ? Tapez un nom vous-même",
     aantalUitgenodigd: (n: number) => (n === 1 ? "1 personne déjà invitée" : `${n} personnes déjà invitées`),
     voegPersoonToeAanClub: "+ Ajouter une personne",
     kiesBestaandeClub:
-      "Choisissez le club dans la liste — nous lions ainsi automatiquement son adresse/téléphone/horaires, et plusieurs personnes invitées du même club partagent les mêmes tournois.",
+      "Tapez le nom du club ou la commune pour chercher, puis cliquez sur le bon club — nous lions ainsi automatiquement son adresse/téléphone/horaires, et plusieurs personnes invitées du même club partagent les mêmes tournois. Le club n'y figure pas ? Ce que vous avez tapé reste simplement tel quel.",
     clubgegevensTitel: "Coordonnées du club (depuis le site)",
     geenClubGekoppeld:
       "Aucune correspondance exacte trouvée avec un club du site. Cliquez sur « modifier » ci-dessus et choisissez le bon club dans la liste pour les lier.",

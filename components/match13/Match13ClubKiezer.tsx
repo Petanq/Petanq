@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import type { EchteClub } from "@/actions/match13-toegang";
 
-// Vervangt een vrij tekstveld door een echte, klikbare dropdown met de
-// bestaande clubdirectory — een <datalist> bleek niet duidelijk genoeg als
-// klikbare lijst. "Staat de club er niet bij" valt terug op vrije tekst,
-// voor een club die nog niet op de website staat.
+// Een eigen zoekveld i.p.v. een native <select>/<datalist> — die twee bleken
+// allebei niet goed genoeg: een <datalist> was niet duidelijk klikbaar, en
+// een <select> laat op een gsm niet toe om te typen/filteren, en de
+// opengeklapte lijst gebruikt altijd een systeemachtergrond (wit-op-wit-risico
+// als de tekstkleur van de context overgeërfd wordt). Dit is gewoon een
+// tekstveld — vrij typen werkt dus altijd — met een eigen, volledig
+// zelf-gestylede suggestielijst eronder die live filtert.
 export function Match13ClubKiezer({
   value,
   onChange,
@@ -20,39 +23,62 @@ export function Match13ClubKiezer({
   aantalPerNaam?: Map<string, number>;
 }) {
   const { t } = useTranslation();
-  const [handmatig, setHandmatig] = useState(
-    () => value.trim() !== "" && !echteClubs.some((c) => c.naam === value)
-  );
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
-  if (handmatig) {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={t.match13.naamClubPlaceholder} />
-        {echteClubs.length > 0 && (
-          <button type="button" className="link-btn" style={{ alignSelf: "flex-start" }} onClick={() => setHandmatig(false)}>
-            {t.match13.kiesUitLijst}
-          </button>
-        )}
-      </div>
-    );
-  }
+  useEffect(() => {
+    function onClickBuiten(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickBuiten);
+    return () => document.removeEventListener("mousedown", onClickBuiten);
+  }, []);
+
+  const zoekterm = value.trim().toLowerCase();
+  const suggesties = (
+    zoekterm
+      ? echteClubs.filter(
+          (c) => c.naam.toLowerCase().includes(zoekterm) || c.gemeente.toLowerCase().includes(zoekterm)
+        )
+      : echteClubs
+  ).slice(0, 30);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-      <select value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">{t.match13.kiesClubPlaceholder}</option>
-        {echteClubs.map((c) => {
-          const aantal = aantalPerNaam.get(c.naam.toLowerCase().trim()) ?? 0;
-          return (
-            <option key={c.id} value={c.naam}>
-              {c.naam} ({c.gemeente}){aantal > 0 ? ` — ${t.match13.aantalUitgenodigd(aantal)}` : ""}
-            </option>
-          );
-        })}
-      </select>
-      <button type="button" className="link-btn" style={{ alignSelf: "flex-start" }} onClick={() => setHandmatig(true)}>
-        {t.match13.clubNietInLijst}
-      </button>
+    <div className="match13-club-kiezer" ref={wrapRef}>
+      <input
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setOpen(true);
+        }}
+        onFocus={() => setOpen(true)}
+        placeholder={t.match13.naamClubPlaceholder}
+        autoComplete="off"
+      />
+      {open && suggesties.length > 0 && (
+        <div className="match13-club-suggesties">
+          {suggesties.map((c) => {
+            const aantal = aantalPerNaam.get(c.naam.toLowerCase().trim()) ?? 0;
+            return (
+              <button
+                type="button"
+                key={c.id}
+                className="match13-club-suggestie"
+                onClick={() => {
+                  onChange(c.naam);
+                  setOpen(false);
+                }}
+              >
+                <span>{c.naam}</span>
+                <span className="hint">
+                  {c.gemeente}
+                  {aantal > 0 ? ` — ${t.match13.aantalUitgenodigd(aantal)}` : ""}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

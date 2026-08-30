@@ -1420,8 +1420,7 @@
   letter-spacing: 0.05em;
   color: rgba(255, 255, 255, 0.65);
 }
-.match13-scope .match13-uitnodig-veld input,
-.match13-scope .match13-uitnodig-veld select {
+.match13-scope .match13-uitnodig-veld input {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 7px;
@@ -1433,17 +1432,60 @@
 .match13-scope .match13-uitnodig-veld input::placeholder {
   color: rgba(255, 255, 255, 0.4);
 }
-.match13-scope .match13-uitnodig-veld input:focus,
-.match13-scope .match13-uitnodig-veld select:focus {
+.match13-scope .match13-uitnodig-veld input:focus {
   outline: none;
   border-color: var(--accent);
 }
-/* De opengeklapte lijst van een <select> gebruikt altijd een effen,
-   lichte systeemachtergrond, ongeacht de kleur van het veld zelf — zonder
-   dit werd witte tekst (zoals hierboven) onzichtbaar op die witte lijst. */
-.match13-scope select option {
-  color: #1f1f1f;
+.match13-scope .match13-club-kiezer {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+.match13-scope .match13-club-kiezer input {
+  width: 100%;
+  box-sizing: border-box;
+}
+.match13-scope .match13-club-suggesties {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  overflow-y: auto;
   background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+.match13-scope .match13-club-suggestie {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.match13-scope .match13-club-suggestie:last-child {
+  border-bottom: none;
+}
+.match13-scope .match13-club-suggestie:hover,
+.match13-scope .match13-club-suggestie:focus-visible {
+  background: var(--surface-2);
+}
+.match13-scope .match13-club-suggestie .hint {
+  font-weight: 400;
+  font-size: 0.78rem;
+  margin: 0;
 }
 .match13-scope .match13-uitnodig-balk .cta {
   flex-shrink: 0;
