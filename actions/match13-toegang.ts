@@ -201,11 +201,22 @@ export async function match13GegevensWijzigen(
   if (!input.club.trim() || !input.naam.trim()) return { succes: false, fout: "server_fout" };
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("match13_gebruikers")
     .update({ club: input.club.trim(), naam: input.naam.trim() })
-    .eq("id", id);
-  if (error) return { succes: false, fout: "server_fout" };
+    .eq("id", id)
+    .select("user_id")
+    .single();
+  if (error || !data) return { succes: false, fout: "server_fout" };
+
+  // Neem de eigen toernooien van deze persoon mee naar de (gecorrigeerde)
+  // clubnaam — anders zou een typfout-correctie hun bestaande toernooien
+  // per ongeluk loskoppelen van de rest van hun club.
+  const { error: toernooiFout } = await supabase
+    .from("match13_toernooien")
+    .update({ club: input.club.trim() })
+    .eq("aangemaakt_door", data.user_id);
+  if (toernooiFout) console.error("Kon club op bestaande toernooien niet bijwerken:", toernooiFout.message);
 
   revalidatePath("/beheer/match13/toegang");
   return { succes: true };
