@@ -8,7 +8,8 @@ import { vrijwilligerAanmelden } from "@/actions/vrijwilliger-aanmelden";
 
 export function AanmeldenForm() {
   const { t, taal } = useTranslation();
-  const [naam, setNaam] = useState("");
+  const [voornaam, setVoornaam] = useState("");
+  const [achternaam, setAchternaam] = useState("");
   const [email, setEmail] = useState("");
   const [wachtwoord, setWachtwoord] = useState("");
   const [provincie, setProvincie] = useState<Provincie | "">("");
@@ -27,7 +28,7 @@ export function AanmeldenForm() {
     setStatus("bezig");
     setFoutCode(null);
     const resultaat = await vrijwilligerAanmelden({
-      naam,
+      naam: `${voornaam.trim()} ${achternaam.trim()}`.trim(),
       email,
       wachtwoord,
       provincie,
@@ -64,8 +65,22 @@ export function AanmeldenForm() {
       <p className="mb-6 text-center text-sm text-grijs">{t.beheer.aanmeldenBeschrijving}</p>
       <form onSubmit={versturen} className="flex flex-col gap-4">
         <label className="flex flex-col gap-1.5">
-          <span className="text-[0.8rem] font-bold text-donker">{t.beheer.naam}</span>
-          <input required value={naam} onChange={(e) => setNaam(e.target.value)} className="veld-input" />
+          <span className="text-[0.8rem] font-bold text-donker">{t.beheer.voornaam}</span>
+          <input
+            required
+            value={voornaam}
+            onChange={(e) => setVoornaam(e.target.value)}
+            className="veld-input"
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[0.8rem] font-bold text-donker">{t.beheer.achternaam}</span>
+          <input
+            required
+            value={achternaam}
+            onChange={(e) => setAchternaam(e.target.value)}
+            className="veld-input"
+          />
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="text-[0.8rem] font-bold text-donker">{t.beheer.email}</span>
