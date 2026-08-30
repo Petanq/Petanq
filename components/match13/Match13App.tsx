@@ -785,65 +785,83 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     );
   };
 
+  // Elk team krijgt zijn eigen kaartje met het eigen nummer vooraan (petanque-
+  // gewoonte) — behalve bij Tête-à-Tête (1 tegen 1, geen verwarring mogelijk)
+  // en Meli-Melo (elke ronde nieuwe, losse spelerscombinaties, geen vast
+  // "eigen team" om een kaartje aan toe te wijzen).
+  const dubbeleKaartjes = !isMeli && format !== "tete";
+
+  const renderRondeKaart = (m: Match, key: string | number, eersteZijde: "A" | "B", rondeNummer: number) => {
+    const tweedeZijde = eersteZijde === "A" ? "B" : "A";
+    return (
+      <article className="mk-kaart" key={key}>
+        <div className="mk-kop">
+          <img className="mk-logo" src="/images/logo-icon.png" alt="" />
+          <div className="mk-titel">
+            <b>
+              MATCH<span className="m13-gold">13</span>
+            </b>
+            <span>{clubName}</span>
+          </div>
+          <div className="mk-meta">
+            {t.match13.printRondeKort}
+            <br />
+            <b>{rondeNummer}</b>
+          </div>
+        </div>
+        <div className="mk-teams">
+          <div className="mk-team">{printTeamHeader(m, eersteZijde)}</div>
+          <div className="mk-plein">
+            {t.match13.pleinLabelKort}
+            <br />
+            <b>{m.court}</b>
+          </div>
+          <div className="mk-team">{printTeamHeader(m, tweedeZijde)}</div>
+        </div>
+        <div className="mk-score">
+          <ul className="mk-tally">
+            {Array.from({ length: 13 }).map((_, n) => (
+              <li key={n} />
+            ))}
+          </ul>
+          <div className="mk-mid">
+            <span>{t.match13.printUitslag}</span>
+            <span className="lijn" />
+          </div>
+          <ul className="mk-tally">
+            {Array.from({ length: 13 }).map((_, n) => (
+              <li key={n} />
+            ))}
+          </ul>
+        </div>
+        <div className="mk-voet">
+          <div className="mk-vak" />
+          <div className="mk-mid2">
+            <span className="lbl">{t.match13.printTotaal}</span>
+            <span className="hand">{t.match13.printHandtekening}</span>
+          </div>
+          <div className="mk-vak" />
+        </div>
+        <div className="mk-credit">
+          www.petanque<span className="m13-gold">13</span>.be
+        </div>
+      </article>
+    );
+  };
+
   const printKaartjesBlad = currentRound && (
     <div className="print-kaarten-blad">
       <div className="print-kaarten-grid">
         {currentRound.matches
           .filter((m) => m.teamB !== null)
-          .map((m, i) => (
-            <article className="mk-kaart" key={i}>
-              <div className="mk-kop">
-                <img className="mk-logo" src="/images/logo-icon.png" alt="" />
-                <div className="mk-titel">
-                  <b>
-                    MATCH<span className="m13-gold">13</span>
-                  </b>
-                  <span>{clubName}</span>
-                </div>
-                <div className="mk-meta">
-                  {t.match13.printRondeKort}
-                  <br />
-                  <b>{currentRound.number}</b>
-                </div>
-              </div>
-              <div className="mk-teams">
-                <div className="mk-team">{printTeamHeader(m, "A")}</div>
-                <div className="mk-plein">
-                  {t.match13.pleinLabelKort}
-                  <br />
-                  <b>{m.court}</b>
-                </div>
-                <div className="mk-team">{printTeamHeader(m, "B")}</div>
-              </div>
-              <div className="mk-score">
-                <ul className="mk-tally">
-                  {Array.from({ length: 13 }).map((_, n) => (
-                    <li key={n} />
-                  ))}
-                </ul>
-                <div className="mk-mid">
-                  <span>{t.match13.printUitslag}</span>
-                  <span className="lijn" />
-                </div>
-                <ul className="mk-tally">
-                  {Array.from({ length: 13 }).map((_, n) => (
-                    <li key={n} />
-                  ))}
-                </ul>
-              </div>
-              <div className="mk-voet">
-                <div className="mk-vak" />
-                <div className="mk-mid2">
-                  <span className="lbl">{t.match13.printTotaal}</span>
-                  <span className="hand">{t.match13.printHandtekening}</span>
-                </div>
-                <div className="mk-vak" />
-              </div>
-              <div className="mk-credit">
-                www.petanque<span className="m13-gold">13</span>.be
-              </div>
-            </article>
-          ))}
+          .flatMap((m, i) =>
+            dubbeleKaartjes
+              ? [
+                  renderRondeKaart(m, `${i}-a`, "A", currentRound.number),
+                  renderRondeKaart(m, `${i}-b`, "B", currentRound.number),
+                ]
+              : [renderRondeKaart(m, i, "A", currentRound.number)]
+          )}
       </div>
     </div>
   );
@@ -864,69 +882,78 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
 
   const printPoulesLabel = (m: BracketMatch) => (m.poule ? t.match13.pouleLabel(m.poule) : m.label);
 
+  const renderPoulesKaart = (
+    m: BracketMatch,
+    key: string,
+    eersteId: string | null,
+    tweedeId: string | null
+  ) => {
+    const eersteTeam = teamOf(eersteId);
+    const tweedeTeam = teamOf(tweedeId);
+    return (
+      <article className="mk-kaart" key={key}>
+        <div className="mk-kop">
+          <img className="mk-logo" src="/images/logo-icon.png" alt="" />
+          <div className="mk-titel">
+            <b>
+              MATCH<span className="m13-gold">13</span>
+            </b>
+            <span>{clubName}</span>
+          </div>
+          <div className="mk-meta mk-meta-tekst">{printPoulesLabel(m)}</div>
+        </div>
+        <div className="mk-teams">
+          <div className="mk-team">
+            <span className="mk-nr">{eersteTeam?.number ?? "?"}</span>
+            <div className="mk-namen">{eersteTeam?.name ?? ""}</div>
+          </div>
+          <div className="mk-plein">
+            {t.match13.pleinLabelKort}
+            <br />
+            <b>{m.court ?? "—"}</b>
+          </div>
+          <div className="mk-team">
+            <span className="mk-nr">{tweedeTeam?.number ?? "?"}</span>
+            <div className="mk-namen">{tweedeTeam?.name ?? ""}</div>
+          </div>
+        </div>
+        <div className="mk-score">
+          <ul className="mk-tally">
+            {Array.from({ length: 13 }).map((_, n) => (
+              <li key={n} />
+            ))}
+          </ul>
+          <div className="mk-mid">
+            <span>{t.match13.printUitslag}</span>
+            <span className="lijn" />
+          </div>
+          <ul className="mk-tally">
+            {Array.from({ length: 13 }).map((_, n) => (
+              <li key={n} />
+            ))}
+          </ul>
+        </div>
+        <div className="mk-voet">
+          <div className="mk-vak" />
+          <div className="mk-mid2">
+            <span className="lbl">{t.match13.printTotaal}</span>
+            <span className="hand">{t.match13.printHandtekening}</span>
+          </div>
+          <div className="mk-vak" />
+        </div>
+        <div className="mk-credit">
+          www.petanque<span className="m13-gold">13</span>.be
+        </div>
+      </article>
+    );
+  };
+
   const printPoulesKaartjesBlad = playablePoulesMatches.length > 0 && (
     <div className="print-kaarten-blad">
       <div className="print-kaarten-grid">
-        {playablePoulesMatches.map((m) => {
+        {playablePoulesMatches.flatMap((m) => {
           const [aId, bId] = resolvedTeams(activePoulesBracket, m);
-          const teamA = teamOf(aId);
-          const teamB = teamOf(bId);
-          return (
-            <article className="mk-kaart" key={m.id}>
-              <div className="mk-kop">
-                <img className="mk-logo" src="/images/logo-icon.png" alt="" />
-                <div className="mk-titel">
-                  <b>
-                    MATCH<span className="m13-gold">13</span>
-                  </b>
-                  <span>{clubName}</span>
-                </div>
-                <div className="mk-meta mk-meta-tekst">{printPoulesLabel(m)}</div>
-              </div>
-              <div className="mk-teams">
-                <div className="mk-team">
-                  <span className="mk-nr">{teamA?.number ?? "?"}</span>
-                  <div className="mk-namen">{teamA?.name ?? ""}</div>
-                </div>
-                <div className="mk-plein">
-                  {t.match13.pleinLabelKort}
-                  <br />
-                  <b>{m.court ?? "—"}</b>
-                </div>
-                <div className="mk-team">
-                  <span className="mk-nr">{teamB?.number ?? "?"}</span>
-                  <div className="mk-namen">{teamB?.name ?? ""}</div>
-                </div>
-              </div>
-              <div className="mk-score">
-                <ul className="mk-tally">
-                  {Array.from({ length: 13 }).map((_, n) => (
-                    <li key={n} />
-                  ))}
-                </ul>
-                <div className="mk-mid">
-                  <span>{t.match13.printUitslag}</span>
-                  <span className="lijn" />
-                </div>
-                <ul className="mk-tally">
-                  {Array.from({ length: 13 }).map((_, n) => (
-                    <li key={n} />
-                  ))}
-                </ul>
-              </div>
-              <div className="mk-voet">
-                <div className="mk-vak" />
-                <div className="mk-mid2">
-                  <span className="lbl">{t.match13.printTotaal}</span>
-                  <span className="hand">{t.match13.printHandtekening}</span>
-                </div>
-                <div className="mk-vak" />
-              </div>
-              <div className="mk-credit">
-                www.petanque<span className="m13-gold">13</span>.be
-              </div>
-            </article>
-          );
+          return [renderPoulesKaart(m, `${m.id}-a`, aId, bId), renderPoulesKaart(m, `${m.id}-b`, bId, aId)];
         })}
       </div>
     </div>
