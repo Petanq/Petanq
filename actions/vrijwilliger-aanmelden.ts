@@ -11,6 +11,10 @@ export async function vrijwilligerAanmelden(input: {
   email: string;
   wachtwoord: string;
   provincie: Provincie | null | "";
+  aanmeld_motivatie: string;
+  aanmeld_club: string;
+  aanmeld_tijd: string;
+  aanmeld_regiokennis: string;
 }): Promise<VrijwilligerAanmeldenResultaat> {
   const parsed = vrijwilligerAanmeldenSchema.safeParse(input);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
@@ -42,6 +46,10 @@ export async function vrijwilligerAanmelden(input: {
     provincie: parsed.data.provincie,
     wachtwoord_ingesteld: true,
     goedgekeurd: false,
+    aanmeld_motivatie: parsed.data.aanmeld_motivatie,
+    aanmeld_club: parsed.data.aanmeld_club,
+    aanmeld_tijd: parsed.data.aanmeld_tijd,
+    aanmeld_regiokennis: parsed.data.aanmeld_regiokennis,
   });
 
   if (invoegFout) {

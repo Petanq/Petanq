@@ -397,6 +397,10 @@ const nl = {
       "Vraag toegang aan tot het beheerpaneel. Een beheerder moet je aanvraag nog goedkeuren voor je kan inloggen.",
     kiesWachtwoord: "Kies een wachtwoord",
     provincieUitleg: "Bepaalt welke toernooien je straks kan goedkeuren.",
+    aanmeldMotivatie: "Waarom wil je vrijwilliger worden?",
+    aanmeldClub: "Bij welke club speel je (of ben je actief)?",
+    aanmeldTijd: "Hoeveel tijd kan je er ongeveer per maand aan besteden?",
+    aanmeldRegiokennis: "Ken je de petanqueclubs en -toernooien in jouw regio goed?",
     aanmeldenKnop: "Aanvraag versturen",
     aanmeldingVerzonden:
       "Aanvraag verstuurd. Een beheerder moet dit nog goedkeuren — vraag het gerust na.",
@@ -1002,6 +1006,10 @@ const fr: typeof nl = {
       "Demandez l'accès au panneau d'administration. Un administrateur doit encore approuver votre demande avant que vous puissiez vous connecter.",
     kiesWachtwoord: "Choisissez un mot de passe",
     provincieUitleg: "Détermine quels tournois vous pourrez approuver.",
+    aanmeldMotivatie: "Pourquoi voulez-vous devenir bénévole ?",
+    aanmeldClub: "Dans quel club jouez-vous (ou êtes-vous actif) ?",
+    aanmeldTijd: "Combien de temps pouvez-vous y consacrer par mois environ ?",
+    aanmeldRegiokennis: "Connaissez-vous bien les clubs et tournois de pétanque de votre région ?",
     aanmeldenKnop: "Envoyer la demande",
     aanmeldingVerzonden:
       "Demande envoyée. Un administrateur doit encore l'approuver — n'hésitez pas à en reparler.",

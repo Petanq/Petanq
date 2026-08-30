@@ -124,6 +124,22 @@ export function ModeratorManageList({
               </span>
             )}
           </div>
+          {!mod.goedgekeurd && mod.aanmeld_motivatie && (
+            <div className="mt-1 flex flex-col gap-1 rounded-md bg-licht p-2.5 text-xs text-donker">
+              <p>
+                <span className="font-bold">{t.beheer.aanmeldMotivatie}</span> {mod.aanmeld_motivatie}
+              </p>
+              <p>
+                <span className="font-bold">{t.beheer.aanmeldClub}</span> {mod.aanmeld_club}
+              </p>
+              <p>
+                <span className="font-bold">{t.beheer.aanmeldTijd}</span> {mod.aanmeld_tijd}
+              </p>
+              <p>
+                <span className="font-bold">{t.beheer.aanmeldRegiokennis}</span> {mod.aanmeld_regiokennis}
+              </p>
+            </div>
+          )}
           {isAdmin && (
             <p className="text-xs text-grijs">
               {t.beheer.aantalKeerBezocht(mod.bezoek_aantal)}

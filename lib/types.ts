@@ -137,4 +137,8 @@ export type Moderator = {
   aangemaakt_op: string;
   bezoek_aantal: number;
   laatste_bezoek: string | null;
+  aanmeld_motivatie: string | null;
+  aanmeld_club: string | null;
+  aanmeld_tijd: string | null;
+  aanmeld_regiokennis: string | null;
 };

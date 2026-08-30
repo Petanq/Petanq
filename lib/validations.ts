@@ -115,4 +115,8 @@ export const vrijwilligerAanmeldenSchema = z.object({
   // enkel toernooien in zijn eigen provincie goedkeuren, dus zonder provincie
   // zou een nieuwe aanmelding meteen niets kunnen goedkeuren.
   provincie: provincieEnum,
+  aanmeld_motivatie: z.string().trim().min(2).max(500),
+  aanmeld_club: z.string().trim().min(2).max(120),
+  aanmeld_tijd: z.string().trim().min(2).max(300),
+  aanmeld_regiokennis: z.string().trim().min(2).max(500),
 });

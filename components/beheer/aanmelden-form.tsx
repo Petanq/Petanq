@@ -12,6 +12,10 @@ export function AanmeldenForm() {
   const [email, setEmail] = useState("");
   const [wachtwoord, setWachtwoord] = useState("");
   const [provincie, setProvincie] = useState<Provincie | "">("");
+  const [aanmeldMotivatie, setAanmeldMotivatie] = useState("");
+  const [aanmeldClub, setAanmeldClub] = useState("");
+  const [aanmeldTijd, setAanmeldTijd] = useState("");
+  const [aanmeldRegiokennis, setAanmeldRegiokennis] = useState("");
   const [status, setStatus] = useState<"idle" | "bezig" | "verzonden" | "te_kort" | "fout">("idle");
   const [foutCode, setFoutCode] = useState<string | null>(null);
 
@@ -28,6 +32,10 @@ export function AanmeldenForm() {
       email,
       wachtwoord,
       provincie,
+      aanmeld_motivatie: aanmeldMotivatie,
+      aanmeld_club: aanmeldClub,
+      aanmeld_tijd: aanmeldTijd,
+      aanmeld_regiokennis: aanmeldRegiokennis,
     });
     if (!resultaat.succes) {
       setFoutCode(resultaat.fout);
@@ -100,6 +108,44 @@ export function AanmeldenForm() {
             ))}
           </select>
           <span className="text-xs text-grijs">{t.beheer.provincieUitleg}</span>
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[0.8rem] font-bold text-donker">{t.beheer.aanmeldMotivatie}</span>
+          <textarea
+            required
+            rows={2}
+            value={aanmeldMotivatie}
+            onChange={(e) => setAanmeldMotivatie(e.target.value)}
+            className="veld-input resize-none"
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[0.8rem] font-bold text-donker">{t.beheer.aanmeldClub}</span>
+          <input
+            required
+            value={aanmeldClub}
+            onChange={(e) => setAanmeldClub(e.target.value)}
+            className="veld-input"
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[0.8rem] font-bold text-donker">{t.beheer.aanmeldTijd}</span>
+          <input
+            required
+            value={aanmeldTijd}
+            onChange={(e) => setAanmeldTijd(e.target.value)}
+            className="veld-input"
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[0.8rem] font-bold text-donker">{t.beheer.aanmeldRegiokennis}</span>
+          <textarea
+            required
+            rows={2}
+            value={aanmeldRegiokennis}
+            onChange={(e) => setAanmeldRegiokennis(e.target.value)}
+            className="veld-input resize-none"
+          />
         </label>
         {status === "te_kort" && <p className="text-sm font-medium text-rood-2">{t.beheer.wachtwoordTeKort}</p>}
         {status === "fout" && (
