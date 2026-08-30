@@ -87,7 +87,9 @@ export function Match13GebruikerDetail({ gebruiker }: { gebruiker: Match13Gebrui
       </div>
 
       <div className="match13-lijst-head" style={{ display: "block" }}>
-        <h2 style={{ margin: "0 0 0.8rem", fontSize: "1.15rem" }}>{t.match13.toernooienVanClub}</h2>
+        <h2 style={{ margin: "0 0 0.8rem", fontSize: "1.15rem" }}>
+          {t.match13.toernooienVanClub(gebruiker.toernooien.length)}
+        </h2>
         {gebruiker.toernooien.length === 0 ? (
           <p className="hint">{t.match13.nogGeenToernooien}</p>
         ) : (

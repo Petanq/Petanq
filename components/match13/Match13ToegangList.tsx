@@ -256,6 +256,9 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
                         >
                           {g.bevestigd ? t.match13.ingelogd : t.match13.nogNietIngelogd}
                         </span>
+                        <Link href={`/beheer/match13/toegang/${g.id}`} className="team-num team-num-toggle">
+                          {t.match13.aantalToernooien(g.toernooiAantal)}
+                        </Link>
                       </span>
                       <span className="hint">{t.match13.verantwoordelijke(g.naam, g.email)}</span>
                     </>

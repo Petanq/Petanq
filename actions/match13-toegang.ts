@@ -22,22 +22,37 @@ export interface Match13Gebruiker {
   status: Match13Status;
   bevestigd: boolean;
   aangemaakt_op: string;
+  toernooiAantal: number;
 }
 
 export async function haalMatch13Gebruikers(): Promise<Match13Gebruiker[]> {
   if (!(await isAdmin())) return [];
 
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("match13_gebruikers")
-    .select("id, naam, club, email, actief, status, bevestigd, aangemaakt_op")
-    .order("aangemaakt_op", { ascending: false });
+  const [{ data, error }, { data: toernooien }] = await Promise.all([
+    supabase
+      .from("match13_gebruikers")
+      .select("id, naam, club, email, actief, status, bevestigd, aangemaakt_op")
+      .order("aangemaakt_op", { ascending: false }),
+    supabase.from("match13_toernooien").select("club"),
+  ]);
 
   if (error) {
     console.error("Kon Match13-gebruikers niet ophalen:", error.message);
     return [];
   }
-  return data as Match13Gebruiker[];
+
+  // Aantal toernooien per club — meerdere uitgenodigde personen van dezelfde
+  // club delen dezelfde toernooien, dus dit telt per club, niet per persoon.
+  const aantalPerClub = new Map<string, number>();
+  for (const tour of toernooien ?? []) {
+    aantalPerClub.set(tour.club, (aantalPerClub.get(tour.club) ?? 0) + 1);
+  }
+
+  return (data as Omit<Match13Gebruiker, "toernooiAantal">[]).map((g) => ({
+    ...g,
+    toernooiAantal: aantalPerClub.get(g.club) ?? 0,
+  }));
 }
 
 // Zelfde aanpak als moderatorUitnodigen: we genereren de link zelf i.p.v. een
@@ -222,7 +237,7 @@ export async function match13GegevensWijzigen(
   return { succes: true };
 }
 
-export interface Match13GebruikerMetToernooien extends Match13Gebruiker {
+export interface Match13GebruikerMetToernooien extends Omit<Match13Gebruiker, "toernooiAantal"> {
   toernooien: { id: string; naam: string; bijgewerkt_op: string }[];
 }
 
@@ -240,10 +255,13 @@ export async function haalMatch13GebruikerMetToernooien(id: string): Promise<Mat
     .single();
   if (error || !gebruiker) return null;
 
+  // Op club gefilterd (niet op deze ene persoon) — anders zou dit een
+  // onvolledig beeld geven zodra een club meerdere uitgenodigde mensen heeft
+  // die dezelfde toernooien delen.
   const { data: toernooien } = await supabase
     .from("match13_toernooien")
     .select("id, naam, bijgewerkt_op")
-    .eq("aangemaakt_door", gebruiker.user_id)
+    .eq("club", gebruiker.club)
     .order("bijgewerkt_op", { ascending: false });
 
   const { user_id: _userId, ...rest } = gebruiker;
