@@ -234,6 +234,16 @@
 .match13-scope .match13-club-kaart {
   border: 2px solid var(--accent);
 }
+.match13-scope .match13-club-titel {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  color: var(--ink) !important;
+}
+.match13-scope .match13-club-scheiding {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.8rem 0;
+}
 .match13-scope .muted-card {
   color: var(--ink-muted);
 }

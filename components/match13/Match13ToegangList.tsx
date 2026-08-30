@@ -241,8 +241,7 @@ export function Match13ToegangList({
               <div className="match13-club-rij" style={{ marginBottom: groep.echteClub ? "0.2rem" : "0.6rem" }}>
                 <Link
                   href={`/beheer/match13/toegang/${groep.leden[0].id}`}
-                  className="match13-toegang-naam-link"
-                  style={{ fontSize: "1.1rem", fontWeight: 700 }}
+                  className="match13-toegang-naam-link match13-club-titel"
                 >
                   {groep.club}
                 </Link>
@@ -255,6 +254,7 @@ export function Match13ToegangList({
                   {groep.echteClub.gemeente}
                 </p>
               )}
+              <hr className="match13-club-scheiding" />
 
               {groep.leden.map((g) => (
                 <div className="match13-toegang-rij-wrap" key={g.id}>
