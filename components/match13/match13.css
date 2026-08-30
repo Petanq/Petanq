@@ -1410,7 +1410,8 @@
   letter-spacing: 0.05em;
   color: rgba(255, 255, 255, 0.65);
 }
-.match13-scope .match13-uitnodig-veld input {
+.match13-scope .match13-uitnodig-veld input,
+.match13-scope .match13-uitnodig-veld select {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 7px;
@@ -1422,9 +1423,17 @@
 .match13-scope .match13-uitnodig-veld input::placeholder {
   color: rgba(255, 255, 255, 0.4);
 }
-.match13-scope .match13-uitnodig-veld input:focus {
+.match13-scope .match13-uitnodig-veld input:focus,
+.match13-scope .match13-uitnodig-veld select:focus {
   outline: none;
   border-color: var(--accent);
+}
+/* De opengeklapte lijst van een <select> gebruikt altijd een effen,
+   lichte systeemachtergrond, ongeacht de kleur van het veld zelf — zonder
+   dit werd witte tekst (zoals hierboven) onzichtbaar op die witte lijst. */
+.match13-scope select option {
+  color: #1f1f1f;
+  background: #fff;
 }
 .match13-scope .match13-uitnodig-balk .cta {
   flex-shrink: 0;
