@@ -133,9 +133,6 @@ export function ModeratorManageList({
                 <span className="font-bold">{t.beheer.aanmeldClub}</span> {mod.aanmeld_club}
               </p>
               <p>
-                <span className="font-bold">{t.beheer.aanmeldTijd}</span> {mod.aanmeld_tijd}
-              </p>
-              <p>
                 <span className="font-bold">{t.beheer.aanmeldRegiokennis}</span> {mod.aanmeld_regiokennis}
               </p>
             </div>

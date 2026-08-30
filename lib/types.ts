@@ -139,6 +139,5 @@ export type Moderator = {
   laatste_bezoek: string | null;
   aanmeld_motivatie: string | null;
   aanmeld_club: string | null;
-  aanmeld_tijd: string | null;
   aanmeld_regiokennis: string | null;
 };

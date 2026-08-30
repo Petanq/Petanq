@@ -14,7 +14,6 @@ export function AanmeldenForm() {
   const [provincie, setProvincie] = useState<Provincie | "">("");
   const [aanmeldMotivatie, setAanmeldMotivatie] = useState("");
   const [aanmeldClub, setAanmeldClub] = useState("");
-  const [aanmeldTijd, setAanmeldTijd] = useState("");
   const [aanmeldRegiokennis, setAanmeldRegiokennis] = useState("");
   const [status, setStatus] = useState<"idle" | "bezig" | "verzonden" | "te_kort" | "fout">("idle");
   const [foutCode, setFoutCode] = useState<string | null>(null);
@@ -34,7 +33,6 @@ export function AanmeldenForm() {
       provincie,
       aanmeld_motivatie: aanmeldMotivatie,
       aanmeld_club: aanmeldClub,
-      aanmeld_tijd: aanmeldTijd,
       aanmeld_regiokennis: aanmeldRegiokennis,
     });
     if (!resultaat.succes) {
@@ -125,15 +123,6 @@ export function AanmeldenForm() {
             required
             value={aanmeldClub}
             onChange={(e) => setAanmeldClub(e.target.value)}
-            className="veld-input"
-          />
-        </label>
-        <label className="flex flex-col gap-1.5">
-          <span className="text-[0.8rem] font-bold text-donker">{t.beheer.aanmeldTijd}</span>
-          <input
-            required
-            value={aanmeldTijd}
-            onChange={(e) => setAanmeldTijd(e.target.value)}
             className="veld-input"
           />
         </label>

@@ -399,7 +399,6 @@ const nl = {
     provincieUitleg: "Bepaalt welke toernooien je straks kan goedkeuren.",
     aanmeldMotivatie: "Waarom wil je vrijwilliger worden?",
     aanmeldClub: "Bij welke club speel je (of ben je actief)?",
-    aanmeldTijd: "Hoeveel tijd kan je er ongeveer per maand aan besteden?",
     aanmeldRegiokennis: "Ken je de petanqueclubs en -toernooien in jouw regio goed?",
     aanmeldenKnop: "Aanvraag versturen",
     aanmeldingVerzonden:
@@ -1008,7 +1007,6 @@ const fr: typeof nl = {
     provincieUitleg: "Détermine quels tournois vous pourrez approuver.",
     aanmeldMotivatie: "Pourquoi voulez-vous devenir bénévole ?",
     aanmeldClub: "Dans quel club jouez-vous (ou êtes-vous actif) ?",
-    aanmeldTijd: "Combien de temps pouvez-vous y consacrer par mois environ ?",
     aanmeldRegiokennis: "Connaissez-vous bien les clubs et tournois de pétanque de votre région ?",
     aanmeldenKnop: "Envoyer la demande",
     aanmeldingVerzonden:
