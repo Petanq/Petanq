@@ -17,12 +17,35 @@ export interface Match13Gebruiker {
   id: string;
   naam: string;
   club: string;
+  club_id: string | null;
   email: string;
   actief: boolean;
   status: Match13Status;
   bevestigd: boolean;
   aangemaakt_op: string;
   toernooiAantal: number;
+}
+
+export interface EchteClub {
+  id: string;
+  naam: string;
+  gemeente: string;
+}
+
+// Voor het kies-uit-de-lijst-veld bij het uitnodigen/bewerken — de volledige
+// clubdirectory, ook niet-actieve clubs (bv. een piloot die nog niet publiek
+// goedgekeurd is moet ook koppelbaar zijn).
+export async function haalEchteClubs(): Promise<EchteClub[]> {
+  if (!(await isAdmin())) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("clubs").select("id, naam, gemeente").order("naam");
+
+  if (error) {
+    console.error("Kon clubs niet ophalen:", error.message);
+    return [];
+  }
+  return data;
 }
 
 export async function haalMatch13Gebruikers(): Promise<Match13Gebruiker[]> {
@@ -32,7 +55,7 @@ export async function haalMatch13Gebruikers(): Promise<Match13Gebruiker[]> {
   const [{ data, error }, { data: toernooien }] = await Promise.all([
     supabase
       .from("match13_gebruikers")
-      .select("id, naam, club, email, actief, status, bevestigd, aangemaakt_op")
+      .select("id, naam, club, club_id, email, actief, status, bevestigd, aangemaakt_op")
       .order("aangemaakt_op", { ascending: false }),
     supabase.from("match13_toernooien").select("club"),
   ]);
@@ -62,12 +85,25 @@ function wachtwoordLink(hashedToken: string, type: "invite" | "recovery") {
   return `${siteUrl()}/beheer/wachtwoord-resetten?token_hash=${hashedToken}&type=${type}`;
 }
 
+// Zoekt de echte clubrij op via een exacte (hoofdletter-ongevoelige) naam-
+// match — dat is wat gebeurt als je uit de lijst kiest. Typ je iets dat niet
+// (meer) exact bestaat, dan blijft club_id gewoon leeg — geen harde eis, om
+// het uitnodigen niet te blokkeren voor een club die nog niet in de
+// directory staat.
+async function zoekClubId(naam: string): Promise<{ club: string; club_id: string | null }> {
+  const serviceClient = createServiceRoleClient();
+  const { data } = await serviceClient.from("clubs").select("id, naam").ilike("naam", naam.trim()).maybeSingle();
+  return data ? { club: data.naam, club_id: data.id } : { club: naam.trim(), club_id: null };
+}
+
 export async function match13GebruikerUitnodigen(input: {
   email: string;
   naam: string;
   club: string;
 }): Promise<Match13UitnodigenResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const { club, club_id } = await zoekClubId(input.club);
 
   const serviceClient = createServiceRoleClient();
   const { data, error } = await serviceClient.auth.admin.generateLink({
@@ -97,7 +133,8 @@ export async function match13GebruikerUitnodigen(input: {
       const { error: invoegFout2 } = await serviceClient.from("match13_gebruikers").insert({
         user_id: bestaandeUser.id,
         naam: input.naam,
-        club: input.club,
+        club,
+        club_id,
         email: input.email,
       });
       if (invoegFout2) {
@@ -125,7 +162,8 @@ export async function match13GebruikerUitnodigen(input: {
   const { error: invoegFout } = await serviceClient.from("match13_gebruikers").insert({
     user_id: data.user.id,
     naam: input.naam,
-    club: input.club,
+    club,
+    club_id,
     email: input.email,
   });
 
@@ -215,10 +253,12 @@ export async function match13GegevensWijzigen(
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
   if (!input.club.trim() || !input.naam.trim()) return { succes: false, fout: "server_fout" };
 
+  const { club, club_id } = await zoekClubId(input.club);
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("match13_gebruikers")
-    .update({ club: input.club.trim(), naam: input.naam.trim() })
+    .update({ club, club_id, naam: input.naam.trim() })
     .eq("id", id)
     .select("user_id")
     .single();
@@ -229,7 +269,7 @@ export async function match13GegevensWijzigen(
   // per ongeluk loskoppelen van de rest van hun club.
   const { error: toernooiFout } = await supabase
     .from("match13_toernooien")
-    .update({ club: input.club.trim() })
+    .update({ club })
     .eq("aangemaakt_door", data.user_id);
   if (toernooiFout) console.error("Kon club op bestaande toernooien niet bijwerken:", toernooiFout.message);
 
@@ -237,8 +277,19 @@ export async function match13GegevensWijzigen(
   return { succes: true };
 }
 
+export interface EchteClubDetail extends EchteClub {
+  adres: string | null;
+  provincie: string;
+  website: string | null;
+  contact_email: string | null;
+  telefoon: string | null;
+  openingsuren: string | null;
+  foto_url: string | null;
+}
+
 export interface Match13GebruikerMetToernooien extends Omit<Match13Gebruiker, "toernooiAantal"> {
   toernooien: { id: string; naam: string; bijgewerkt_op: string }[];
+  echteClub: EchteClubDetail | null;
 }
 
 // Voor het nakijken: welke toernooien heeft deze pilootclub zelf al
@@ -250,7 +301,9 @@ export async function haalMatch13GebruikerMetToernooien(id: string): Promise<Mat
   const supabase = await createClient();
   const { data: gebruiker, error } = await supabase
     .from("match13_gebruikers")
-    .select("id, naam, club, email, actief, status, bevestigd, aangemaakt_op, user_id")
+    .select(
+      "id, naam, club, club_id, email, actief, status, bevestigd, aangemaakt_op, user_id, echteClub:clubs(id, naam, gemeente, provincie, adres, website, contact_email, telefoon, openingsuren, foto_url)"
+    )
     .eq("id", id)
     .single();
   if (error || !gebruiker) return null;
@@ -264,8 +317,12 @@ export async function haalMatch13GebruikerMetToernooien(id: string): Promise<Mat
     .eq("club", gebruiker.club)
     .order("bijgewerkt_op", { ascending: false });
 
-  const { user_id: _userId, ...rest } = gebruiker;
-  return { ...rest, toernooien: toernooien ?? [] };
+  const { user_id: _userId, echteClub: echteClubRuw, ...rest } = gebruiker;
+  // De ingebouwde club-join komt afhankelijk van de Supabase-clientversie
+  // terug als object of als array van 1 — dit vangt beide op.
+  const echteClub = (Array.isArray(echteClubRuw) ? echteClubRuw[0] : echteClubRuw) as EchteClubDetail | null;
+
+  return { ...rest, toernooien: toernooien ?? [], echteClub: echteClub ?? null };
 }
 
 export async function match13GebruikerVerwijderen(id: string): Promise<Match13ToegangActieResultaat> {

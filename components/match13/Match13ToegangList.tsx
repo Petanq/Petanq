@@ -12,14 +12,18 @@ import {
   match13StatusWijzigen,
   match13ToegangWijzigen,
   type Match13Gebruiker,
+  type EchteClub,
 } from "@/actions/match13-toegang";
 
-export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruiker[] }) {
+export function Match13ToegangList({
+  gebruikers,
+  echteClubs,
+}: {
+  gebruikers: Match13Gebruiker[];
+  echteClubs: EchteClub[];
+}) {
   const { t } = useTranslation();
   const router = useRouter();
-  const bestaandeClubs = Array.from(new Set(gebruikers.map((g) => g.club).filter(Boolean))).sort((a, b) =>
-    a.localeCompare(b)
-  );
   const [club, setClub] = useState("");
   const [naam, setNaam] = useState("");
   const [email, setEmail] = useState("");
@@ -137,11 +141,13 @@ export function Match13ToegangList({ gebruikers }: { gebruikers: Match13Gebruike
             list="match13-bestaande-clubs"
           />
           <datalist id="match13-bestaande-clubs">
-            {bestaandeClubs.map((c) => (
-              <option key={c} value={c} />
+            {echteClubs.map((c) => (
+              <option key={c.id} value={c.naam}>
+                {c.gemeente}
+              </option>
             ))}
           </datalist>
-          {bestaandeClubs.length > 0 && <p className="hint" style={{ margin: 0 }}>{t.match13.kiesBestaandeClub}</p>}
+          <p className="hint" style={{ margin: 0 }}>{t.match13.kiesBestaandeClub}</p>
         </div>
         <div className="match13-uitnodig-veld">
           <label>{t.match13.naamContactpersoon}</label>

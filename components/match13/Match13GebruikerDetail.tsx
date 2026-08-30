@@ -7,9 +7,16 @@ import { useTranslation } from "@/lib/language-context";
 import {
   match13GegevensWijzigen,
   type Match13GebruikerMetToernooien,
+  type EchteClub,
 } from "@/actions/match13-toegang";
 
-export function Match13GebruikerDetail({ gebruiker }: { gebruiker: Match13GebruikerMetToernooien }) {
+export function Match13GebruikerDetail({
+  gebruiker,
+  echteClubs,
+}: {
+  gebruiker: Match13GebruikerMetToernooien;
+  echteClubs: EchteClub[];
+}) {
   const { t, taal } = useTranslation();
   const router = useRouter();
   const [bewerken, setBewerken] = useState(false);
@@ -49,7 +56,15 @@ export function Match13GebruikerDetail({ gebruiker }: { gebruiker: Match13Gebrui
               value={club}
               onChange={(e) => setClub(e.target.value)}
               placeholder={t.match13.naamClub}
+              list="match13-detail-echte-clubs"
             />
+            <datalist id="match13-detail-echte-clubs">
+              {echteClubs.map((c) => (
+                <option key={c.id} value={c.naam}>
+                  {c.gemeente}
+                </option>
+              ))}
+            </datalist>
             <input
               value={naam}
               onChange={(e) => setNaam(e.target.value)}
@@ -84,6 +99,43 @@ export function Match13GebruikerDetail({ gebruiker }: { gebruiker: Match13Gebrui
           </h1>
         )}
         <p style={{ color: "var(--ink-muted)", margin: 0 }}>{t.match13.verantwoordelijke(gebruiker.naam, gebruiker.email)}</p>
+      </div>
+
+      <div className="match13-lijst-head" style={{ display: "block" }}>
+        <h2 style={{ margin: "0 0 0.8rem", fontSize: "1.15rem" }}>{t.match13.clubgegevensTitel}</h2>
+        {gebruiker.echteClub ? (
+          <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+            {gebruiker.echteClub.foto_url && (
+              <img
+                src={gebruiker.echteClub.foto_url}
+                alt=""
+                style={{ width: 80, height: 80, borderRadius: 10, objectFit: "cover", flex: "0 0 auto" }}
+              />
+            )}
+            <dl style={{ margin: 0, display: "grid", gridTemplateColumns: "auto 1fr", gap: "0.3rem 0.8rem" }}>
+              <dt style={{ color: "var(--ink-muted)" }}>{t.match13.labelAdres}</dt>
+              <dd style={{ margin: 0 }}>
+                {[gebruiker.echteClub.adres, gebruiker.echteClub.gemeente].filter(Boolean).join(", ") || "—"}
+              </dd>
+              <dt style={{ color: "var(--ink-muted)" }}>{t.match13.labelTelefoon}</dt>
+              <dd style={{ margin: 0 }}>{gebruiker.echteClub.telefoon || "—"}</dd>
+              <dt style={{ color: "var(--ink-muted)" }}>{t.match13.labelWebsite}</dt>
+              <dd style={{ margin: 0 }}>
+                {gebruiker.echteClub.website ? (
+                  <a href={gebruiker.echteClub.website} target="_blank" rel="noreferrer">
+                    {gebruiker.echteClub.website}
+                  </a>
+                ) : (
+                  "—"
+                )}
+              </dd>
+              <dt style={{ color: "var(--ink-muted)" }}>{t.match13.labelOpeningsuren}</dt>
+              <dd style={{ margin: 0 }}>{gebruiker.echteClub.openingsuren || "—"}</dd>
+            </dl>
+          </div>
+        ) : (
+          <p className="hint">{t.match13.geenClubGekoppeld}</p>
+        )}
       </div>
 
       <div className="match13-lijst-head" style={{ display: "block" }}>
