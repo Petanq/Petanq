@@ -24,11 +24,12 @@ export default async function BeheerDashboardLayout({ children }: { children: Re
   }
 
   const magAdminZien = await isAdmin();
-  const [toernooien, clubs, verwijderAanvragenToernooien, verwijderAanvragenClubs] = await Promise.all([
+  const [toernooien, clubs, verwijderAanvragenToernooien, verwijderAanvragenClubs, magMatch13Zien] = await Promise.all([
     getInBehandelingToernooien(),
     getWachtendeClubs(),
     magAdminZien ? getVerwijderAanvragenToernooien() : Promise.resolve([]),
     magAdminZien ? getVerwijderAanvragenClubs() : Promise.resolve([]),
+    heeftMatch13Toegang(),
   ]);
 
   return (
@@ -39,6 +40,7 @@ export default async function BeheerDashboardLayout({ children }: { children: Re
         wachtendeClubs={clubs.length}
         wachtendeVerwijderaanvragen={verwijderAanvragenToernooien.length + verwijderAanvragenClubs.length}
         isAdmin={magAdminZien}
+        heeftMatch13Toegang={magMatch13Zien}
       />
       <div className="mx-auto max-w-[1140px] px-6 py-8 lg:px-10">{children}</div>
     </div>

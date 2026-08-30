@@ -9,11 +9,13 @@ export function BeheerNav({
   wachtendeClubs = 0,
   wachtendeVerwijderaanvragen = 0,
   isAdmin = false,
+  heeftMatch13Toegang = false,
 }: {
   wachtendeToernooien?: number;
   wachtendeClubs?: number;
   wachtendeVerwijderaanvragen?: number;
   isAdmin?: boolean;
+  heeftMatch13Toegang?: boolean;
 }) {
   const { t } = useTranslation();
   const pathname = usePathname();
@@ -26,8 +28,10 @@ export function BeheerNav({
     { href: "/beheer/moderatoren", label: t.beheer.vrijwilligers, badge: 0 },
     { href: "/beheer/ideeen", label: t.beheer.ideeen, badge: 0 },
     ...(isAdmin
+      ? [{ href: "/beheer/verwijderaanvragen", label: t.beheer.verwijderaanvragen, badge: wachtendeVerwijderaanvragen }]
+      : []),
+    ...(isAdmin || heeftMatch13Toegang
       ? [
-          { href: "/beheer/verwijderaanvragen", label: t.beheer.verwijderaanvragen, badge: wachtendeVerwijderaanvragen },
           {
             href: "/beheer/match13",
             label: (
