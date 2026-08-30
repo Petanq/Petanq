@@ -48,6 +48,69 @@ export async function haalEchteClubs(): Promise<EchteClub[]> {
   return data;
 }
 
+export interface Match13ToegangStatus {
+  id: string;
+  actief: boolean;
+}
+
+// Voor de vrijwilligerslijst: welke moderatoren hebben al Match13-toegang,
+// en staat die aan of uit? Gesleuteld op user_id zodat de lijst dat per rij
+// kan opzoeken zonder een aparte query per moderator.
+export async function haalMatch13ToegangPerGebruiker(): Promise<Record<string, Match13ToegangStatus>> {
+  if (!(await isAdmin())) return {};
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("match13_gebruikers").select("id, user_id, actief");
+  if (error) {
+    console.error("Kon Match13-toegangsstatus niet ophalen:", error.message);
+    return {};
+  }
+
+  const perGebruiker: Record<string, Match13ToegangStatus> = {};
+  for (const rij of data) {
+    perGebruiker[rij.user_id] = { id: rij.id, actief: rij.actief };
+  }
+  return perGebruiker;
+}
+
+// Geeft een bestaande moderator (die al een werkend account/wachtwoord
+// heeft) meteen Match13-toegang — geen nieuwe uitnodigingslink nodig, ze
+// zien de Match13-link voortaan gewoon in hun eigen menu zodra ze opnieuw
+// inloggen. De clubnaam staat aanvankelijk op wat ze ooit als aanmeld_club
+// opgaven (of leeg); die kan je nadien via de Match13-toegangspagina nog
+// koppelen aan de echte clubdirectory.
+export async function match13ToegangGevenAanModerator(input: {
+  userId: string;
+  naam: string;
+  email: string;
+  club: string;
+}): Promise<Match13ToegangActieResultaat> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const supabase = await createClient();
+  const { data: bestaat } = await supabase
+    .from("match13_gebruikers")
+    .select("id")
+    .eq("user_id", input.userId)
+    .maybeSingle();
+  if (bestaat) return { succes: false, fout: "al_geregistreerd" };
+
+  const { error } = await supabase.from("match13_gebruikers").insert({
+    user_id: input.userId,
+    naam: input.naam,
+    email: input.email,
+    club: input.club,
+  });
+  if (error) {
+    console.error("Match13-toegang geven aan moderator mislukt:", error.message);
+    return { succes: false, fout: "server_fout" };
+  }
+
+  revalidatePath("/beheer/moderatoren");
+  revalidatePath("/beheer/match13/toegang");
+  return { succes: true };
+}
+
 export async function haalMatch13Gebruikers(): Promise<Match13Gebruiker[]> {
   if (!(await isAdmin())) return [];
 

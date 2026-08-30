@@ -14,15 +14,22 @@ import {
   moderatorToegangWijzigen,
   ModeratorToegangsniveau,
 } from "@/actions/beheer-moderatoren";
+import {
+  match13ToegangGevenAanModerator,
+  match13ToegangWijzigen,
+  type Match13ToegangStatus,
+} from "@/actions/match13-toegang";
 
 export function ModeratorManageList({
   moderatoren,
   huidigUserId,
   isAdmin,
+  match13Status,
 }: {
   moderatoren: ModeratorMetStatus[];
   huidigUserId: string | null;
   isAdmin: boolean;
+  match13Status: Record<string, Match13ToegangStatus>;
 }) {
   const { t, taal } = useTranslation();
   const router = useRouter();
@@ -51,6 +58,25 @@ export function ModeratorManageList({
   async function toegangWijzigen(mod: Moderator, toegangsniveau: ModeratorToegangsniveau) {
     setBezig(mod.id);
     await moderatorToegangWijzigen(mod.id, toegangsniveau);
+    setBezig(null);
+    router.refresh();
+  }
+
+  async function match13ToegangGeven(mod: Moderator) {
+    setBezig(mod.id);
+    await match13ToegangGevenAanModerator({
+      userId: mod.user_id,
+      naam: mod.naam,
+      email: mod.email,
+      club: mod.aanmeld_club ?? "",
+    });
+    setBezig(null);
+    router.refresh();
+  }
+
+  async function match13ToggleActief(mod: Moderator, status: Match13ToegangStatus) {
+    setBezig(mod.id);
+    await match13ToegangWijzigen(status.id, !status.actief);
     setBezig(null);
     router.refresh();
   }
@@ -159,6 +185,31 @@ export function ModeratorManageList({
                   <option value="eigen_regio">{t.beheer.toegangEigenRegio}</option>
                   <option value="heel_belgie">{t.beheer.toegangHeelBelgie}</option>
                 </select>
+              )}
+              {isAdmin && mod.rol !== "admin" && (
+                <>
+                  {match13Status[mod.user_id] ? (
+                    <button
+                      onClick={() => match13ToggleActief(mod, match13Status[mod.user_id])}
+                      disabled={bezig === mod.id}
+                      className={`whitespace-nowrap rounded-md border px-3 py-1.5 text-sm font-semibold transition-all active:scale-[0.97] disabled:opacity-60 ${
+                        match13Status[mod.user_id].actief
+                          ? "border-groen bg-[#f0fdf4] text-groen hover:brightness-95"
+                          : "border-rand bg-licht text-grijs hover:border-blauw-3"
+                      }`}
+                    >
+                      Match13: {match13Status[mod.user_id].actief ? t.match13.actief : t.match13.gepauzeerd}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => match13ToegangGeven(mod)}
+                      disabled={bezig === mod.id}
+                      className="whitespace-nowrap rounded-md border border-geel bg-[#fdf3d9] px-3 py-1.5 text-sm font-semibold text-[#b8860b] transition-all hover:brightness-95 active:scale-[0.97] disabled:opacity-60"
+                    >
+                      {t.beheer.geefMatch13Toegang}
+                    </button>
+                  )}
+                </>
               )}
               {isAdmin && (
                 <button
