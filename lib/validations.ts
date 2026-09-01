@@ -26,6 +26,7 @@ const datumVeld = z
 const kwalificatieDatumVeld = z.object({
   datum: datumVeld,
   uur: z.string().trim().max(5).nullable().optional().or(z.literal("")),
+  opmerking: z.string().trim().max(80).nullable().optional().or(z.literal("")),
 });
 
 const toernooiBaseSchema = z.object({

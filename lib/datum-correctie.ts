@@ -18,7 +18,7 @@ export type AfficheVelden = {
   max_ploegen: number | null;
   link_inschrijving: string | null;
   opmerking: string | null;
-  kwalificatiedata: { datum: string | null; uur: string | null }[] | null;
+  kwalificatiedata: { datum: string | null; uur: string | null; opmerking: string | null }[] | null;
   kwalificatie_uur: string | null;
 };
 

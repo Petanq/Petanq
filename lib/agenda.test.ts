@@ -30,7 +30,7 @@ const basisToernooi: Toernooi = {
   contact_email: null,
   link_inschrijving: null,
   opmerking: null,
-  kwalificatiedata: [{ datum: "2026-12-26", uur: "14:00" }],
+  kwalificatiedata: [{ datum: "2026-12-26", uur: "14:00", opmerking: null }],
   kwalificatie_uur: "19:00",
   status: "goedgekeurd",
   ingediend_door: null,

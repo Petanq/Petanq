@@ -58,8 +58,8 @@ describe("corrigeerJaartallen", () => {
           ...basis,
           datum: "2025-01-17", // finale, oorspronkelijk jaar X
           kwalificatiedata: [
-            { datum: "2024-10-02", uur: null }, // schifting, jaar X-1
-            { datum: "2024-11-13", uur: null },
+            { datum: "2024-10-02", uur: null, opmerking: null }, // schifting, jaar X-1
+            { datum: "2024-11-13", uur: null, opmerking: null },
           ],
         },
       ],

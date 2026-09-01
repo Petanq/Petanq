@@ -119,8 +119,8 @@ export function TournamentForm() {
     if (velden.kwalificatiedata && velden.kwalificatiedata.length > 0) {
       setKwalificatieData(
         velden.kwalificatiedata
-          .filter((k): k is { datum: string; uur: string | null } => !!k.datum)
-          .map((k) => ({ datum: k.datum, uur: k.uur ?? null }))
+          .filter((k): k is { datum: string; uur: string | null; opmerking: string | null } => !!k.datum)
+          .map((k) => ({ datum: k.datum, uur: k.uur ?? null, opmerking: k.opmerking ?? null }))
       );
     }
     if (velden.kwalificatie_uur) setKwalificatieUur(velden.kwalificatie_uur);

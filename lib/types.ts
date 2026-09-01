@@ -19,7 +19,7 @@ export type ModeratorRol = "moderator" | "admin";
 
 export type NieuwsbriefTaal = "nl" | "fr";
 
-export type KwalificatieDatum = { datum: string; uur: string | null };
+export type KwalificatieDatum = { datum: string; uur: string | null; opmerking: string | null };
 
 export type Toernooi = {
   id: string;

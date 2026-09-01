@@ -101,7 +101,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
   const data = parsed.data;
   const kwalificatiedata = (data.kwalificatiedata ?? [])
     .filter((k) => k.datum)
-    .map((k) => ({ datum: k.datum, uur: k.uur || null }));
+    .map((k) => ({ datum: k.datum, uur: k.uur || null, opmerking: k.opmerking || null }));
 
   const supabase = await createClient();
   const moderatorNaam = await huidigeModeratorNaam();

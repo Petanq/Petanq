@@ -210,6 +210,9 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
                       · {formatUur((schifting.uur ?? toernooi.kwalificatie_uur) as string)}
                     </span>
                   )}
+                  {schifting.opmerking && (
+                    <span className="block text-xs font-normal text-donker/60">{schifting.opmerking}</span>
+                  )}
                 </a>
               ))}
             </div>

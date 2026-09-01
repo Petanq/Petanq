@@ -63,8 +63,13 @@ const TOERNOOI_ITEM_SCHEMA = {
             type: ["string", "null"],
             description: "24-uursformaat UU:MM, enkel invullen als deze datum een ander uur heeft dan de meeste schiftingen (zie kwalificatie_uur), anders null",
           },
+          opmerking: {
+            type: ["string", "null"],
+            description:
+              "Enkel invullen als er op de affiche een bijzonderheid specifiek bij DEZE datum staat (bv. \"enkel clubleden\", \"repêchage\", \"enkel voor geplaatste ploegen\"). Anders null.",
+          },
         },
-        required: ["datum", "uur"],
+        required: ["datum", "uur", "opmerking"],
       },
     },
     kwalificatie_uur: {
@@ -137,7 +142,7 @@ export async function afficheAnalyseren(
 
 Let op — er zijn twee verschillende situaties met meerdere datums op een affiche, die je niet mag verwarren:
 
-A. Schiftingensysteem: een reeks schiftings-/kwalificatiedatums die ALLEMAAL naar dezelfde ÉÉN finale leiden (je herkent dit meestal aan woorden als "schifting(en)", "kwalificatie(s)", "éliminatoire(s)" gevolgd door één "finale"-datum). Dit is GEEN aparte inzending per datum — geef dit terug als ÉÉN enkel item: datum/uur = de finaledatum en -uur, kwalificatiedata = de overige schiftingsdatums (elk met hun eigen uur enkel als dat afwijkt van de rest), kwalificatie_uur = het uur dat voor de meeste schiftingen geldt. Vermeld in opmerking eventuele bijzonderheden (bv. als een bepaalde schiftingsdatum enkel toegankelijk is voor al geplaatste ploegen).
+A. Schiftingensysteem: een reeks schiftings-/kwalificatiedatums die ALLEMAAL naar dezelfde ÉÉN finale leiden (je herkent dit meestal aan woorden als "schifting(en)", "kwalificatie(s)", "éliminatoire(s)" gevolgd door één "finale"-datum). Dit is GEEN aparte inzending per datum — geef dit terug als ÉÉN enkel item: datum/uur = de finaledatum en -uur, kwalificatiedata = de overige schiftingsdatums (elk met hun eigen uur enkel als dat afwijkt van de rest), kwalificatie_uur = het uur dat voor de meeste schiftingen geldt. Staat er bij een specifieke schiftingsdatum een eigen bijzonderheid vermeld (bv. "enkel clubleden", "repêchage"), zet die dan bij de opmerking van díe datum in kwalificatiedata — niet bij de algemene opmerking van het toernooi.
 
 B. Losse, onafhankelijke concours: meerdere ECHT verschillende toernooien die niets met elkaar te maken hebben, elk met een eigen doel — bv. een dagprogramma met 's ochtends een damesconcours en apart een herenconcours, een jeugd- en seniorenconcours op dezelfde dag, of een toernooi over meerdere dagen met elke dag een andere speelvorm (dag 1 doublette, dag 2 triplette). Geef elk van deze als een APART item terug (elk met eigen datum, uur, categorie, formule, en kwalificatiedata/kwalificatie_uur op null). Verwerk het onderscheid ook in naam_nl/naam_fr, bv. "Toernooi - Dag 1" en "Toernooi - Dag 2", of "Toernooi - Dames" en "Toernooi - Heren".
 
