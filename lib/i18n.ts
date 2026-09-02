@@ -524,7 +524,8 @@ const nl = {
     rustDezeRonde: "Rust deze ronde:",
     vulGeldigeEindstand:
       "Vul voor elk plein een geldige eindstand in (één team op 13, de andere op 0 t.e.m. 12) voor je een volgende ronde kan genereren.",
-    tornooiAfgelopen: (naam: string, punten: number) => `🏆 Tornooi afgelopen! ${naam} eindigt op kop met ${punten} matchpunten.`,
+    tornooiAfgelopen: (naam: string, overwinningen: number, saldo: number) =>
+      `🏆 Tornooi afgelopen! ${naam} eindigt op kop met ${overwinningen} overwinning${overwinningen === 1 ? "" : "en"} (saldo ${saldo >= 0 ? "+" : ""}${saldo}).`,
     nogEen: "Nog een",
     extraRondeToevoegen: "extra ronde toevoegen",
     bye: "BYE",
@@ -1154,7 +1155,8 @@ const fr: typeof nl = {
     rustDezeRonde: "Repos cette manche :",
     vulGeldigeEindstand:
       "Entrez un score final valide pour chaque terrain (une équipe à 13, l'autre entre 0 et 12) avant de pouvoir générer une manche suivante.",
-    tornooiAfgelopen: (naam: string, punten: number) => `🏆 Tournoi terminé ! ${naam} termine en tête avec ${punten} points de match.`,
+    tornooiAfgelopen: (naam: string, overwinningen: number, saldo: number) =>
+      `🏆 Tournoi terminé ! ${naam} termine en tête avec ${overwinningen} victoire${overwinningen === 1 ? "" : "s"} (écart ${saldo >= 0 ? "+" : ""}${saldo}).`,
     nogEen: "Encore une",
     extraRondeToevoegen: "manche supplémentaire à ajouter",
     bye: "EXEMPT",

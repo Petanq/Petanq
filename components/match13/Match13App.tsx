@@ -1837,7 +1837,11 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
 
             {tournamentComplete && (
               <div className="finish-banner">
-                {t.match13.tornooiAfgelopen(standings[0]?.name ?? "", standings[0]?.matchpunten ?? 0)}
+                {t.match13.tornooiAfgelopen(
+                  standings[0]?.name ?? "",
+                  standings[0]?.overwinningen ?? 0,
+                  standings[0]?.saldo ?? 0
+                )}
                 <div className="hint" style={{ marginTop: "0.3rem" }}>
                   {t.match13.nogEen}{" "}
                   <button className="link-btn" onClick={generateNextRound}>
