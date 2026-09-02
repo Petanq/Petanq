@@ -19,13 +19,21 @@ export function isInvalidSubScore(a?: number, b?: number): boolean {
 // no single "team" id, the real players are in playersA/playersB) — that
 // must NOT be mistaken for a BYE, so this checks strict null, not falsiness.
 //
-// Kwartet matches (detected via alleenNaamA, always set for a real match)
-// need BOTH sub-results — the "enkelspel" and the triplet — to individually
-// reach 13, since scoreA/scoreB there is just their sum and isn't itself
-// bound to 13.
+// Kwartet/Sextet matches (detected via alleenNaamA, always set for a real
+// match) need EACH sub-result — the "enkelspel" and the triplet, plus the
+// dubbel for Sextet — to individually reach 13, since scoreA/scoreB there
+// is just their sum and isn't itself bound to 13. `kwsSoort` says whether
+// there are 2 sub-results (Kwartet) or 3 (Sextet).
 export function isCompleteMatch(m: Match): boolean {
   if (m.teamB === null) return true; // BYE — no score needed
   if (m.alleenNaamA !== undefined) {
+    if (m.kwsSoort === "sextet") {
+      return (
+        isCompleteSubScore(m.scoreEnkelA, m.scoreEnkelB) &&
+        isCompleteSubScore(m.scoreDoubletA, m.scoreDoubletB) &&
+        isCompleteSubScore(m.scoreTripletA, m.scoreTripletB)
+      );
+    }
     return (
       isCompleteSubScore(m.scoreEnkelA, m.scoreEnkelB) &&
       isCompleteSubScore(m.scoreTripletA, m.scoreTripletB)
@@ -42,7 +50,12 @@ export function isCompleteMatch(m: Match): boolean {
 export function isInvalidMatch(m: Match): boolean {
   if (m.teamB === null) return false;
   if (m.alleenNaamA !== undefined) {
-    return isInvalidSubScore(m.scoreEnkelA, m.scoreEnkelB) || isInvalidSubScore(m.scoreTripletA, m.scoreTripletB);
+    const enkelOfTripletInvalid =
+      isInvalidSubScore(m.scoreEnkelA, m.scoreEnkelB) || isInvalidSubScore(m.scoreTripletA, m.scoreTripletB);
+    if (m.kwsSoort === "sextet") {
+      return enkelOfTripletInvalid || isInvalidSubScore(m.scoreDoubletA, m.scoreDoubletB);
+    }
+    return enkelOfTripletInvalid;
   }
   if (m.scoreA === undefined || m.scoreB === undefined) return false;
   return !isCompleteMatch(m);

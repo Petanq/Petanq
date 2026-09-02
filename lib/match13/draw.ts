@@ -1,4 +1,4 @@
-import { KWARTET_LETTERS, type Match, type Role, type Round, type Team } from "./types";
+import { SPEL_LETTERS, type Match, type Role, type Round, type Team } from "./types";
 
 // Real opponent-avoidance draw engine.
 //
@@ -553,11 +553,50 @@ export function assignKwartetRoles(
     alleenIndexUpdates.set(m.teamB, (idxB + 1) % 4);
     return {
       ...m,
+      kwsSoort: "kwartet" as const,
       alleenNaamA: teamA?.members?.[idxA] ?? teamA?.name ?? "",
       alleenNaamB: teamB?.members?.[idxB] ?? teamB?.name ?? "",
-      alleenLetterA: KWARTET_LETTERS[idxA],
-      alleenLetterB: KWARTET_LETTERS[idxB],
+      alleenLetterA: SPEL_LETTERS[idxA],
+      alleenLetterB: SPEL_LETTERS[idxB],
       courtTriplet: m.court + speelbareMatches,
+    };
+  });
+
+  return { matches: updatedMatches, alleenIndexUpdates };
+}
+
+// Sextet: pick who plays the solo "enkelspel" for each team in this round —
+// the fixed MATCH16 lookup table (SEXTET_SPLIT) then decides which other 2
+// form the dubbel and which other 3 form the triplet. Rotates through the
+// team's 6 members the same way Kwartet does (index 0→1→2→3→4→5→0).
+export function assignSextetRoles(
+  matches: Match[],
+  teams: Team[]
+): { matches: Match[]; alleenIndexUpdates: Map<string, number> } {
+  const teamById = new Map(teams.map((t) => [t.id, t]));
+  const alleenIndexUpdates = new Map<string, number>();
+  // Enkelspel, dubbel en triplet gebeuren tegelijk door andere mensen, dus
+  // elk krijgt zijn eigen blok pleinnummers: enkelspel eerst, dan dubbel,
+  // dan triplet.
+  const speelbareMatches = matches.filter((m) => m.teamB !== null).length;
+
+  const updatedMatches = matches.map((m) => {
+    if (m.teamB === null) return m;
+    const teamA = teamById.get(m.teamA);
+    const teamB = teamById.get(m.teamB);
+    const idxA = teamA?.kwartetAlleenIndex ?? 0;
+    const idxB = teamB?.kwartetAlleenIndex ?? 0;
+    alleenIndexUpdates.set(m.teamA, (idxA + 1) % 6);
+    alleenIndexUpdates.set(m.teamB, (idxB + 1) % 6);
+    return {
+      ...m,
+      kwsSoort: "sextet" as const,
+      alleenNaamA: teamA?.members?.[idxA] ?? teamA?.name ?? "",
+      alleenNaamB: teamB?.members?.[idxB] ?? teamB?.name ?? "",
+      alleenLetterA: SPEL_LETTERS[idxA],
+      alleenLetterB: SPEL_LETTERS[idxB],
+      courtDoublet: m.court + speelbareMatches,
+      courtTriplet: m.court + speelbareMatches * 2,
     };
   });
 

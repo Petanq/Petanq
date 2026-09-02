@@ -79,3 +79,39 @@ describe("isInvalidMatch", () => {
     expect(isInvalidMatch({ ...kwartet, scoreEnkelA: 13, scoreEnkelB: 4 })).toBe(false);
   });
 });
+
+describe("Sextet (3 sub-scores)", () => {
+  function sextetMatch(overrides: Partial<Match> = {}): Match {
+    return {
+      court: 1,
+      teamA: "A",
+      teamB: "B",
+      alleenNaamA: "Jan",
+      alleenNaamB: "Piet",
+      kwsSoort: "sextet",
+      ...overrides,
+    };
+  }
+
+  it("needs all 3 sub-scores (enkel + dubbel + triplet), not just 2", () => {
+    expect(
+      isCompleteMatch(sextetMatch({ scoreEnkelA: 13, scoreEnkelB: 4, scoreTripletA: 8, scoreTripletB: 13 }))
+    ).toBe(false); // dubbel ontbreekt nog
+    expect(
+      isCompleteMatch(
+        sextetMatch({
+          scoreEnkelA: 13,
+          scoreEnkelB: 4,
+          scoreDoubletA: 13,
+          scoreDoubletB: 6,
+          scoreTripletA: 8,
+          scoreTripletB: 13,
+        })
+      )
+    ).toBe(true);
+  });
+
+  it("flags an invalid dubbel sub-score even while enkel/triplet are still empty", () => {
+    expect(isInvalidMatch(sextetMatch({ scoreDoubletA: 13, scoreDoubletB: 13 }))).toBe(true);
+  });
+});

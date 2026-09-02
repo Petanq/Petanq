@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   assignKwartetRoles,
+  assignSextetRoles,
   buildCourtHistory,
   buildMeleeHistory,
   buildOpponentHistory,
@@ -440,6 +441,54 @@ describe("assignKwartetRoles", () => {
     const matches: Match[] = [{ court: 1, teamA: "A", teamB: null }];
 
     const { matches: result, alleenIndexUpdates } = assignKwartetRoles(matches, [teamA]);
+
+    expect(result[0].alleenNaamA).toBeUndefined();
+    expect(alleenIndexUpdates.size).toBe(0);
+  });
+});
+
+describe("assignSextetRoles", () => {
+  function makeSextetTeam(id: string, members: string[], kwartetAlleenIndex = 0): Team {
+    return { id, number: 1, name: members.join(" & "), present: true, paid: false, byes: 0, members, kwartetAlleenIndex };
+  }
+
+  it("picks the player at kwartetAlleenIndex as the solo player, wrapping at 6", () => {
+    const teamA = makeSextetTeam("A", ["A1", "A2", "A3", "A4", "A5", "A6"], 5);
+    const teamB = makeSextetTeam("B", ["B1", "B2", "B3", "B4", "B5", "B6"], 0);
+    const matches: Match[] = [{ court: 1, teamA: "A", teamB: "B" }];
+
+    const { matches: result, alleenIndexUpdates } = assignSextetRoles(matches, [teamA, teamB]);
+
+    expect(result[0].alleenNaamA).toBe("A6");
+    expect(result[0].alleenLetterA).toBe("F");
+    expect(result[0].kwsSoort).toBe("sextet");
+    expect(alleenIndexUpdates.get("A")).toBe(0); // wraps around past F
+    expect(alleenIndexUpdates.get("B")).toBe(1);
+  });
+
+  it("gives the dubbel and triplet their own pleinen, stacked past the enkelspel pleinen", () => {
+    const teamA = makeSextetTeam("A", ["A1", "A2", "A3", "A4", "A5", "A6"]);
+    const teamB = makeSextetTeam("B", ["B1", "B2", "B3", "B4", "B5", "B6"]);
+    const teamC = makeSextetTeam("C", ["C1", "C2", "C3", "C4", "C5", "C6"]);
+    const teamD = makeSextetTeam("D", ["D1", "D2", "D3", "D4", "D5", "D6"]);
+    const matches: Match[] = [
+      { court: 1, teamA: "A", teamB: "B" },
+      { court: 2, teamA: "C", teamB: "D" },
+    ];
+
+    const { matches: result } = assignSextetRoles(matches, [teamA, teamB, teamC, teamD]);
+
+    expect(result[0].courtDoublet).toBe(3); // 1 + 2 speelbare wedstrijden
+    expect(result[0].courtTriplet).toBe(5); // 1 + 2 * 2 speelbare wedstrijden
+    expect(result[1].courtDoublet).toBe(4);
+    expect(result[1].courtTriplet).toBe(6);
+  });
+
+  it("leaves a BYE match untouched", () => {
+    const teamA = makeSextetTeam("A", ["A1", "A2", "A3", "A4", "A5", "A6"]);
+    const matches: Match[] = [{ court: 1, teamA: "A", teamB: null }];
+
+    const { matches: result, alleenIndexUpdates } = assignSextetRoles(matches, [teamA]);
 
     expect(result[0].alleenNaamA).toBeUndefined();
     expect(alleenIndexUpdates.size).toBe(0);

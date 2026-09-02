@@ -458,6 +458,8 @@ const nl = {
       "Bepaalt enkel de weergave — de loting werkt hetzelfde voor elk formaat: vaste teams, geen herhaalde tegenstanders. Ronde 1 is een vrije loting; vanaf ronde 2 koppelt de app op stand (winnaars tegen winnaars).",
     hintKwartet:
       "Bij Kwartet speel je met teams van 4: 1 speler speelt een enkelspel, de andere 3 spelen samen een triplet — de twee uitslagen worden opgeteld tot de eindstand. Het systeem laat automatisch en eerlijk rouleren wie elke ronde het enkelspel speelt.",
+    hintSextet:
+      "Bij Sextet speel je met teams van 6: 1 speler speelt een enkelspel, 2 spelen samen een dubbel en 3 samen een triplet — de drie uitslagen worden opgeteld tot de eindstand. Het systeem laat automatisch en eerlijk rouleren wie elke ronde het enkelspel speelt.",
     speltypeVastgezet: "Kan niet meer gewijzigd worden zolang er teams zijn — verwijder eerst alle teams om dit aan te passen.",
     opslaanMislukt:
       "Opslaan mislukt — controleer je internetverbinding. Je laatste wijziging is nog niet bewaard; we proberen het automatisch opnieuw bij je volgende aanpassing.",
@@ -532,6 +534,7 @@ const nl = {
     tweeKeer13: "Twee keer 13 kan niet — er is maar 1 winnaar.",
     eenMoetOp13: "Eén van beide moet op 13 staan.",
     enkelspelLabel: "Enkelspel",
+    dubbelLabel: "Dubbel",
     tripletLabel: "Triplet",
     totaalLabel: "Totaal",
     vorigeRondes: (n: number) => `Vorige rondes (${n})`,
@@ -1085,6 +1088,8 @@ const fr: typeof nl = {
       "Ne détermine que l'affichage — le tirage fonctionne de la même façon pour chaque format : équipes fixes, pas d'adversaires répétés. La manche 1 est un tirage libre ; à partir de la manche 2, l'app associe selon le classement (vainqueurs contre vainqueurs).",
     hintKwartet:
       "Avec Kwartet, vous jouez en équipes de 4 : 1 joueur dispute un tête-à-tête, les 3 autres jouent ensemble une triplette — les deux résultats sont additionnés pour former le score final. L'app fait tourner automatiquement et équitablement qui joue le tête-à-tête chaque manche.",
+    hintSextet:
+      "Avec Sextet, vous jouez en équipes de 6 : 1 joueur dispute un tête-à-tête, 2 jouent ensemble une doublette et 3 une triplette — les trois résultats sont additionnés pour former le score final. L'app fait tourner automatiquement et équitablement qui joue le tête-à-tête chaque manche.",
     speltypeVastgezet: "Ne peut plus être modifié tant qu'il y a des équipes — supprimez d'abord toutes les équipes pour changer ceci.",
     opslaanMislukt:
       "Échec de l'enregistrement — vérifiez votre connexion internet. Votre dernière modification n'est pas encore sauvegardée ; nous réessayons automatiquement à votre prochaine action.",
@@ -1159,6 +1164,7 @@ const fr: typeof nl = {
     tweeKeer13: "Deux fois 13 n'est pas possible — il n'y a qu'un seul vainqueur.",
     eenMoetOp13: "L'une des deux équipes doit être à 13.",
     enkelspelLabel: "Tête-à-tête",
+    dubbelLabel: "Doublette",
     tripletLabel: "Triplette",
     totaalLabel: "Total",
     vorigeRondes: (n: number) => `Manches précédentes (${n})`,

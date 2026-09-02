@@ -5,9 +5,10 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNod
 import "./match13.css";
 import { useTranslation } from "@/lib/language-context";
 import type { Format, Match, Role, Round, Team } from "@/lib/match13/types";
-import { FORMAT_LABELS, FORMAT_TEAM_SIZE, KWARTET_LETTERS } from "@/lib/match13/types";
+import { FORMAT_LABELS, FORMAT_TEAM_SIZE, SPEL_LETTERS, SEXTET_SPLIT } from "@/lib/match13/types";
 import {
   assignKwartetRoles,
+  assignSextetRoles,
   buildCourtHistory,
   buildMeleeHistory,
   buildOpponentHistory,
@@ -384,6 +385,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   const isMeli = format === "meli";
   const isPoules = format === "poules";
   const isKwartet = format === "kwartet";
+  const isSextet = format === "sextet";
+  const isKwsFormaat = isKwartet || isSextet;
   const teamSize = FORMAT_TEAM_SIZE[format];
   const minToPlay = isMeli ? 6 : isPoules ? 3 : 2;
   // Verplicht vóór je nog iets kan doen — maar enkel bij de allereerste
@@ -488,7 +491,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
             present: true,
             paid: false,
             byes: 0,
-            ...(isKwartet ? { members, kwartetAlleenIndex: 0 } : {}),
+            ...(isKwsFormaat ? { members, kwartetAlleenIndex: 0 } : {}),
           },
         ],
       };
@@ -584,6 +587,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
 
     const { matches: finalMatches, alleenIndexUpdates: kwartetIndexUpdates } = isKwartet
       ? assignKwartetRoles(matches, teams)
+      : isSextet
+      ? assignSextetRoles(matches, teams)
       : { matches, alleenIndexUpdates: new Map<string, number>() };
 
     setState((s) => ({
@@ -719,7 +724,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   function updateKwartetScore(
     roundIndex: number,
     matchIndex: number,
-    deel: "Enkel" | "Triplet",
+    deel: "Enkel" | "Doublet" | "Triplet",
     side: "A" | "B",
     value: string
   ) {
@@ -731,16 +736,24 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
       const n = value === "" ? undefined : Math.min(13, Math.max(0, Number(value)));
       if (deel === "Enkel" && side === "A") match.scoreEnkelA = n;
       else if (deel === "Enkel" && side === "B") match.scoreEnkelB = n;
+      else if (deel === "Doublet" && side === "A") match.scoreDoubletA = n;
+      else if (deel === "Doublet" && side === "B") match.scoreDoubletB = n;
       else if (deel === "Triplet" && side === "A") match.scoreTripletA = n;
       else match.scoreTripletB = n;
-      match.scoreA =
-        match.scoreEnkelA !== undefined && match.scoreTripletA !== undefined
-          ? match.scoreEnkelA + match.scoreTripletA
-          : undefined;
-      match.scoreB =
-        match.scoreEnkelB !== undefined && match.scoreTripletB !== undefined
-          ? match.scoreEnkelB + match.scoreTripletB
-          : undefined;
+      // Sextet telt 3 delen op (enkel + dubbel + triplet), Kwartet 2 (enkel +
+      // triplet) — scoreDoubletA/B blijft bij Kwartet altijd undefined.
+      const delenA = match.kwsSoort === "sextet"
+        ? [match.scoreEnkelA, match.scoreDoubletA, match.scoreTripletA]
+        : [match.scoreEnkelA, match.scoreTripletA];
+      const delenB = match.kwsSoort === "sextet"
+        ? [match.scoreEnkelB, match.scoreDoubletB, match.scoreTripletB]
+        : [match.scoreEnkelB, match.scoreTripletB];
+      match.scoreA = delenA.every((v) => v !== undefined)
+        ? delenA.reduce((sum: number, v) => sum + (v as number), 0)
+        : undefined;
+      match.scoreB = delenB.every((v) => v !== undefined)
+        ? delenB.reduce((sum: number, v) => sum + (v as number), 0)
+        : undefined;
       match.finishedAt = isCompleteMatch(match) ? Date.now() : undefined;
       matches[matchIndex] = match;
       round.matches = matches;
@@ -777,6 +790,19 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     });
   }
 
+  // Sextet only: the dubbel's own plein, same idea as updateTripletCourt.
+  function updateDoubletCourt(roundIndex: number, matchIndex: number, court: number) {
+    setState((s) => {
+      const rounds = s.rounds.slice();
+      const round = { ...rounds[roundIndex] };
+      const matches = round.matches.slice();
+      matches[matchIndex] = { ...matches[matchIndex], courtDoublet: court };
+      round.matches = matches;
+      rounds[roundIndex] = round;
+      return { ...s, rounds };
+    });
+  }
+
   function updateTeamName(id: string, rawName: string) {
     setState((s) => ({
       ...s,
@@ -799,19 +825,32 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   }
 
   const teamOf = (id: string | null) => (id ? teams.find((t) => t.id === id) : undefined);
-  // Kwartet: the 3 triplet players are the team's 4 members minus whoever
-  // plays the enkelspel that round — never the raw team.name, since that
-  // includes the enkelspel player too and would let them "play" both at once.
-  const kwartetTripletLeden = (team: Team | undefined, alleenLetter: string | undefined): ReactNode => {
-    const leden = (team?.members ?? [])
-      .map((naam, i) => ({ letter: KWARTET_LETTERS[i], naam }))
-      .filter(({ letter }) => letter !== alleenLetter);
-    return leden.map(({ letter, naam }, i) => (
-      <span key={letter}>
-        {i > 0 && ", "}
-        <span className="kwartet-letter">{letter}</span>. {naam}
+  // Toont de leden op de gegeven letter-indices (bv. [1,4] -> "B. Piet, E.
+  // Wout"), gedeeld door Kwartet's triplet en Sextet's dubbel/triplet.
+  const ledenVoorIndices = (team: Team | undefined, indices: number[]): ReactNode =>
+    indices.map((i, pos) => (
+      <span key={i}>
+        {pos > 0 && ", "}
+        <span className="kwartet-letter">{SPEL_LETTERS[i]}</span>. {team?.members?.[i] ?? ""}
       </span>
     ));
+  // Kwartet: de 3 triplet-spelers zijn het team min wie deze ronde het
+  // enkelspel speelt — nooit de rauwe team.name, want die bevat ook de
+  // enkelspel-speler, alsof die tegelijk op 2 pleinen zou spelen.
+  const kwartetTripletLeden = (team: Team | undefined, alleenLetter: string | undefined): ReactNode => {
+    const alleenIndex = alleenLetter ? SPEL_LETTERS.indexOf(alleenLetter as (typeof SPEL_LETTERS)[number]) : -1;
+    return ledenVoorIndices(team, [0, 1, 2, 3].filter((i) => i !== alleenIndex));
+  };
+  // Sextet: dubbel/triplet-samenstelling ligt vast per "alleen"-letter,
+  // rechtstreeks overgenomen uit MATCH16's Sextet 1-2-3-tabel (SEXTET_SPLIT).
+  const sextetLeden = (
+    team: Team | undefined,
+    alleenLetter: string | undefined,
+    deel: "doublet" | "triplet"
+  ): ReactNode => {
+    const alleenIndex = alleenLetter ? SPEL_LETTERS.indexOf(alleenLetter as (typeof SPEL_LETTERS)[number]) : 0;
+    const split = SEXTET_SPLIT[alleenIndex];
+    return ledenVoorIndices(team, deel === "doublet" ? split.doublet : split.triplet);
   };
   // The number is gold, bold, inline text — no box/circle around it, since a
   // fixed-size badge is what broke the line-wrapping last time. Plain
@@ -1044,6 +1083,102 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     return [enkelKaart, tripletKaart("A", `${key}-triplet-a`), tripletKaart("B", `${key}-triplet-b`)];
   };
 
+  // Sextet: 5 losse kaartjes per wedstrijd — 1 enkelspel + 2 dubbel + 2
+  // triplet (elk team eigen exemplaar) — elk met zijn eigen plein, net als
+  // Kwartet's kaartjes hierboven maar met een extra dubbel-onderdeel.
+  const renderSextetKaarten = (m: Match, key: string | number, rondeNummer: number) => {
+    if (m.alleenNaamA === undefined || m.alleenNaamB === undefined) return [];
+    const teamA = teamOf(m.teamA);
+    const teamB = teamOf(m.teamB);
+
+    const enkelKaart = (
+      <article className="mk-kaart" key={`${key}-enkel`}>
+        {renderKaartLichaam(rondeNummer, t.match13.enkelspelLabel)}
+        <div className="mk-teams">
+          <div className="mk-team">
+            <span className="mk-nr">{teamA?.number ?? "?"}</span>
+            <div className="mk-namen">
+              <span className="mk-letter">{m.alleenLetterA}</span>. {m.alleenNaamA}
+            </div>
+          </div>
+          <div className="mk-plein">
+            {t.match13.pleinLabelKort}
+            <br />
+            <b>{m.court}</b>
+          </div>
+          <div className="mk-team">
+            <span className="mk-nr">{teamB?.number ?? "?"}</span>
+            <div className="mk-namen">
+              <span className="mk-letter">{m.alleenLetterB}</span>. {m.alleenNaamB}
+            </div>
+          </div>
+        </div>
+        {renderTelbolletjes()}
+        <div className="mk-voet">
+          <div className="mk-vak" />
+          <div className="mk-mid2">
+            <span className="lbl">{t.match13.printTotaal}</span>
+            <span className="hand">{t.match13.printHandtekening}</span>
+          </div>
+          <div className="mk-vak" />
+        </div>
+        <div className="mk-credit">
+          www.petanque<span className="m13-gold">13</span>.be
+        </div>
+      </article>
+    );
+
+    const subKaart = (deel: "doublet" | "triplet", eersteZijde: "A" | "B", key2: string) => {
+      const tweedeZijde = eersteZijde === "A" ? "B" : "A";
+      const eersteTeam = eersteZijde === "A" ? teamA : teamB;
+      const tweedeTeam = eersteZijde === "A" ? teamB : teamA;
+      const eersteLetter = eersteZijde === "A" ? m.alleenLetterA : m.alleenLetterB;
+      const tweedeLetter = eersteZijde === "A" ? m.alleenLetterB : m.alleenLetterA;
+      const label = deel === "doublet" ? t.match13.dubbelLabel : t.match13.tripletLabel;
+      const plein = deel === "doublet" ? m.courtDoublet : m.courtTriplet;
+      return (
+        <article className="mk-kaart" key={key2}>
+          {renderKaartLichaam(rondeNummer, label)}
+          <div className="mk-teams">
+            <div className="mk-team">
+              <span className="mk-nr">{eersteTeam?.number ?? "?"}</span>
+              <div className="mk-namen">{sextetLeden(eersteTeam, eersteLetter, deel)}</div>
+            </div>
+            <div className="mk-plein">
+              {t.match13.pleinLabelKort}
+              <br />
+              <b>{plein}</b>
+            </div>
+            <div className="mk-team">
+              <span className="mk-nr">{tweedeTeam?.number ?? "?"}</span>
+              <div className="mk-namen">{sextetLeden(tweedeTeam, tweedeLetter, deel)}</div>
+            </div>
+          </div>
+          {renderTelbolletjes()}
+          <div className="mk-voet">
+            <div className="mk-vak" />
+            <div className="mk-mid2">
+              <span className="lbl">{t.match13.printTotaal}</span>
+              <span className="hand">{t.match13.printHandtekening}</span>
+            </div>
+            <div className="mk-vak" />
+          </div>
+          <div className="mk-credit">
+            www.petanque<span className="m13-gold">13</span>.be
+          </div>
+        </article>
+      );
+    };
+
+    return [
+      enkelKaart,
+      subKaart("doublet", "A", `${key}-doublet-a`),
+      subKaart("doublet", "B", `${key}-doublet-b`),
+      subKaart("triplet", "A", `${key}-triplet-a`),
+      subKaart("triplet", "B", `${key}-triplet-b`),
+    ];
+  };
+
   const printKaartjesBlad = currentRound && (
     <div className="print-kaarten-blad">
       <div className="print-kaarten-grid">
@@ -1052,6 +1187,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           .flatMap((m, i) =>
             isKwartet
               ? renderKwartetKaarten(m, i, currentRound.number)
+              : isSextet
+              ? renderSextetKaarten(m, i, currentRound.number)
               : dubbeleKaartjes
               ? [
                   renderRondeKaart(m, `${i}-a`, "A", currentRound.number),
@@ -1288,6 +1425,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                     ? t.match13.hintPoules
                     : isKwartet
                     ? t.match13.hintKwartet
+                    : isSextet
+                    ? t.match13.hintSextet
                     : t.match13.hintAndereFormats}
                 </div>
               </div>
@@ -1457,11 +1596,11 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                   ) : (
                     <span className="name">
                       <span className="team-num">{t2.number}</span>
-                      {isKwartet && t2.members
+                      {isKwsFormaat && t2.members
                         ? t2.members.map((naam, i) => (
                             <span key={i}>
                               {i > 0 && ", "}
-                              <span className="kwartet-letter">{KWARTET_LETTERS[i]}</span>. {naam}
+                              <span className="kwartet-letter">{SPEL_LETTERS[i]}</span>. {naam}
                             </span>
                           ))
                         : t2.name}
@@ -1738,7 +1877,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                         {currentRound.startedAt && (
                           <MatchTimer startedAt={currentRound.startedAt} finishedAt={m.finishedAt} />
                         )}
-                        {isKwartet && m.alleenNaamA !== undefined ? (
+                        {isKwsFormaat && m.alleenNaamA !== undefined ? (
                           <>
                             <div className="kwartet-onderdeel-label">{t.match13.enkelspelLabel}</div>
                             <div className={"match-row" + (isInvalidSubScore(m.scoreEnkelA, m.scoreEnkelB) ? " invalid" : "")}>
@@ -1771,6 +1910,61 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                                 onChange={(e) => updateKwartetScore(rounds.length - 1, i, "Enkel", "B", e.target.value)}
                               />
                             </div>
+                            {isSextet && (
+                              <>
+                                <div className="kwartet-onderdeel-label kwartet-onderdeel-met-plein">
+                                  <span>{t.match13.dubbelLabel}</span>
+                                  <span className="court-label">
+                                    <span className="court-label-edit">
+                                      {t.match13.pleinLabelKort}{" "}
+                                      <input
+                                        type="number"
+                                        min={1}
+                                        className="court-label-input"
+                                        value={m.courtDoublet ?? ""}
+                                        onChange={(e) =>
+                                          updateDoubletCourt(rounds.length - 1, i, Math.max(1, Number(e.target.value) || 1))
+                                        }
+                                      />
+                                    </span>
+                                  </span>
+                                </div>
+                                <div className={"match-row" + (isInvalidSubScore(m.scoreDoubletA, m.scoreDoubletB) ? " invalid" : "")}>
+                                  <span>{sextetLeden(teamOf(m.teamA), m.alleenLetterA, "doublet")}</span>
+                                  <input
+                                    className={
+                                      isCompleteSubScore(m.scoreDoubletA, m.scoreDoubletB)
+                                        ? m.scoreDoubletA === 13
+                                          ? "won"
+                                          : "lost"
+                                        : ""
+                                    }
+                                    type="number"
+                                    min={0}
+                                    max={13}
+                                    value={m.scoreDoubletA ?? ""}
+                                    onChange={(e) => updateKwartetScore(rounds.length - 1, i, "Doublet", "A", e.target.value)}
+                                  />
+                                </div>
+                                <div className={"match-row" + (isInvalidSubScore(m.scoreDoubletA, m.scoreDoubletB) ? " invalid" : "")}>
+                                  <span>{sextetLeden(teamOf(m.teamB), m.alleenLetterB, "doublet")}</span>
+                                  <input
+                                    className={
+                                      isCompleteSubScore(m.scoreDoubletA, m.scoreDoubletB)
+                                        ? m.scoreDoubletB === 13
+                                          ? "won"
+                                          : "lost"
+                                        : ""
+                                    }
+                                    type="number"
+                                    min={0}
+                                    max={13}
+                                    value={m.scoreDoubletB ?? ""}
+                                    onChange={(e) => updateKwartetScore(rounds.length - 1, i, "Doublet", "B", e.target.value)}
+                                  />
+                                </div>
+                              </>
+                            )}
                             <div className="kwartet-onderdeel-label kwartet-onderdeel-met-plein">
                               <span>{t.match13.tripletLabel}</span>
                               <span className="court-label">
@@ -1789,7 +1983,11 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                               </span>
                             </div>
                             <div className={"match-row" + (isInvalidSubScore(m.scoreTripletA, m.scoreTripletB) ? " invalid" : "")}>
-                              <span>{kwartetTripletLeden(teamOf(m.teamA), m.alleenLetterA)}</span>
+                              <span>
+                                {isSextet
+                                  ? sextetLeden(teamOf(m.teamA), m.alleenLetterA, "triplet")
+                                  : kwartetTripletLeden(teamOf(m.teamA), m.alleenLetterA)}
+                              </span>
                               <input
                                 className={
                                   isCompleteSubScore(m.scoreTripletA, m.scoreTripletB)
@@ -1806,7 +2004,11 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                               />
                             </div>
                             <div className={"match-row" + (isInvalidSubScore(m.scoreTripletA, m.scoreTripletB) ? " invalid" : "")}>
-                              <span>{kwartetTripletLeden(teamOf(m.teamB), m.alleenLetterB)}</span>
+                              <span>
+                                {isSextet
+                                  ? sextetLeden(teamOf(m.teamB), m.alleenLetterB, "triplet")
+                                  : kwartetTripletLeden(teamOf(m.teamB), m.alleenLetterB)}
+                              </span>
                               <input
                                 className={
                                   isCompleteSubScore(m.scoreTripletA, m.scoreTripletB)
@@ -1902,7 +2104,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                           </span>
                           {m.teamB !== null ? (
                             <>
-                              {isKwartet && m.alleenNaamA !== undefined ? (
+                              {isKwsFormaat && m.alleenNaamA !== undefined ? (
                                 <span
                                   className={"prev-score-edit" + (isInvalidMatch(m) ? " invalid" : "")}
                                   style={{ flexDirection: "column", alignItems: "flex-start", gap: "0.2rem" }}
@@ -1927,6 +2129,28 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                                       {t.match13.enkelspelLabel}
                                     </span>
                                   </span>
+                                  {isSextet && (
+                                    <span style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                                      <input
+                                        type="number"
+                                        min={0}
+                                        max={13}
+                                        value={m.scoreDoubletA ?? ""}
+                                        onChange={(e) => updateKwartetScore(roundIndex, mi, "Doublet", "A", e.target.value)}
+                                      />
+                                      <span>&ndash;</span>
+                                      <input
+                                        type="number"
+                                        min={0}
+                                        max={13}
+                                        value={m.scoreDoubletB ?? ""}
+                                        onChange={(e) => updateKwartetScore(roundIndex, mi, "Doublet", "B", e.target.value)}
+                                      />
+                                      <span className="hint" style={{ fontSize: "0.7rem" }}>
+                                        {t.match13.dubbelLabel}
+                                      </span>
+                                    </span>
+                                  )}
                                   <span style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
                                     <input
                                       type="number"
