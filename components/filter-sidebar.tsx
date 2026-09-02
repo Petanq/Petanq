@@ -103,20 +103,14 @@ function KwalificatieToggle({
         style={{ backgroundImage: "url('/images/logo-icon.png')" }}
         aria-hidden
       />
-      <span className="min-w-0 flex-1">
-        <span
-          className={`block text-[0.66rem] font-extrabold uppercase tracking-widest ${
-            actief ? "text-white/70" : "text-[#1a4480]"
-          }`}
-        >
-          {titel}
-        </span>
-        <span className={`block truncate text-[0.83rem] font-bold ${actief ? "text-white" : "text-donker"}`}>
-          {label}
-        </span>
+      <span
+        aria-label={titel}
+        className={`min-w-0 flex-1 text-[0.83rem] font-bold leading-snug ${actief ? "text-white" : "text-donker"}`}
+      >
+        {label}
       </span>
       <span
-        className={`min-w-[20px] shrink-0 rounded-full px-1.5 py-[0.1rem] text-center text-[0.67rem] font-bold ${
+        className={`min-w-[20px] shrink-0 self-start rounded-full px-1.5 py-[0.1rem] text-center text-[0.67rem] font-bold ${
           actief ? "bg-white text-[#1a4480]" : "bg-[#eff6ff] text-[#1a4480]"
         }`}
       >
