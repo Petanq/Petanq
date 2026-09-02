@@ -404,6 +404,8 @@ describe("assignKwartetRoles", () => {
 
     expect(result[0].alleenNaamA).toBe("A1");
     expect(result[0].alleenNaamB).toBe("B3");
+    expect(result[0].alleenLetterA).toBe("A");
+    expect(result[0].alleenLetterB).toBe("C");
   });
 
   it("advances each involved team's index by 1, wrapping 3 back to 0", () => {

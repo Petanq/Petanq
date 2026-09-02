@@ -31,16 +31,24 @@ export interface Match {
   playersA?: string[];
   playersB?: string[];
   // Kwartet only: each team's 4 players split into a solo "enkelspel"
-  // (this named player) and a triplet (the other 3, playersA/playersB
-  // unused). scoreA/scoreB are the sum of the two sub-results below,
-  // recomputed automatically whenever a sub-score changes.
+  // (this named player, with their fixed A/B/C/D letter) and a triplet (the
+  // other 3, playersA/playersB unused). scoreA/scoreB are the sum of the
+  // two sub-results below, recomputed automatically whenever a sub-score
+  // changes.
   alleenNaamA?: string;
   alleenNaamB?: string;
+  alleenLetterA?: string;
+  alleenLetterB?: string;
   scoreEnkelA?: number;
   scoreEnkelB?: number;
   scoreTripletA?: number;
   scoreTripletB?: number;
 }
+
+// Kwartet: a team's 4 members get a fixed A/B/C/D letter, in registration
+// order — printed on cards and the roster so everyone recognizes their own
+// letter regardless of which round assigns them the solo "enkelspel".
+export const KWARTET_LETTERS = ["A", "B", "C", "D"] as const;
 
 export interface Round {
   number: number;

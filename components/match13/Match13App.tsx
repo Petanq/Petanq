@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNod
 import "./match13.css";
 import { useTranslation } from "@/lib/language-context";
 import type { Format, Match, Role, Round, Team } from "@/lib/match13/types";
-import { FORMAT_LABELS, FORMAT_TEAM_SIZE } from "@/lib/match13/types";
+import { FORMAT_LABELS, FORMAT_TEAM_SIZE, KWARTET_LETTERS } from "@/lib/match13/types";
 import {
   assignKwartetRoles,
   buildCourtHistory,
@@ -847,27 +847,59 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   // "eigen team" om een kaartje aan toe te wijzen).
   const dubbeleKaartjes = !isMeli && format !== "tete";
 
+  // Gedeeld door alle "gewone" kaartjes (dus niet Poules, en niet Kwartet
+  // dat zijn eigen renderer heeft): kop + team-headers + volle rij
+  // telbolletjes + voet. `label` is het optionele geel badge in de hoek
+  // (enkel gebruikt door Kwartet's enkelspel/triplet-kaartjes hieronder).
+  const renderKaartLichaam = (rondeNummer: number, court: number, label?: string) => (
+    <>
+      <div className="mk-kop">
+        <img className="mk-logo" src="/images/logo-icon.png" alt="" />
+        <div className="mk-titel">
+          <b>
+            MATCH<span className="m13-gold">13</span>
+          </b>
+          <span>{clubName}</span>
+        </div>
+        <div className="mk-meta">
+          {t.match13.printRondeKort}
+          <br />
+          <b>{rondeNummer}</b>
+          {label && (
+            <>
+              <br />
+              <span className="mk-deel-label">{label}</span>
+            </>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
+  const renderTelbolletjes = () => (
+    <div className="mk-score">
+      <ul className="mk-tally">
+        {Array.from({ length: 13 }).map((_, n) => (
+          <li key={n} />
+        ))}
+      </ul>
+      <div className="mk-mid">
+        <span>{t.match13.printUitslag}</span>
+        <span className="lijn" />
+      </div>
+      <ul className="mk-tally">
+        {Array.from({ length: 13 }).map((_, n) => (
+          <li key={n} />
+        ))}
+      </ul>
+    </div>
+  );
+
   const renderRondeKaart = (m: Match, key: string | number, eersteZijde: "A" | "B", rondeNummer: number) => {
     const tweedeZijde = eersteZijde === "A" ? "B" : "A";
-    const kwartetMatch = isKwartet && m.alleenNaamA !== undefined;
-    const alleenEerste = eersteZijde === "A" ? m.alleenNaamA : m.alleenNaamB;
-    const alleenTweede = eersteZijde === "A" ? m.alleenNaamB : m.alleenNaamA;
     return (
       <article className="mk-kaart" key={key}>
-        <div className="mk-kop">
-          <img className="mk-logo" src="/images/logo-icon.png" alt="" />
-          <div className="mk-titel">
-            <b>
-              MATCH<span className="m13-gold">13</span>
-            </b>
-            <span>{clubName}</span>
-          </div>
-          <div className="mk-meta">
-            {t.match13.printRondeKort}
-            <br />
-            <b>{rondeNummer}</b>
-          </div>
-        </div>
+        {renderKaartLichaam(rondeNummer, m.court)}
         <div className="mk-teams">
           <div className="mk-team">{printTeamHeader(m, eersteZijde)}</div>
           <div className="mk-plein">
@@ -877,52 +909,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           </div>
           <div className="mk-team">{printTeamHeader(m, tweedeZijde)}</div>
         </div>
-        {kwartetMatch ? (
-          <div className="mk-kwartet">
-            <div className="mk-kwartet-deel">
-              <div className="mk-kwartet-koppen">
-                <span>{alleenEerste}</span>
-                <span className="mk-kwartet-label">{t.match13.enkelspelLabel}</span>
-                <span>{alleenTweede}</span>
-              </div>
-              <div className="mk-kwartet-vakjes">
-                <span className="mk-vak" />
-                <span>–</span>
-                <span className="mk-vak" />
-              </div>
-            </div>
-            <div className="mk-kwartet-deel">
-              <div className="mk-kwartet-koppen">
-                <span className="mk-kwartet-label">{t.match13.tripletLabel}</span>
-              </div>
-              <div className="mk-kwartet-vakjes">
-                <span className="mk-vak" />
-                <span>–</span>
-                <span className="mk-vak" />
-              </div>
-            </div>
-            <div className="mk-kwartet-totaal">
-              {t.match13.totaalLabel}: <span className="mk-vak" /> – <span className="mk-vak" />
-            </div>
-          </div>
-        ) : (
-          <div className="mk-score">
-            <ul className="mk-tally">
-              {Array.from({ length: 13 }).map((_, n) => (
-                <li key={n} />
-              ))}
-            </ul>
-            <div className="mk-mid">
-              <span>{t.match13.printUitslag}</span>
-              <span className="lijn" />
-            </div>
-            <ul className="mk-tally">
-              {Array.from({ length: 13 }).map((_, n) => (
-                <li key={n} />
-              ))}
-            </ul>
-          </div>
-        )}
+        {renderTelbolletjes()}
         <div className="mk-voet">
           <div className="mk-vak" />
           <div className="mk-mid2">
@@ -938,13 +925,112 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     );
   };
 
+  // Kwartet: 3 losse kaartjes per wedstrijd, alle drie op hetzelfde plein —
+  // 1x het enkelspel (net als een gewoon Tête-à-Tête-kaartje) en 2x het
+  // triplet (net als een gewoon Triplet-kaartje, elk team eigen exemplaar).
+  // Geen uitgeknepen hybride kaartje meer: dit hergebruikt exact hetzelfde,
+  // al goedgekeurde bolletjes-ontwerp, gewoon driemaal.
+  const renderKwartetKaarten = (m: Match, key: string | number, rondeNummer: number) => {
+    if (m.alleenNaamA === undefined || m.alleenNaamB === undefined) return [];
+    const teamA = teamOf(m.teamA);
+    const teamB = teamOf(m.teamB);
+
+    const tripletNamen = (team: Team | undefined, alleenLetter: string | undefined) =>
+      (team?.members ?? [])
+        .map((naam, i) => ({ letter: KWARTET_LETTERS[i], naam }))
+        .filter(({ letter }) => letter !== alleenLetter)
+        .map(({ letter, naam }) => `${letter}. ${naam}`)
+        .join(", ");
+
+    const enkelKaart = (
+      <article className="mk-kaart" key={`${key}-enkel`}>
+        {renderKaartLichaam(rondeNummer, m.court, t.match13.enkelspelLabel)}
+        <div className="mk-teams">
+          <div className="mk-team">
+            <span className="mk-nr">{teamA?.number ?? "?"}</span>
+            <div className="mk-namen">
+              <span className="mk-letter">{m.alleenLetterA}</span>. {m.alleenNaamA}
+            </div>
+          </div>
+          <div className="mk-plein">
+            {t.match13.pleinLabelKort}
+            <br />
+            <b>{m.court}</b>
+          </div>
+          <div className="mk-team">
+            <span className="mk-nr">{teamB?.number ?? "?"}</span>
+            <div className="mk-namen">
+              <span className="mk-letter">{m.alleenLetterB}</span>. {m.alleenNaamB}
+            </div>
+          </div>
+        </div>
+        {renderTelbolletjes()}
+        <div className="mk-voet">
+          <div className="mk-vak" />
+          <div className="mk-mid2">
+            <span className="lbl">{t.match13.printTotaal}</span>
+            <span className="hand">{t.match13.printHandtekening}</span>
+          </div>
+          <div className="mk-vak" />
+        </div>
+        <div className="mk-credit">
+          www.petanque<span className="m13-gold">13</span>.be
+        </div>
+      </article>
+    );
+
+    const tripletKaart = (eersteZijde: "A" | "B", key2: string) => {
+      const tweedeZijde = eersteZijde === "A" ? "B" : "A";
+      const eersteTeam = eersteZijde === "A" ? teamA : teamB;
+      const tweedeTeam = eersteZijde === "A" ? teamB : teamA;
+      const eersteLetter = eersteZijde === "A" ? m.alleenLetterA : m.alleenLetterB;
+      const tweedeLetter = eersteZijde === "A" ? m.alleenLetterB : m.alleenLetterA;
+      return (
+        <article className="mk-kaart" key={key2}>
+          {renderKaartLichaam(rondeNummer, m.court, t.match13.tripletLabel)}
+          <div className="mk-teams">
+            <div className="mk-team">
+              <span className="mk-nr">{eersteTeam?.number ?? "?"}</span>
+              <div className="mk-namen">{tripletNamen(eersteTeam, eersteLetter)}</div>
+            </div>
+            <div className="mk-plein">
+              {t.match13.pleinLabelKort}
+              <br />
+              <b>{m.court}</b>
+            </div>
+            <div className="mk-team">
+              <span className="mk-nr">{tweedeTeam?.number ?? "?"}</span>
+              <div className="mk-namen">{tripletNamen(tweedeTeam, tweedeLetter)}</div>
+            </div>
+          </div>
+          {renderTelbolletjes()}
+          <div className="mk-voet">
+            <div className="mk-vak" />
+            <div className="mk-mid2">
+              <span className="lbl">{t.match13.printTotaal}</span>
+              <span className="hand">{t.match13.printHandtekening}</span>
+            </div>
+            <div className="mk-vak" />
+          </div>
+          <div className="mk-credit">
+            www.petanque<span className="m13-gold">13</span>.be
+          </div>
+        </article>
+      );
+    };
+
+    return [enkelKaart, tripletKaart("A", `${key}-triplet-a`), tripletKaart("B", `${key}-triplet-b`)];
+  };
+
   const printKaartjesBlad = currentRound && (
     <div className="print-kaarten-blad">
       <div className="print-kaarten-grid">
         {currentRound.matches
           .filter((m) => m.teamB !== null)
           .flatMap((m, i) =>
-            dubbeleKaartjes
+            isKwartet
+              ? renderKwartetKaarten(m, i, currentRound.number)
+              : dubbeleKaartjes
               ? [
                   renderRondeKaart(m, `${i}-a`, "A", currentRound.number),
                   renderRondeKaart(m, `${i}-b`, "B", currentRound.number),
@@ -1349,7 +1435,14 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                   ) : (
                     <span className="name">
                       <span className="team-num">{t2.number}</span>
-                      {t2.name}
+                      {isKwartet && t2.members
+                        ? t2.members.map((naam, i) => (
+                            <span key={i}>
+                              {i > 0 && ", "}
+                              <span className="kwartet-letter">{KWARTET_LETTERS[i]}</span>. {naam}
+                            </span>
+                          ))
+                        : t2.name}
                       {isPoules && t2.poule && (
                         <span className="team-num poule-num">{t.match13.pouleLabel(t2.poule)}</span>
                       )}
@@ -1627,7 +1720,9 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                           <>
                             <div className="kwartet-onderdeel-label">{t.match13.enkelspelLabel}</div>
                             <div className={"match-row" + (isInvalidSubScore(m.scoreEnkelA, m.scoreEnkelB) ? " invalid" : "")}>
-                              <span>{m.alleenNaamA}</span>
+                              <span>
+                                <span className="kwartet-letter">{m.alleenLetterA}</span>. {m.alleenNaamA}
+                              </span>
                               <input
                                 className={
                                   isCompleteSubScore(m.scoreEnkelA, m.scoreEnkelB) ? (m.scoreEnkelA === 13 ? "won" : "lost") : ""
@@ -1640,7 +1735,9 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                               />
                             </div>
                             <div className={"match-row" + (isInvalidSubScore(m.scoreEnkelA, m.scoreEnkelB) ? " invalid" : "")}>
-                              <span>{m.alleenNaamB}</span>
+                              <span>
+                                <span className="kwartet-letter">{m.alleenLetterB}</span>. {m.alleenNaamB}
+                              </span>
                               <input
                                 className={
                                   isCompleteSubScore(m.scoreEnkelA, m.scoreEnkelB) ? (m.scoreEnkelB === 13 ? "won" : "lost") : ""

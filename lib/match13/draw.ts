@@ -1,4 +1,4 @@
-import type { Match, Role, Round, Team } from "./types";
+import { KWARTET_LETTERS, type Match, type Role, type Round, type Team } from "./types";
 
 // Real opponent-avoidance draw engine.
 //
@@ -551,6 +551,8 @@ export function assignKwartetRoles(
       ...m,
       alleenNaamA: teamA?.members?.[idxA] ?? teamA?.name ?? "",
       alleenNaamB: teamB?.members?.[idxB] ?? teamB?.name ?? "",
+      alleenLetterA: KWARTET_LETTERS[idxA],
+      alleenLetterB: KWARTET_LETTERS[idxB],
     };
   });
 
