@@ -70,6 +70,63 @@ function FilterItem({
   );
 }
 
+// Anders dan de overige filters (die telkens tussen meerdere opties kiezen en
+// dus een uitklap-lijst nodig hebben) is dit een directe aan/uit-schakelaar:
+// 1 klik past het filter meteen toe. Een eigen blauw accent (i.p.v. het
+// gele accordion-uiterlijk) maakt dat verschil in gedrag ook visueel duidelijk.
+function KwalificatieToggle({
+  actief,
+  onClick,
+  titel,
+  label,
+  aantal,
+}: {
+  actief: boolean;
+  onClick: () => void;
+  titel: string;
+  label: string;
+  aantal: number;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`mb-3.5 flex w-full items-center gap-2.5 rounded-[10px] border-[1.5px] p-[1.1rem] text-left transition-all ${
+        actief
+          ? "border-[#1a4480] bg-[#1a4480] shadow-[0_2px_10px_rgba(26,68,128,0.25)]"
+          : "border-[#1a4480]/30 bg-white hover:border-[#1a4480]"
+      }`}
+    >
+      <span
+        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 text-xs transition-colors ${
+          actief ? "border-white bg-white text-[#1a4480]" : "border-[#1a4480]/40 text-transparent"
+        }`}
+        aria-hidden
+      >
+        ✓
+      </span>
+      <span className="min-w-0 flex-1">
+        <span
+          className={`block truncate text-[0.66rem] font-extrabold uppercase tracking-widest ${
+            actief ? "text-white/70" : "text-[#1a4480]"
+          }`}
+        >
+          {titel}
+        </span>
+        <span className={`block truncate text-[0.83rem] font-bold ${actief ? "text-white" : "text-donker"}`}>
+          {label}
+        </span>
+      </span>
+      <span
+        className={`min-w-[20px] shrink-0 rounded-full px-1.5 py-[0.1rem] text-center text-[0.67rem] font-bold ${
+          actief ? "bg-white text-[#1a4480]" : "bg-[#eff6ff] text-[#1a4480]"
+        }`}
+      >
+        {aantal}
+      </span>
+    </button>
+  );
+}
+
 export function FilterSidebar({
   alleToernooien,
   filters,
@@ -108,17 +165,13 @@ export function FilterSidebar({
         />
       </div>
 
-      <FilterCard
+      <KwalificatieToggle
+        actief={filters.kwalificatie === true}
+        onClick={() => setFilters({ ...filters, kwalificatie: filters.kwalificatie === true ? null : true })}
         titel={t.filters.kwalificatie}
-        actiefLabel={filters.kwalificatie ? t.filters.metKwalificatiedata : null}
-      >
-        <FilterItem
-          actief={filters.kwalificatie === true}
-          onClick={() => setFilters({ ...filters, kwalificatie: filters.kwalificatie === true ? null : true })}
-          label={t.filters.metKwalificatiedata}
-          aantal={tel("kwalificatie", heeftKwalificatiedata)}
-        />
-      </FilterCard>
+        label={t.filters.metKwalificatiedata}
+        aantal={tel("kwalificatie", heeftKwalificatiedata)}
+      />
 
       <FilterCard titel={t.filters.regio} actiefLabel={filters.regio ? vertaalRegio(filters.regio, taal) : null}>
         <FilterItem
