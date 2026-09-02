@@ -97,16 +97,15 @@ function KwalificatieToggle({
       }`}
     >
       <span
-        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 text-xs transition-colors ${
-          actief ? "border-white bg-white text-[#1a4480]" : "border-[#1a4480]/40 text-transparent"
+        className={`h-7 w-7 shrink-0 rounded-full border-2 bg-contain bg-center bg-no-repeat ${
+          actief ? "border-white bg-white" : "border-[#1a4480]/30 bg-white"
         }`}
+        style={{ backgroundImage: "url('/images/logo-icon.png')" }}
         aria-hidden
-      >
-        ✓
-      </span>
+      />
       <span className="min-w-0 flex-1">
         <span
-          className={`block truncate text-[0.66rem] font-extrabold uppercase tracking-widest ${
+          className={`block text-[0.66rem] font-extrabold uppercase tracking-widest ${
             actief ? "text-white/70" : "text-[#1a4480]"
           }`}
         >
