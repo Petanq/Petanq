@@ -408,6 +408,22 @@ describe("assignKwartetRoles", () => {
     expect(result[0].alleenLetterB).toBe("C");
   });
 
+  it("gives the triplet its own plein, offset past every match's enkelspel plein", () => {
+    const teamA = makeKwartetTeam("A", ["A1", "A2", "A3", "A4"]);
+    const teamB = makeKwartetTeam("B", ["B1", "B2", "B3", "B4"]);
+    const teamC = makeKwartetTeam("C", ["C1", "C2", "C3", "C4"]);
+    const teamD = makeKwartetTeam("D", ["D1", "D2", "D3", "D4"]);
+    const matches: Match[] = [
+      { court: 1, teamA: "A", teamB: "B" },
+      { court: 2, teamA: "C", teamB: "D" },
+    ];
+
+    const { matches: result } = assignKwartetRoles(matches, [teamA, teamB, teamC, teamD]);
+
+    expect(result[0].courtTriplet).toBe(3); // 1 + 2 speelbare wedstrijden
+    expect(result[1].courtTriplet).toBe(4);
+  });
+
   it("advances each involved team's index by 1, wrapping 3 back to 0", () => {
     const teamA = makeKwartetTeam("A", ["A1", "A2", "A3", "A4"], 1);
     const teamB = makeKwartetTeam("B", ["B1", "B2", "B3", "B4"], 3);

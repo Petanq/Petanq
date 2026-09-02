@@ -538,6 +538,10 @@ export function assignKwartetRoles(
 ): { matches: Match[]; alleenIndexUpdates: Map<string, number> } {
   const teamById = new Map(teams.map((t) => [t.id, t]));
   const alleenIndexUpdates = new Map<string, number>();
+  // The enkelspel and triplet happen at the same time between different
+  // people, so they need separate pleinen — the triplet's plein numbers
+  // start right after every match's own enkelspel plein.
+  const speelbareMatches = matches.filter((m) => m.teamB !== null).length;
 
   const updatedMatches = matches.map((m) => {
     if (m.teamB === null) return m;
@@ -553,6 +557,7 @@ export function assignKwartetRoles(
       alleenNaamB: teamB?.members?.[idxB] ?? teamB?.name ?? "",
       alleenLetterA: KWARTET_LETTERS[idxA],
       alleenLetterB: KWARTET_LETTERS[idxB],
+      courtTriplet: m.court + speelbareMatches,
     };
   });
 

@@ -694,6 +694,15 @@
 .match13-scope .kwartet-onderdeel-label:first-of-type {
   margin-top: 0;
 }
+.match13-scope .kwartet-onderdeel-met-plein {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.match13-scope .kwartet-onderdeel-met-plein .court-label {
+  margin-bottom: 0;
+}
 .match13-scope .kwartet-totaal {
   margin-top: 0.5rem;
   padding-top: 0.5rem;

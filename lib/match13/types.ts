@@ -34,11 +34,14 @@ export interface Match {
   // (this named player, with their fixed A/B/C/D letter) and a triplet (the
   // other 3, playersA/playersB unused). scoreA/scoreB are the sum of the
   // two sub-results below, recomputed automatically whenever a sub-score
-  // changes.
+  // changes. The enkelspel and triplet happen at the same time between
+  // different people, so they need their own plein — `court` is the
+  // enkelspel's, `courtTriplet` the triplet's.
   alleenNaamA?: string;
   alleenNaamB?: string;
   alleenLetterA?: string;
   alleenLetterB?: string;
+  courtTriplet?: number;
   scoreEnkelA?: number;
   scoreEnkelB?: number;
   scoreTripletA?: number;
