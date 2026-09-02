@@ -97,7 +97,7 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
       <main>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-titel text-2xl tracking-wide text-blauw">{t.lijst.titel}</h2>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             {weergave === "lijst" && (
               <MonthPills
                 maandSleutels={maandSleutels}
