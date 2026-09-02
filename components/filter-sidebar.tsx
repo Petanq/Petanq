@@ -130,6 +130,14 @@ export function FilterSidebar({
   setFilters: (f: FilterState) => void;
 }) {
   const { t, taal } = useTranslation();
+  const [mobielOpen, setMobielOpen] = useState(false);
+  const aantalActieveFilters = [
+    filters.regio,
+    filters.provincie,
+    filters.categorie,
+    filters.formule,
+    filters.type,
+  ].filter(Boolean).length;
 
   function voldoetAanOverigeFilters(tn: Toernooi, exclusief: keyof FilterState) {
     if (exclusief !== "regio" && filters.regio && tn.regio !== filters.regio) return false;
@@ -166,114 +174,138 @@ export function FilterSidebar({
         aantal={tel("kwalificatie", heeftKwalificatiedata)}
       />
 
-      <FilterCard titel={t.filters.regio} actiefLabel={filters.regio ? vertaalRegio(filters.regio, taal) : null}>
-        <FilterItem
-          actief={filters.regio === null}
-          onClick={() => setFilters({ ...filters, regio: null, provincie: null })}
-          label={t.filters.heelBelgie}
-          aantal={tel("regio", () => true)}
-        />
-        {REGIOS.map((regio) => (
-          <FilterItem
-            key={regio}
-            actief={filters.regio === regio}
-            onClick={() => setFilters({ ...filters, regio, provincie: null })}
-            label={vertaalRegio(regio, taal)}
-            aantal={tel("regio", (tn) => tn.regio === regio)}
-          />
-        ))}
-      </FilterCard>
-
-      <FilterCard
-        titel={t.filters.provincie}
-        actiefLabel={filters.provincie ? vertaalProvincie(filters.provincie, taal) : null}
+      <button
+        onClick={() => setMobielOpen((v) => !v)}
+        className="mb-3.5 flex w-full items-center justify-between gap-2 rounded-[10px] border-[1.5px] border-rand bg-white p-[1.1rem] text-left lg:hidden"
       >
-        <FilterItem
-          actief={filters.provincie === null}
-          onClick={() => setFilters({ ...filters, provincie: null })}
-          label={t.filters.alleProvincies}
-          aantal={tel("provincie", () => true)}
-        />
-        {ALLE_PROVINCIES.filter((p) => !filters.regio || PROVINCIE_REGIO[p] === filters.regio).map((provincie) => (
-          <FilterItem
-            key={provincie}
-            actief={filters.provincie === provincie}
-            onClick={() => setFilters({ ...filters, provincie })}
-            label={vertaalProvincie(provincie, taal)}
-            aantal={tel("provincie", (tn) => tn.provincie === provincie)}
-          />
-        ))}
-      </FilterCard>
+        <span className="flex items-center gap-2">
+          <span className="text-[0.83rem] font-bold text-donker">{t.filters.meerFilters}</span>
+          {aantalActieveFilters > 0 && (
+            <span className="rounded-full bg-geel px-1.5 py-[0.1rem] text-[0.67rem] font-bold text-donker">
+              {aantalActieveFilters}
+            </span>
+          )}
+        </span>
+        <span
+          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#fdf3d9] text-xs text-[#b8860b] transition-transform ${
+            mobielOpen ? "rotate-180" : ""
+          }`}
+          aria-hidden
+        >
+          ▾
+        </span>
+      </button>
 
-      <FilterCard
-        titel={t.filters.categorie}
-        actiefLabel={filters.categorie ? t.categorie[filters.categorie] : null}
-      >
-        <FilterItem
-          actief={filters.categorie === null}
-          onClick={() => setFilters({ ...filters, categorie: null })}
-          label={t.filters.alleCategorieen}
-          aantal={tel("categorie", () => true)}
-        />
-        {CATEGORIEEN.map((categorie) => (
+      <div className={`${mobielOpen ? "block" : "hidden"} lg:block`}>
+        <FilterCard titel={t.filters.regio} actiefLabel={filters.regio ? vertaalRegio(filters.regio, taal) : null}>
           <FilterItem
-            key={categorie}
-            actief={filters.categorie === categorie}
-            onClick={() => setFilters({ ...filters, categorie })}
-            label={t.categorie[categorie]}
-            aantal={tel("categorie", (tn) => tn.categorie === categorie)}
-            pip={CATEGORIE_PIP[categorie]}
+            actief={filters.regio === null}
+            onClick={() => setFilters({ ...filters, regio: null, provincie: null })}
+            label={t.filters.heelBelgie}
+            aantal={tel("regio", () => true)}
           />
-        ))}
-      </FilterCard>
+          {REGIOS.map((regio) => (
+            <FilterItem
+              key={regio}
+              actief={filters.regio === regio}
+              onClick={() => setFilters({ ...filters, regio, provincie: null })}
+              label={vertaalRegio(regio, taal)}
+              aantal={tel("regio", (tn) => tn.regio === regio)}
+            />
+          ))}
+        </FilterCard>
 
-      <FilterCard titel={t.filters.formule} actiefLabel={filters.formule ? t.formule[filters.formule] : null}>
-        <FilterItem
-          actief={filters.formule === null}
-          onClick={() => setFilters({ ...filters, formule: null })}
-          label={t.filters.alleFormules}
-          aantal={tel("formule", () => true)}
-        />
-        {FORMULES.map((formule) => (
+        <FilterCard
+          titel={t.filters.provincie}
+          actiefLabel={filters.provincie ? vertaalProvincie(filters.provincie, taal) : null}
+        >
           <FilterItem
-            key={formule}
-            actief={filters.formule === formule}
-            onClick={() => setFilters({ ...filters, formule })}
-            label={t.formule[formule]}
-            aantal={tel("formule", (tn) => tn.formule === formule)}
+            actief={filters.provincie === null}
+            onClick={() => setFilters({ ...filters, provincie: null })}
+            label={t.filters.alleProvincies}
+            aantal={tel("provincie", () => true)}
           />
-        ))}
-      </FilterCard>
+          {ALLE_PROVINCIES.filter((p) => !filters.regio || PROVINCIE_REGIO[p] === filters.regio).map((provincie) => (
+            <FilterItem
+              key={provincie}
+              actief={filters.provincie === provincie}
+              onClick={() => setFilters({ ...filters, provincie })}
+              label={vertaalProvincie(provincie, taal)}
+              aantal={tel("provincie", (tn) => tn.provincie === provincie)}
+            />
+          ))}
+        </FilterCard>
 
-      <FilterCard
-        titel={t.form.tornooiType}
-        actiefLabel={
-          filters.type === "officieel"
-            ? t.form.officieelToernooi
-            : filters.type === "open"
-              ? t.form.openToernooi
-              : null
-        }
-      >
-        <FilterItem
-          actief={filters.type === null}
-          onClick={() => setFilters({ ...filters, type: null })}
-          label={t.filters.alleTypes}
-          aantal={tel("type", () => true)}
-        />
-        <FilterItem
-          actief={filters.type === "officieel"}
-          onClick={() => setFilters({ ...filters, type: "officieel" })}
-          label={t.form.officieelToernooi}
-          aantal={tel("type", (tn) => !tn.open_toernooi)}
-        />
-        <FilterItem
-          actief={filters.type === "open"}
-          onClick={() => setFilters({ ...filters, type: "open" })}
-          label={t.form.openToernooi}
-          aantal={tel("type", (tn) => tn.open_toernooi)}
-        />
-      </FilterCard>
+        <FilterCard
+          titel={t.filters.categorie}
+          actiefLabel={filters.categorie ? t.categorie[filters.categorie] : null}
+        >
+          <FilterItem
+            actief={filters.categorie === null}
+            onClick={() => setFilters({ ...filters, categorie: null })}
+            label={t.filters.alleCategorieen}
+            aantal={tel("categorie", () => true)}
+          />
+          {CATEGORIEEN.map((categorie) => (
+            <FilterItem
+              key={categorie}
+              actief={filters.categorie === categorie}
+              onClick={() => setFilters({ ...filters, categorie })}
+              label={t.categorie[categorie]}
+              aantal={tel("categorie", (tn) => tn.categorie === categorie)}
+              pip={CATEGORIE_PIP[categorie]}
+            />
+          ))}
+        </FilterCard>
+
+        <FilterCard titel={t.filters.formule} actiefLabel={filters.formule ? t.formule[filters.formule] : null}>
+          <FilterItem
+            actief={filters.formule === null}
+            onClick={() => setFilters({ ...filters, formule: null })}
+            label={t.filters.alleFormules}
+            aantal={tel("formule", () => true)}
+          />
+          {FORMULES.map((formule) => (
+            <FilterItem
+              key={formule}
+              actief={filters.formule === formule}
+              onClick={() => setFilters({ ...filters, formule })}
+              label={t.formule[formule]}
+              aantal={tel("formule", (tn) => tn.formule === formule)}
+            />
+          ))}
+        </FilterCard>
+
+        <FilterCard
+          titel={t.form.tornooiType}
+          actiefLabel={
+            filters.type === "officieel"
+              ? t.form.officieelToernooi
+              : filters.type === "open"
+                ? t.form.openToernooi
+                : null
+          }
+        >
+          <FilterItem
+            actief={filters.type === null}
+            onClick={() => setFilters({ ...filters, type: null })}
+            label={t.filters.alleTypes}
+            aantal={tel("type", () => true)}
+          />
+          <FilterItem
+            actief={filters.type === "officieel"}
+            onClick={() => setFilters({ ...filters, type: "officieel" })}
+            label={t.form.officieelToernooi}
+            aantal={tel("type", (tn) => !tn.open_toernooi)}
+          />
+          <FilterItem
+            actief={filters.type === "open"}
+            onClick={() => setFilters({ ...filters, type: "open" })}
+            label={t.form.openToernooi}
+            aantal={tel("type", (tn) => tn.open_toernooi)}
+          />
+        </FilterCard>
+      </div>
     </aside>
   );
 }

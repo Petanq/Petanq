@@ -56,6 +56,7 @@ const nl = {
     gratis: "Gratis",
     betalend: "Betalend",
     wisFilters: "Filters wissen",
+    meerFilters: "Filters",
   },
   lijst: {
     titel: "Aankomende toernooien",
@@ -687,6 +688,7 @@ const fr: typeof nl = {
     gratis: "Gratuit",
     betalend: "Payant",
     wisFilters: "Effacer les filtres",
+    meerFilters: "Filtres",
   },
   lijst: {
     titel: "Tournois à venir",
