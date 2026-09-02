@@ -7,6 +7,7 @@ import { useTranslation } from "@/lib/language-context";
 import type { Format, Match, Role, Round, Team } from "@/lib/match13/types";
 import { FORMAT_LABELS, FORMAT_TEAM_SIZE } from "@/lib/match13/types";
 import {
+  assignKwartetRoles,
   buildCourtHistory,
   buildMeleeHistory,
   buildOpponentHistory,
@@ -15,7 +16,7 @@ import {
   generateRound,
 } from "@/lib/match13/draw";
 import { computeMeleeStandings, computeStandings, type StandingRow } from "@/lib/match13/standings";
-import { isCompleteMatch, isInvalidMatch } from "@/lib/match13/validation";
+import { isCompleteMatch, isInvalidMatch, isCompleteSubScore, isInvalidSubScore } from "@/lib/match13/validation";
 import {
   assignPoules,
   buildKnockoutBracket,
@@ -382,6 +383,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   const { clubName, format, entryFee, totalRounds, teams, rounds, pouleBracket, knockoutBracket } = state;
   const isMeli = format === "meli";
   const isPoules = format === "poules";
+  const isKwartet = format === "kwartet";
   const teamSize = FORMAT_TEAM_SIZE[format];
   const minToPlay = isMeli ? 6 : isPoules ? 3 : 2;
   // Verplicht vóór je nog iets kan doen — maar enkel bij de allereerste
@@ -471,14 +473,23 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
 
   function addTeam() {
     if (!canAddTeam) return;
-    const name = playerInputs.map(cleanName).join(" & ");
+    const members = playerInputs.map(cleanName);
+    const name = members.join(" & ");
     setState((s) => {
       const nextNumber = s.teams.reduce((max, t) => Math.max(max, t.number || 0), 0) + 1;
       return {
         ...s,
         teams: [
           ...s.teams,
-          { id: nextId(), number: nextNumber, name, present: true, paid: false, byes: 0 },
+          {
+            id: nextId(),
+            number: nextNumber,
+            name,
+            present: true,
+            paid: false,
+            byes: 0,
+            ...(isKwartet ? { members, kwartetAlleenIndex: 0 } : {}),
+          },
         ],
       };
     });
@@ -571,10 +582,18 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           );
     const { matches, byeTeamId } = result;
 
+    const { matches: finalMatches, alleenIndexUpdates: kwartetIndexUpdates } = isKwartet
+      ? assignKwartetRoles(matches, teams)
+      : { matches, alleenIndexUpdates: new Map<string, number>() };
+
     setState((s) => ({
       ...s,
-      rounds: [...s.rounds, { number: roundNumber, matches, startedAt: Date.now() }],
-      teams: s.teams.map((t) => (t.id === byeTeamId ? { ...t, byes: t.byes + 1 } : t)),
+      rounds: [...s.rounds, { number: roundNumber, matches: finalMatches, startedAt: Date.now() }],
+      teams: s.teams.map((t) => {
+        const metBye = t.id === byeTeamId ? { ...t, byes: t.byes + 1 } : t;
+        const nieuweIndex = kwartetIndexUpdates.get(t.id);
+        return nieuweIndex === undefined ? metBye : { ...metBye, kwartetAlleenIndex: nieuweIndex };
+      }),
     }));
     setTab("zaal");
   }
@@ -693,6 +712,43 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     });
   }
 
+  // Kwartet: elk van de 2 deeluitslagen (enkelspel/triplet) apart ingeven —
+  // scoreA/scoreB wordt telkens automatisch herberekend als de som van
+  // beide, zodat klassement/validatie daarna gewoon verder werken zoals bij
+  // elk ander speltype, zonder zelf iets van "enkelspel"/"triplet" te weten.
+  function updateKwartetScore(
+    roundIndex: number,
+    matchIndex: number,
+    deel: "Enkel" | "Triplet",
+    side: "A" | "B",
+    value: string
+  ) {
+    setState((s) => {
+      const rounds = s.rounds.slice();
+      const round = { ...rounds[roundIndex] };
+      const matches = round.matches.slice();
+      const match = { ...matches[matchIndex] };
+      const n = value === "" ? undefined : Math.min(13, Math.max(0, Number(value)));
+      if (deel === "Enkel" && side === "A") match.scoreEnkelA = n;
+      else if (deel === "Enkel" && side === "B") match.scoreEnkelB = n;
+      else if (deel === "Triplet" && side === "A") match.scoreTripletA = n;
+      else match.scoreTripletB = n;
+      match.scoreA =
+        match.scoreEnkelA !== undefined && match.scoreTripletA !== undefined
+          ? match.scoreEnkelA + match.scoreTripletA
+          : undefined;
+      match.scoreB =
+        match.scoreEnkelB !== undefined && match.scoreTripletB !== undefined
+          ? match.scoreEnkelB + match.scoreTripletB
+          : undefined;
+      match.finishedAt = isCompleteMatch(match) ? Date.now() : undefined;
+      matches[matchIndex] = match;
+      round.matches = matches;
+      rounds[roundIndex] = round;
+      return { ...s, rounds };
+    });
+  }
+
   // Same escape hatch as updateBracketCourt, for the fixed-format court grid.
   function updateCourt(roundIndex: number, matchIndex: number, court: number) {
     setState((s) => {
@@ -793,6 +849,9 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
 
   const renderRondeKaart = (m: Match, key: string | number, eersteZijde: "A" | "B", rondeNummer: number) => {
     const tweedeZijde = eersteZijde === "A" ? "B" : "A";
+    const kwartetMatch = isKwartet && m.alleenNaamA !== undefined;
+    const alleenEerste = eersteZijde === "A" ? m.alleenNaamA : m.alleenNaamB;
+    const alleenTweede = eersteZijde === "A" ? m.alleenNaamB : m.alleenNaamA;
     return (
       <article className="mk-kaart" key={key}>
         <div className="mk-kop">
@@ -818,22 +877,52 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           </div>
           <div className="mk-team">{printTeamHeader(m, tweedeZijde)}</div>
         </div>
-        <div className="mk-score">
-          <ul className="mk-tally">
-            {Array.from({ length: 13 }).map((_, n) => (
-              <li key={n} />
-            ))}
-          </ul>
-          <div className="mk-mid">
-            <span>{t.match13.printUitslag}</span>
-            <span className="lijn" />
+        {kwartetMatch ? (
+          <div className="mk-kwartet">
+            <div className="mk-kwartet-deel">
+              <div className="mk-kwartet-koppen">
+                <span>{alleenEerste}</span>
+                <span className="mk-kwartet-label">{t.match13.enkelspelLabel}</span>
+                <span>{alleenTweede}</span>
+              </div>
+              <div className="mk-kwartet-vakjes">
+                <span className="mk-vak" />
+                <span>–</span>
+                <span className="mk-vak" />
+              </div>
+            </div>
+            <div className="mk-kwartet-deel">
+              <div className="mk-kwartet-koppen">
+                <span className="mk-kwartet-label">{t.match13.tripletLabel}</span>
+              </div>
+              <div className="mk-kwartet-vakjes">
+                <span className="mk-vak" />
+                <span>–</span>
+                <span className="mk-vak" />
+              </div>
+            </div>
+            <div className="mk-kwartet-totaal">
+              {t.match13.totaalLabel}: <span className="mk-vak" /> – <span className="mk-vak" />
+            </div>
           </div>
-          <ul className="mk-tally">
-            {Array.from({ length: 13 }).map((_, n) => (
-              <li key={n} />
-            ))}
-          </ul>
-        </div>
+        ) : (
+          <div className="mk-score">
+            <ul className="mk-tally">
+              {Array.from({ length: 13 }).map((_, n) => (
+                <li key={n} />
+              ))}
+            </ul>
+            <div className="mk-mid">
+              <span>{t.match13.printUitslag}</span>
+              <span className="lijn" />
+            </div>
+            <ul className="mk-tally">
+              {Array.from({ length: 13 }).map((_, n) => (
+                <li key={n} />
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="mk-voet">
           <div className="mk-vak" />
           <div className="mk-mid2">
@@ -1089,6 +1178,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                     ? t.match13.hintMeli
                     : isPoules
                     ? t.match13.hintPoules
+                    : isKwartet
+                    ? t.match13.hintKwartet
                     : t.match13.hintAndereFormats}
                 </div>
               </div>
@@ -1532,28 +1623,100 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                         {currentRound.startedAt && (
                           <MatchTimer startedAt={currentRound.startedAt} finishedAt={m.finishedAt} />
                         )}
-                        <div className={"match-row" + (isInvalidMatch(m) ? " invalid" : "")}>
-                          <span>{sideLabel(m, "A")}</span>
-                          <input
-                            className={scoreClass(m, "scoreA")}
-                            type="number"
-                            min={0}
-                            max={13}
-                            value={m.scoreA ?? ""}
-                            onChange={(e) => updateScore(rounds.length - 1, i, "scoreA", e.target.value)}
-                          />
-                        </div>
-                        <div className={"match-row" + (isInvalidMatch(m) ? " invalid" : "")}>
-                          <span>{sideLabel(m, "B")}</span>
-                          <input
-                            className={scoreClass(m, "scoreB")}
-                            type="number"
-                            min={0}
-                            max={13}
-                            value={m.scoreB ?? ""}
-                            onChange={(e) => updateScore(rounds.length - 1, i, "scoreB", e.target.value)}
-                          />
-                        </div>
+                        {isKwartet && m.alleenNaamA !== undefined ? (
+                          <>
+                            <div className="kwartet-onderdeel-label">{t.match13.enkelspelLabel}</div>
+                            <div className={"match-row" + (isInvalidSubScore(m.scoreEnkelA, m.scoreEnkelB) ? " invalid" : "")}>
+                              <span>{m.alleenNaamA}</span>
+                              <input
+                                className={
+                                  isCompleteSubScore(m.scoreEnkelA, m.scoreEnkelB) ? (m.scoreEnkelA === 13 ? "won" : "lost") : ""
+                                }
+                                type="number"
+                                min={0}
+                                max={13}
+                                value={m.scoreEnkelA ?? ""}
+                                onChange={(e) => updateKwartetScore(rounds.length - 1, i, "Enkel", "A", e.target.value)}
+                              />
+                            </div>
+                            <div className={"match-row" + (isInvalidSubScore(m.scoreEnkelA, m.scoreEnkelB) ? " invalid" : "")}>
+                              <span>{m.alleenNaamB}</span>
+                              <input
+                                className={
+                                  isCompleteSubScore(m.scoreEnkelA, m.scoreEnkelB) ? (m.scoreEnkelB === 13 ? "won" : "lost") : ""
+                                }
+                                type="number"
+                                min={0}
+                                max={13}
+                                value={m.scoreEnkelB ?? ""}
+                                onChange={(e) => updateKwartetScore(rounds.length - 1, i, "Enkel", "B", e.target.value)}
+                              />
+                            </div>
+                            <div className="kwartet-onderdeel-label">{t.match13.tripletLabel}</div>
+                            <div className={"match-row" + (isInvalidSubScore(m.scoreTripletA, m.scoreTripletB) ? " invalid" : "")}>
+                              <span>{sideLabel(m, "A")}</span>
+                              <input
+                                className={
+                                  isCompleteSubScore(m.scoreTripletA, m.scoreTripletB)
+                                    ? m.scoreTripletA === 13
+                                      ? "won"
+                                      : "lost"
+                                    : ""
+                                }
+                                type="number"
+                                min={0}
+                                max={13}
+                                value={m.scoreTripletA ?? ""}
+                                onChange={(e) => updateKwartetScore(rounds.length - 1, i, "Triplet", "A", e.target.value)}
+                              />
+                            </div>
+                            <div className={"match-row" + (isInvalidSubScore(m.scoreTripletA, m.scoreTripletB) ? " invalid" : "")}>
+                              <span>{sideLabel(m, "B")}</span>
+                              <input
+                                className={
+                                  isCompleteSubScore(m.scoreTripletA, m.scoreTripletB)
+                                    ? m.scoreTripletB === 13
+                                      ? "won"
+                                      : "lost"
+                                    : ""
+                                }
+                                type="number"
+                                min={0}
+                                max={13}
+                                value={m.scoreTripletB ?? ""}
+                                onChange={(e) => updateKwartetScore(rounds.length - 1, i, "Triplet", "B", e.target.value)}
+                              />
+                            </div>
+                            <div className="kwartet-totaal">
+                              {t.match13.totaalLabel}: {m.scoreA ?? "–"} – {m.scoreB ?? "–"}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className={"match-row" + (isInvalidMatch(m) ? " invalid" : "")}>
+                              <span>{sideLabel(m, "A")}</span>
+                              <input
+                                className={scoreClass(m, "scoreA")}
+                                type="number"
+                                min={0}
+                                max={13}
+                                value={m.scoreA ?? ""}
+                                onChange={(e) => updateScore(rounds.length - 1, i, "scoreA", e.target.value)}
+                              />
+                            </div>
+                            <div className={"match-row" + (isInvalidMatch(m) ? " invalid" : "")}>
+                              <span>{sideLabel(m, "B")}</span>
+                              <input
+                                className={scoreClass(m, "scoreB")}
+                                type="number"
+                                min={0}
+                                max={13}
+                                value={m.scoreB ?? ""}
+                                onChange={(e) => updateScore(rounds.length - 1, i, "scoreB", e.target.value)}
+                              />
+                            </div>
+                          </>
+                        )}
                         {isInvalidMatch(m) && (
                           <p className="hint" style={{ color: "var(--warn)", marginTop: "0.4rem" }}>
                             {m.scoreA === 13 && m.scoreB === 13 ? t.match13.tweeKeer13 : t.match13.eenMoetOp13}
@@ -1604,29 +1767,77 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                           </span>
                           {m.teamB !== null ? (
                             <>
-                              <span className={"prev-score-edit" + (isInvalidMatch(m) ? " invalid" : "")}>
-                                <input
-                                  className={scoreClass(m, "scoreA")}
-                                  type="number"
-                                  min={0}
-                                  max={13}
-                                  value={m.scoreA ?? ""}
-                                  onChange={(e) =>
-                                    updateScore(roundIndex, mi, "scoreA", e.target.value)
-                                  }
-                                />
-                                <span>&ndash;</span>
-                                <input
-                                  className={scoreClass(m, "scoreB")}
-                                  type="number"
-                                  min={0}
-                                  max={13}
-                                  value={m.scoreB ?? ""}
-                                  onChange={(e) =>
-                                    updateScore(roundIndex, mi, "scoreB", e.target.value)
-                                  }
-                                />
-                              </span>
+                              {isKwartet && m.alleenNaamA !== undefined ? (
+                                <span
+                                  className={"prev-score-edit" + (isInvalidMatch(m) ? " invalid" : "")}
+                                  style={{ flexDirection: "column", alignItems: "flex-start", gap: "0.2rem" }}
+                                >
+                                  <span style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      max={13}
+                                      value={m.scoreEnkelA ?? ""}
+                                      onChange={(e) => updateKwartetScore(roundIndex, mi, "Enkel", "A", e.target.value)}
+                                    />
+                                    <span>&ndash;</span>
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      max={13}
+                                      value={m.scoreEnkelB ?? ""}
+                                      onChange={(e) => updateKwartetScore(roundIndex, mi, "Enkel", "B", e.target.value)}
+                                    />
+                                    <span className="hint" style={{ fontSize: "0.7rem" }}>
+                                      {t.match13.enkelspelLabel}
+                                    </span>
+                                  </span>
+                                  <span style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      max={13}
+                                      value={m.scoreTripletA ?? ""}
+                                      onChange={(e) => updateKwartetScore(roundIndex, mi, "Triplet", "A", e.target.value)}
+                                    />
+                                    <span>&ndash;</span>
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      max={13}
+                                      value={m.scoreTripletB ?? ""}
+                                      onChange={(e) => updateKwartetScore(roundIndex, mi, "Triplet", "B", e.target.value)}
+                                    />
+                                    <span className="hint" style={{ fontSize: "0.7rem" }}>
+                                      {t.match13.tripletLabel}
+                                    </span>
+                                  </span>
+                                </span>
+                              ) : (
+                                <span className={"prev-score-edit" + (isInvalidMatch(m) ? " invalid" : "")}>
+                                  <input
+                                    className={scoreClass(m, "scoreA")}
+                                    type="number"
+                                    min={0}
+                                    max={13}
+                                    value={m.scoreA ?? ""}
+                                    onChange={(e) =>
+                                      updateScore(roundIndex, mi, "scoreA", e.target.value)
+                                    }
+                                  />
+                                  <span>&ndash;</span>
+                                  <input
+                                    className={scoreClass(m, "scoreB")}
+                                    type="number"
+                                    min={0}
+                                    max={13}
+                                    value={m.scoreB ?? ""}
+                                    onChange={(e) =>
+                                      updateScore(roundIndex, mi, "scoreB", e.target.value)
+                                    }
+                                  />
+                                </span>
+                              )}
                               <span className={m.scoreB === 13 ? "winner" : "loser"}>
                                 {sideLabel(m, "B")}
                               </span>

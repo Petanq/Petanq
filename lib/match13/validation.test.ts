@@ -44,6 +44,18 @@ describe("isCompleteMatch", () => {
     expect(isCompleteMatch(melee)).toBe(false); // no scores yet — must still require them
     expect(isCompleteMatch({ ...melee, scoreA: 13, scoreB: 7 })).toBe(true);
   });
+
+  it("needs BOTH Kwartet sub-scores individually at 13, not just the summed total", () => {
+    const kwartet: Match = { court: 1, teamA: "A", teamB: "B", alleenNaamA: "Jan", alleenNaamB: "Piet" };
+    expect(isCompleteMatch({ ...kwartet, scoreEnkelA: 13, scoreEnkelB: 4 })).toBe(false); // triplet part missing
+    expect(
+      isCompleteMatch({ ...kwartet, scoreEnkelA: 13, scoreEnkelB: 4, scoreTripletA: 8, scoreTripletB: 13 })
+    ).toBe(true);
+    // A combined total of 13 (e.g. 6+7) means nothing on its own for Kwartet.
+    expect(
+      isCompleteMatch({ ...kwartet, scoreA: 13, scoreB: 8, scoreEnkelA: 6, scoreEnkelB: 5, scoreTripletA: 7, scoreTripletB: 3 })
+    ).toBe(false);
+  });
 });
 
 describe("isInvalidMatch", () => {
@@ -59,5 +71,11 @@ describe("isInvalidMatch", () => {
 
   it("is false for a valid finished result", () => {
     expect(isInvalidMatch(m(13, 6))).toBe(false);
+  });
+
+  it("flags an invalid Kwartet sub-score even while the other sub-match is still empty", () => {
+    const kwartet: Match = { court: 1, teamA: "A", teamB: "B", alleenNaamA: "Jan", alleenNaamB: "Piet" };
+    expect(isInvalidMatch({ ...kwartet, scoreEnkelA: 13, scoreEnkelB: 13 })).toBe(true);
+    expect(isInvalidMatch({ ...kwartet, scoreEnkelA: 13, scoreEnkelB: 4 })).toBe(false);
   });
 });

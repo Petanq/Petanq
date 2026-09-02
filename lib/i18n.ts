@@ -456,6 +456,8 @@ const nl = {
       "Bij Poules speel je in poules van 4: winnaars tegen winnaars (rechtstreeks door bij 2 zeges), verliezers tegen verliezers (bij verlies uitgeschakeld), en een barrage om de 2de plaats. Nadien volgt een knock-outfase — elk plein speelt door zodra zijn twee tegenstanders gekend zijn, zonder op de andere pleinen te wachten. Twee ploegen uit dezelfde poule komen elkaar pas in de finale opnieuw tegen.",
     hintAndereFormats:
       "Bepaalt enkel de weergave — de loting werkt hetzelfde voor elk formaat: vaste teams, geen herhaalde tegenstanders. Ronde 1 is een vrije loting; vanaf ronde 2 koppelt de app op stand (winnaars tegen winnaars).",
+    hintKwartet:
+      "Bij Kwartet speel je met teams van 4: 1 speler speelt een enkelspel, de andere 3 spelen samen een triplet — de twee uitslagen worden opgeteld tot de eindstand. Het systeem laat automatisch en eerlijk rouleren wie elke ronde het enkelspel speelt.",
     speltypeVastgezet: "Kan niet meer gewijzigd worden zolang er teams zijn — verwijder eerst alle teams om dit aan te passen.",
     opslaanMislukt:
       "Opslaan mislukt — controleer je internetverbinding. Je laatste wijziging is nog niet bewaard; we proberen het automatisch opnieuw bij je volgende aanpassing.",
@@ -529,6 +531,9 @@ const nl = {
     automatischeWinst: "automatische winst (13–7)",
     tweeKeer13: "Twee keer 13 kan niet — er is maar 1 winnaar.",
     eenMoetOp13: "Eén van beide moet op 13 staan.",
+    enkelspelLabel: "Enkelspel",
+    tripletLabel: "Triplet",
+    totaalLabel: "Totaal",
     vorigeRondes: (n: number) => `Vorige rondes (${n})`,
     fouteScoreHint: "Foute score getikt? Pas hem hier gewoon aan — het klassement rekent meteen opnieuw.",
     ronde: (n: number) => `Ronde ${n}`,
@@ -1078,6 +1083,8 @@ const fr: typeof nl = {
       "Avec Poules, vous jouez en poules de 4 : vainqueurs contre vainqueurs (qualification directe après 2 victoires), perdants contre perdants (éliminé en cas de défaite), et une barrage pour la 2e place. Suit ensuite une phase finale — chaque terrain continue dès que ses deux adversaires sont connus, sans attendre les autres terrains. Deux équipes de la même poule ne se rencontrent à nouveau qu'en finale.",
     hintAndereFormats:
       "Ne détermine que l'affichage — le tirage fonctionne de la même façon pour chaque format : équipes fixes, pas d'adversaires répétés. La manche 1 est un tirage libre ; à partir de la manche 2, l'app associe selon le classement (vainqueurs contre vainqueurs).",
+    hintKwartet:
+      "Avec Kwartet, vous jouez en équipes de 4 : 1 joueur dispute un tête-à-tête, les 3 autres jouent ensemble une triplette — les deux résultats sont additionnés pour former le score final. L'app fait tourner automatiquement et équitablement qui joue le tête-à-tête chaque manche.",
     speltypeVastgezet: "Ne peut plus être modifié tant qu'il y a des équipes — supprimez d'abord toutes les équipes pour changer ceci.",
     opslaanMislukt:
       "Échec de l'enregistrement — vérifiez votre connexion internet. Votre dernière modification n'est pas encore sauvegardée ; nous réessayons automatiquement à votre prochaine action.",
@@ -1151,6 +1158,9 @@ const fr: typeof nl = {
     automatischeWinst: "victoire automatique (13–7)",
     tweeKeer13: "Deux fois 13 n'est pas possible — il n'y a qu'un seul vainqueur.",
     eenMoetOp13: "L'une des deux équipes doit être à 13.",
+    enkelspelLabel: "Tête-à-tête",
+    tripletLabel: "Triplette",
+    totaalLabel: "Total",
     vorigeRondes: (n: number) => `Manches précédentes (${n})`,
     fouteScoreHint: "Erreur de frappe dans un score ? Corrigez-le simplement ici — le classement se recalcule aussitôt.",
     ronde: (n: number) => `Manche ${n}`,

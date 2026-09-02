@@ -526,3 +526,33 @@ export function generateRankedRound(
 
   return { matches, byeTeamId };
 }
+
+// Kwartet: pick who plays the solo "enkelspel" for each team in this round
+// (the other 3 automatically form the triplet). Rotates through the team's
+// 4 members — index 0, then 1, then 2, then 3, then back to 0 — so it's
+// someone different's turn every time that team plays, mirroring MATCH16's
+// "Kwartet 1-3" rotation variants (one per possible solo player).
+export function assignKwartetRoles(
+  matches: Match[],
+  teams: Team[]
+): { matches: Match[]; alleenIndexUpdates: Map<string, number> } {
+  const teamById = new Map(teams.map((t) => [t.id, t]));
+  const alleenIndexUpdates = new Map<string, number>();
+
+  const updatedMatches = matches.map((m) => {
+    if (m.teamB === null) return m;
+    const teamA = teamById.get(m.teamA);
+    const teamB = teamById.get(m.teamB);
+    const idxA = teamA?.kwartetAlleenIndex ?? 0;
+    const idxB = teamB?.kwartetAlleenIndex ?? 0;
+    alleenIndexUpdates.set(m.teamA, (idxA + 1) % 4);
+    alleenIndexUpdates.set(m.teamB, (idxB + 1) % 4);
+    return {
+      ...m,
+      alleenNaamA: teamA?.members?.[idxA] ?? teamA?.name ?? "",
+      alleenNaamB: teamB?.members?.[idxB] ?? teamB?.name ?? "",
+    };
+  });
+
+  return { matches: updatedMatches, alleenIndexUpdates };
+}

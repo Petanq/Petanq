@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  assignKwartetRoles,
   buildCourtHistory,
   buildMeleeHistory,
   buildOpponentHistory,
@@ -7,7 +8,7 @@ import {
   generateRankedRound,
   generateRound,
 } from "./draw";
-import type { Role, Round, Team } from "./types";
+import type { Match, Role, Round, Team } from "./types";
 
 function makeTeam(id: string, byes = 0): Team {
   return { id, number: 1, name: id, present: true, paid: false, byes };
@@ -386,5 +387,43 @@ describe("generateMeleeRound", () => {
     expect(schutterCount(matches[0].playersB!)).toBe(1);
     expect(pointeurCount(matches[0].playersA!)).toBe(1);
     expect(pointeurCount(matches[0].playersB!)).toBe(1);
+  });
+});
+
+describe("assignKwartetRoles", () => {
+  function makeKwartetTeam(id: string, members: string[], kwartetAlleenIndex = 0): Team {
+    return { id, number: 1, name: members.join(" & "), present: true, paid: false, byes: 0, members, kwartetAlleenIndex };
+  }
+
+  it("picks the player at kwartetAlleenIndex as the solo player for each side", () => {
+    const teamA = makeKwartetTeam("A", ["A1", "A2", "A3", "A4"], 0);
+    const teamB = makeKwartetTeam("B", ["B1", "B2", "B3", "B4"], 2);
+    const matches: Match[] = [{ court: 1, teamA: "A", teamB: "B" }];
+
+    const { matches: result } = assignKwartetRoles(matches, [teamA, teamB]);
+
+    expect(result[0].alleenNaamA).toBe("A1");
+    expect(result[0].alleenNaamB).toBe("B3");
+  });
+
+  it("advances each involved team's index by 1, wrapping 3 back to 0", () => {
+    const teamA = makeKwartetTeam("A", ["A1", "A2", "A3", "A4"], 1);
+    const teamB = makeKwartetTeam("B", ["B1", "B2", "B3", "B4"], 3);
+    const matches: Match[] = [{ court: 1, teamA: "A", teamB: "B" }];
+
+    const { alleenIndexUpdates } = assignKwartetRoles(matches, [teamA, teamB]);
+
+    expect(alleenIndexUpdates.get("A")).toBe(2);
+    expect(alleenIndexUpdates.get("B")).toBe(0); // wraps around
+  });
+
+  it("leaves a BYE match untouched — no solo assignment, no index update", () => {
+    const teamA = makeKwartetTeam("A", ["A1", "A2", "A3", "A4"], 0);
+    const matches: Match[] = [{ court: 1, teamA: "A", teamB: null }];
+
+    const { matches: result, alleenIndexUpdates } = assignKwartetRoles(matches, [teamA]);
+
+    expect(result[0].alleenNaamA).toBeUndefined();
+    expect(alleenIndexUpdates.size).toBe(0);
   });
 });
