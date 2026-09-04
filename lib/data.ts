@@ -7,6 +7,7 @@ export async function getGoedgekeurdeToernooien(): Promise<Toernooi[]> {
     .from("toernooien")
     .select("*")
     .eq("status", "goedgekeurd")
+    .is("verwijderd_op", null)
     .order("datum", { ascending: true })
     .order("uur", { ascending: true });
 
@@ -24,6 +25,7 @@ export async function getToernooiById(id: string): Promise<Toernooi | null> {
     .select("*")
     .eq("id", id)
     .eq("status", "goedgekeurd")
+    .is("verwijderd_op", null)
     .single();
 
   if (error) return null;
@@ -328,6 +330,7 @@ export async function getActieveClubs(): Promise<Club[]> {
     .from("clubs")
     .select("*")
     .eq("actief", true)
+    .is("verwijderd_op", null)
     .order("naam", { ascending: true });
 
   if (error) {
