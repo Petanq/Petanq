@@ -496,7 +496,11 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
             present: true,
             paid: false,
             byes: 0,
-            ...(isKwsFormaat ? { members, kwartetAlleenIndex: 0 } : {}),
+            // Willekeurige startletter i.p.v. altijd bij A: bij een kort
+            // tornooi (minder rondes dan er teamleden zijn) komt anders
+            // altijd hetzelfde (laatst ingeschreven) lid nooit aan de beurt
+            // voor het enkelspel — dit verdeelt dat eerlijk uit over de teams.
+            ...(isKwsFormaat ? { members, kwartetAlleenIndex: Math.floor(Math.random() * teamSize) } : {}),
           },
         ],
       };
