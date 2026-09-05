@@ -1969,6 +1969,16 @@
 .match13-scope table.print-klassement-tabel td.team-naam-print {
   font-weight: 700;
 }
+.match13-scope table.print-klassement-tabel td.vs-kolom,
+.match13-scope table.print-klassement-tabel th.vs-kolom {
+  width: 10mm;
+  text-align: center;
+  font-weight: 800;
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b8860b;
+}
 .match13-scope table.print-klassement-tabel td.team-naam-print .nr {
   color: #b8860b;
   font-weight: 800;

@@ -1223,6 +1223,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           <tr>
             <th className="num">{t.match13.pleinLabelKort}</th>
             <th>{t.match13.teamKolom} A</th>
+            <th className="vs-kolom"></th>
             <th>{t.match13.teamKolom} B</th>
           </tr>
         </thead>
@@ -1233,6 +1234,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                 <span className="rank-bol geen-podium">{m.court}</span>
               </td>
               <td className="team-naam-print">{sideLabel(m, "A")}</td>
+              <td className="vs-kolom">{t.match13.tegenLabel}</td>
               <td className="team-naam-print">{m.teamB === null ? t.match13.bye : sideLabel(m, "B")}</td>
             </tr>
           ))}
