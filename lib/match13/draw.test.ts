@@ -59,7 +59,11 @@ describe("buildCourtHistory", () => {
 });
 
 describe("court rotation", () => {
-  const equalRank = () => ({ matchpunten: 0, saldo: 0 });
+  // A/B and C/D sit in distinct winst-groepen so the ranked draw has exactly
+  // one lowest-cost pairing ((A,B) and (C,D)) — this test is about court
+  // rotation, not about which teams face each other, so the ranks need to
+  // pin the pairing down unambiguously.
+  const equalRank = (id: string) => ({ matchpunten: id === "A" || id === "B" ? 2 : 0, saldo: 0 });
 
   it("avoids sending a team back to a court it already played on, when a swap fixes it", () => {
     const teams = ["A", "B", "C", "D"].map((id) => makeTeam(id));
@@ -175,6 +179,27 @@ describe("generateRankedRound", () => {
     // would force a rematch even though a conflict-free option exists.
     const history = new Map([["A|B", 1]]);
     const { matches } = generateRankedRound(2, teams, history, rankOf);
+    expect(conflictScore(matches, history)).toBe(0);
+  });
+
+  it("varies who plays whom within a tied winst-groep instead of always pairing 1st vs 2nd", () => {
+    // Real club report: 4 teams tied on 1 overwinning each. The old
+    // algorithm always paired rank-1-vs-2 and rank-3-vs-4, so once those two
+    // had already met, the very next round forced the exact same rematch —
+    // even though A vs C / B vs D (or A vs D / B vs C) were both fully
+    // conflict-free options.
+    const tiedRank: Record<string, { matchpunten: number; saldo: number }> = {
+      A: { matchpunten: 1, saldo: 3 },
+      B: { matchpunten: 1, saldo: 2 },
+      C: { matchpunten: 1, saldo: 1 },
+      D: { matchpunten: 1, saldo: 0 },
+    };
+    const teams = ["A", "B", "C", "D"].map((id) => makeTeam(id));
+    const history = new Map([
+      ["A|B", 1],
+      ["C|D", 1],
+    ]);
+    const { matches } = generateRankedRound(4, teams, history, (id) => tiedRank[id]);
     expect(conflictScore(matches, history)).toBe(0);
   });
 

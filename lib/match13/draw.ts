@@ -457,13 +457,66 @@ export interface TeamRank {
   saldo: number;
 }
 
+/** How far apart two teams' matchpunten are — 0 means "same winst-groep". */
+function tierGap(rankA: TeamRank, rankB: TeamRank): number {
+  return Math.abs(rankA.matchpunten - rankB.matchpunten);
+}
+
+// A repeat opponent is weighted far heavier than a cross-groep pairing, so
+// the search only reaches outside a team's own winst-groep once every
+// same-groep option is genuinely exhausted (everyone in the groep already
+// played each other) — never merely to shave off a smaller tier-gap.
+const HERHALING_GEWICHT = 1000;
+
+function rankedPairCost(a: string, b: string, history: Map<string, number>, rankOf: (id: string) => TeamRank): number {
+  const herhalingen = history.get(pairKey(a, b)) ?? 0;
+  return herhalingen * HERHALING_GEWICHT + tierGap(rankOf(a), rankOf(b));
+}
+
+function greedyPairRanked(
+  ids: string[],
+  history: Map<string, number>,
+  rankOf: (id: string) => TeamRank
+): [string, string][] {
+  const remaining = shuffle(ids);
+  const pairs: [string, string][] = [];
+  while (remaining.length > 0) {
+    const a = remaining.shift()!;
+    let bestCost = Infinity;
+    let candidates: number[] = [];
+    remaining.forEach((b, i) => {
+      const cost = rankedPairCost(a, b, history, rankOf);
+      if (cost < bestCost) {
+        bestCost = cost;
+        candidates = [i];
+      } else if (cost === bestCost) {
+        candidates.push(i);
+      }
+    });
+    const idx = candidates[Math.floor(Math.random() * candidates.length)];
+    const b = remaining.splice(idx, 1)[0];
+    pairs.push([a, b]);
+  }
+  return pairs;
+}
+
+function scoreRankedPairing(
+  pairs: [string, string][],
+  history: Map<string, number>,
+  rankOf: (id: string) => TeamRank
+): number {
+  return pairs.reduce((sum, [a, b]) => sum + rankedPairCost(a, b, history, rankOf), 0);
+}
+
 /**
- * Ranked ("Swiss") draw: sorts present teams by matchpunten then saldo and
- * pairs 1v2, 3v4, 5v6... — winners face winners, losers face losers. Repeat
- * opponents are then shaken loose with a bounded local repair pass (swap the
- * second half of two neighbouring pairs whenever that lowers the total
- * repeat-count) so it doesn't blindly force a rematch just to keep strict
- * rank order.
+ * Ranked ("Swiss") draw: groups present teams by matchpunten (then saldo to
+ * pick who sits out on a BYE) and searches many random pairings — same
+ * approach as the round-1 draw (`generateRound`) — keeping whichever pairing
+ * scores lowest. A repeat opponent is weighted far heavier than pairing
+ * across two different winst-groepen, so within a groep the two teams that
+ * face each other genuinely varies from round to round (never always
+ * "rank 1 vs rank 2") and a rematch is only ever forced once every
+ * conflict-free option in that groep is used up.
  */
 export function generateRankedRound(
   roundNumber: number,
@@ -490,27 +543,17 @@ export function generateRankedRound(
     }
   }
 
-  const pairs: [string, string][] = [];
-  for (let i = 0; i < sorted.length; i += 2) {
-    pairs.push([sorted[i].id, sorted[i + 1].id]);
-  }
+  const ids = sorted.map((t) => t.id);
+  let pairs: [string, string][] = greedyPairRanked(ids, history, rankOf);
+  let bestScore = scoreRankedPairing(pairs, history, rankOf);
 
-  for (let pass = 0; pass < 6; pass++) {
-    let improved = false;
-    for (let i = 0; i < pairs.length - 1; i++) {
-      const before = scorePairing([pairs[i], pairs[i + 1]], history);
-      const swapped: [string, string][] = [
-        [pairs[i][0], pairs[i + 1][1]],
-        [pairs[i + 1][0], pairs[i][1]],
-      ];
-      const after = scorePairing(swapped, history);
-      if (after < before) {
-        pairs[i] = swapped[0];
-        pairs[i + 1] = swapped[1];
-        improved = true;
-      }
+  for (let attempt = 1; attempt < MAX_ATTEMPTS && bestScore > 0; attempt++) {
+    const candidate = greedyPairRanked(ids, history, rankOf);
+    const score = scoreRankedPairing(candidate, history, rankOf);
+    if (score < bestScore) {
+      pairs = candidate;
+      bestScore = score;
     }
-    if (!improved) break;
   }
 
   const courts = assignCourts(pairs, courtHistory);
