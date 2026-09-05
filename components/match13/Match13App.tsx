@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import "./match13.css";
 import { useTranslation } from "@/lib/language-context";
 import type { Format, Match, Role, Round, Team } from "@/lib/match13/types";
@@ -361,6 +362,10 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   const [state, setState] = useState<AppState>(initialState);
   const [tab, setTab] = useState<Tab>("opzet");
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
+  // Welk afdrukblad er getoond wordt op het Zaalscherm — de kaartjes (default)
+  // of het rondeoverzicht — via flushSync omgewisseld vlak vóór window.print()
+  // zodat de browser het net-gekozen blad print, niet het vorige.
+  const [printRondeModus, setPrintRondeModus] = useState<"kaartjes" | "overzicht">("kaartjes");
 
   // Volledig scherm: handig om het Zaalscherm groot te tonen op een
   // projector/tv aan de zaal. Luistert ook naar Esc (of de browser-eigen
@@ -1200,6 +1205,45 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     </div>
   );
 
+  // Alternatief voor de losse kaartjes: alle wedstrijden van de huidige ronde
+  // op 1 blad, om op te hangen aan de zaalwand i.p.v. per plein rond te delen.
+  const printRondeOverzichtBlad = currentRound && (
+    <div className="print-klassement-blad">
+      <div className="print-klassement-kop">
+        <img className="print-klassement-logo" src="/images/logo-icon.png" alt="" />
+        <div className="print-klassement-titel">
+          <b>
+            MATCH<span className="m13-gold">13</span>
+          </b>
+          <span>{clubName}</span>
+        </div>
+      </div>
+      <table className="print-klassement-tabel">
+        <thead>
+          <tr>
+            <th className="num">{t.match13.pleinLabelKort}</th>
+            <th>{t.match13.teamKolom} A</th>
+            <th>{t.match13.teamKolom} B</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentRound.matches.map((m) => (
+            <tr key={m.court}>
+              <td className="num">
+                <span className="rank-bol geen-podium">{m.court}</span>
+              </td>
+              <td className="team-naam-print">{sideLabel(m, "A")}</td>
+              <td className="team-naam-print">{m.teamB === null ? t.match13.bye : sideLabel(m, "B")}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="print-klassement-credit">
+        www.petanque<span className="m13-gold">13</span>.be
+      </div>
+    </div>
+  );
+
   // Poules heeft geen vaste "ronde" — wedstrijden binnen een poule en de
   // knockout-fase worden vrij gepland. "Nu speelbaar" = beide teams gekend,
   // geen echte bye, en nog geen score → dat zijn de kaartjes die nu gedrukt
@@ -1332,6 +1376,57 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
               <td className="num">{row.saldo > 0 ? `+${row.saldo}` : row.saldo}</td>
             </tr>
           ))}
+        </tbody>
+      </table>
+      <div className="print-klassement-credit">
+        www.petanque<span className="m13-gold">13</span>.be
+      </div>
+    </div>
+  );
+
+  // Wie welk nummer heeft — om af te drukken en op te hangen bij het
+  // onthaal, zodat spelers/teams hun eigen nummer meteen terugvinden.
+  const printLijstBlad = (
+    <div className="print-klassement-blad">
+      <div className="print-klassement-kop">
+        <img className="print-klassement-logo" src="/images/logo-icon.png" alt="" />
+        <div className="print-klassement-titel">
+          <b>
+            MATCH<span className="m13-gold">13</span>
+          </b>
+          <span>{clubName}</span>
+        </div>
+      </div>
+      <table className="print-klassement-tabel">
+        <thead>
+          <tr>
+            <th className="num">{t.match13.nummerKolom}</th>
+            <th>{isMeli ? t.match13.spelerKolom : t.match13.teamKolom}</th>
+            {isMeli && <th>{t.match13.rolKolom}</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {teams
+            .slice()
+            .sort((a, b) => a.number - b.number)
+            .map((t2) => (
+              <tr key={t2.id}>
+                <td className="num">
+                  <span className="rank-bol geen-podium">{t2.number}</span>
+                </td>
+                <td className="team-naam-print">
+                  {isKwsFormaat && t2.members
+                    ? t2.members.map((naam, i) => (
+                        <span key={i}>
+                          {i > 0 && ", "}
+                          <span className="kwartet-letter">{SPEL_LETTERS[i]}</span>. {naam}
+                        </span>
+                      ))
+                    : t2.name}
+                </td>
+                {isMeli && <td>{t.match13.roleLabels[t2.role ?? "flex"]}</td>}
+              </tr>
+            ))}
         </tbody>
       </table>
       <div className="print-klassement-credit">
@@ -1486,8 +1581,18 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           <section className="card fade-in">
             <div className="zaal-head">
               <h2>{isMeli ? t.match13.spelersHeader : t.match13.teamsHeader}</h2>
-              {!isPoules && <RoundStepper current={rounds.length} total={totalRounds} currentDone={currentRoundComplete} />}
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                {teams.length > 0 && (
+                  <button className="match13-actie-knop" onClick={() => window.print()}>
+                    {t.match13.printLijst}
+                  </button>
+                )}
+                {!isPoules && (
+                  <RoundStepper current={rounds.length} total={totalRounds} currentDone={currentRoundComplete} />
+                )}
+              </div>
             </div>
+            {printLijstBlad}
 
             {groupStageStarted ? (
               <p className="hint">{t.match13.teamsGeslotenPoules}</p>
@@ -1786,8 +1891,25 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
               <h2>{t.match13.rondeVan(currentRound ? currentRound.number : "—", totalRounds)}</h2>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                 {currentRound && currentRound.matches.some((m) => m.teamB !== null) && (
-                  <button className="match13-actie-knop" onClick={() => window.print()}>
+                  <button
+                    className="match13-actie-knop"
+                    onClick={() => {
+                      flushSync(() => setPrintRondeModus("kaartjes"));
+                      window.print();
+                    }}
+                  >
                     {t.match13.printKaartjes}
+                  </button>
+                )}
+                {currentRound && (
+                  <button
+                    className="match13-actie-knop"
+                    onClick={() => {
+                      flushSync(() => setPrintRondeModus("overzicht"));
+                      window.print();
+                    }}
+                  >
+                    {t.match13.printRondeOverzicht}
                   </button>
                 )}
                 {currentRound && (
@@ -2075,7 +2197,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
               </div>
             )}
 
-            {printKaartjesBlad}
+            {printRondeModus === "kaartjes" ? printKaartjesBlad : printRondeOverzichtBlad}
 
             {rounds.length > 1 && (
               <details className="prev-rounds" open>
