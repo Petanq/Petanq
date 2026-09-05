@@ -1979,6 +1979,49 @@
   letter-spacing: 0.04em;
   color: #b8860b;
 }
+
+/* Rondeoverzicht (Zaalscherm, "Rondeoverzicht afdrukken"): hangt aan de
+   zaalwand en wordt van verder weg gelezen, dus flink groter dan het
+   compacte klassement dat op dezelfde tabel-stijl is gebaseerd. */
+.match13-scope table.print-klassement-tabel.ronde-overzicht {
+  /* Vaste kolombreedtes i.p.v. laten meegroeien met de inhoud — anders
+     bepaalt de langste naam links/rechts waar de "vs" precies terechtkomt,
+     in plaats van netjes in het midden tussen de 2 teams te staan. */
+  table-layout: fixed;
+}
+.match13-scope table.print-klassement-tabel.ronde-overzicht th,
+.match13-scope table.print-klassement-tabel.ronde-overzicht td {
+  padding: 4.5mm 3mm;
+  font-size: 13pt;
+}
+.match13-scope table.print-klassement-tabel.ronde-overzicht th.num {
+  font-size: 9pt;
+  width: 12%;
+}
+.match13-scope table.print-klassement-tabel.ronde-overzicht .rank-bol {
+  width: 9mm;
+  height: 9mm;
+  font-size: 11pt;
+}
+.match13-scope table.print-klassement-tabel.ronde-overzicht td.vs-kolom,
+.match13-scope table.print-klassement-tabel.ronde-overzicht th.vs-kolom {
+  width: 14%;
+}
+.match13-scope table.print-klassement-tabel.ronde-overzicht th.team-kolom,
+.match13-scope table.print-klassement-tabel.ronde-overzicht td.team-naam-print {
+  width: 37%;
+}
+.match13-scope table.print-klassement-tabel.ronde-overzicht td.vs-kolom .vs-pil {
+  display: inline-block;
+  padding: 1.2mm 3.4mm;
+  border-radius: 999px;
+  background: #fdf3d9;
+  color: #b8860b;
+  font-weight: 800;
+  font-size: 9pt;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
 .match13-scope table.print-klassement-tabel td.team-naam-print .nr {
   color: #b8860b;
   font-weight: 800;

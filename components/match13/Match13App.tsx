@@ -1218,13 +1218,13 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           <span>{clubName}</span>
         </div>
       </div>
-      <table className="print-klassement-tabel">
+      <table className="print-klassement-tabel ronde-overzicht">
         <thead>
           <tr>
             <th className="num">{t.match13.pleinLabelKort}</th>
-            <th>{t.match13.teamKolom} A</th>
+            <th className="team-kolom">{t.match13.teamKolom} A</th>
             <th className="vs-kolom"></th>
-            <th>{t.match13.teamKolom} B</th>
+            <th className="team-kolom">{t.match13.teamKolom} B</th>
           </tr>
         </thead>
         <tbody>
@@ -1234,7 +1234,9 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                 <span className="rank-bol geen-podium">{m.court}</span>
               </td>
               <td className="team-naam-print">{sideLabel(m, "A")}</td>
-              <td className="vs-kolom">{t.match13.tegenLabel}</td>
+              <td className="vs-kolom">
+                <span className="vs-pil">{t.match13.tegenLabel}</span>
+              </td>
               <td className="team-naam-print">{m.teamB === null ? t.match13.bye : sideLabel(m, "B")}</td>
             </tr>
           ))}
