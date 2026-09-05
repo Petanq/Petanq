@@ -337,13 +337,20 @@ describe("buildKnockoutBracket", () => {
     expect(real).toHaveLength(1);
     expect(byes.every((m) => m.label === "Rechtstreeks door")).toBe(true);
     expect(real.every((m) => m.label === "Barrage")).toBe(true);
-    // byes (3) + the barrage winner (1) = 4 survivors -> a clean semifinal round.
+    // byes (3) + the barrage winner (1) = 4 survivors per half, 8 combined
+    // across both halves -> a "kwartfinale" round, not "halve finale" (that
+    // combined-across-halves count is what must drive the label, not the
+    // per-half match count alone).
     const topR2 = bracket.filter((m) => m.id.startsWith("KO-A-R2-"));
     expect(topR2).toHaveLength(2);
-    expect(topR2.every((m) => m.label === "Halve finale")).toBe(true);
+    expect(topR2.every((m) => m.label === "Kwartfinale")).toBe(true);
+    // Round 3 (1 match) is the half's own final -> the real combined semifinal.
+    const topR3 = bracket.filter((m) => m.id.startsWith("KO-A-R3-"));
+    expect(topR3).toHaveLength(1);
+    expect(topR3[0].label).toBe("Halve finale");
   });
 
-  it("labels round 1 by its normal round-of-N name when the half is already a clean power of 2", () => {
+  it("labels round 1 by the combined-across-both-halves round-of-N name when the half is already a clean power of 2", () => {
     const qualifiers = [
       { teamId: "A-first", poule: "A", place: 1 as const, tiebreak: 40 },
       { teamId: "A-second", poule: "A", place: 2 as const, tiebreak: 1 },
@@ -358,7 +365,13 @@ describe("buildKnockoutBracket", () => {
     const topR1 = bracket.filter((m) => m.id.startsWith("KO-A-R1-"));
     expect(topR1).toHaveLength(2); // exactly 4 direct qualifiers, no byes needed
     expect(topR1.every((m) => m.teamB !== null)).toBe(true);
-    expect(topR1.every((m) => m.label === "Halve finale")).toBe(true);
+    // 2 matches per half = 4 combined across both halves -> "kwartfinale",
+    // even though it's only 2 matches within this one half's own bracket.
+    expect(topR1.every((m) => m.label === "Kwartfinale")).toBe(true);
+    // Round 2 (the half's own final, 1 match) is the true combined semifinal.
+    const topR2 = bracket.filter((m) => m.id.startsWith("KO-A-R2-"));
+    expect(topR2).toHaveLength(1);
+    expect(topR2[0].label).toBe("Halve finale");
   });
 
   it("builds a direct final with no bracket at all when there's only one pool", () => {

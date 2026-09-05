@@ -456,19 +456,26 @@ function buildSingleBracket(seeds: string[], idPrefix: string, courtStart: numbe
     roundIds = next;
     round++;
   }
+  // Elke ronde hier is maar 1 helft van de echte piramide — de andere helft
+  // speelt evenveel wedstrijden in diezelfde ronde. "Kwartfinale"/"Achtste
+  // finale" moet dus op het GECOMBINEERDE aantal wedstrijden over beide
+  // helften gebaseerd zijn (× 2), anders heet bv. ronde 1 van elke helft bij
+  // 4+ poules ten onrechte al "Halve finale" — hetzelfde label dat de echte
+  // halve finale (de laatste ronde van de helft, hieronder geforceerd) ook
+  // krijgt.
   if (!hasByes) {
     // The seed count was already a clean power of 2 — round 1 is a normal
     // round-of-N stage too, not a barrage, so it gets the same naming as
     // every later round.
     const perRound = new Map<number, number>();
     matches.forEach((m) => perRound.set(m.round, (perRound.get(m.round) ?? 0) + 1));
-    return matches.map((m) => ({ ...m, label: labelForRound(perRound.get(m.round)!) }));
+    return matches.map((m) => ({ ...m, label: labelForRound(perRound.get(m.round)! * 2) }));
   }
   // Round 1 was a barrage/bye mix (labelled above); from round 2 on the
   // field is always a clean power of 2, so those get the standard names.
   const perRound = new Map<number, number>();
   matches.filter((m) => m.round > 1).forEach((m) => perRound.set(m.round, (perRound.get(m.round) ?? 0) + 1));
-  return matches.map((m) => (m.round === 1 ? m : { ...m, label: labelForRound(perRound.get(m.round)!) }));
+  return matches.map((m) => (m.round === 1 ? m : { ...m, label: labelForRound(perRound.get(m.round)! * 2) }));
 }
 
 /**
