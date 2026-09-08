@@ -56,6 +56,7 @@ export function TournamentManageList({
   const [duplicaatBron, setDuplicaatBron] = useState<Toernooi | null>(null);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
   const [bezig, setBezig] = useState(false);
+  const [weergave, setWeergave] = useState<"aankomend" | "verleden">("aankomend");
   const [filterCategorie, setFilterCategorie] = useState<Categorie | "">("");
   const [filterProvincie, setFilterProvincie] = useState<Provincie | "">("");
   const [filterType, setFilterType] = useState<"" | "open" | "officieel">("");
@@ -63,6 +64,10 @@ export function TournamentManageList({
   const [actieveMaand, setActieveMaand] = useState<string | null>(null);
   const [verwijderAanvraagId, setVerwijderAanvraagId] = useState<string | null>(null);
   const [verwijderReden, setVerwijderReden] = useState("");
+
+  // Eén vaste "vandaag"-waarde voor deze render — voorkomt dat de knop en de
+  // lijst rond middernacht ineens uit sync zouden lopen tijdens eenzelfde sessie.
+  const vandaag = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   async function verwijderen(id: string) {
     if (!window.confirm("Weet je zeker dat je dit toernooi wil verwijderen?")) return;
@@ -83,18 +88,21 @@ export function TournamentManageList({
   }
 
   const maandSleutels = useMemo(() => {
-    // Enkel maanden met nog aankomende toernooien tonen als filterknop — een
-    // maand die volledig achter de rug is, hoeft niemand nog te doorzoeken.
-    const vandaag = new Date().toISOString().slice(0, 10);
+    // Enkel maanden binnen de huidige weergave (aankomend/verleden) tonen als
+    // filterknop — een maand zonder tornooien in die weergave hoeft niemand
+    // nog te doorzoeken.
     const sleutels = new Set(
-      toernooien.filter((tn) => tn.datum >= vandaag).map((tn) => maandJaarKey(tn.datum))
+      toernooien
+        .filter((tn) => (weergave === "aankomend" ? tn.datum >= vandaag : tn.datum < vandaag))
+        .map((tn) => maandJaarKey(tn.datum))
     );
     return Array.from(sleutels).sort();
-  }, [toernooien]);
+  }, [toernooien, weergave, vandaag]);
 
   const zoekTerm = zoek.trim().toLowerCase();
 
   const zichtbareToernooien = toernooien
+    .filter((tn) => (weergave === "aankomend" ? tn.datum >= vandaag : tn.datum < vandaag))
     .filter((tn) => !filterCategorie || tn.categorie === filterCategorie)
     .filter((tn) => !filterProvincie || tn.provincie === filterProvincie)
     .filter((tn) => !filterType || (filterType === "open" ? tn.open_toernooi : !tn.open_toernooi))
@@ -131,6 +139,31 @@ export function TournamentManageList({
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="flex shrink-0 self-start overflow-hidden rounded-full border border-rand">
+        <button
+          onClick={() => {
+            setWeergave("aankomend");
+            setActieveMaand(null);
+          }}
+          className={`px-4 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+            weergave === "aankomend" ? "bg-geel text-donker" : "text-grijs hover:bg-[#fdf3d9] hover:text-[#b8860b]"
+          }`}
+        >
+          {t.beheer.aankomend}
+        </button>
+        <button
+          onClick={() => {
+            setWeergave("verleden");
+            setActieveMaand(null);
+          }}
+          className={`px-4 py-1.5 text-xs font-bold transition-all active:scale-95 ${
+            weergave === "verleden" ? "bg-geel text-donker" : "text-grijs hover:bg-[#fdf3d9] hover:text-[#b8860b]"
+          }`}
+        >
+          {t.beheer.verleden}
+        </button>
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           <input
