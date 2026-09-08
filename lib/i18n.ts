@@ -296,6 +296,7 @@ const nl = {
     alleToernooien: "Alle toernooien",
     schiftingen: "Schiftingen",
     bewerken: "Bewerken",
+    dupliceren: "Dupliceren",
     verwijderen: "Verwijderen",
     verwijderingAanvragen: "Verwijdering aanvragen",
     waaromVerwijderen: "Waarom wil je dit verwijderen?",
@@ -414,6 +415,8 @@ const nl = {
     nieuweVrijwilligerAanvragen: "Nieuwe aanvragen",
     geenNieuweVrijwilligerAanvragen: "Geen nieuwe aanvragen.",
     mogelijkDubbel: "Mogelijk dubbel",
+    gedupliceerdVan: (naam: string) => `Gedupliceerd van "${naam}"`,
+    pasDatumAan: "pas hieronder de datum (en eventueel andere details) aan.",
     afficheOverzicht: (n: number) => `Dit affiche bevat ${n} concours:`,
     opslaanEnVolgende: (n: number) => `Opslaan en volgende (${n} nog te gaan)`,
     persoonlijkBedankje: (naam: string, n: number) =>
@@ -933,6 +936,7 @@ const fr: typeof nl = {
     alleToernooien: "Tous les tournois",
     schiftingen: "Éliminatoires",
     bewerken: "Modifier",
+    dupliceren: "Dupliquer",
     verwijderen: "Supprimer",
     verwijderingAanvragen: "Demander la suppression",
     waaromVerwijderen: "Pourquoi voulez-vous supprimer ceci ?",
@@ -1051,6 +1055,8 @@ const fr: typeof nl = {
     nieuweVrijwilligerAanvragen: "Nouvelles demandes",
     geenNieuweVrijwilligerAanvragen: "Aucune nouvelle demande.",
     mogelijkDubbel: "Doublon possible",
+    gedupliceerdVan: (naam: string) => `Dupliqué de "${naam}"`,
+    pasDatumAan: "modifiez ci-dessous la date (et éventuellement d'autres détails).",
     afficheOverzicht: (n: number) => `Cette affiche contient ${n} concours :`,
     opslaanEnVolgende: (n: number) => `Enregistrer et suivant (${n} restants)`,
     persoonlijkBedankje: (naam: string, n: number) =>

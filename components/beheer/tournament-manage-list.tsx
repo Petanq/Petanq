@@ -53,6 +53,7 @@ export function TournamentManageList({
   const { t, taal } = useTranslation();
   const router = useRouter();
   const [toevoegenOpen, setToevoegenOpen] = useState(false);
+  const [duplicaatBron, setDuplicaatBron] = useState<Toernooi | null>(null);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
   const [bezig, setBezig] = useState(false);
   const [filterCategorie, setFilterCategorie] = useState<Categorie | "">("");
@@ -174,7 +175,10 @@ export function TournamentManageList({
           </select>
         </div>
         <button
-          onClick={() => setToevoegenOpen((v) => !v)}
+          onClick={() => {
+            setDuplicaatBron(null);
+            setToevoegenOpen((v) => !v);
+          }}
           className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97]"
         >
           {t.beheer.nieuwToernooi}
@@ -187,12 +191,18 @@ export function TournamentManageList({
 
       {toevoegenOpen && (
         <AddForm
+          key={duplicaatBron?.id ?? "nieuw"}
           bestaandeToernooien={toernooien}
+          beginwaarde={duplicaatBron}
           onKlaar={() => {
             setToevoegenOpen(false);
+            setDuplicaatBron(null);
             router.refresh();
           }}
-          onAnnuleren={() => setToevoegenOpen(false)}
+          onAnnuleren={() => {
+            setToevoegenOpen(false);
+            setDuplicaatBron(null);
+          }}
         />
       )}
 
@@ -285,6 +295,15 @@ export function TournamentManageList({
                           {t.beheer.bewerken}
                         </button>
                         <button
+                          onClick={() => {
+                            setDuplicaatBron(tn);
+                            setToevoegenOpen(true);
+                          }}
+                          className="rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
+                        >
+                          {t.beheer.dupliceren}
+                        </button>
+                        <button
                           onClick={() =>
                             isAdmin ? verwijderen(tn.id) : setVerwijderAanvraagId(tn.id)
                           }
@@ -339,38 +358,44 @@ export function TournamentManageList({
 
 function AddForm({
   bestaandeToernooien,
+  beginwaarde,
   onKlaar,
   onAnnuleren,
 }: {
   bestaandeToernooien: Toernooi[];
+  beginwaarde?: Toernooi | null;
   onKlaar: () => void;
   onAnnuleren: () => void;
 }) {
   const { t, taal } = useTranslation();
-  const [openToernooi, setOpenToernooi] = useState(false);
-  const [clubnaam, setClubnaam] = useState("");
-  const [naamNl, setNaamNl] = useState("");
-  const [naamFr, setNaamFr] = useState("");
+  const [openToernooi, setOpenToernooi] = useState(beginwaarde?.open_toernooi ?? false);
+  const [clubnaam, setClubnaam] = useState(beginwaarde?.clubnaam ?? "");
+  const [naamNl, setNaamNl] = useState(beginwaarde?.naam_nl ?? "");
+  const [naamFr, setNaamFr] = useState(beginwaarde?.naam_fr ?? "");
+  // Datum (en kwalificatiedata) altijd leeg laten bij dupliceren — net het veld
+  // dat de admin bewust zelf moet invullen voor de nieuwe datum.
   const [datum, setDatum] = useState("");
-  const [uur, setUur] = useState("");
-  const [gemeente, setGemeente] = useState("");
-  const [adres, setAdres] = useState("");
-  const [provincie, setProvincie] = useState<Provincie | "">("");
-  const [categorie, setCategorie] = useState<Categorie | "">("");
-  const [formule, setFormule] = useState<Formule | "">("");
-  const [speelvorm, setSpeelvorm] = useState<Speelvorm>("rondes");
-  const [aantalRonden, setAantalRonden] = useState("4");
-  const [aantalPoules, setAantalPoules] = useState("4");
-  const [finale, setFinale] = useState(false);
-  const [contactEmail, setContactEmail] = useState("");
-  const [gratis, setGratis] = useState(false);
-  const [inschrijvingsprijs, setInschrijvingsprijs] = useState("");
-  const [maxPloegen, setMaxPloegen] = useState("");
-  const [linkInschrijving, setLinkInschrijving] = useState("");
-  const [opmerking, setOpmerking] = useState("");
+  const [uur, setUur] = useState(beginwaarde?.uur ?? "");
+  const [gemeente, setGemeente] = useState(beginwaarde?.gemeente ?? "");
+  const [adres, setAdres] = useState(beginwaarde?.adres ?? "");
+  const [provincie, setProvincie] = useState<Provincie | "">(beginwaarde?.provincie ?? "");
+  const [categorie, setCategorie] = useState<Categorie | "">(beginwaarde?.categorie ?? "");
+  const [formule, setFormule] = useState<Formule | "">(beginwaarde?.formule ?? "");
+  const [speelvorm, setSpeelvorm] = useState<Speelvorm>(beginwaarde?.speelvorm ?? "rondes");
+  const [aantalRonden, setAantalRonden] = useState(String(beginwaarde?.aantal_ronden ?? "4"));
+  const [aantalPoules, setAantalPoules] = useState(String(beginwaarde?.aantal_poules ?? "4"));
+  const [finale, setFinale] = useState(beginwaarde?.finale ?? false);
+  const [contactEmail, setContactEmail] = useState(beginwaarde?.contact_email ?? "");
+  const [gratis, setGratis] = useState(beginwaarde?.gratis ?? false);
+  const [inschrijvingsprijs, setInschrijvingsprijs] = useState(
+    beginwaarde?.inschrijvingsprijs != null ? String(beginwaarde.inschrijvingsprijs) : ""
+  );
+  const [maxPloegen, setMaxPloegen] = useState(beginwaarde?.max_ploegen != null ? String(beginwaarde.max_ploegen) : "");
+  const [linkInschrijving, setLinkInschrijving] = useState(beginwaarde?.link_inschrijving ?? "");
+  const [opmerking, setOpmerking] = useState(beginwaarde?.opmerking ?? "");
   const [kwalificatieData, setKwalificatieData] = useState<KwalificatieDatum[]>([]);
   const [kwalificatieUur, setKwalificatieUur] = useState("");
-  const [afficheUrl, setAfficheUrl] = useState<string | null>(null);
+  const [afficheUrl, setAfficheUrl] = useState<string | null>(beginwaarde?.affiche_url ?? null);
   const [afficheBezig, setAfficheBezig] = useState(false);
   const [afficheFout, setAfficheFout] = useState(false);
   const [aiBezig, setAiBezig] = useState(false);
@@ -548,6 +573,11 @@ function AddForm({
 
   return (
     <div className="rounded-[10px] border-[1.5px] border-blauw-3 bg-white p-4">
+      {beginwaarde && (
+        <div className="mb-3 rounded-md border border-[#bae6fd] bg-[#f0f9ff] p-2.5 text-xs text-[#0369a1]">
+          <span className="font-bold">{t.beheer.gedupliceerdVan(beginwaarde.naam_nl)}</span> — {t.beheer.pasDatumAan}
+        </div>
+      )}
       {dubbels.length > 0 && (
         <div className="mb-3 rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
           <span className="font-bold">{t.beheer.mogelijkDubbel}</span> —{" "}
