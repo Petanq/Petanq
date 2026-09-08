@@ -9,6 +9,8 @@ import {
 } from "@/lib/emails/bevestiging-indiener";
 import { MeldingModeratorEmail, meldingModeratorOnderwerp } from "@/lib/emails/melding-moderator";
 import { siteUrl } from "@/lib/site-url";
+import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
+import { Provincie } from "@/lib/provincies";
 
 export type ToernooiActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -85,8 +87,18 @@ export async function toernooiIndienen(
     }
 
     const serviceClient = createServiceRoleClient();
-    const { data: moderatoren } = await serviceClient.from("moderatoren").select("email");
-    const moderatorEmails = (moderatoren ?? []).map((m: { email: string }) => m.email);
+    const { data: moderatoren } = await serviceClient
+      .from("moderatoren")
+      .select("email, rol, provincie, toegangsniveau");
+    const moderatorEmails = (moderatoren ?? [])
+      .filter((m) =>
+        heeftToegangTotProvincie(
+          m.rol === "admin" ? "heel_belgie" : m.toegangsniveau,
+          m.provincie as Provincie | null,
+          data.provincie as Provincie
+        )
+      )
+      .map((m) => m.email);
 
     if (moderatorEmails.length > 0) {
       await resend.emails.send({

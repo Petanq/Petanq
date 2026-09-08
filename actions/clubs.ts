@@ -9,6 +9,8 @@ import {
   bevestigingClubIndienerOnderwerp,
 } from "@/lib/emails/bevestiging-club-indiener";
 import { siteUrl } from "@/lib/site-url";
+import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
+import { Provincie } from "@/lib/provincies";
 
 export type ClubActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -54,8 +56,18 @@ export async function clubVoorstellen(
     }
 
     const serviceClient = createServiceRoleClient();
-    const { data: moderatoren } = await serviceClient.from("moderatoren").select("email");
-    const moderatorEmails = (moderatoren ?? []).map((m: { email: string }) => m.email);
+    const { data: moderatoren } = await serviceClient
+      .from("moderatoren")
+      .select("email, rol, provincie, toegangsniveau");
+    const moderatorEmails = (moderatoren ?? [])
+      .filter((m) =>
+        heeftToegangTotProvincie(
+          m.rol === "admin" ? "heel_belgie" : m.toegangsniveau,
+          m.provincie as Provincie | null,
+          parsed.data.provincie as Provincie
+        )
+      )
+      .map((m) => m.email);
 
     if (moderatorEmails.length > 0) {
       await resend.emails.send({
