@@ -33,6 +33,7 @@ const toernooiBaseSchema = z.object({
   datum: datumVeld,
   uur: z.string().min(1),
   clubnaam: z.string().trim().min(2).max(120),
+  club_id: z.string().trim().uuid().nullable().optional().or(z.literal("")),
   naam_nl: z.string().trim().min(2).max(160),
   naam_fr: z.string().trim().min(2).max(160),
   gemeente: z.string().trim().min(2).max(120),
@@ -70,6 +71,16 @@ export const toernooiSchema = toernooiBaseSchema.superRefine((data, ctx) => {
   }
   if (data.speelvorm === "poules" && !data.aantal_poules) {
     ctx.addIssue({ code: "custom", path: ["aantal_poules"], message: "verplicht" });
+  }
+  // Bij een open toernooi (geen echte club) staat er nergens anders een adres
+  // vast, dus moet dat hier verplicht ingevuld worden. Bij een officieel
+  // (club-)toernooi verwachten we net een gekoppelde club i.p.v. vrije tekst.
+  if (data.open_toernooi) {
+    if (!data.adres || !data.adres.trim()) {
+      ctx.addIssue({ code: "custom", path: ["adres"], message: "verplicht" });
+    }
+  } else if (!data.club_id) {
+    ctx.addIssue({ code: "custom", path: ["club_id"], message: "verplicht" });
   }
 });
 

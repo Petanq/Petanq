@@ -8,6 +8,7 @@ const basisToernooi: Toernooi = {
   datum: "2026-12-27",
   uur: "10:00",
   clubnaam: "OPC Oostende",
+  club_id: null,
   naam_nl: "Trofee Jeannot Backaert",
   naam_fr: "Trofee Jeannot Backaert",
   gemeente: "Oostende",

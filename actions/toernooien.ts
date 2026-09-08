@@ -32,6 +32,7 @@ export async function toernooiIndienen(
     datum: data.datum,
     uur: data.uur,
     clubnaam: data.clubnaam,
+    club_id: data.club_id || null,
     naam_nl: data.naam_nl,
     naam_fr: data.naam_fr,
     gemeente: data.gemeente,

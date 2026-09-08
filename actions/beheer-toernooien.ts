@@ -112,6 +112,7 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
       datum: data.datum,
       uur: data.uur,
       clubnaam: data.clubnaam,
+      club_id: data.club_id || null,
       naam_nl: data.naam_nl,
       naam_fr: data.naam_fr,
       gemeente: data.gemeente,
@@ -296,6 +297,7 @@ export async function toernooiBewerken(
       | "datum"
       | "uur"
       | "clubnaam"
+      | "club_id"
       | "naam_nl"
       | "naam_fr"
       | "gemeente"
@@ -327,8 +329,14 @@ export async function toernooiBewerken(
   const parsed = toernooiWijzigenSchema.safeParse(wijzigingen);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
 
+  // Een leeg "club_id" (open toernooi zonder gekoppelde club) is geldig
+  // volgens het schema, maar een lege string is geen geldige uuid voor de
+  // databank — die moet dan effectief leeg (null) worden opgeslagen.
+  const updateData = { ...parsed.data };
+  if (updateData.club_id === "") updateData.club_id = null;
+
   const supabase = await createClient();
-  const { error } = await supabase.from("toernooien").update(parsed.data).eq("id", id);
+  const { error } = await supabase.from("toernooien").update(updateData).eq("id", id);
   if (error) {
     console.error("Toernooi bewerken mislukt:", error.message);
     if (error.code === "23505") return { succes: false, fout: "dubbel_toernooi" };

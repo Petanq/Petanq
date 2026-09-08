@@ -13,6 +13,7 @@ import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
 import { Knop } from "@/components/ui/knop";
 import { createClient } from "@/lib/supabase/client";
 import { vindClubBijNaam } from "@/lib/club-opzoeken";
+import { ClubKiezer } from "@/components/ui/club-kiezer";
 import { KwalificatieDataVeld } from "@/components/ui/kwalificatie-data-veld";
 import { normaliseerUrl } from "@/lib/normaliseer-url";
 
@@ -36,6 +37,7 @@ export function TournamentForm() {
   const [uur, setUur] = useState("");
   const [openToernooi, setOpenToernooi] = useState(true);
   const [clubnaam, setClubnaam] = useState("");
+  const [clubId, setClubId] = useState<string | null>(null);
   const [naamNl, setNaamNl] = useState("");
   const [naamFr, setNaamFr] = useState("");
   const [gemeente, setGemeente] = useState("");
@@ -74,16 +76,6 @@ export function TournamentForm() {
       .then(({ data }) => setClubs((data as Club[]) ?? []));
   }, []);
 
-  function vulAdresInVanClub() {
-    if (adres || gemeente || provincie) return;
-    const club = vindClubBijNaam(clubnaam, clubs);
-    if (!club) return;
-    if (club.adres) setAdres(club.adres);
-    setGemeente(club.gemeente);
-    setProvincie(club.provincie);
-    setAdresVanClub(true);
-  }
-
   function veldFout(waarde: string): string {
     return verzendPoging && !waarde ? "!border-rood-2" : "";
   }
@@ -91,14 +83,32 @@ export function TournamentForm() {
   function vulVeldenInVanAffiche(velden: AfficheVelden) {
     if (velden.datum) setDatum(velden.datum);
     if (velden.uur) setUur(velden.uur);
-    if (velden.clubnaam) setClubnaam(velden.clubnaam);
+
+    // Duidelijke match op een bestaande club: automatisch koppelen en haar
+    // eigen, betrouwbare gegevens gebruiken i.p.v. de gok van de AI — dan
+    // moet er niets meer manueel opgezocht worden. Geen match? Dan gewoon de
+    // tekst van de affiche overnemen zoals voorheen.
+    const matchClub = velden.clubnaam ? vindClubBijNaam(velden.clubnaam, clubs) : undefined;
+    if (matchClub) {
+      setClubnaam(matchClub.naam);
+      setClubId(matchClub.id);
+      setOpenToernooi(false);
+      if (matchClub.adres) setAdres(matchClub.adres);
+      setGemeente(matchClub.gemeente);
+      setProvincie(matchClub.provincie);
+      setAdresVanClub(true);
+    } else {
+      if (velden.clubnaam) setClubnaam(velden.clubnaam);
+      setClubId(null);
+      if (velden.gemeente) setGemeente(velden.gemeente);
+      if (velden.adres) setAdres(velden.adres);
+      if (velden.provincie && (ALLE_PROVINCIES as string[]).includes(velden.provincie)) {
+        setProvincie(velden.provincie as Provincie);
+      }
+    }
+
     if (velden.naam_nl) setNaamNl(velden.naam_nl);
     if (velden.naam_fr) setNaamFr(velden.naam_fr);
-    if (velden.gemeente) setGemeente(velden.gemeente);
-    if (velden.adres) setAdres(velden.adres);
-    if (velden.provincie && (ALLE_PROVINCIES as string[]).includes(velden.provincie)) {
-      setProvincie(velden.provincie as Provincie);
-    }
     if (velden.categorie && CATEGORIEEN.includes(velden.categorie as Categorie)) {
       setCategorie(velden.categorie as Categorie);
     }
@@ -158,7 +168,8 @@ export function TournamentForm() {
     const verplichteVelden = [
       datum,
       uur,
-      clubnaam,
+      openToernooi ? clubnaam : clubId,
+      openToernooi ? adres : "ok",
       naamNl,
       gemeente,
       provincie,
@@ -178,6 +189,7 @@ export function TournamentForm() {
         datum,
         uur,
         clubnaam,
+        club_id: clubId,
         naam_nl: naamNl,
         naam_fr: naamFr,
         gemeente,
@@ -297,16 +309,37 @@ export function TournamentForm() {
               </button>
             </div>
           </Veld>
-          <Veld label={openToernooi ? t.form.organisator : t.form.clubnaam} verplicht>
-            <input
-              required
-              value={clubnaam}
-              onChange={(e) => setClubnaam(e.target.value)}
-              onBlur={vulAdresInVanClub}
-              className={`veld-input ${veldFout(clubnaam)}`}
-            />
-            {adresVanClub && <p className="mt-1 text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</p>}
-          </Veld>
+          {openToernooi ? (
+            <Veld label={t.form.organisator} verplicht>
+              <input
+                required
+                value={clubnaam}
+                onChange={(e) => setClubnaam(e.target.value)}
+                className={`veld-input ${veldFout(clubnaam)}`}
+              />
+            </Veld>
+          ) : (
+            <Veld label={t.form.clubnaam} verplicht>
+              <ClubKiezer
+                waarde={clubnaam}
+                onWaardeChange={(v) => {
+                  setClubnaam(v);
+                  setClubId(null);
+                }}
+                onClubGekozen={(club) => {
+                  setClubnaam(club.naam);
+                  setClubId(club.id);
+                  if (club.adres) setAdres(club.adres);
+                  setGemeente(club.gemeente);
+                  setProvincie(club.provincie);
+                  setAdresVanClub(true);
+                }}
+                clubs={clubs}
+                fout={veldFout(clubId ?? "")}
+              />
+              {adresVanClub && <p className="mt-1 text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</p>}
+            </Veld>
+          )}
           <Veld label={t.form.naamToernooi} verplicht>
             <input
               required
@@ -318,8 +351,13 @@ export function TournamentForm() {
               className={`veld-input ${veldFout(naamNl)}`}
             />
           </Veld>
-          <Veld label={`${t.form.adres} (${t.form.optioneel})`}>
-            <input value={adres} onChange={(e) => setAdres(e.target.value)} className="veld-input" />
+          <Veld label={openToernooi ? t.form.adres : `${t.form.adres} (${t.form.optioneel})`} verplicht={openToernooi}>
+            <input
+              required={openToernooi}
+              value={adres}
+              onChange={(e) => setAdres(e.target.value)}
+              className={`veld-input ${openToernooi ? veldFout(adres) : ""}`}
+            />
           </Veld>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Veld label={t.form.gemeente} verplicht>
@@ -522,7 +560,8 @@ export function TournamentForm() {
           [
             datum,
             uur,
-            clubnaam,
+            openToernooi ? clubnaam : clubId,
+            openToernooi ? adres : "ok",
             naamNl,
             gemeente,
             provincie,

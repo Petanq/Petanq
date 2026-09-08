@@ -27,6 +27,7 @@ export type Toernooi = {
   datum: string;
   uur: string;
   clubnaam: string;
+  club_id: string | null;
   naam_nl: string;
   naam_fr: string;
   gemeente: string;

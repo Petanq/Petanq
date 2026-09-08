@@ -23,6 +23,7 @@ import { vindMogelijkeDubbelsVoorVelden } from "@/lib/dubbels";
 import { vindClubBijNaam } from "@/lib/club-opzoeken";
 import { createClient } from "@/lib/supabase/client";
 import { KwalificatieDataVeld } from "@/components/ui/kwalificatie-data-veld";
+import { ClubKiezer } from "@/components/ui/club-kiezer";
 import { normaliseerUrl } from "@/lib/normaliseer-url";
 
 function afficheItemLabel(item: AfficheVelden, taal: "nl" | "fr"): string {
@@ -403,6 +404,7 @@ function AddForm({
   const { t, taal } = useTranslation();
   const [openToernooi, setOpenToernooi] = useState(beginwaarde?.open_toernooi ?? false);
   const [clubnaam, setClubnaam] = useState(beginwaarde?.clubnaam ?? "");
+  const [clubId, setClubId] = useState<string | null>(beginwaarde?.club_id ?? null);
   const [naamNl, setNaamNl] = useState(beginwaarde?.naam_nl ?? "");
   const [naamFr, setNaamFr] = useState(beginwaarde?.naam_fr ?? "");
   // Datum (en kwalificatiedata) altijd leeg laten bij dupliceren — net het veld
@@ -450,16 +452,6 @@ function AddForm({
       .then(({ data }) => setClubs((data as Club[]) ?? []));
   }, []);
 
-  function vulAdresInVanClub() {
-    if (adres || gemeente || provincie) return;
-    const club = vindClubBijNaam(clubnaam, clubs);
-    if (!club) return;
-    if (club.adres) setAdres(club.adres);
-    setGemeente(club.gemeente);
-    setProvincie(club.provincie);
-    setAdresVanClub(true);
-  }
-
   const dubbels = useMemo(
     () => vindMogelijkeDubbelsVoorVelden(datum, gemeente, bestaandeToernooien),
     [datum, gemeente, bestaandeToernooien]
@@ -468,6 +460,7 @@ function AddForm({
   function resetVelden() {
     setOpenToernooi(false);
     setClubnaam("");
+    setClubId(null);
     setNaamNl("");
     setNaamFr("");
     setDatum("");
@@ -495,14 +488,32 @@ function AddForm({
   function vulVeldenInVanAffiche(velden: AfficheVelden) {
     if (velden.datum) setDatum(velden.datum);
     if (velden.uur) setUur(velden.uur);
-    if (velden.clubnaam) setClubnaam(velden.clubnaam);
+
+    // Duidelijke match op een bestaande club: automatisch koppelen en haar
+    // eigen, betrouwbare gegevens gebruiken i.p.v. de gok van de AI — dan
+    // moet er niets meer manueel opgezocht worden. Geen match? Dan gewoon de
+    // tekst van de affiche overnemen zoals voorheen.
+    const matchClub = velden.clubnaam ? vindClubBijNaam(velden.clubnaam, clubs) : undefined;
+    if (matchClub) {
+      setClubnaam(matchClub.naam);
+      setClubId(matchClub.id);
+      setOpenToernooi(false);
+      if (matchClub.adres) setAdres(matchClub.adres);
+      setGemeente(matchClub.gemeente);
+      setProvincie(matchClub.provincie);
+      setAdresVanClub(true);
+    } else {
+      if (velden.clubnaam) setClubnaam(velden.clubnaam);
+      setClubId(null);
+      if (velden.gemeente) setGemeente(velden.gemeente);
+      if (velden.adres) setAdres(velden.adres);
+      if (velden.provincie && (ALLE_PROVINCIES as string[]).includes(velden.provincie)) {
+        setProvincie(velden.provincie as Provincie);
+      }
+    }
+
     if (velden.naam_nl) setNaamNl(velden.naam_nl);
     if (velden.naam_fr) setNaamFr(velden.naam_fr);
-    if (velden.gemeente) setGemeente(velden.gemeente);
-    if (velden.adres) setAdres(velden.adres);
-    if (velden.provincie && (ALLE_PROVINCIES as string[]).includes(velden.provincie)) {
-      setProvincie(velden.provincie as Provincie);
-    }
     if (velden.categorie && CATEGORIEEN.includes(velden.categorie as Categorie)) {
       setCategorie(velden.categorie as Categorie);
     }
@@ -564,6 +575,7 @@ function AddForm({
     setFout(null);
     const resultaat = await toernooiToevoegenAlsAdmin({
       clubnaam,
+      club_id: clubId,
       naam_nl: naamNl,
       naam_fr: naamFr,
       datum,
@@ -646,12 +658,26 @@ function AddForm({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {openToernooi ? t.form.organisator : t.form.clubnaam}
-          <input
-            value={clubnaam}
-            onChange={(e) => setClubnaam(e.target.value)}
-            onBlur={vulAdresInVanClub}
-            className="veld-input"
-          />
+          {openToernooi ? (
+            <input value={clubnaam} onChange={(e) => setClubnaam(e.target.value)} className="veld-input" />
+          ) : (
+            <ClubKiezer
+              waarde={clubnaam}
+              onWaardeChange={(v) => {
+                setClubnaam(v);
+                setClubId(null);
+              }}
+              onClubGekozen={(club) => {
+                setClubnaam(club.naam);
+                setClubId(club.id);
+                if (club.adres) setAdres(club.adres);
+                setGemeente(club.gemeente);
+                setProvincie(club.provincie);
+                setAdresVanClub(true);
+              }}
+              clubs={clubs}
+            />
+          )}
           {adresVanClub && <span className="text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</span>}
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
@@ -704,8 +730,12 @@ function AddForm({
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker sm:col-span-2">
-          {t.form.adres}
-          <input value={adres} onChange={(e) => setAdres(e.target.value)} className="veld-input" />
+          {openToernooi ? t.form.adres : `${t.form.adres} (${t.form.optioneel})`}
+          <input
+            value={adres}
+            onChange={(e) => setAdres(e.target.value)}
+            className={`veld-input ${openToernooi && !adres ? "!border-rood-2" : ""}`}
+          />
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.categorie}
@@ -906,7 +936,7 @@ function AddForm({
           onClick={toevoegen}
           disabled={
             bezig ||
-            !clubnaam ||
+            (openToernooi ? !clubnaam || !adres : !clubId) ||
             !naamNl ||
             !naamFr ||
             !datum ||
@@ -943,6 +973,8 @@ export function EditForm({
   const { t, taal } = useTranslation();
   const [openToernooi, setOpenToernooi] = useState(toernooi.open_toernooi);
   const [clubnaam, setClubnaam] = useState(toernooi.clubnaam);
+  const [clubId, setClubId] = useState<string | null>(toernooi.club_id);
+  const [clubs, setClubs] = useState<Club[]>([]);
   const [naamNl, setNaamNl] = useState(toernooi.naam_nl);
   const [naamFr, setNaamFr] = useState(toernooi.naam_fr);
   const [datum, setDatum] = useState(toernooi.datum);
@@ -972,6 +1004,15 @@ export function EditForm({
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<string | null>(null);
 
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("clubs")
+      .select("*")
+      .eq("actief", true)
+      .then(({ data }) => setClubs((data as Club[]) ?? []));
+  }, []);
+
   async function afficheGekozen(bestand: File | null) {
     if (!bestand) return;
     setAfficheBezig(true);
@@ -990,6 +1031,7 @@ export function EditForm({
     setFout(null);
     const resultaat = await toernooiBewerken(toernooi.id, {
       clubnaam,
+      club_id: clubId,
       naam_nl: naamNl,
       naam_fr: naamFr,
       datum,
@@ -1055,7 +1097,25 @@ export function EditForm({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {openToernooi ? t.form.organisator : t.form.clubnaam}
-          <input value={clubnaam} onChange={(e) => setClubnaam(e.target.value)} className="veld-input" />
+          {openToernooi ? (
+            <input value={clubnaam} onChange={(e) => setClubnaam(e.target.value)} className="veld-input" />
+          ) : (
+            <ClubKiezer
+              waarde={clubnaam}
+              onWaardeChange={(v) => {
+                setClubnaam(v);
+                setClubId(null);
+              }}
+              onClubGekozen={(club) => {
+                setClubnaam(club.naam);
+                setClubId(club.id);
+                if (club.adres) setAdres(club.adres);
+                setGemeente(club.gemeente);
+                setProvincie(club.provincie);
+              }}
+              clubs={clubs}
+            />
+          )}
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.contactEmail}
@@ -1101,8 +1161,12 @@ export function EditForm({
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker sm:col-span-2">
-          {t.form.adres}
-          <input value={adres} onChange={(e) => setAdres(e.target.value)} className="veld-input" />
+          {openToernooi ? t.form.adres : `${t.form.adres} (${t.form.optioneel})`}
+          <input
+            value={adres}
+            onChange={(e) => setAdres(e.target.value)}
+            className={`veld-input ${openToernooi && !adres ? "!border-rood-2" : ""}`}
+          />
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.categorie}
@@ -1293,7 +1357,7 @@ export function EditForm({
       <div className="mt-3 flex gap-2">
         <button
           onClick={opslaan}
-          disabled={bezig}
+          disabled={bezig || (openToernooi ? !clubnaam || !adres : !clubId)}
           className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
         >
           {t.beheer.opslaan}
