@@ -1589,7 +1589,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           <section className="card fade-in">
             <div className="zaal-head">
               <h2>{isMeli ? t.match13.spelersHeader : t.match13.teamsHeader}</h2>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
                 {teams.length > 0 && (
                   <button className="match13-actie-knop" onClick={() => window.print()}>
                     {t.match13.printLijst}
@@ -1805,7 +1805,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                   ? t.match13.groepsfaseKlaar
                   : t.match13.groepsfase}
               </h2>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
                 {playablePoulesMatches.length > 0 && (
                   <button className="match13-actie-knop" onClick={() => window.print()}>
                     {t.match13.printKaartjes}
@@ -1897,7 +1897,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
           <section className="card fade-in">
             <div className="zaal-head">
               <h2>{t.match13.rondeVan(currentRound ? currentRound.number : "—", totalRounds)}</h2>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
                 {currentRound && currentRound.matches.some((m) => m.teamB !== null) && (
                   <button
                     className="match13-actie-knop"
