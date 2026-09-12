@@ -135,7 +135,9 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
       kwalificatiedata: kwalificatiedata.length ? kwalificatiedata : null,
       kwalificatie_uur: data.kwalificatie_uur || null,
       status: "goedgekeurd",
-      ingediend_door: data.contact_email || null,
+      // Rechtstreeks door een admin toegevoegd — er is dan geen aparte
+      // indiener, dus de naam van de moderator zelf vult diezelfde plek in.
+      ingediend_door: moderatorNaam,
       goedgekeurd_door: moderatorNaam,
       goedgekeurd_op: new Date().toISOString(),
     })

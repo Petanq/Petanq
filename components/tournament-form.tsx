@@ -35,6 +35,7 @@ export function TournamentForm() {
   const [status, setStatus] = useState<"idle" | "bezig" | "ok" | "fout">("idle");
   const [foutReden, setFoutReden] = useState<string | null>(null);
 
+  const [naamIndiener, setNaamIndiener] = useState("");
   const [datum, setDatum] = useState("");
   const [uur, setUur] = useState("");
   const [openToernooi, setOpenToernooi] = useState(true);
@@ -211,6 +212,7 @@ export function TournamentForm() {
     e.preventDefault();
 
     const verplichteVelden = [
+      naamIndiener,
       datum,
       uur,
       openToernooi ? clubnaam : clubId,
@@ -231,6 +233,7 @@ export function TournamentForm() {
 
     const resultaat = await toernooiIndienen(
       {
+        ingediend_door: naamIndiener,
         datum,
         uur,
         clubnaam,
@@ -335,6 +338,15 @@ export function TournamentForm() {
           <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
             {t.form.sectieBasis}
           </legend>
+          <Veld label={t.form.jouwNaam} verplicht>
+            <input
+              required
+              value={naamIndiener}
+              onChange={(e) => setNaamIndiener(e.target.value)}
+              className={`veld-input ${veldFout(naamIndiener)}`}
+            />
+            <p className="mt-1 text-xs text-grijs">{t.form.jouwNaamHint}</p>
+          </Veld>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Veld label={t.form.datum} verplicht>
               <input
@@ -630,6 +642,7 @@ export function TournamentForm() {
 
         {verzendPoging &&
           [
+            naamIndiener,
             datum,
             uur,
             openToernooi ? clubnaam : clubId,

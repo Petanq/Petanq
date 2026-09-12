@@ -54,6 +54,10 @@ const toernooiBaseSchema = z.object({
   aantal_ronden: z.coerce.number().int().min(1).max(20).nullable().optional(),
   aantal_poules: z.coerce.number().int().min(1).max(20).nullable().optional(),
   contact_email: z.string().trim().email().nullable().optional().or(z.literal("")),
+  // Niet strikt verplicht in het schema (de admin-invoer in het beheerpaneel
+  // stuurt dit niet mee — daar wordt het serverside op de moderator gezet),
+  // maar het publieke aanmeldformulier maakt dit zelf wel verplicht.
+  ingediend_door: z.string().trim().max(120).nullable().optional().or(z.literal("")),
   inschrijvingsprijs: z.coerce.number().min(0).max(1000).nullable().optional(),
   gratis: z.boolean().optional().default(false),
   max_ploegen: z.coerce.number().int().min(1).max(500).nullable().optional(),

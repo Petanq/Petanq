@@ -111,6 +111,8 @@ export function PendingList({
                 {tn.finale && ` · ${t.lijst.metFinale}`}
               </div>
               <div className="mt-1 text-xs text-grijs">
+                {tn.ingediend_door && <span className="font-semibold text-donker">{tn.ingediend_door}</span>}
+                {tn.ingediend_door && " · "}
                 {tn.contact_email || t.beheer.geenEmailOpgegeven}
               </div>
             </div>

@@ -55,7 +55,7 @@ export async function toernooiIndienen(
     kwalificatiedata: kwalificatiedata.length ? kwalificatiedata : null,
     kwalificatie_uur: data.kwalificatie_uur || null,
     status: "in_behandeling",
-    ingediend_door: data.contact_email || null,
+    ingediend_door: data.ingediend_door || null,
   });
 
   // Let op: geen .select() na deze insert — de indiener (anoniem/publiek) mag
