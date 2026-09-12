@@ -511,6 +511,45 @@ function scoreRankedPairing(
   return pairs.reduce((sum, [a, b]) => sum + rankedPairCost(a, b, history, rankIndexOf), 0);
 }
 
+// Local-swap hill-climbing: try every pair of matches and swap their second
+// halves whenever that lowers the combined cost, repeating until a full pass
+// finds no more improvement. Mutates and returns `pairs`. Run from a single
+// starting point this only reaches that point's local optimum — a repeat
+// constraint can wall off a better arrangement behind a swap that briefly
+// looks worse — so the caller runs it from many different starting pairings
+// (every random attempt, not just the final winner) rather than relying on
+// one pass to find the global optimum on its own.
+function polishRankedPairing(
+  pairs: [string, string][],
+  history: Map<string, number>,
+  rankIndexOf: (id: string) => number
+): [string, string][] {
+  for (let pass = 0; pass < 30; pass++) {
+    let improved = false;
+    for (let i = 0; i < pairs.length; i++) {
+      for (let j = i + 1; j < pairs.length; j++) {
+        const swapped: [[string, string], [string, string]] = [
+          [pairs[i][0], pairs[j][1]],
+          [pairs[j][0], pairs[i][1]],
+        ];
+        const before =
+          rankedPairCost(pairs[i][0], pairs[i][1], history, rankIndexOf) +
+          rankedPairCost(pairs[j][0], pairs[j][1], history, rankIndexOf);
+        const after =
+          rankedPairCost(swapped[0][0], swapped[0][1], history, rankIndexOf) +
+          rankedPairCost(swapped[1][0], swapped[1][1], history, rankIndexOf);
+        if (after < before) {
+          pairs[i] = swapped[0];
+          pairs[j] = swapped[1];
+          improved = true;
+        }
+      }
+    }
+    if (!improved) break;
+  }
+  return pairs;
+}
+
 /**
  * Ranked ("Swiss") draw: groups present teams by matchpunten (then saldo to
  * pick who sits out on a BYE) and searches many random pairings — same
@@ -554,11 +593,28 @@ export function generateRankedRound(
   const rankIndex = new Map(ids.map((id, i) => [id, i]));
   const rankIndexOf = (id: string) => rankIndex.get(id) ?? 0;
 
-  let pairs: [string, string][] = greedyPairRanked(ids, history, rankIndexOf);
+  // Buren-aan-buren in de gesorteerde volgorde (1e met 2e, 3e met 4e, ...)
+  // is wiskundig altijd de kleinst mogelijke totale rangafstand — dat als
+  // startpunt nemen garandeert dat een groot tornooi (waar 500 willekeurige
+  // pogingen niet altijd de beste volgorde vinden) nooit slechter uitkomt
+  // dan deze basis. De willekeurige zoektocht wijkt er daarna enkel vanaf
+  // als dat een herhaalde tegenstander vermijdt (die blijft 1000x zwaarder
+  // wegen dan rangafstand).
+  let pairs: [string, string][] = [];
+  for (let i = 0; i < ids.length; i += 2) {
+    pairs.push([ids[i], ids[i + 1]]);
+  }
+  pairs = polishRankedPairing(pairs, history, rankIndexOf);
   let bestScore = scoreRankedPairing(pairs, history, rankIndexOf);
 
-  for (let attempt = 1; attempt < MAX_ATTEMPTS && bestScore > 0; attempt++) {
-    const candidate = greedyPairRanked(ids, history, rankIndexOf);
+  // Multi-start hill-climbing: a single local-swap polish only reaches the
+  // local optimum nearest its own starting point — a repeat constraint can
+  // wall off a better arrangement behind a swap that briefly looks worse.
+  // Polishing every random attempt (not just the eventual winner) explores
+  // many different starting points, which is what reliably closes the
+  // remaining gap for bigger tornooien.
+  for (let attempt = 0; attempt < MAX_ATTEMPTS && bestScore > 0; attempt++) {
+    const candidate = polishRankedPairing(greedyPairRanked(ids, history, rankIndexOf), history, rankIndexOf);
     const score = scoreRankedPairing(candidate, history, rankIndexOf);
     if (score < bestScore) {
       pairs = candidate;
