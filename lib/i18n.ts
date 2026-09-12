@@ -420,6 +420,12 @@ const nl = {
     mogelijkDubbel: "Mogelijk dubbel",
     gedupliceerdVan: (naam: string) => `Gedupliceerd van "${naam}"`,
     pasDatumAan: "pas hieronder de datum (en eventueel andere details) aan.",
+    herhaalToernooi: "+ Herhaal toernooi",
+    herhaalUitleg:
+      "Vul alle velden hieronder één keer in — bij opslaan wordt er automatisch een apart tornooi aangemaakt voor elke datum die je toevoegt.",
+    herhaalDatums: "Datums",
+    datumToevoegen: "+ Datum toevoegen",
+    opslaanHerhaal: (n: number) => (n === 1 ? "Opslaan (1 toernooi)" : `Opslaan (${n} toernooien)`),
     afficheOverzicht: (n: number) => `Dit affiche bevat ${n} concours:`,
     opslaanEnVolgende: (n: number) => `Opslaan en volgende (${n} nog te gaan)`,
     persoonlijkBedankje: (naam: string, n: number) =>
@@ -1064,6 +1070,12 @@ const fr: typeof nl = {
     mogelijkDubbel: "Doublon possible",
     gedupliceerdVan: (naam: string) => `Dupliqué de "${naam}"`,
     pasDatumAan: "modifiez ci-dessous la date (et éventuellement d'autres détails).",
+    herhaalToernooi: "+ Répéter un tournoi",
+    herhaalUitleg:
+      "Remplissez tous les champs ci-dessous une seule fois — à l'enregistrement, un tournoi distinct sera créé automatiquement pour chaque date que vous ajoutez.",
+    herhaalDatums: "Dates",
+    datumToevoegen: "+ Ajouter une date",
+    opslaanHerhaal: (n: number) => (n === 1 ? "Enregistrer (1 tournoi)" : `Enregistrer (${n} tournois)`),
     afficheOverzicht: (n: number) => `Cette affiche contient ${n} concours :`,
     opslaanEnVolgende: (n: number) => `Enregistrer et suivant (${n} restants)`,
     persoonlijkBedankje: (naam: string, n: number) =>

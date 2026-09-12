@@ -54,6 +54,7 @@ export function TournamentManageList({
   const { t, taal } = useTranslation();
   const router = useRouter();
   const [toevoegenOpen, setToevoegenOpen] = useState(false);
+  const [herhaalOpen, setHerhaalOpen] = useState(false);
   const [duplicaatBron, setDuplicaatBron] = useState<Toernooi | null>(null);
   const [bewerkId, setBewerkId] = useState<string | null>(null);
   const [bezig, setBezig] = useState(false);
@@ -208,15 +209,28 @@ export function TournamentManageList({
             <option value="officieel">{t.form.officieelToernooi}</option>
           </select>
         </div>
-        <button
-          onClick={() => {
-            setDuplicaatBron(null);
-            setToevoegenOpen((v) => !v);
-          }}
-          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97]"
-        >
-          {t.beheer.nieuwToernooi}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => {
+              setHerhaalOpen(false);
+              setDuplicaatBron(null);
+              setToevoegenOpen((v) => !v);
+            }}
+            className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97]"
+          >
+            {t.beheer.nieuwToernooi}
+          </button>
+          <button
+            onClick={() => {
+              setToevoegenOpen(false);
+              setDuplicaatBron(null);
+              setHerhaalOpen((v) => !v);
+            }}
+            className="rounded-md border-[1.5px] border-blauw px-4 py-2 text-sm font-bold text-blauw shadow-sm transition-all hover:bg-blauw hover:text-white hover:shadow-md active:scale-[0.97]"
+          >
+            {t.beheer.herhaalToernooi}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -237,6 +251,19 @@ export function TournamentManageList({
             setToevoegenOpen(false);
             setDuplicaatBron(null);
           }}
+        />
+      )}
+
+      {herhaalOpen && (
+        <AddForm
+          key="herhaal"
+          herhaalModus
+          bestaandeToernooien={toernooien}
+          onKlaar={() => {
+            setHerhaalOpen(false);
+            router.refresh();
+          }}
+          onAnnuleren={() => setHerhaalOpen(false)}
         />
       )}
 
@@ -393,11 +420,13 @@ export function TournamentManageList({
 function AddForm({
   bestaandeToernooien,
   beginwaarde,
+  herhaalModus = false,
   onKlaar,
   onAnnuleren,
 }: {
   bestaandeToernooien: Toernooi[];
   beginwaarde?: Toernooi | null;
+  herhaalModus?: boolean;
   onKlaar: () => void;
   onAnnuleren: () => void;
 }) {
@@ -410,6 +439,9 @@ function AddForm({
   // Datum (en kwalificatiedata) altijd leeg laten bij dupliceren — net het veld
   // dat de admin bewust zelf moet invullen voor de nieuwe datum.
   const [datum, setDatum] = useState("");
+  // Enkel gebruikt in herhaalModus: één set gedeelde velden, meerdere datums —
+  // bij opslaan wordt per datum een apart tornooi aangemaakt.
+  const [herhaalDatums, setHerhaalDatums] = useState<string[]>([""]);
   const [uur, setUur] = useState(beginwaarde?.uur ?? "");
   const [gemeente, setGemeente] = useState(beginwaarde?.gemeente ?? "");
   const [adres, setAdres] = useState(beginwaarde?.adres ?? "");
@@ -570,15 +602,13 @@ function AddForm({
     }
   }
 
-  async function toevoegen() {
-    setBezig(true);
-    setFout(null);
-    const resultaat = await toernooiToevoegenAlsAdmin({
+  function gedeeldeVelden(voorDatum: string) {
+    return {
       clubnaam,
       club_id: clubId,
       naam_nl: naamNl,
       naam_fr: naamFr,
-      datum,
+      datum: voorDatum,
       uur,
       gemeente,
       adres: adres || null,
@@ -594,12 +624,37 @@ function AddForm({
       max_ploegen: maxPloegen || null,
       link_inschrijving: linkInschrijving || null,
       opmerking: opmerking || null,
-      kwalificatiedata: kwalificatieData.filter((k) => k.datum),
-      kwalificatie_uur: kwalificatieUur || null,
+      kwalificatiedata: herhaalModus ? [] : kwalificatieData.filter((k) => k.datum),
+      kwalificatie_uur: herhaalModus ? null : kwalificatieUur || null,
       affiche_url: afficheUrl,
       open_toernooi: openToernooi,
       finale,
-    });
+    };
+  }
+
+  async function toevoegen() {
+    setBezig(true);
+    setFout(null);
+
+    if (herhaalModus) {
+      const datums = herhaalDatums.filter((d) => d);
+      let aantalGelukt = 0;
+      for (const eenDatum of datums) {
+        const resultaat = await toernooiToevoegenAlsAdmin(gedeeldeVelden(eenDatum));
+        if (!resultaat.succes) {
+          setBezig(false);
+          setFout(resultaat.fout);
+          setHerhaalDatums(datums.slice(aantalGelukt));
+          return;
+        }
+        aantalGelukt++;
+      }
+      setBezig(false);
+      onKlaar();
+      return;
+    }
+
+    const resultaat = await toernooiToevoegenAlsAdmin(gedeeldeVelden(datum));
     setBezig(false);
     if (!resultaat.succes) {
       setFout(resultaat.fout);
@@ -621,6 +676,11 @@ function AddForm({
       {beginwaarde && (
         <div className="mb-3 rounded-md border border-[#bae6fd] bg-[#f0f9ff] p-2.5 text-xs text-[#0369a1]">
           <span className="font-bold">{t.beheer.gedupliceerdVan(beginwaarde.naam_nl)}</span> — {t.beheer.pasDatumAan}
+        </div>
+      )}
+      {herhaalModus && (
+        <div className="mb-3 rounded-md border border-[#bae6fd] bg-[#f0f9ff] p-2.5 text-xs text-[#0369a1]">
+          <span className="font-bold">{t.beheer.herhaalUitleg}</span>
         </div>
       )}
       {dubbels.length > 0 && (
@@ -704,10 +764,46 @@ function AddForm({
             className="veld-input"
           />
         </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.form.datum}
-          <input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} className="veld-input" />
-        </label>
+        {herhaalModus ? (
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
+            <span className="text-xs font-bold text-donker">{t.beheer.herhaalDatums}</span>
+            <div className="flex flex-col gap-2">
+              {herhaalDatums.map((d, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={d}
+                    onChange={(e) =>
+                      setHerhaalDatums((lijst) => lijst.map((v, j) => (j === i ? e.target.value : v)))
+                    }
+                    className="veld-input"
+                  />
+                  {herhaalDatums.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setHerhaalDatums((lijst) => lijst.filter((_, j) => j !== i))}
+                      className="shrink-0 rounded-md border border-rand px-2.5 py-2 text-sm font-bold text-grijs transition-all hover:border-rood-2 hover:text-rood-2 active:scale-95"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setHerhaalDatums((lijst) => [...lijst, ""])}
+              className="mt-1 self-start rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-95"
+            >
+              {t.beheer.datumToevoegen}
+            </button>
+          </div>
+        ) : (
+          <label className="flex flex-col gap-1 text-xs font-bold text-donker">
+            {t.form.datum}
+            <input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} className="veld-input" />
+          </label>
+        )}
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.uur}
           <input type="time" value={uur} onChange={(e) => setUur(e.target.value)} className="veld-input" />
@@ -880,16 +976,18 @@ function AddForm({
         />
       </label>
 
-      <div className="mt-3">
-        <KwalificatieDataVeld
-          waarden={kwalificatieData}
-          onChange={setKwalificatieData}
-          uur={kwalificatieUur}
-          onUurChange={setKwalificatieUur}
-          hoofdDatum={datum}
-          hoofdUur={uur}
-        />
-      </div>
+      {!herhaalModus && (
+        <div className="mt-3">
+          <KwalificatieDataVeld
+            waarden={kwalificatieData}
+            onChange={setKwalificatieData}
+            uur={kwalificatieUur}
+            onUurChange={setKwalificatieUur}
+            hoofdDatum={datum}
+            hoofdUur={uur}
+          />
+        </div>
+      )}
 
       <div className="mt-3 flex flex-col gap-1.5">
         <span className="text-xs font-bold text-donker">{t.form.affiche}</span>
@@ -943,7 +1041,7 @@ function AddForm({
             (openToernooi ? !clubnaam || !adres : !clubId) ||
             !naamNl ||
             !naamFr ||
-            !datum ||
+            (herhaalModus ? herhaalDatums.filter((d) => d).length === 0 : !datum) ||
             !uur ||
             !gemeente ||
             !provincie ||
@@ -952,7 +1050,11 @@ function AddForm({
           }
           className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
         >
-          {wachtrij.length > 0 ? t.beheer.opslaanEnVolgende(wachtrij.length) : t.beheer.opslaan}
+          {herhaalModus
+            ? t.beheer.opslaanHerhaal(herhaalDatums.filter((d) => d).length)
+            : wachtrij.length > 0
+            ? t.beheer.opslaanEnVolgende(wachtrij.length)
+            : t.beheer.opslaan}
         </button>
         <button
           onClick={onAnnuleren}
