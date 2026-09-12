@@ -109,6 +109,7 @@ export const clubSchema = z.object({
   telefoon: z.string().trim().max(30).nullable().optional().or(z.literal("")),
   openingsuren: z.string().trim().max(300).nullable().optional().or(z.literal("")),
   foto_url: z.string().trim().url().nullable().optional().or(z.literal("")),
+  ingediend_door: z.string().trim().max(120).nullable().optional().or(z.literal("")),
 });
 
 export type ClubFormData = z.infer<typeof clubSchema>;

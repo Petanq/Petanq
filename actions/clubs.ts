@@ -31,6 +31,7 @@ export async function clubVoorstellen(
     adres: parsed.data.adres || null,
     website: parsed.data.website || null,
     contact_email: parsed.data.contact_email || null,
+    ingediend_door: parsed.data.ingediend_door || null,
     actief: false,
   });
 

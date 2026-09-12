@@ -15,6 +15,7 @@ export function ClubForm() {
   const voorgeselecteerdeProvincie = zoekParams.get("provincie") as Provincie | null;
 
   const [status, setStatus] = useState<"idle" | "bezig" | "ok" | "fout">("idle");
+  const [naamIndiener, setNaamIndiener] = useState("");
   const [naam, setNaam] = useState("");
   const [gemeente, setGemeente] = useState("");
   const [adres, setAdres] = useState("");
@@ -27,6 +28,7 @@ export function ClubForm() {
     setStatus("bezig");
     const resultaat = await clubVoorstellen(
       {
+        ingediend_door: naamIndiener,
         naam,
         gemeente,
         provincie,
@@ -56,6 +58,15 @@ export function ClubForm() {
       <p className="mb-8 text-sm text-grijs">{t.clubForm.beschrijving}</p>
 
       <form onSubmit={versturen} className="flex flex-col gap-4">
+        <Veld label={t.form.jouwNaam} verplicht>
+          <input
+            required
+            value={naamIndiener}
+            onChange={(e) => setNaamIndiener(e.target.value)}
+            className="veld-input"
+          />
+          <p className="mt-1 text-xs text-grijs">{t.clubForm.jouwNaamHint}</p>
+        </Veld>
         <Veld label={t.clubForm.naam} verplicht>
           <input
             required

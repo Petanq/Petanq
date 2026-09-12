@@ -89,6 +89,7 @@ export type Club = {
   telefoon: string | null;
   openingsuren: string | null;
   foto_url: string | null;
+  ingediend_door: string | null;
   aangemaakt_op: string;
   actief: boolean;
   verwijderd_op: string | null;

@@ -163,6 +163,7 @@ const nl = {
     titel: "Club voorstellen",
     beschrijving:
       "Ontbreekt jouw club? Vul onderstaand formulier in. Een moderator controleert en activeert de club.",
+    jouwNaamHint: "Zodat we weten wie deze club aanmeldt, mocht er iets moeten gecorrigeerd worden.",
     naam: "Naam van de club",
     gemeente: "Gemeente",
     adres: "Adres (optioneel)",
@@ -425,6 +426,7 @@ const nl = {
     mogelijkDubbel: "Mogelijk dubbel",
     gedupliceerdVan: (naam: string) => `Gedupliceerd van "${naam}"`,
     pasDatumAan: "pas hieronder de datum (en eventueel andere details) aan.",
+    ingediendDoor: (naam: string) => `Ingediend door ${naam}`,
     herhaalToernooi: "+ Herhaal toernooi",
     herhaalUitleg:
       "Vul alle velden hieronder één keer in — bij opslaan wordt er automatisch een apart tornooi aangemaakt voor elke datum die je toevoegt.",
@@ -817,6 +819,7 @@ const fr: typeof nl = {
     titel: "Proposer un club",
     beschrijving:
       "Votre club manque ? Remplissez le formulaire ci-dessous. Un modérateur vérifiera et activera le club.",
+    jouwNaamHint: "Pour savoir qui soumet ce club, au cas où quelque chose devrait être corrigé.",
     naam: "Nom du club",
     gemeente: "Commune",
     adres: "Adresse (optionnel)",
@@ -1080,6 +1083,7 @@ const fr: typeof nl = {
     mogelijkDubbel: "Doublon possible",
     gedupliceerdVan: (naam: string) => `Dupliqué de "${naam}"`,
     pasDatumAan: "modifiez ci-dessous la date (et éventuellement d'autres détails).",
+    ingediendDoor: (naam: string) => `Soumis par ${naam}`,
     herhaalToernooi: "+ Répéter un tournoi",
     herhaalUitleg:
       "Remplissez tous les champs ci-dessous une seule fois — à l'enregistrement, un tournoi distinct sera créé automatiquement pour chaque date que vous ajoutez.",

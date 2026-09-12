@@ -110,6 +110,11 @@ export function ClubManageList({ clubs, isAdmin = false }: { clubs: Club[]; isAd
             </div>
             {club.adres && <div className="text-xs text-grijs">📍 {club.adres}</div>}
             {club.telefoon && <div className="text-xs text-grijs">📞 {club.telefoon}</div>}
+            {!club.actief && club.ingediend_door && (
+              <div className="text-xs text-grijs">
+                {t.beheer.ingediendDoor(club.ingediend_door)}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
