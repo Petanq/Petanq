@@ -217,6 +217,7 @@ const nl = {
     afficheAutoIngevuld:
       "We hebben op basis van de affiche alvast enkele velden ingevuld — controleer ze zeker voor je verstuurt.",
     adresVanClubIngevuld: "Adres, gemeente en provincie automatisch ingevuld op basis van deze club.",
+    clubNietGekoppeld: "Nog niet gekoppeld — klik hierboven op de club in de lijst om te bevestigen (anders kan je niet opslaan).",
     linkInschrijving: "Link naar inschrijving",
     opmerking: "Opmerking",
     kwalificatieData: "Schiftingsdata (optioneel)",
@@ -859,6 +860,8 @@ const fr: typeof nl = {
     afficheAutoIngevuld:
       "Nous avons déjà rempli certains champs à partir de l'affiche — vérifiez-les bien avant d'envoyer.",
     adresVanClubIngevuld: "Adresse, commune et province automatiquement remplies à partir de ce club.",
+    clubNietGekoppeld:
+      "Pas encore confirmé — cliquez sur le club dans la liste ci-dessus pour valider (sinon impossible d'enregistrer).",
     linkInschrijving: "Lien d'inscription",
     opmerking: "Remarque",
     kwalificatieData: "Dates d'éliminatoires (optionnel)",

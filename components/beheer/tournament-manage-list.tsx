@@ -676,9 +676,13 @@ function AddForm({
                 setAdresVanClub(true);
               }}
               clubs={clubs}
+              fout={!clubId ? "!border-rood-2" : ""}
             />
           )}
           {adresVanClub && <span className="text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</span>}
+          {!openToernooi && !clubId && (
+            <span className="text-xs font-semibold text-rood-2">{t.form.clubNietGekoppeld}</span>
+          )}
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
           {t.form.contactEmail}
@@ -1114,7 +1118,11 @@ export function EditForm({
                 setProvincie(club.provincie);
               }}
               clubs={clubs}
+              fout={!clubId ? "!border-rood-2" : ""}
             />
+          )}
+          {!openToernooi && !clubId && (
+            <span className="text-xs font-semibold text-rood-2">{t.form.clubNietGekoppeld}</span>
           )}
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold text-donker">
