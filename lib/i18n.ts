@@ -222,6 +222,10 @@ const nl = {
       "We hebben op basis van de affiche alvast enkele velden ingevuld — controleer ze zeker voor je verstuurt.",
     afficheOverzicht: (n: number) => `Dit affiche bevat ${n} tornooien:`,
     verstuurEnVolgende: (n: number) => `Versturen en volgende (${n} nog te gaan)`,
+    reeksHerkend: (n: number) =>
+      `Herhalende reeks herkend — ${n} datums hieronder alvast ingevuld, controleer ze zeker.`,
+    herhaalDatums: "Datums",
+    verstuurReeks: (n: number) => (n === 1 ? "Versturen (1 tornooi)" : `Versturen (${n} tornooien)`),
     adresVanClubIngevuld: "Adres, gemeente en provincie automatisch ingevuld op basis van deze club.",
     clubNietGekoppeld: "Nog niet gekoppeld — klik hierboven op de club in de lijst om te bevestigen (anders kan je niet opslaan).",
     linkInschrijving: "Link naar inschrijving",
@@ -878,6 +882,10 @@ const fr: typeof nl = {
       "Nous avons déjà rempli certains champs à partir de l'affiche — vérifiez-les bien avant d'envoyer.",
     afficheOverzicht: (n: number) => `Cette affiche contient ${n} tournois :`,
     verstuurEnVolgende: (n: number) => `Envoyer et suivant (${n} restants)`,
+    reeksHerkend: (n: number) =>
+      `Série récurrente détectée — ${n} dates déjà remplies ci-dessous, vérifiez-les bien.`,
+    herhaalDatums: "Dates",
+    verstuurReeks: (n: number) => (n === 1 ? "Envoyer (1 tournoi)" : `Envoyer (${n} tournois)`),
     adresVanClubIngevuld: "Adresse, commune et province automatiquement remplies à partir de ce club.",
     clubNietGekoppeld:
       "Pas encore confirmé — cliquez sur le club dans la liste ci-dessus pour valider (sinon impossible d'enregistrer).",

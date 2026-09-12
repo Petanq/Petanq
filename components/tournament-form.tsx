@@ -18,6 +18,17 @@ import { KwalificatieDataVeld } from "@/components/ui/kwalificatie-data-veld";
 import { normaliseerUrl } from "@/lib/normaliseer-url";
 import { afficheItemLabel } from "@/lib/affiche-item-label";
 
+// Onderscheidt een herhalende reeks (exact hetzelfde tornooi, enkel andere
+// datums — bv. "elke laatste vrijdag van de maand") van echt verschillende
+// concours (bv. een apart dames- en herenconcours). De AI-prompt garandeert
+// dat een reeks overal dezelfde naam_nl meekrijgt, dus dat is voldoende om
+// het onderscheid betrouwbaar te maken zonder elk veld te moeten vergelijken.
+function isHerhalendeReeks(items: AfficheVelden[]): boolean {
+  const eersteNaam = items[0]?.naam_nl?.trim().toLowerCase() ?? "";
+  if (!eersteNaam) return false;
+  return items.every((item) => (item.naam_nl?.trim().toLowerCase() ?? "") === eersteNaam);
+}
+
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
   "tete-a-tete",
@@ -69,12 +80,18 @@ export function TournamentForm() {
   const [verzendPoging, setVerzendPoging] = useState(false);
   const [clubs, setClubs] = useState<Club[]>([]);
   const [adresVanClub, setAdresVanClub] = useState(false);
-  // Als één affiche meerdere tornooien oplevert (bv. een herhalende reeks of
-  // een dames-/herenconcours), verwerken we ze één voor één na elkaar — net
-  // als in het beheerpaneel — i.p.v. de rest stilzwijgend te laten vallen.
+  // Als één affiche meerdere tornooien oplevert die ECHT van elkaar
+  // verschillen (bv. een dames-/herenconcours), verwerken we ze één voor één
+  // na elkaar — net als in het beheerpaneel — i.p.v. de rest stilzwijgend te
+  // laten vallen.
   const [wachtrij, setWachtrij] = useState<AfficheVelden[]>([]);
   const [alleAfficheVelden, setAlleAfficheVelden] = useState<AfficheVelden[]>([]);
   const [huidigeIndex, setHuidigeIndex] = useState(0);
+  // Herkent de affiche net een HERHALENDE reeks (exact hetzelfde tornooi,
+  // enkel andere datums)? Dan vullen we meteen alle datums samen in — één
+  // gedeeld formulier, één keer versturen — i.p.v. een wachtrij.
+  const [reeksModus, setReeksModus] = useState(false);
+  const [herhaalDatums, setHerhaalDatums] = useState<string[]>([]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -198,14 +215,53 @@ export function TournamentForm() {
     const base64 = await bestandNaarBase64(verwerkt);
     const resultaten = await afficheAnalyseren(base64, verwerkt.type);
     setAiBezig(false);
-    if (resultaten && resultaten.length > 0) {
-      vulVeldenInVanAffiche(resultaten[0]);
-      // Meerdere tornooien op deze affiche (bv. een herhalende reeks of een
-      // dames-/herenconcours) — die verwerken we één voor één na elkaar in.
+    if (!resultaten || resultaten.length === 0) return;
+
+    vulVeldenInVanAffiche(resultaten[0]);
+
+    if (resultaten.length > 1 && isHerhalendeReeks(resultaten)) {
+      // Exact hetzelfde tornooi, enkel andere datums: meteen alle datums
+      // samen invullen i.p.v. een wachtrij van aparte inzendingen.
+      setReeksModus(true);
+      setHerhaalDatums(resultaten.map((r) => r.datum ?? "").filter(Boolean));
+    } else if (resultaten.length > 1) {
+      // Echt verschillende tornooien (bv. dames-/herenconcours) — die
+      // verwerken we één voor één na elkaar in.
       setWachtrij(resultaten.slice(1));
       setAlleAfficheVelden(resultaten);
       setHuidigeIndex(0);
     }
+  }
+
+  function gedeeldeVelden(voorDatum: string) {
+    return {
+      ingediend_door: naamIndiener,
+      datum: voorDatum,
+      uur,
+      clubnaam,
+      club_id: clubId,
+      naam_nl: naamNl,
+      naam_fr: naamFr,
+      gemeente,
+      adres: adres || null,
+      provincie,
+      categorie,
+      formule,
+      speelvorm,
+      aantal_ronden: speelvorm === "rondes" ? aantalRonden : null,
+      aantal_poules: speelvorm === "poules" ? aantalPoules : null,
+      contact_email: contactEmail,
+      gratis,
+      inschrijvingsprijs: gratis ? null : inschrijvingsprijs || null,
+      max_ploegen: maxPloegen || null,
+      link_inschrijving: linkInschrijving || null,
+      opmerking: opmerking || null,
+      kwalificatiedata: reeksModus ? [] : kwalificatieData.filter((k) => k.datum),
+      kwalificatie_uur: reeksModus ? null : kwalificatieUur || null,
+      affiche_url: afficheUrl || null,
+      open_toernooi: openToernooi,
+      finale,
+    };
   }
 
   async function versturen(e: React.FormEvent) {
@@ -213,7 +269,7 @@ export function TournamentForm() {
 
     const verplichteVelden = [
       naamIndiener,
-      datum,
+      reeksModus ? (herhaalDatums.filter((d) => d).length > 0 ? "ok" : "") : datum,
       uur,
       openToernooi ? clubnaam : clubId,
       openToernooi ? adres : "ok",
@@ -231,37 +287,22 @@ export function TournamentForm() {
 
     setStatus("bezig");
 
-    const resultaat = await toernooiIndienen(
-      {
-        ingediend_door: naamIndiener,
-        datum,
-        uur,
-        clubnaam,
-        club_id: clubId,
-        naam_nl: naamNl,
-        naam_fr: naamFr,
-        gemeente,
-        adres: adres || null,
-        provincie,
-        categorie,
-        formule,
-        speelvorm,
-        aantal_ronden: speelvorm === "rondes" ? aantalRonden : null,
-        aantal_poules: speelvorm === "poules" ? aantalPoules : null,
-        contact_email: contactEmail,
-        gratis,
-        inschrijvingsprijs: gratis ? null : inschrijvingsprijs || null,
-        max_ploegen: maxPloegen || null,
-        link_inschrijving: linkInschrijving || null,
-        opmerking: opmerking || null,
-        kwalificatiedata: kwalificatieData.filter((k) => k.datum),
-        kwalificatie_uur: kwalificatieUur || null,
-        affiche_url: afficheUrl || null,
-        open_toernooi: openToernooi,
-        finale,
-      },
-      taal
-    );
+    if (reeksModus) {
+      const datums = herhaalDatums.filter((d) => d);
+      for (const eenDatum of datums) {
+        const resultaat = await toernooiIndienen(gedeeldeVelden(eenDatum), taal);
+        if (!resultaat.succes) {
+          setFoutReden(resultaat.fout);
+          setStatus("fout");
+          return;
+        }
+      }
+      setFoutReden(null);
+      setStatus("ok");
+      return;
+    }
+
+    const resultaat = await toernooiIndienen(gedeeldeVelden(datum), taal);
     if (!resultaat.succes) {
       setFoutReden(resultaat.fout);
       setStatus("fout");
@@ -331,6 +372,11 @@ export function TournamentForm() {
                 </ul>
               </div>
             )}
+            {reeksModus && (
+              <p className="mt-1 text-xs font-semibold text-groen">
+                {t.form.reeksHerkend(herhaalDatums.length)}
+              </p>
+            )}
           </Veld>
         </fieldset>
 
@@ -347,16 +393,55 @@ export function TournamentForm() {
             />
             <p className="mt-1 text-xs text-grijs">{t.form.jouwNaamHint}</p>
           </Veld>
+          {reeksModus && (
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[0.8rem] font-bold text-donker">
+                {t.form.herhaalDatums} <span className="text-rood">*</span>
+              </span>
+              <div className="flex flex-col gap-2">
+                {herhaalDatums.map((d, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      value={d}
+                      onChange={(e) =>
+                        setHerhaalDatums((lijst) => lijst.map((v, j) => (j === i ? e.target.value : v)))
+                      }
+                      className="veld-input"
+                    />
+                    {herhaalDatums.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setHerhaalDatums((lijst) => lijst.filter((_, j) => j !== i))}
+                        className="shrink-0 rounded-md border border-rand px-2.5 py-2 text-sm font-bold text-grijs transition-all hover:border-rood-2 hover:text-rood-2 active:scale-95"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setHerhaalDatums((lijst) => [...lijst, ""])}
+                className="mt-1 self-start rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-95"
+              >
+                {t.beheer.datumToevoegen}
+              </button>
+            </div>
+          )}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Veld label={t.form.datum} verplicht>
-              <input
-                type="date"
-                required
-                value={datum}
-                onChange={(e) => setDatum(e.target.value)}
-                className={`veld-input ${veldFout(datum)}`}
-              />
-            </Veld>
+            {!reeksModus && (
+              <Veld label={t.form.datum} verplicht>
+                <input
+                  type="date"
+                  required
+                  value={datum}
+                  onChange={(e) => setDatum(e.target.value)}
+                  className={`veld-input ${veldFout(datum)}`}
+                />
+              </Veld>
+            )}
             <Veld label={t.form.uur} verplicht>
               <input
                 type="time"
@@ -643,7 +728,7 @@ export function TournamentForm() {
         {verzendPoging &&
           [
             naamIndiener,
-            datum,
+            reeksModus ? (herhaalDatums.filter((d) => d).length > 0 ? "ok" : "") : datum,
             uur,
             openToernooi ? clubnaam : clubId,
             openToernooi ? adres : "ok",
@@ -677,6 +762,8 @@ export function TournamentForm() {
             ? t.form.afficheAnalyseren
             : status === "bezig"
             ? t.form.bezigMetVersturen
+            : reeksModus
+            ? t.form.verstuurReeks(herhaalDatums.filter((d) => d).length)
             : wachtrij.length > 0
             ? t.form.verstuurEnVolgende(wachtrij.length)
             : t.form.versturen}
