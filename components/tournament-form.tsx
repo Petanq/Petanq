@@ -24,9 +24,17 @@ import { afficheItemLabel } from "@/lib/affiche-item-label";
 // dat een reeks overal dezelfde naam_nl meekrijgt, dus dat is voldoende om
 // het onderscheid betrouwbaar te maken zonder elk veld te moeten vergelijken.
 function isHerhalendeReeks(items: AfficheVelden[]): boolean {
-  const eersteNaam = items[0]?.naam_nl?.trim().toLowerCase() ?? "";
-  if (!eersteNaam) return false;
-  return items.every((item) => (item.naam_nl?.trim().toLowerCase() ?? "") === eersteNaam);
+  // Bewust NIET op naam_nl vergelijken — de AI voegt daar soms toch een
+  // maandnaam aan toe (bv. "... - oktober", "... - november"), ook al is
+  // het exact dezelfde reeks. Deze structurele velden verschillen wél
+  // betrouwbaar tussen ECHT aparte concours (bv. een dames-/herenconcours).
+  const sleutel = (item: AfficheVelden) =>
+    [item.clubnaam, item.categorie, item.formule, item.speelvorm, item.aantal_ronden, item.aantal_poules]
+      .map((v) => (v ?? "").toString().trim().toLowerCase())
+      .join("|");
+  const eersteSleutel = sleutel(items[0]);
+  if (!eersteSleutel.replace(/\|/g, "")) return false;
+  return items.every((item) => sleutel(item) === eersteSleutel);
 }
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
