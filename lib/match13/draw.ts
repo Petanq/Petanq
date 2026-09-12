@@ -457,26 +457,29 @@ export interface TeamRank {
   saldo: number;
 }
 
-/** How far apart two teams' matchpunten are — 0 means "same winst-groep". */
-function tierGap(rankA: TeamRank, rankB: TeamRank): number {
-  return Math.abs(rankA.matchpunten - rankB.matchpunten);
-}
-
-// A repeat opponent is weighted far heavier than a cross-groep pairing, so
-// the search only reaches outside a team's own winst-groep once every
-// same-groep option is genuinely exhausted (everyone in the groep already
-// played each other) — never merely to shave off a smaller tier-gap.
+// A repeat opponent is weighted far heavier than pairing further apart in
+// the standings, so the search only reaches outside a team's own
+// winst-groep once every same-groep option is genuinely exhausted
+// (everyone in the groep already played each other) — never merely to
+// shave off a smaller rank-gap.
 const HERHALING_GEWICHT = 1000;
 
-function rankedPairCost(a: string, b: string, history: Map<string, number>, rankOf: (id: string) => TeamRank): number {
+// Afstand = verschil in plaats in de volledige rangschikking (op
+// matchpunten dan saldo), niet enkel "hoeveel winst-groepen verschil". Zo
+// komt een team dat noodgedwongen naar een lagere groep moet uitwijken
+// (bv. 3 teams met evenveel overwinningen — één moet uitwijken) terecht
+// bij het BESTE team van die lagere groep (kleinste rangafstand), niet bij
+// een willekeurig team eruit — tenzij ze al tegen elkaar speelden, want
+// een herhaling weegt nog altijd 1000x zwaarder dan rangafstand.
+function rankedPairCost(a: string, b: string, history: Map<string, number>, rankIndexOf: (id: string) => number): number {
   const herhalingen = history.get(pairKey(a, b)) ?? 0;
-  return herhalingen * HERHALING_GEWICHT + tierGap(rankOf(a), rankOf(b));
+  return herhalingen * HERHALING_GEWICHT + Math.abs(rankIndexOf(a) - rankIndexOf(b));
 }
 
 function greedyPairRanked(
   ids: string[],
   history: Map<string, number>,
-  rankOf: (id: string) => TeamRank
+  rankIndexOf: (id: string) => number
 ): [string, string][] {
   const remaining = shuffle(ids);
   const pairs: [string, string][] = [];
@@ -485,7 +488,7 @@ function greedyPairRanked(
     let bestCost = Infinity;
     let candidates: number[] = [];
     remaining.forEach((b, i) => {
-      const cost = rankedPairCost(a, b, history, rankOf);
+      const cost = rankedPairCost(a, b, history, rankIndexOf);
       if (cost < bestCost) {
         bestCost = cost;
         candidates = [i];
@@ -503,9 +506,9 @@ function greedyPairRanked(
 function scoreRankedPairing(
   pairs: [string, string][],
   history: Map<string, number>,
-  rankOf: (id: string) => TeamRank
+  rankIndexOf: (id: string) => number
 ): number {
-  return pairs.reduce((sum, [a, b]) => sum + rankedPairCost(a, b, history, rankOf), 0);
+  return pairs.reduce((sum, [a, b]) => sum + rankedPairCost(a, b, history, rankIndexOf), 0);
 }
 
 /**
@@ -544,12 +547,19 @@ export function generateRankedRound(
   }
 
   const ids = sorted.map((t) => t.id);
-  let pairs: [string, string][] = greedyPairRanked(ids, history, rankOf);
-  let bestScore = scoreRankedPairing(pairs, history, rankOf);
+  // Positie in de volledige rangschikking (0 = koploper) — gebruikt als
+  // afstandsmaat i.p.v. enkel "hoeveel winst-groepen verschil", zodat een
+  // team dat moet uitwijken naar een lagere groep bij het beste team van
+  // die groep terechtkomt, niet bij een willekeurig team eruit.
+  const rankIndex = new Map(ids.map((id, i) => [id, i]));
+  const rankIndexOf = (id: string) => rankIndex.get(id) ?? 0;
+
+  let pairs: [string, string][] = greedyPairRanked(ids, history, rankIndexOf);
+  let bestScore = scoreRankedPairing(pairs, history, rankIndexOf);
 
   for (let attempt = 1; attempt < MAX_ATTEMPTS && bestScore > 0; attempt++) {
-    const candidate = greedyPairRanked(ids, history, rankOf);
-    const score = scoreRankedPairing(candidate, history, rankOf);
+    const candidate = greedyPairRanked(ids, history, rankIndexOf);
+    const score = scoreRankedPairing(candidate, history, rankIndexOf);
     if (score < bestScore) {
       pairs = candidate;
       bestScore = score;

@@ -203,6 +203,27 @@ describe("generateRankedRound", () => {
     expect(conflictScore(matches, history)).toBe(0);
   });
 
+  it("sends the odd team out of a tied winst-groep to the BEST team of the next groep, not a random one", () => {
+    // Real club scenario: 3 teams have 2 overwinningen (odd — one of them
+    // can't be paired within that groep). The leftover team should land on
+    // the highest-saldo team of the 1-overwinning groep (closest in the
+    // full ranking), not an arbitrary team from it.
+    const rankTable: Record<string, { matchpunten: number; saldo: number }> = {
+      A: { matchpunten: 4, saldo: 30 },
+      B: { matchpunten: 4, saldo: 20 },
+      C: { matchpunten: 4, saldo: 10 }, // odd one out of the 2-win groep
+      D: { matchpunten: 2, saldo: 30 }, // best of the 1-win groep
+      E: { matchpunten: 2, saldo: 20 },
+      F: { matchpunten: 2, saldo: 10 },
+    };
+    const teams = ["A", "B", "C", "D", "E", "F"].map((id) => makeTeam(id));
+    const { matches } = generateRankedRound(2, teams, new Map(), (id) => rankTable[id]);
+    const pairs = matches.map((m) => new Set([m.teamA, m.teamB]));
+    expect(pairs).toContainEqual(new Set(["A", "B"]));
+    expect(pairs).toContainEqual(new Set(["C", "D"]));
+    expect(pairs).toContainEqual(new Set(["E", "F"]));
+  });
+
   it("gives the BYE to the lowest-ranked team among those with the fewest byes", () => {
     const teams = ["A", "B", "C"].map((id) => makeTeam(id));
     const { byeTeamId } = generateRankedRound(2, teams, new Map(), rankOf);
