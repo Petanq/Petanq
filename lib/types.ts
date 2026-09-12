@@ -9,7 +9,8 @@ export type Formule =
   | "sextet"
   | "quartet"
   | "kwintet"
-  | "kleurentornooi";
+  | "kleurentornooi"
+  | "meli-melo";
 
 export type Speelvorm = "rondes" | "poules";
 

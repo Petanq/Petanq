@@ -48,6 +48,7 @@ const toernooiBaseSchema = z.object({
     "quartet",
     "kwintet",
     "kleurentornooi",
+    "meli-melo",
   ]),
   speelvorm: z.enum(["rondes", "poules"]).default("rondes"),
   aantal_ronden: z.coerce.number().int().min(1).max(20).nullable().optional(),

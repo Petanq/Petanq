@@ -26,6 +26,7 @@ const FORMULES: Formule[] = [
   "quartet",
   "kwintet",
   "kleurentornooi",
+  "meli-melo",
 ];
 
 export function TournamentForm() {

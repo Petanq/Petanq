@@ -38,4 +38,5 @@ export const FORMULE_BADGE: Record<Formule, string> = {
   quartet: "bg-[#fdf4ff] text-[#7e22ce]",
   kwintet: "bg-[#fdf4ff] text-[#7e22ce]",
   kleurentornooi: "bg-[#fff7ed] text-oranje",
+  "meli-melo": "bg-[#f0f9ff] text-[#0369a1]",
 };

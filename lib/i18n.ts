@@ -120,6 +120,7 @@ const nl = {
     quartet: "Quartet",
     kwintet: "Kwintet",
     kleurentornooi: "Kleurentornooi",
+    "meli-melo": "Meli-Melo",
   },
   speelvorm: {
     rondes: "Ronden",
@@ -769,6 +770,7 @@ const fr: typeof nl = {
     quartet: "Quartet",
     kwintet: "Quintette",
     kleurentornooi: "Tournoi couleurs",
+    "meli-melo": "Méli-mélo",
   },
   speelvorm: {
     rondes: "Manches",

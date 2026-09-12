@@ -30,6 +30,7 @@ const FORMULES: Formule[] = [
   "quartet",
   "kwintet",
   "kleurentornooi",
+  "meli-melo",
 ];
 const REGIOS: Regio[] = ["vlaanderen", "wallonie", "brussel"];
 

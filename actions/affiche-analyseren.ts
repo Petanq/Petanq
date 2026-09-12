@@ -16,6 +16,7 @@ const FORMULES = [
   "quartet",
   "kwintet",
   "kleurentornooi",
+  "meli-melo",
 ];
 
 const TOOL_NAAM = "affiche_gegevens";
