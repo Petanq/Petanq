@@ -16,6 +16,7 @@ import { vindClubBijNaam } from "@/lib/club-opzoeken";
 import { ClubKiezer } from "@/components/ui/club-kiezer";
 import { KwalificatieDataVeld } from "@/components/ui/kwalificatie-data-veld";
 import { normaliseerUrl } from "@/lib/normaliseer-url";
+import { afficheItemLabel } from "@/lib/affiche-item-label";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
@@ -67,6 +68,12 @@ export function TournamentForm() {
   const [verzendPoging, setVerzendPoging] = useState(false);
   const [clubs, setClubs] = useState<Club[]>([]);
   const [adresVanClub, setAdresVanClub] = useState(false);
+  // Als één affiche meerdere tornooien oplevert (bv. een herhalende reeks of
+  // een dames-/herenconcours), verwerken we ze één voor één na elkaar — net
+  // als in het beheerpaneel — i.p.v. de rest stilzwijgend te laten vallen.
+  const [wachtrij, setWachtrij] = useState<AfficheVelden[]>([]);
+  const [alleAfficheVelden, setAlleAfficheVelden] = useState<AfficheVelden[]>([]);
+  const [huidigeIndex, setHuidigeIndex] = useState(0);
 
   useEffect(() => {
     const supabase = createClient();
@@ -79,6 +86,38 @@ export function TournamentForm() {
 
   function veldFout(waarde: string): string {
     return verzendPoging && !waarde ? "!border-rood-2" : "";
+  }
+
+  // Voor het volgende item uit de wachtrij: alles resetten behalve de affiche
+  // zelf (die blijft dezelfde, gewoon een volgend tornooi van dezelfde foto).
+  function resetVeldenVoorVolgende() {
+    setOpenToernooi(true);
+    setClubnaam("");
+    setClubId(null);
+    setNaamNl("");
+    setNaamFr("");
+    setDatum("");
+    setUur("");
+    setGemeente("");
+    setAdres("");
+    setProvincie("");
+    setCategorie("");
+    setFormule("");
+    setSpeelvorm("rondes");
+    setAantalRonden("4");
+    setAantalPoules("4");
+    setFinale(false);
+    setContactEmail("");
+    setGratis(false);
+    setInschrijvingsprijs("");
+    setMaxPloegen("");
+    setLinkInschrijving("");
+    setOpmerking("");
+    setKwalificatieData([]);
+    setKwalificatieUur("");
+    setAdresVanClub(false);
+    setAutoIngevuld(false);
+    setVerzendPoging(false);
   }
 
   function vulVeldenInVanAffiche(velden: AfficheVelden) {
@@ -158,9 +197,14 @@ export function TournamentForm() {
     const base64 = await bestandNaarBase64(verwerkt);
     const resultaten = await afficheAnalyseren(base64, verwerkt.type);
     setAiBezig(false);
-    // Als de affiche meerdere toernooien toont (bv. kwalificaties + finale),
-    // vult dit formulier enkel het eerste in — de rest dient de indiener apart in.
-    if (resultaten && resultaten.length > 0) vulVeldenInVanAffiche(resultaten[0]);
+    if (resultaten && resultaten.length > 0) {
+      vulVeldenInVanAffiche(resultaten[0]);
+      // Meerdere tornooien op deze affiche (bv. een herhalende reeks of een
+      // dames-/herenconcours) — die verwerken we één voor één na elkaar in.
+      setWachtrij(resultaten.slice(1));
+      setAlleAfficheVelden(resultaten);
+      setHuidigeIndex(0);
+    }
   }
 
   async function versturen(e: React.FormEvent) {
@@ -215,8 +259,22 @@ export function TournamentForm() {
       },
       taal
     );
-    setFoutReden(resultaat.succes ? null : resultaat.fout);
-    setStatus(resultaat.succes ? "ok" : "fout");
+    if (!resultaat.succes) {
+      setFoutReden(resultaat.fout);
+      setStatus("fout");
+      return;
+    }
+    if (wachtrij.length > 0) {
+      const [volgende, ...rest] = wachtrij;
+      resetVeldenVoorVolgende();
+      vulVeldenInVanAffiche(volgende);
+      setWachtrij(rest);
+      setHuidigeIndex((i) => i + 1);
+      setStatus("idle");
+      return;
+    }
+    setFoutReden(null);
+    setStatus("ok");
   }
 
   if (status === "ok") {
@@ -256,6 +314,19 @@ export function TournamentForm() {
             {afficheFout && <p className="mt-1 text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
             {autoIngevuld && !aiBezig && (
               <p className="mt-1 text-xs font-semibold text-groen">{t.form.afficheAutoIngevuld}</p>
+            )}
+            {alleAfficheVelden.length > 1 && (
+              <div className="mt-1 rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
+                <p className="font-bold">{t.form.afficheOverzicht(alleAfficheVelden.length)}</p>
+                <ul className="mt-1 flex flex-col gap-0.5">
+                  {alleAfficheVelden.map((item, i) => (
+                    <li key={i} className={i === huidigeIndex ? "font-bold" : i < huidigeIndex ? "text-groen" : ""}>
+                      {i < huidigeIndex ? "✓ " : i === huidigeIndex ? "→ " : "· "}
+                      {afficheItemLabel(item, taal)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </Veld>
         </fieldset>
@@ -593,6 +664,8 @@ export function TournamentForm() {
             ? t.form.afficheAnalyseren
             : status === "bezig"
             ? t.form.bezigMetVersturen
+            : wachtrij.length > 0
+            ? t.form.verstuurEnVolgende(wachtrij.length)
             : t.form.versturen}
         </Knop>
       </form>

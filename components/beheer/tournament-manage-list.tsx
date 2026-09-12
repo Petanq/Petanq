@@ -25,13 +25,7 @@ import { createClient } from "@/lib/supabase/client";
 import { KwalificatieDataVeld } from "@/components/ui/kwalificatie-data-veld";
 import { ClubKiezer } from "@/components/ui/club-kiezer";
 import { normaliseerUrl } from "@/lib/normaliseer-url";
-
-function afficheItemLabel(item: AfficheVelden, taal: "nl" | "fr"): string {
-  const datumLabel = item.datum ? `${dagNummer(item.datum)} ${maandKort(item.datum, taal)}` : "?";
-  const uurLabel = item.uur ? ` ${formatUur(item.uur)}` : "";
-  const naam = (taal === "fr" ? item.naam_fr : item.naam_nl) ?? item.clubnaam ?? "?";
-  return `${datumLabel}${uurLabel} — ${naam}`;
-}
+import { afficheItemLabel } from "@/lib/affiche-item-label";
 
 const CATEGORIEEN: Categorie[] = ["heren", "dames", "mix", "jeugd", "kampioenschap", "circuit", "recreanten"];
 const FORMULES: Formule[] = [
