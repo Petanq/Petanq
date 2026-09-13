@@ -11,7 +11,7 @@ set toegang_scope = case
   when toegangsniveau = 'eigen_regio' and provincie in
     ('antwerpen', 'oost-vlaanderen', 'west-vlaanderen', 'limburg', 'vlaams-brabant') then 'vlaanderen'
   when toegangsniveau = 'eigen_regio' then 'wallonie'
-  when provincie is not null then provincie
+  when provincie is not null then provincie::text
   -- Een moderator zonder provincie en zonder regio-niveau had voorheen
   -- feitelijk NERGENS toegang toe (heeftToegangTotProvincie gaf altijd
   -- false terug). Dat "niets"-geval bestaat niet meer in het nieuwe model
