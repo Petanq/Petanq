@@ -1484,6 +1484,59 @@
   background: var(--surface);
   color: var(--ink);
 }
+.match13-scope .match13-lijst-datum-veld {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+.match13-scope .match13-lijst-datum-veld input {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  background: var(--surface);
+  color: var(--ink);
+}
+.match13-scope .match13-lijst-sectie {
+  margin-bottom: 1.8rem;
+}
+.match13-scope .match13-lijst-sectie-titel {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.7rem;
+}
+.match13-scope .match13-lijst-sectie-inklapbaar {
+  margin-bottom: 1.8rem;
+}
+.match13-scope .match13-lijst-sectie-inklapbaar summary {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  list-style: none;
+}
+.match13-scope .match13-lijst-sectie-inklapbaar summary::-webkit-details-marker {
+  display: none;
+}
+.match13-scope .match13-lijst-sectie-inklapbaar summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 0.15s ease;
+}
+.match13-scope .match13-lijst-sectie-inklapbaar[open] summary::before {
+  transform: rotate(90deg);
+}
+.match13-scope .match13-lijst-sectie-inklapbaar .match13-lijst {
+  margin-top: 0.7rem;
+}
 .match13-scope .match13-lijst-filters {
   display: flex;
   gap: 0.5rem;

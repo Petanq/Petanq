@@ -17,6 +17,7 @@ export interface Match13ToernooiRij {
   is_test: boolean;
   afgewerkt: boolean;
   organisator: string | null;
+  geplande_datum: string | null;
 }
 
 // Admin ziet alles; een pilootgebruiker mag enkel Match13 gebruiken (nooit de
@@ -32,7 +33,7 @@ export async function haalMatch13Toernooien(): Promise<Match13ToernooiRij[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("match13_toernooien")
-    .select("id, naam, club, aangemaakt_op, bijgewerkt_op, is_test, afgewerkt, organisator")
+    .select("id, naam, club, aangemaakt_op, bijgewerkt_op, is_test, afgewerkt, organisator, geplande_datum")
     .order("bijgewerkt_op", { ascending: false });
 
   if (error) {
@@ -147,7 +148,7 @@ export async function slaMatch13OpAsync(id: string, state: AppState): Promise<Ma
 // per rij) zodat je die niet per toernooi hoeft te openen om ze te zetten.
 export async function bewerkMatch13Metadata(
   id: string,
-  wijziging: { is_test?: boolean; afgewerkt?: boolean; organisator?: string }
+  wijziging: { is_test?: boolean; afgewerkt?: boolean; organisator?: string; geplande_datum?: string | null }
 ): Promise<Match13ActieResultaat> {
   if (!(await magMatch13Gebruiken())) return { succes: false, fout: "niet_geautoriseerd" };
 
