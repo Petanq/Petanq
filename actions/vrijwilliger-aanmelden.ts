@@ -43,6 +43,7 @@ export async function vrijwilligerAanmelden(input: {
     email: parsed.data.email,
     rol: "moderator",
     provincie: parsed.data.provincie,
+    toegang_scope: parsed.data.provincie,
     wachtwoord_ingesteld: true,
     goedgekeurd: false,
     aanmeld_motivatie: parsed.data.aanmeld_motivatie,

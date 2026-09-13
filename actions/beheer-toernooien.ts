@@ -8,7 +8,8 @@ import {
   nieuwToernooiOnderwerp,
 } from "@/lib/emails/nieuw-toernooi-nieuwsbrief";
 import { WeigeringEmail, weigeringOnderwerp } from "@/lib/emails/weigering";
-import { vertaalProvincie, Provincie, PROVINCIE_TOEGANGSREGIO } from "@/lib/provincies";
+import { vertaalProvincie, Provincie } from "@/lib/provincies";
+import { heeftToegangTotProvincie, ToegangScope } from "@/lib/moderator-toegang";
 import { toernooiSchema, toernooiWijzigenSchema } from "@/lib/validations";
 import { Toernooi } from "@/lib/types";
 import { isModerator, isAdmin, huidigeModeratorNaam } from "@/lib/auth-helpers";
@@ -19,8 +20,7 @@ export type BeheerActieResultaat = { succes: true } | { succes: false; fout: str
 
 type ModeratorScope = {
   rol: "moderator" | "admin";
-  provincie: Provincie | null;
-  toegangsniveau: "eigen_provincie" | "eigen_regio" | "heel_belgie";
+  toegang_scope: ToegangScope;
 };
 
 async function huidigeModeratorScope(): Promise<ModeratorScope | null> {
@@ -31,23 +31,19 @@ async function huidigeModeratorScope(): Promise<ModeratorScope | null> {
   if (!user) return null;
   const { data } = await supabase
     .from("moderatoren")
-    .select("rol, provincie, toegangsniveau")
+    .select("rol, toegang_scope")
     .eq("user_id", user.id)
     .single();
   return (data as ModeratorScope) ?? null;
 }
 
-// Buiten hun eigen provincie mag een gewone moderator niets goed- of afkeuren,
-// tenzij een admin hen toegang tot hun eigen regio (heel Vlaanderen, of heel
-// Wallonië incl. Brussel) of tot heel België gaf. Dit is een extra check
-// bovenop de RLS-policy, zodat de foutmelding hier specifiek genoeg is om in
-// de UI uit te leggen waarom het niet lukte.
+// Buiten hun eigen toegangsgebied mag een gewone moderator niets goed- of
+// afkeuren, tenzij een admin hen een ruimer gebied (regio of heel België)
+// gaf. Dit is een extra check bovenop de RLS-policy, zodat de foutmelding
+// hier specifiek genoeg is om in de UI uit te leggen waarom het niet lukte.
 function magToernooiBeheren(scope: ModeratorScope, toernooiProvincie: Provincie): boolean {
-  if (scope.rol === "admin" || scope.toegangsniveau === "heel_belgie") return true;
-  if (scope.toegangsniveau === "eigen_regio") {
-    return !!scope.provincie && PROVINCIE_TOEGANGSREGIO[scope.provincie] === PROVINCIE_TOEGANGSREGIO[toernooiProvincie];
-  }
-  return scope.provincie === toernooiProvincie;
+  if (scope.rol === "admin") return true;
+  return heeftToegangTotProvincie(scope.toegang_scope, toernooiProvincie);
 }
 
 export async function toernooiGoedkeuren(id: string): Promise<BeheerActieResultaat> {

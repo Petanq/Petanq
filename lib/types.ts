@@ -1,4 +1,5 @@
 import { Provincie, Regio } from "./provincies";
+import type { ToegangScope } from "./moderator-toegang";
 
 export type Categorie = "heren" | "dames" | "mix" | "jeugd" | "kampioenschap" | "circuit" | "recreanten";
 
@@ -136,7 +137,7 @@ export type Moderator = {
   rol: ModeratorRol;
   wachtwoord_ingesteld: boolean;
   goedgekeurd: boolean;
-  toegangsniveau: "eigen_provincie" | "eigen_regio" | "heel_belgie";
+  toegang_scope: ToegangScope;
   aangemaakt_op: string;
   bezoek_aantal: number;
   laatste_bezoek: string | null;

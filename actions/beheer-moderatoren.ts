@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Moderator, ModeratorRol } from "@/lib/types";
 import { Provincie } from "@/lib/provincies";
+import { ToegangScope } from "@/lib/moderator-toegang";
 import { isAdmin } from "@/lib/auth-helpers";
 import { maakKorteLink } from "@/lib/korte-link";
 import { siteUrl } from "@/lib/site-url";
@@ -66,6 +67,7 @@ export async function moderatorUitnodigen(input: {
         email: input.email,
         rol: input.rol,
         provincie: input.provincie,
+        toegang_scope: input.provincie ?? "heel_belgie",
       });
       if (invoegFout2) {
         console.error("Vrijwilliger-rij toevoegen mislukt (bestaande gebruiker):", invoegFout2.message);
@@ -95,6 +97,7 @@ export async function moderatorUitnodigen(input: {
     email: input.email,
     rol: input.rol,
     provincie: input.provincie,
+    toegang_scope: input.provincie ?? "heel_belgie",
   });
 
   if (invoegFout) {
@@ -175,19 +178,14 @@ export async function moderatorGoedkeuren(id: string): Promise<BeheerActieResult
   return { succes: true };
 }
 
-export type ModeratorToegangsniveau = "eigen_provincie" | "eigen_regio" | "heel_belgie";
-
-// Admin-only: standaard mag een moderator enkel toernooien in zijn eigen
-// provincie goed- of afkeuren. Dit verhoogt/verlaagt die beperking naar
-// heel zijn regio (Vlaanderen of Wallonië incl. Brussel) of heel België.
-export async function moderatorToegangWijzigen(
-  id: string,
-  toegangsniveau: ModeratorToegangsniveau
-): Promise<BeheerActieResultaat> {
+// Admin-only: kent een moderator rechtstreeks een toegangsgebied toe — een
+// specifieke provincie, een hele regio (Vlaanderen/Wallonië), of heel België
+// — los van waar die moderator zelf woont.
+export async function moderatorToegangWijzigen(id: string, toegangScope: ToegangScope): Promise<BeheerActieResultaat> {
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const serviceClient = createServiceRoleClient();
-  const { error } = await serviceClient.from("moderatoren").update({ toegangsniveau }).eq("id", id);
+  const { error } = await serviceClient.from("moderatoren").update({ toegang_scope: toegangScope }).eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
 
   revalidatePath("/beheer/moderatoren");

@@ -5,20 +5,32 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Moderator, ModeratorRol } from "@/lib/types";
 import { ModeratorMetStatus } from "@/lib/data";
-import { ALLE_PROVINCIES, Provincie, vertaalProvincie, PROVINCIE_TOEGANGSREGIO, TOEGANGSREGIO_NAAM } from "@/lib/provincies";
+import { ALLE_PROVINCIES, Provincie, vertaalProvincie, TOEGANGSREGIO_NAAM } from "@/lib/provincies";
+import { ToegangScope } from "@/lib/moderator-toegang";
 import {
   moderatorBewerken,
   moderatorVerwijderen,
   moderatorUitnodigen,
   moderatorGoedkeuren,
   moderatorToegangWijzigen,
-  ModeratorToegangsniveau,
 } from "@/actions/beheer-moderatoren";
 import {
   match13ToegangGevenAanModerator,
   match13ToegangWijzigen,
   type Match13ToegangStatus,
 } from "@/actions/match13-toegang";
+
+function toegangScopeIcoon(scope: ToegangScope): string {
+  if (scope === "heel_belgie") return "🇧🇪";
+  if (scope === "vlaanderen" || scope === "wallonie") return "🗺️";
+  return "📍";
+}
+
+function toegangScopeLabel(scope: ToegangScope, taal: "nl" | "fr", heelBelgieLabel: string): string {
+  if (scope === "heel_belgie") return heelBelgieLabel;
+  if (scope === "vlaanderen" || scope === "wallonie") return TOEGANGSREGIO_NAAM[scope][taal];
+  return vertaalProvincie(scope, taal);
+}
 
 export function ModeratorManageList({
   moderatoren,
@@ -55,9 +67,9 @@ export function ModeratorManageList({
     router.refresh();
   }
 
-  async function toegangWijzigen(mod: Moderator, toegangsniveau: ModeratorToegangsniveau) {
+  async function toegangWijzigen(mod: Moderator, toegangScope: ToegangScope) {
     setBezig(mod.id);
-    await moderatorToegangWijzigen(mod.id, toegangsniveau);
+    await moderatorToegangWijzigen(mod.id, toegangScope);
     setBezig(null);
     router.refresh();
   }
@@ -139,14 +151,9 @@ export function ModeratorManageList({
                 </span>
               )
             )}
-            {mod.rol !== "admin" && mod.toegangsniveau === "heel_belgie" && (
+            {mod.rol !== "admin" && (
               <span className="rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[#b8860b]">
-                🇧🇪 {t.beheer.magHeelBelgie}
-              </span>
-            )}
-            {mod.rol !== "admin" && mod.toegangsniveau === "eigen_regio" && mod.provincie && (
-              <span className="rounded-full bg-[#fdf3d9] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[#b8860b]">
-                🗺️ {TOEGANGSREGIO_NAAM[PROVINCIE_TOEGANGSREGIO[mod.provincie]][taal]}
+                {toegangScopeIcoon(mod.toegang_scope)} {toegangScopeLabel(mod.toegang_scope, taal, t.beheer.toegangHeelBelgie)}
               </span>
             )}
           </div>
@@ -176,13 +183,22 @@ export function ModeratorManageList({
             <>
               {isAdmin && mod.rol !== "admin" && (
                 <select
-                  value={mod.toegangsniveau}
-                  onChange={(e) => toegangWijzigen(mod, e.target.value as ModeratorToegangsniveau)}
+                  value={mod.toegang_scope}
+                  onChange={(e) => toegangWijzigen(mod, e.target.value as ToegangScope)}
                   disabled={bezig === mod.id}
-                  className="whitespace-nowrap rounded-md border border-rand px-2 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht disabled:opacity-60"
+                  className="whitespace-nowrap rounded-md border-[1.5px] border-geel bg-[#fdf3d9] px-2 py-1.5 text-sm font-semibold text-[#b8860b] transition-all hover:brightness-95 disabled:opacity-60"
                 >
-                  <option value="eigen_provincie">{t.beheer.toegangEigenProvincie}</option>
-                  <option value="eigen_regio">{t.beheer.toegangEigenRegio}</option>
+                  <optgroup label={t.beheer.toegangGroepProvincie}>
+                    {ALLE_PROVINCIES.map((p) => (
+                      <option key={p} value={p}>
+                        {vertaalProvincie(p, taal)}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label={t.beheer.toegangGroepRegio}>
+                    <option value="vlaanderen">{TOEGANGSREGIO_NAAM.vlaanderen[taal]}</option>
+                    <option value="wallonie">{TOEGANGSREGIO_NAAM.wallonie[taal]}</option>
+                  </optgroup>
                   <option value="heel_belgie">{t.beheer.toegangHeelBelgie}</option>
                 </select>
               )}

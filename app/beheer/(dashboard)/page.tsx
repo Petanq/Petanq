@@ -37,14 +37,17 @@ export default async function BeheerDashboardPagina() {
     getHuidigeModerator(),
   ]);
 
-  // Een gewone moderator ziet enkel toernooien uit zijn eigen provincie, tenzij
-  // een admin hem toegang tot zijn hele regio (Vlaanderen, of Wallonië incl.
-  // Brussel) of tot heel België gaf — zo keurt altijd de juiste persoon voor
-  // de juiste regio goed.
-  const toegangsniveau = magAdminZien ? "heel_belgie" : huidigeModerator?.toegangsniveau ?? "eigen_provincie";
-  const zichtbareToernooien = toernooien.filter((tn) =>
-    heeftToegangTotProvincie(toegangsniveau, huidigeModerator?.provincie ?? null, tn.provincie)
-  );
+  // Een gewone moderator ziet enkel toernooien binnen het toegangsgebied dat
+  // een admin hem rechtstreeks gaf (een specifieke provincie, zijn regio, of
+  // heel België) — zo keurt altijd de juiste persoon voor het juiste gebied
+  // goed. Zonder gekende moderator-rij (zou niet mogen voorkomen voor een
+  // ingelogde moderator) toont niets, uit voorzorg.
+  const zichtbareToernooien =
+    magAdminZien || huidigeModerator
+      ? toernooien.filter((tn) =>
+          magAdminZien ? true : heeftToegangTotProvincie(huidigeModerator!.toegang_scope, tn.provincie)
+        )
+      : [];
 
   const eigenAantal = huidigeModerator
     ? toernooiStatistieken.perModerator.find((mod) => mod.naam === huidigeModerator.naam)?.aantal ?? 0

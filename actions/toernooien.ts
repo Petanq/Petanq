@@ -90,12 +90,11 @@ export async function toernooiIndienen(
     const serviceClient = createServiceRoleClient();
     const { data: moderatoren } = await serviceClient
       .from("moderatoren")
-      .select("email, rol, provincie, toegangsniveau");
+      .select("email, rol, toegang_scope");
     const moderatorEmails = (moderatoren ?? [])
       .filter((m) =>
         heeftToegangTotProvincie(
-          m.rol === "admin" ? "heel_belgie" : m.toegangsniveau,
-          m.provincie as Provincie | null,
+          m.rol === "admin" ? "heel_belgie" : m.toegang_scope,
           data.provincie as Provincie
         )
       )
