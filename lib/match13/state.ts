@@ -9,6 +9,9 @@ export interface AppState {
   format: Format;
   entryFee: number;
   totalRounds: number;
+  // Aantal fysiek beschikbare pleinen (bv. beperkt bij binnenspelen 's winters).
+  // undefined/0 = onbeperkt, elke wedstrijd speelt meteen (huidig gedrag).
+  maxPleinen?: number;
   teams: Team[];
   rounds: Round[];
   pouleBracket: BracketMatch[];

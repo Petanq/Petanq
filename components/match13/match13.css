@@ -578,6 +578,35 @@
   color: var(--warn);
   background: var(--warn-bg);
 }
+/* Wachtrij: geen wedstrijd (en dus geen plein) toegewezen omdat er meer
+   wedstrijden dan fysieke pleinen zijn — duidelijk gedempt/gestreept zodat
+   het scherm in één oogopslag "speelt" van "wacht nog" onderscheidt. */
+.match13-scope .court-card.wachtrij-kaart {
+  border-style: dashed;
+  background: var(--surface-2);
+  opacity: 0.85;
+}
+.match13-scope .wachtrij-label {
+  color: var(--ink-muted) !important;
+  background: var(--surface) !important;
+}
+.match13-scope .wachtrij-teams {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.6rem 0;
+  font-weight: 700;
+  font-size: 1.15rem;
+  text-align: center;
+}
+.match13-scope .wachtrij-vs {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
 .match13-scope .match-timer {
   display: inline-block;
   margin: 0.35rem 0 0.15rem;

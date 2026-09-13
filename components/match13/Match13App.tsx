@@ -47,6 +47,25 @@ function pouleColor(index: number): string {
   return POULE_COLORS[index % POULE_COLORS.length];
 }
 
+// Bij een beperkt aantal fysieke pleinen (bv. binnenspelen 's winters) mag
+// niet elke wedstrijd van de ronde meteen spelen. Enkel nog-niet-gespeelde,
+// echte wedstrijden (geen BYE) tellen mee voor de wachtrij — een reeds
+// afgewerkte wedstrijd telt niet meer mee, dus zodra die zijn score krijgt,
+// schuift de eerstvolgende wachtende vanzelf door (geen eigen opgeslagen
+// toestand nodig, dit wordt elke render opnieuw berekend).
+function berekenWachtPositie(matches: Match[], i: number, maxPleinen: number | undefined): number {
+  const limiet = maxPleinen && maxPleinen > 0 ? maxPleinen : Infinity;
+  let actief = 0;
+  for (let j = 0; j < matches.length; j++) {
+    const m = matches[j];
+    const klaar = m.teamB === null || (m.scoreA !== undefined && m.scoreB !== undefined);
+    if (klaar) continue;
+    actief += 1;
+    if (j === i) return actief > limiet ? actief - limiet : 0;
+  }
+  return 0;
+}
+
 let idCounter = 0;
 function nextId() {
   idCounter += 1;
@@ -386,7 +405,7 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
     }
   }
 
-  const { clubName, format, entryFee, totalRounds, teams, rounds, pouleBracket, knockoutBracket } = state;
+  const { clubName, format, entryFee, totalRounds, maxPleinen, teams, rounds, pouleBracket, knockoutBracket } = state;
   const isMeli = format === "meli";
   const isPoules = format === "poules";
   const isKwartet = format === "kwartet";
@@ -1561,6 +1580,26 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                   <div className="hint">{t.match13.hintAantalRondes}</div>
                 </div>
               )}
+              {!isPoules && (
+                <div className="field">
+                  <label>{t.match13.aantalPleinen}</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={maxPleinen ?? ""}
+                    placeholder={t.match13.aantalPleinenOnbeperkt}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      setState((s) => ({
+                        ...s,
+                        maxPleinen: raw === "" ? undefined : Math.max(0, Number(raw) || 0),
+                      }));
+                    }}
+                    style={{ maxWidth: 120 }}
+                  />
+                  <div className="hint">{t.match13.hintAantalPleinen}</div>
+                </div>
+              )}
               <div className="field">
                 <label>{t.match13.teamsLabel}</label>
                 <div className="value">
@@ -1984,7 +2023,25 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
 
             {currentRound && (
               <div className="court-grid">
-                {currentRound.matches.map((m, i) => (
+                {currentRound.matches.map((m, i) => {
+                  const wachtPositie = isPoules ? 0 : berekenWachtPositie(currentRound.matches, i, maxPleinen);
+                  if (wachtPositie > 0) {
+                    return (
+                      <div
+                        className="court-card wachtrij-kaart"
+                        key={i}
+                        style={{ "--plein-accent": pouleColor(i) } as CSSProperties}
+                      >
+                        <div className="court-label wachtrij-label">{t.match13.wachtOpPlein(wachtPositie)}</div>
+                        <div className="wachtrij-teams">
+                          <span>{sideLabel(m, "A")}</span>
+                          <span className="wachtrij-vs">{t.match13.tegenLabel}</span>
+                          <span>{sideLabel(m, "B")}</span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
                   <div
                     className="court-card"
                     key={i}
@@ -2201,7 +2258,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 

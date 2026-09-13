@@ -490,6 +490,11 @@ const nl = {
     inlegPerTeam: "Inleg per team (€)",
     aantalRondes: "Aantal rondes",
     hintAantalRondes: "Zo weet de tafel bij het onthaal hoeveel rondes er nog moeten volgen.",
+    aantalPleinen: "Aantal beschikbare pleinen",
+    aantalPleinenOnbeperkt: "onbeperkt",
+    hintAantalPleinen:
+      "Bv. bij binnenspelen 's winters met maar een beperkt aantal pleinen. Leeg = onbeperkt (elke wedstrijd speelt meteen). Zijn er meer wedstrijden dan pleinen, dan komen de overige teams in een wachtrij en krijgen ze automatisch een plein zodra er een vrijkomt.",
+    wachtOpPlein: (positie: number) => `Wacht op plein (${positie}e in rij)`,
     teamsLabel: "Teams",
     teamsSamenvatting: (totaal: number, aanwezig: number, betaald: number) =>
       `${totaal} ingeschreven — ${aanwezig} aanwezig — ${betaald} betaald`,
@@ -1159,6 +1164,11 @@ const fr: typeof nl = {
     inlegPerTeam: "Mise par équipe (€)",
     aantalRondes: "Nombre de manches",
     hintAantalRondes: "Ainsi la table d'accueil sait combien de manches restent à jouer.",
+    aantalPleinen: "Nombre de terrains disponibles",
+    aantalPleinenOnbeperkt: "illimité",
+    hintAantalPleinen:
+      "P.ex. en jouant en intérieur l'hiver avec un nombre limité de terrains. Vide = illimité (chaque match commence tout de suite). S'il y a plus de matchs que de terrains, les équipes restantes passent en file d'attente et reçoivent automatiquement un terrain dès qu'il se libère.",
+    wachtOpPlein: (positie: number) => `En attente d'un terrain (${positie}e dans la file)`,
     teamsLabel: "Équipes",
     teamsSamenvatting: (totaal: number, aanwezig: number, betaald: number) =>
       `${totaal} inscrites — ${aanwezig} présentes — ${betaald} payées`,
