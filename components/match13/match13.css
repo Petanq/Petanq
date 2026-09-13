@@ -1338,13 +1338,18 @@
 }
 .match13-scope .match13-lijst-rij {
   display: flex;
+  flex-direction: column;
   align-items: stretch;
-  gap: 0.6rem;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
   box-shadow: var(--shadow);
   overflow: hidden;
+}
+.match13-scope .match13-lijst-boven {
+  display: flex;
+  align-items: stretch;
+  gap: 0.6rem;
 }
 .match13-scope .match13-lijst-rij a {
   flex: 1;
@@ -1370,12 +1375,95 @@
 .match13-scope .match13-lijst-verwijder:hover {
   background: var(--warn-bg);
 }
+.match13-scope .match13-lijst-naam-blok {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
 .match13-scope .match13-lijst-naam {
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .match13-scope .match13-lijst-datum {
   font-size: 0.82rem;
   color: var(--ink-muted);
+  white-space: nowrap;
+}
+.match13-scope .match13-badge {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 20px;
+  padding: 0.2rem 0.6rem;
+  white-space: nowrap;
+}
+.match13-scope .match13-badge-test {
+  color: #92640a;
+  background: #fdecc8;
+}
+.match13-scope .match13-badge-afgewerkt {
+  color: #1a7a4c;
+  background: #d9f2e6;
+}
+.match13-scope .match13-badge-geenclub {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+.match13-scope .match13-lijst-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.6rem 1.2rem 0.8rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+.match13-scope .match13-lijst-club {
+  font-weight: 600;
+  color: var(--ink);
+}
+.match13-scope .match13-lijst-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  user-select: none;
+}
+.match13-scope .match13-lijst-organisator {
+  flex: 1;
+  min-width: 160px;
+  max-width: 260px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+  background: var(--surface);
+  color: var(--ink);
+}
+.match13-scope .match13-lijst-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+.match13-scope .match13-lijst-filter {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-muted);
+  border-radius: 20px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.match13-scope .match13-lijst-filter.actief {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 .match13-scope .match13-lijst-head-knoppen {
   display: flex;

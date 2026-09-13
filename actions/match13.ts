@@ -11,8 +11,12 @@ export type Match13ActieResultaat = { succes: true } | { succes: false; fout: st
 export interface Match13ToernooiRij {
   id: string;
   naam: string;
+  club: string;
   aangemaakt_op: string;
   bijgewerkt_op: string;
+  is_test: boolean;
+  afgewerkt: boolean;
+  organisator: string | null;
 }
 
 // Admin ziet alles; een pilootgebruiker mag enkel Match13 gebruiken (nooit de
@@ -28,7 +32,7 @@ export async function haalMatch13Toernooien(): Promise<Match13ToernooiRij[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("match13_toernooien")
-    .select("id, naam, aangemaakt_op, bijgewerkt_op")
+    .select("id, naam, club, aangemaakt_op, bijgewerkt_op, is_test, afgewerkt, organisator")
     .order("bijgewerkt_op", { ascending: false });
 
   if (error) {
@@ -136,6 +140,25 @@ export async function slaMatch13OpAsync(id: string, state: AppState): Promise<Ma
     console.error("Kon Match13-toernooi niet opslaan:", error.message);
     return { succes: false, fout: "opslaan_mislukt" };
   }
+  return { succes: true };
+}
+
+// Wordt gebruikt vanuit de overzichtslijst zelf (checkboxes/organisator-veld
+// per rij) zodat je die niet per toernooi hoeft te openen om ze te zetten.
+export async function bewerkMatch13Metadata(
+  id: string,
+  wijziging: { is_test?: boolean; afgewerkt?: boolean; organisator?: string }
+): Promise<Match13ActieResultaat> {
+  if (!(await magMatch13Gebruiken())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("match13_toernooien").update(wijziging).eq("id", id);
+
+  if (error) {
+    console.error("Kon Match13-metadata niet opslaan:", error.message);
+    return { succes: false, fout: "opslaan_mislukt" };
+  }
+  revalidatePath("/beheer/match13");
   return { succes: true };
 }
 
