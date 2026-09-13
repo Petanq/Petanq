@@ -92,6 +92,9 @@ function Match13LijstRij({
               <span className="match13-badge match13-badge-afgewerkt">{t.match13.lijstAfgewerkt}</span>
             )}
             {!tour.club && <span className="match13-badge match13-badge-geenclub">{t.match13.lijstGeenClub}</span>}
+            {!organisator && (
+              <span className="match13-badge match13-badge-geenclub">{t.match13.lijstGeenOrganisator}</span>
+            )}
           </div>
           <span className="match13-lijst-datum">
             {t.match13.bijgewerkt(new Date(tour.bijgewerkt_op).toLocaleString(taal === "fr" ? "fr-BE" : "nl-BE"))}
@@ -100,7 +103,7 @@ function Match13LijstRij({
         <Match13VerwijderKnop id={tour.id} naam={tour.naam} />
       </div>
       <div className="match13-lijst-meta">
-        {tour.club && <span className="match13-lijst-club">🏛️ {tour.club}</span>}
+        {tour.club && <span className="match13-lijst-club">{tour.club}</span>}
         <label className="match13-lijst-checkbox">
           <input
             type="checkbox"
@@ -127,7 +130,7 @@ function Match13LijstRij({
           type="text"
           className="match13-lijst-organisator"
           value={organisator}
-          placeholder={`👤 ${t.match13.lijstOrganisatorPlaceholder}`}
+          placeholder={t.match13.lijstOrganisatorPlaceholder}
           onChange={(e) => setOrganisator(e.target.value)}
           onBlur={() => {
             if (organisator !== (tour.organisator ?? "")) void opslaan({ organisator });
