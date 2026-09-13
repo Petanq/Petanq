@@ -4,9 +4,9 @@ import { Match13App } from "@/components/match13/Match13App";
 
 export default async function Match13ToernooiPagina({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const initialState = await haalMatch13Toernooi(id);
+  const toernooi = await haalMatch13Toernooi(id);
 
-  if (!initialState) {
+  if (!toernooi) {
     return (
       <div style={{ maxWidth: 480, margin: "4rem auto", textAlign: "center", padding: "0 1.5rem" }}>
         <p style={{ marginBottom: "1rem" }}>
@@ -20,5 +20,11 @@ export default async function Match13ToernooiPagina({ params }: { params: Promis
     );
   }
 
-  return <Match13App tournamentId={id} initialState={initialState} />;
+  return (
+    <Match13App
+      tournamentId={id}
+      initialState={toernooi.state}
+      initialGeplandeDatum={toernooi.geplandeDatum}
+    />
+  );
 }

@@ -43,13 +43,18 @@ export async function haalMatch13Toernooien(): Promise<Match13ToernooiRij[]> {
   return data as Match13ToernooiRij[];
 }
 
-export async function haalMatch13Toernooi(id: string): Promise<AppState | null> {
+export interface Match13ToernooiMetMeta {
+  state: AppState;
+  geplandeDatum: string | null;
+}
+
+export async function haalMatch13Toernooi(id: string): Promise<Match13ToernooiMetMeta | null> {
   if (!(await magMatch13Gebruiken())) return null;
 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("match13_toernooien")
-    .select("data")
+    .select("data, geplande_datum")
     .eq("id", id)
     .single();
 
@@ -57,7 +62,7 @@ export async function haalMatch13Toernooi(id: string): Promise<AppState | null> 
     console.error("Kon Match13-toernooi niet laden:", id, error.message);
     return null;
   }
-  return data.data as AppState;
+  return { state: data.data as AppState, geplandeDatum: data.geplande_datum as string | null };
 }
 
 // Redirect gebeurt hier zelf (in plaats van het resultaat terug te geven aan

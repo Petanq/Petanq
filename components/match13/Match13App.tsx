@@ -34,7 +34,7 @@ import {
   type BracketMatch,
   type PouleQualifier,
 } from "@/lib/match13/poules";
-import { slaMatch13OpAsync, archiveerMatch13Resultaten } from "@/actions/match13";
+import { slaMatch13OpAsync, archiveerMatch13Resultaten, bewerkMatch13Metadata } from "@/actions/match13";
 import type { AppState } from "@/lib/match13/state";
 
 type Tab = "opzet" | "onthaal" | "zaal" | "klassement";
@@ -376,9 +376,21 @@ function roundRobinStandings(pouleTeams: Team[], pouleMatches: BracketMatch[]): 
   return computeStandings(pouleTeams, [fakeRound]);
 }
 
-export function Match13App({ tournamentId, initialState }: { tournamentId: string; initialState: AppState }) {
+export function Match13App({
+  tournamentId,
+  initialState,
+  initialGeplandeDatum,
+}: {
+  tournamentId: string;
+  initialState: AppState;
+  initialGeplandeDatum: string | null;
+}) {
   const { t } = useTranslation();
   const [state, setState] = useState<AppState>(initialState);
+  // Los van de AppState-blob: "geplande_datum" is een eigen kolom (net als
+  // is_test/afgewerkt/organisator), niet iets in de JSON die hierboven wordt
+  // opgeslagen — vandaar de aparte state + eigen opslag hieronder.
+  const [geplandeDatum, setGeplandeDatum] = useState(initialGeplandeDatum ?? "");
   const [tab, setTab] = useState<Tab>("opzet");
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
   // Welk afdrukblad er getoond wordt op het Zaalscherm — de kaartjes (default)
@@ -1530,6 +1542,19 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                   onChange={(e) => setState((s) => ({ ...s, clubName: e.target.value }))}
                 />
                 {clubNaamVerplicht && <p className="hint" style={{ color: "var(--warn)" }}>{t.match13.clubVerplicht}</p>}
+              </div>
+              <div className="field">
+                <label>{t.match13.geplandeDatumLabel}</label>
+                <input
+                  type="date"
+                  value={geplandeDatum}
+                  onChange={(e) => {
+                    const nieuweDatum = e.target.value;
+                    setGeplandeDatum(nieuweDatum);
+                    void bewerkMatch13Metadata(tournamentId, { geplande_datum: nieuweDatum || null });
+                  }}
+                  style={{ maxWidth: 200 }}
+                />
               </div>
               <div className="field">
                 <label>{t.match13.speltype}</label>
