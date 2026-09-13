@@ -94,7 +94,7 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
     <div id="toernooien" className="mx-auto grid max-w-[1140px] grid-cols-1 gap-6 px-6 pb-12 pt-8 lg:grid-cols-[220px_1fr] lg:px-10">
       <FilterSidebar alleToernooien={toernooien} filters={filters} setFilters={setFilters} />
 
-      <main>
+      <main className="min-w-0">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-titel text-2xl tracking-wide text-blauw">{t.lijst.titel}</h2>
           <div className="flex min-w-0 flex-wrap items-center gap-2">

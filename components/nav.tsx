@@ -40,7 +40,7 @@ export function Nav() {
           </div>
         </Link>
 
-        <div className="hidden gap-1 md:flex">
+        <div className="hidden gap-1 xl:flex">
           <Link href="/#toernooien" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.toernooien}
           </Link>
@@ -93,7 +93,7 @@ export function Nav() {
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Menu"
             aria-expanded={menuOpen}
-            className="relative flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-md transition-colors hover:bg-white/[0.08] md:hidden"
+            className="relative flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-md transition-colors hover:bg-white/[0.08] xl:hidden"
           >
             <span className={`h-0.5 w-5 rounded-full bg-white transition-transform ${menuOpen ? "translate-y-2 rotate-45" : ""}`} />
             <span className={`h-0.5 w-5 rounded-full bg-white transition-opacity ${menuOpen ? "opacity-0" : ""}`} />
