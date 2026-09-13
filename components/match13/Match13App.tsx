@@ -417,6 +417,12 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
   // start: een toernooi dat al teams heeft (bv. van vóór deze check bestond)
   // blijft gewoon bruikbaar, ook als de clubnaam toen leeg bleef.
   const clubNaamVerplicht = !clubName.trim() && teams.length === 0;
+  // Zelfde principe: enkel verplicht zolang er nog niets echt speelt — een
+  // toernooi dat al rondes heeft blijft bruikbaar, ook al stond het veld toen
+  // nog op 0 (bv. van vóór deze verplichting bestond).
+  const inlegVerplicht = entryFee <= 0 && teams.length === 0;
+  const rondesVerplicht = !isPoules && totalRounds <= 0 && rounds.length === 0;
+  const opzetOnvolledig = clubNaamVerplicht || inlegVerplicht || rondesVerplicht;
 
   const [playerInputs, setPlayerInputs] = useState<string[]>(() => Array(teamSize).fill(""));
   const [newPlayerName, setNewPlayerName] = useState("");
@@ -1502,8 +1508,8 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
             <button
               key={tabKey}
               className={"tab" + (tab === tabKey ? " active" : "")}
-              disabled={clubNaamVerplicht && tabKey !== "opzet"}
-              title={clubNaamVerplicht && tabKey !== "opzet" ? t.match13.vulEerstClubIn : undefined}
+              disabled={opzetOnvolledig && tabKey !== "opzet"}
+              title={opzetOnvolledig && tabKey !== "opzet" ? t.match13.vulEerstClubIn : undefined}
               onClick={() => setTab(tabKey)}
             >
               {tabKey === "opzet" && t.match13.tabOpzet}
@@ -1606,7 +1612,20 @@ export function Match13App({ tournamentId, initialState }: { tournamentId: strin
                   {t.match13.teamsSamenvatting(teams.length, presentTeams.length, paidCount)}
                 </div>
               </div>
-              <button className="cta" disabled={clubNaamVerplicht} onClick={() => setTab("onthaal")}>
+              {(inlegVerplicht || rondesVerplicht) && (
+                <p className="hint" style={{ color: "var(--warn)" }}>
+                  {inlegVerplicht && rondesVerplicht
+                    ? t.match13.inlegEnRondesVerplicht
+                    : inlegVerplicht
+                    ? t.match13.inlegVerplicht
+                    : t.match13.rondesVerplicht}
+                </p>
+              )}
+              <button
+                className="cta"
+                disabled={clubNaamVerplicht || inlegVerplicht || rondesVerplicht}
+                onClick={() => setTab("onthaal")}
+              >
                 {t.match13.gaNaarOnthaal}
               </button>
             </div>

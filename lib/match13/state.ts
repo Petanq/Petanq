@@ -22,8 +22,8 @@ export function defaultAppState(): AppState {
   return {
     clubName: "",
     format: "doublet",
-    entryFee: 3,
-    totalRounds: 5,
+    entryFee: 0,
+    totalRounds: 0,
     teams: [],
     rounds: [],
     pouleBracket: [],

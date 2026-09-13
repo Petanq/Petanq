@@ -475,6 +475,9 @@ const nl = {
     club: "Club",
     clubVerplicht: "Vul een clubnaam in vooraleer je verder kan.",
     vulEerstClubIn: "Vul eerst een clubnaam in op Opzet.",
+    inlegVerplicht: "Vul de inleg per team in vooraleer je verder kan.",
+    rondesVerplicht: "Vul het aantal rondes in vooraleer je verder kan.",
+    inlegEnRondesVerplicht: "Vul de inleg per team en het aantal rondes in vooraleer je verder kan.",
     speltype: "Speltype",
     hintMeli:
       "Bij Meli-Melo krijgt elke speler elke ronde nieuwe ploegmaats: schutter, pointeur en geen-voorkeur worden telkens opnieuw samengesteld, zonder onnodige herhaling.",
@@ -1156,6 +1159,9 @@ const fr: typeof nl = {
     club: "Club",
     clubVerplicht: "Indiquez un nom de club avant de continuer.",
     vulEerstClubIn: "Indiquez d'abord un nom de club dans l'onglet Configuration.",
+    inlegVerplicht: "Indiquez la mise par équipe avant de continuer.",
+    rondesVerplicht: "Indiquez le nombre de manches avant de continuer.",
+    inlegEnRondesVerplicht: "Indiquez la mise par équipe et le nombre de manches avant de continuer.",
     speltype: "Type de jeu",
     hintMeli:
       "Avec Meli-Melo, chaque joueur reçoit à chaque manche de nouveaux coéquipiers : tireur, pointeur et sans préférence sont recomposés à chaque fois, sans répétition inutile.",
