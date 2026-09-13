@@ -225,6 +225,8 @@ const nl = {
     reeksHerkend: (n: number) =>
       `Herhalende reeks herkend — ${n} datums hieronder alvast ingevuld, controleer ze zeker.`,
     herhaalDatums: "Datums",
+    reeksEigenNamen:
+      "Op de affiche heeft elke datum een eigen naam (bv. een volgnummer) — die blijft per datum behouden.",
     verstuurReeks: (n: number) => (n === 1 ? "Versturen (1 tornooi)" : `Versturen (${n} tornooien)`),
     adresVanClubIngevuld: "Adres, gemeente en provincie automatisch ingevuld op basis van deze club.",
     clubNietGekoppeld: "Nog niet gekoppeld — klik hierboven op de club in de lijst om te bevestigen (anders kan je niet opslaan).",
@@ -898,6 +900,8 @@ const fr: typeof nl = {
     reeksHerkend: (n: number) =>
       `Série récurrente détectée — ${n} dates déjà remplies ci-dessous, vérifiez-les bien.`,
     herhaalDatums: "Dates",
+    reeksEigenNamen:
+      "Sur l'affiche, chaque date porte son propre nom (ex. un numéro) — celui-ci est conservé par date.",
     verstuurReeks: (n: number) => (n === 1 ? "Envoyer (1 tournoi)" : `Envoyer (${n} tournois)`),
     adresVanClubIngevuld: "Adresse, commune et province automatiquement remplies à partir de ce club.",
     clubNietGekoppeld:

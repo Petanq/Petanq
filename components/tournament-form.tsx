@@ -99,7 +99,12 @@ export function TournamentForm() {
   // enkel andere datums)? Dan vullen we meteen alle datums samen in — één
   // gedeeld formulier, één keer versturen — i.p.v. een wachtrij.
   const [reeksModus, setReeksModus] = useState(false);
-  const [herhaalDatums, setHerhaalDatums] = useState<string[]>([]);
+  const [herhaalDatums, setHerhaalDatums] = useState<{ datum: string; naamNl: string; naamFr: string }[]>([]);
+  // Meestal is een reeks exact hetzelfde tornooi op andere datums, maar soms
+  // staat er per datum een eigen volgnummer op de affiche (bv. "Challenge 1",
+  // "Challenge 2", ...) — dan moet die naam per datum bewaard blijven i.p.v.
+  // overal hetzelfde te tonen.
+  const [reeksNamenVariëren, setReeksNamenVariëren] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -231,7 +236,12 @@ export function TournamentForm() {
       // Exact hetzelfde tornooi, enkel andere datums: meteen alle datums
       // samen invullen i.p.v. een wachtrij van aparte inzendingen.
       setReeksModus(true);
-      setHerhaalDatums(resultaten.map((r) => r.datum ?? "").filter(Boolean));
+      const paren = resultaten
+        .map((r) => ({ datum: r.datum ?? "", naamNl: r.naam_nl ?? "", naamFr: r.naam_fr ?? "" }))
+        .filter((p) => p.datum);
+      const eersteNaam = paren[0]?.naamNl ?? "";
+      setReeksNamenVariëren(paren.some((p) => p.naamNl && p.naamNl !== eersteNaam));
+      setHerhaalDatums(paren);
     } else if (resultaten.length > 1) {
       // Echt verschillende tornooien (bv. dames-/herenconcours) — die
       // verwerken we één voor één na elkaar in.
@@ -241,15 +251,17 @@ export function TournamentForm() {
     }
   }
 
-  function gedeeldeVelden(voorDatum: string) {
+  function gedeeldeVelden(voorDatum: string, reeksItem?: { naamNl: string; naamFr: string }) {
+    const gebruikNaamNl = reeksModus && reeksNamenVariëren && reeksItem?.naamNl ? reeksItem.naamNl : naamNl;
+    const gebruikNaamFr = reeksModus && reeksNamenVariëren && reeksItem?.naamFr ? reeksItem.naamFr : naamFr;
     return {
       ingediend_door: naamIndiener,
       datum: voorDatum,
       uur,
       clubnaam,
       club_id: clubId,
-      naam_nl: naamNl,
-      naam_fr: naamFr,
+      naam_nl: gebruikNaamNl,
+      naam_fr: gebruikNaamFr,
       gemeente,
       adres: adres || null,
       provincie,
@@ -277,7 +289,7 @@ export function TournamentForm() {
 
     const verplichteVelden = [
       naamIndiener,
-      reeksModus ? (herhaalDatums.filter((d) => d).length > 0 ? "ok" : "") : datum,
+      reeksModus ? (herhaalDatums.filter((d) => d.datum).length > 0 ? "ok" : "") : datum,
       uur,
       openToernooi ? clubnaam : clubId,
       openToernooi ? adres : "ok",
@@ -296,9 +308,9 @@ export function TournamentForm() {
     setStatus("bezig");
 
     if (reeksModus) {
-      const datums = herhaalDatums.filter((d) => d);
-      for (const eenDatum of datums) {
-        const resultaat = await toernooiIndienen(gedeeldeVelden(eenDatum), taal);
+      const items = herhaalDatums.filter((d) => d.datum);
+      for (const item of items) {
+        const resultaat = await toernooiIndienen(gedeeldeVelden(item.datum, item), taal);
         if (!resultaat.succes) {
           setFoutReden(resultaat.fout);
           setStatus("fout");
@@ -406,17 +418,25 @@ export function TournamentForm() {
               <span className="text-[0.8rem] font-bold text-donker">
                 {t.form.herhaalDatums} <span className="text-rood">*</span>
               </span>
+              {reeksNamenVariëren && (
+                <p className="text-xs text-grijs">{t.form.reeksEigenNamen}</p>
+              )}
               <div className="flex flex-col gap-2">
-                {herhaalDatums.map((d, i) => (
+                {herhaalDatums.map((item, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <input
                       type="date"
-                      value={d}
+                      value={item.datum}
                       onChange={(e) =>
-                        setHerhaalDatums((lijst) => lijst.map((v, j) => (j === i ? e.target.value : v)))
+                        setHerhaalDatums((lijst) =>
+                          lijst.map((v, j) => (j === i ? { ...v, datum: e.target.value } : v))
+                        )
                       }
                       className="veld-input"
                     />
+                    {reeksNamenVariëren && item.naamNl && (
+                      <span className="text-xs text-grijs">{item.naamNl}</span>
+                    )}
                     {herhaalDatums.length > 1 && (
                       <button
                         type="button"
@@ -431,7 +451,7 @@ export function TournamentForm() {
               </div>
               <button
                 type="button"
-                onClick={() => setHerhaalDatums((lijst) => [...lijst, ""])}
+                onClick={() => setHerhaalDatums((lijst) => [...lijst, { datum: "", naamNl: "", naamFr: "" }])}
                 className="mt-1 self-start rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-95"
               >
                 {t.beheer.datumToevoegen}
@@ -736,7 +756,7 @@ export function TournamentForm() {
         {verzendPoging &&
           [
             naamIndiener,
-            reeksModus ? (herhaalDatums.filter((d) => d).length > 0 ? "ok" : "") : datum,
+            reeksModus ? (herhaalDatums.filter((d) => d.datum).length > 0 ? "ok" : "") : datum,
             uur,
             openToernooi ? clubnaam : clubId,
             openToernooi ? adres : "ok",
@@ -771,7 +791,7 @@ export function TournamentForm() {
             : status === "bezig"
             ? t.form.bezigMetVersturen
             : reeksModus
-            ? t.form.verstuurReeks(herhaalDatums.filter((d) => d).length)
+            ? t.form.verstuurReeks(herhaalDatums.filter((d) => d.datum).length)
             : wachtrij.length > 0
             ? t.form.verstuurEnVolgende(wachtrij.length)
             : t.form.versturen}
