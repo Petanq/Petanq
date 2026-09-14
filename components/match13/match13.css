@@ -553,8 +553,19 @@
 
 .match13-scope .court-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.2rem;
+}
+/* Het aantal kolommen (en de kolom-per-kolom volgorde: plein 1, 2, 3 onder
+   elkaar) wordt per ronde berekend en als inline style meegegeven — zie
+   berekenRoosterKolommen in Match13App.tsx. Op een smal scherm (telefoon)
+   negeert dit die berekening bewust en valt terug op simpelweg 1 kolom,
+   anders zouden meerdere kolommen van elk minstens 280px domweg naast
+   elkaar geperst worden. */
+@media (max-width: 700px) {
+  .match13-scope .court-grid {
+    grid-template-columns: 1fr !important;
+    grid-auto-flow: row !important;
+  }
 }
 .match13-scope .court-card {
   border: 1px solid var(--border);

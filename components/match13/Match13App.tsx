@@ -53,6 +53,19 @@ function pouleColor(index: number): string {
 // afgewerkte wedstrijd telt niet meer mee, dus zodra die zijn score krijgt,
 // schuift de eerstvolgende wachtende vanzelf door (geen eigen opgeslagen
 // toestand nodig, dit wordt elke render opnieuw berekend).
+// Aantal kolommen voor het Zaalscherm-rooster, in functie van het aantal
+// wedstrijden deze ronde — zo blijft het rooster bij weinig pleinen breed en
+// leesbaar, en schuift het bij veel pleinen tegelijk vanzelf naar meer
+// kolommen i.p.v. één almaar langer wordende kolom waar je voor moet
+// scrollen. Gecombineerd met grid-auto-flow:column (zie court-grid hieronder)
+// komen plein 1, 2, 3, ... zo ook netjes onder elkaar te staan in plaats van
+// naast elkaar.
+function berekenRoosterKolommen(aantalWedstrijden: number): number {
+  if (aantalWedstrijden <= 3) return Math.max(1, aantalWedstrijden);
+  if (aantalWedstrijden <= 8) return Math.ceil(aantalWedstrijden / 2);
+  return Math.ceil(aantalWedstrijden / 3);
+}
+
 function berekenWachtPositie(matches: Match[], i: number, maxPleinen: number | undefined): number {
   const limiet = maxPleinen && maxPleinen > 0 ? maxPleinen : Infinity;
   let actief = 0;
@@ -2068,7 +2081,16 @@ export function Match13App({
             )}
 
             {currentRound && (
-              <div className="court-grid">
+              <div
+                className="court-grid"
+                style={{
+                  gridAutoFlow: "column",
+                  gridTemplateColumns: `repeat(${berekenRoosterKolommen(currentRound.matches.length)}, minmax(280px, 1fr))`,
+                  gridTemplateRows: `repeat(${Math.ceil(
+                    currentRound.matches.length / berekenRoosterKolommen(currentRound.matches.length)
+                  )}, auto)`,
+                }}
+              >
                 {currentRound.matches.map((m, i) => {
                   const wachtPositie = isPoules ? 0 : berekenWachtPositie(currentRound.matches, i, maxPleinen);
                   if (wachtPositie > 0) {
