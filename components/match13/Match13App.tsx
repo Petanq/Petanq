@@ -1593,8 +1593,9 @@ export function Match13App({
                   onChange={(e) =>
                     setState((s) => ({ ...s, entryFee: Number(e.target.value) || 0 }))
                   }
-                  style={{ maxWidth: 120 }}
+                  style={{ maxWidth: 120, ...(inlegVerplicht ? { borderColor: "var(--warn)" } : {}) }}
                 />
+                {inlegVerplicht && <p className="hint" style={{ color: "var(--warn)" }}>{t.match13.inlegVerplicht}</p>}
               </div>
               {!isPoules && (
                 <div className="field">
@@ -1606,8 +1607,9 @@ export function Match13App({
                     onChange={(e) =>
                       setState((s) => ({ ...s, totalRounds: Math.max(1, Number(e.target.value) || 1) }))
                     }
-                    style={{ maxWidth: 120 }}
+                    style={{ maxWidth: 120, ...(rondesVerplicht ? { borderColor: "var(--warn)" } : {}) }}
                   />
+                  {rondesVerplicht && <p className="hint" style={{ color: "var(--warn)" }}>{t.match13.rondesVerplicht}</p>}
                   <div className="hint">{t.match13.hintAantalRondes}</div>
                 </div>
               )}
