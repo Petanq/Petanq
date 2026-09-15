@@ -112,6 +112,8 @@ export interface BracketMatch {
   sourceB?: BracketRef;
   scoreA?: number;
   scoreB?: number;
+  startedAt?: number; // timestamp (ms) when the organizer manually started the clock
+  finishedAt?: number; // timestamp (ms) when the score was completed
 }
 
 export function isTrueBye(m: BracketMatch): boolean {

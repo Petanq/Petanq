@@ -211,6 +211,7 @@ function BracketColumns({
   onWin,
   onClear,
   onCourtChange,
+  onStart,
   accent,
   simpleWinLoss,
 }: {
@@ -221,6 +222,7 @@ function BracketColumns({
   onWin?: (matchId: string, kant: "A" | "B") => void;
   onClear?: (matchId: string) => void;
   onCourtChange?: (matchId: string, court: number) => void;
+  onStart?: (matchId: string) => void;
   accent?: string;
   // Poule-wedstrijden tellen enkel wie doorgaat, geen echte eindstand — geen
   // scores intikken dus, gewoon "wint"-knoppen per kant. scoreA/scoreB
@@ -267,6 +269,17 @@ function BracketColumns({
                       ""
                     )}
                   </div>
+                  {!bye && ready && (m.startedAt || (editable && onStart && !done)) && (
+                    <div className="bracket-timer-row">
+                      {m.startedAt ? (
+                        <MatchTimer startedAt={m.startedAt} finishedAt={m.finishedAt} />
+                      ) : (
+                        <button className="bracket-start-btn" onClick={() => onStart!(m.id)}>
+                          {t.match13.startKnop}
+                        </button>
+                      )}
+                    </div>
+                  )}
                   <div className={"bracket-side" + (aWon ? " winner" : bWon ? " loser" : "")}>
                     <span className="bracket-name">{a ? numNameOf(a) : "?"}</span>
                     {simpleWinLoss ? (
@@ -767,7 +780,15 @@ export function Match13App({
     setState((s) => {
       const key = bracketKey(which);
       const n = value === "" ? undefined : Math.min(13, Math.max(0, Number(value)));
-      return { ...s, [key]: (s[key] ?? []).map((m) => (m.id === matchId ? { ...m, [side]: n } : m)) };
+      return {
+        ...s,
+        [key]: (s[key] ?? []).map((m) => {
+          if (m.id !== matchId) return m;
+          const bijgewerkt = { ...m, [side]: n };
+          const done = bijgewerkt.scoreA !== undefined && bijgewerkt.scoreB !== undefined;
+          return { ...bijgewerkt, finishedAt: done ? (bijgewerkt.finishedAt ?? Date.now()) : undefined };
+        }),
+      };
     });
   }
 
@@ -780,7 +801,9 @@ export function Match13App({
     setState((s) => ({
       ...s,
       pouleBracket: s.pouleBracket.map((m) =>
-        m.id === matchId ? { ...m, scoreA: kant === "A" ? 1 : 0, scoreB: kant === "B" ? 1 : 0 } : m
+        m.id === matchId
+          ? { ...m, scoreA: kant === "A" ? 1 : 0, scoreB: kant === "B" ? 1 : 0, finishedAt: Date.now() }
+          : m
       ),
     }));
   }
@@ -795,12 +818,30 @@ export function Match13App({
     });
   }
 
+  // De organisator start de klok zelf op het moment dat de ploegen ook echt
+  // beginnen spelen (niet automatisch zodra de wedstrijd op het scherm
+  // verschijnt) — die kan anders al minuten lopen terwijl de ploegen nog naar
+  // hun plein aan het wandelen zijn.
+  function startBracketMatch(which: "poule" | "knockout" | "knockoutB", matchId: string) {
+    setState((s) => {
+      const key = bracketKey(which);
+      return {
+        ...s,
+        [key]: (s[key] ?? []).map((m) => (m.id === matchId && !m.startedAt ? { ...m, startedAt: Date.now() } : m)),
+      };
+    });
+  }
+
   function clearBracketMatch(which: "poule" | "knockout" | "knockoutB", matchId: string) {
     setState((s) => {
       const key = bracketKey(which);
       return {
         ...s,
-        [key]: (s[key] ?? []).map((m) => (m.id === matchId ? { ...m, scoreA: undefined, scoreB: undefined } : m)),
+        [key]: (s[key] ?? []).map((m) =>
+          m.id === matchId
+            ? { ...m, scoreA: undefined, scoreB: undefined, startedAt: undefined, finishedAt: undefined }
+            : m
+        ),
       };
     });
   }
@@ -2055,7 +2096,10 @@ export function Match13App({
                         <span className="poule-dot" style={{ background: accent }} />
                         {t.match13.pouleLabel(label)}
                       </h4>
-                      <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+                      <div
+                        className="poule-bracket-rij"
+                        style={{ display: "flex", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap" }}
+                      >
                         <BracketColumns
                           matches={pouleBracket.filter((m) => m.poule === label)}
                           numNameOf={numNameOf}
@@ -2064,6 +2108,7 @@ export function Match13App({
                           onWin={(id, kant) => updatePouleWinner(id, kant)}
                           onClear={(id) => clearBracketMatch("poule", id)}
                           onCourtChange={(id, court) => updateBracketCourt("poule", id, court)}
+                          onStart={(id) => startBracketMatch("poule", id)}
                           accent={accent}
                         />
                         {usesBarrageBracket(pouleTeams.length) && (
@@ -2095,6 +2140,7 @@ export function Match13App({
                   onScore={(id, side, v) => updateBracketScore("knockout", id, side, v)}
                   onClear={(id) => clearBracketMatch("knockout", id)}
                   onCourtChange={(id, court) => updateBracketCourt("knockout", id, court)}
+                  onStart={(id) => startBracketMatch("knockout", id)}
                 />
               </>
             )}
@@ -2114,6 +2160,7 @@ export function Match13App({
                   onScore={(id, side, v) => updateBracketScore("knockoutB", id, side, v)}
                   onClear={(id) => clearBracketMatch("knockoutB", id)}
                   onCourtChange={(id, court) => updateBracketCourt("knockoutB", id, court)}
+                  onStart={(id) => startBracketMatch("knockoutB", id)}
                 />
               </>
             )}
@@ -2633,7 +2680,10 @@ export function Match13App({
                           <span className="poule-dot" style={{ background: accent }} />
                           {t.match13.pouleLabel(label)}
                         </h4>
-                        <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+                        <div
+                          className="poule-bracket-rij"
+                          style={{ display: "flex", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap" }}
+                        >
                           <BracketColumns
                             matches={pouleBracket.filter((m) => m.poule === label)}
                             numNameOf={numNameOf}

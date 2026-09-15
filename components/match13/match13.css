@@ -1271,6 +1271,28 @@
   color: var(--live);
   background: var(--live-bg);
 }
+.match13-scope .bracket-timer-row {
+  padding: 0 0.6rem 0.3rem;
+}
+.match13-scope .bracket-timer-row .match-timer {
+  margin: 0;
+}
+.match13-scope .bracket-start-btn {
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-muted);
+  border-radius: 6px;
+  padding: 0.15rem 0.55rem;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.match13-scope .bracket-start-btn:hover {
+  border-color: var(--live);
+  color: var(--live);
+  background: var(--live-bg);
+}
 .match13-scope .piramide-titel {
   margin: 1.6rem 0 0.6rem;
 }
@@ -1321,6 +1343,29 @@
   padding: 0.3rem 0;
   font-size: 0.72rem;
   background: var(--surface-2);
+}
+
+/* Op een smal scherm mag niemand zijwaarts moeten scrollen om een kolom
+   (bv. de finale, of "winnaars/verliezers") te zien — zeker niet de plein-
+   invoer of "wis score" die daar dan in staat. Kolommen komen dus gewoon
+   onder elkaar te staan i.p.v. naast elkaar. */
+@media (max-width: 640px) {
+  .match13-scope .bracket {
+    flex-direction: column;
+    overflow-x: visible;
+    width: 100%;
+  }
+  .match13-scope .bracket-col {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  .match13-scope .poule-bracket-rij {
+    flex-direction: column;
+  }
+  .match13-scope .poule-qualifiers {
+    flex-basis: auto;
+    width: 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
