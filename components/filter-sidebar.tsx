@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { Categorie, Formule, Toernooi } from "@/lib/types";
 import { ALLE_PROVINCIES, PROVINCIE_REGIO, Provincie, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
@@ -121,6 +122,30 @@ function KwalificatieToggle({
   );
 }
 
+// Geen filter, maar een doorverwijzing naar de aparte reizen-pagina — met
+// een eigen kaartje (i.p.v. een plek in de hoofdnavigatie) valt dit beter op
+// naast waar bezoekers toch al naar tornooien aan het zoeken zijn.
+function ReizenPromoBox() {
+  const { t } = useTranslation();
+  return (
+    <Link
+      href="/petanque-reizen"
+      className="mb-3.5 flex items-center gap-2.5 rounded-[10px] border-[1.5px] border-[#1a4480]/30 bg-white p-[1.1rem] text-left transition-all hover:border-[#1a4480] hover:shadow-[0_2px_10px_rgba(26,68,128,0.15)]"
+    >
+      <span
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#eff6ff] text-base"
+        aria-hidden
+      >
+        ✈️
+      </span>
+      <span className="min-w-0 flex-1 text-[0.83rem] font-bold leading-snug text-donker">{t.nav.reizen}</span>
+      <span className="shrink-0 text-[#1a4480]" aria-hidden>
+        →
+      </span>
+    </Link>
+  );
+}
+
 export function FilterSidebar({
   alleToernooien,
   filters,
@@ -174,6 +199,8 @@ export function FilterSidebar({
         label={t.filters.metKwalificatiedata}
         aantal={tel("kwalificatie", heeftKwalificatiedata)}
       />
+
+      <ReizenPromoBox />
 
       <button
         onClick={() => setMobielOpen((v) => !v)}
