@@ -27,6 +27,38 @@ export async function toernooiIndienen(
     .filter((k) => k.datum)
     .map((k) => ({ datum: k.datum, uur: k.uur || null, opmerking: k.opmerking || null }));
 
+  // Mensen dienen hetzelfde tornooi soms twee keer in met lichtjes andere
+  // bewoording (typo, ander lidwoord, "Doublettes" vs "Doublettes Formées",
+  // ...) — een exacte naam-vergelijking mist die dan. We vergelijken daarom
+  // op de structurele velden (net als bij het herkennen van een herhalende
+  // reeks affiches), niet op de vrije naamtekst. De service-role client is
+  // nodig omdat een anonieme indiener via RLS geen nog-niet-goedgekeurde
+  // tornooien mag lezen, maar we willen ook dubbels tussen twee "in
+  // behandeling"-inzendingen tegenhouden, niet enkel tegen al goedgekeurde.
+  const serviceClient = createServiceRoleClient();
+  let dubbelCheck = serviceClient
+    .from("toernooien")
+    .select("id")
+    .eq("datum", data.datum)
+    .eq("categorie", data.categorie)
+    .eq("formule", data.formule)
+    .eq("speelvorm", data.speelvorm)
+    .is("verwijderd_op", null)
+    .neq("status", "geweigerd");
+  dubbelCheck =
+    data.speelvorm === "rondes"
+      ? dubbelCheck.eq("aantal_ronden", data.aantal_ronden ?? null)
+      : dubbelCheck.eq("aantal_poules", data.aantal_poules ?? null);
+  dubbelCheck = data.club_id
+    ? dubbelCheck.eq("club_id", data.club_id)
+    : dubbelCheck.ilike("clubnaam", data.clubnaam.trim());
+
+  const { data: mogelijkeDubbels, error: dubbelFout } = await dubbelCheck.limit(1);
+  if (dubbelFout) console.error("Dubbel-check mislukt:", dubbelFout.message);
+  if (mogelijkeDubbels && mogelijkeDubbels.length > 0) {
+    return { succes: false, fout: "dubbel_toernooi" };
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.from("toernooien").insert({
     datum: data.datum,
