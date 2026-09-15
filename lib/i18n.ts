@@ -299,6 +299,8 @@ const nl = {
     geenInBehandeling: "Geen toernooien in behandeling.",
     geefMatch13Toegang: "Geef toegang tot Match13",
     geefMatch13ToegangMislukt: (reden: string) => `Match13-toegang geven is niet gelukt: ${reden}`,
+    vraagClubVoorMatch13:
+      "Bij welke club hoort deze persoon? Zonder club kan er geen toernooi aangemaakt worden.",
     goedkeuren: "Goedkeuren",
     weigeren: "Weigeren",
     commentaar: "Commentaar (optioneel)",
@@ -676,6 +678,7 @@ const nl = {
     bezig: "Bezig...",
     linkUitleg: "Stuur deze link zelf door naar de club (WhatsApp, sms, e-mail...) — hij werkt 7 dagen:",
     nogGeenPilootclubs: "Nog geen pilootclubs toegevoegd.",
+    clubOntbreekt: "⚠️ Geen club ingesteld — kan hierdoor geen toernooi starten",
     verantwoordelijke: (naam: string, email: string) => `Verantwoordelijke: ${naam} · ${email}`,
     actief: "actief",
     gepauzeerd: "gepauzeerd",
@@ -996,6 +999,8 @@ const fr: typeof nl = {
     geenInBehandeling: "Aucun tournoi en attente.",
     geefMatch13Toegang: "Donner accès à Match13",
     geefMatch13ToegangMislukt: (reden: string) => `Échec de l'octroi de l'accès Match13 : ${reden}`,
+    vraagClubVoorMatch13:
+      "À quel club appartient cette personne ? Sans club, aucun tournoi ne peut être créé.",
     goedkeuren: "Approuver",
     weigeren: "Refuser",
     commentaar: "Commentaire (optionnel)",
@@ -1371,6 +1376,7 @@ const fr: typeof nl = {
     bezig: "En cours...",
     linkUitleg: "Transmettez ce lien vous-même au club (WhatsApp, SMS, e-mail...) — il reste valable 7 jours :",
     nogGeenPilootclubs: "Aucun club pilote ajouté pour l'instant.",
+    clubOntbreekt: "⚠️ Aucun club défini — impossible de créer un tournoi",
     verantwoordelijke: (naam: string, email: string) => `Responsable : ${naam} · ${email}`,
     actief: "actif",
     gepauzeerd: "en pause",

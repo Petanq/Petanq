@@ -243,7 +243,7 @@ export function Match13ToegangList({
                   href={`/beheer/match13/toegang/${groep.leden[0].id}`}
                   className="match13-toegang-naam-link match13-club-titel"
                 >
-                  {groep.club}
+                  {groep.club || t.match13.clubOntbreekt}
                 </Link>
                 <Link href={`/beheer/match13/toegang/${groep.leden[0].id}`} className="team-num team-num-toggle">
                   {t.match13.aantalToernooien(groep.leden[0].toernooiAantal)}

@@ -75,12 +75,25 @@ export function ModeratorManageList({
   }
 
   async function match13ToegangGeven(mod: Moderator) {
+    // mod.aanmeld_club staat enkel ingevuld bij wie zichzelf aanmeldde via
+    // /beheer/aanmelden — wie Frederic zelf rechtstreeks als moderator
+    // uitnodigde (moderatorUitnodigen) heeft dat veld nooit ingevuld. Zonder
+    // club kon de rij hier ooit stil met club:"" aangemaakt worden: de
+    // persoon zag zich dan wel "actief" staan, maar elke poging om een
+    // toernooi te starten liep alsnog vast op de club-gebonden RLS-regel
+    // (match13_eigen_club() <> ''). Dus hier een echte club afdwingen.
+    let club = mod.aanmeld_club?.trim() || "";
+    if (!club) {
+      const ingevoerd = window.prompt(t.beheer.vraagClubVoorMatch13, "");
+      club = ingevoerd?.trim() ?? "";
+      if (!club) return;
+    }
     setBezig(mod.id);
     const resultaat = await match13ToegangGevenAanModerator({
       userId: mod.user_id,
       naam: mod.naam,
       email: mod.email,
-      club: mod.aanmeld_club ?? "",
+      club,
     });
     setBezig(null);
     // Faalde dit vroeger stil, dan leek de knop — vooral op een klein
