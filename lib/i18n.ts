@@ -631,6 +631,8 @@ const nl = {
     archiefTerug: "← Terug naar archief",
     archiefGeenKlassementPoules: "Poules-toernooien hebben geen eindklassement — hieronder de teams per poule.",
     nogGeenToernooien: "Nog geen toernooien — maak er hierboven een aan.",
+    nieuwToernooiMislukt:
+      "Nieuw toernooi aanmaken is niet gelukt — mogelijk staat je Match13-toegang (nog) niet aan. Neem contact op met de beheerder.",
     bijgewerkt: (datum: string) => `bijgewerkt ${datum}`,
     naamloosToernooi: "Naamloos toernooi",
     lijstTest: "Test",
@@ -1324,6 +1326,8 @@ const fr: typeof nl = {
     archiefTerug: "← Retour aux archives",
     archiefGeenKlassementPoules: "Les tournois Poules n'ont pas de classement final — voici les équipes par poule.",
     nogGeenToernooien: "Pas encore de tournois — créez-en un ci-dessus.",
+    nieuwToernooiMislukt:
+      "La création d'un nouveau tournoi a échoué — votre accès Match13 n'est peut-être pas (encore) activé. Contactez l'administrateur.",
     bijgewerkt: (datum: string) => `mis à jour ${datum}`,
     naamloosToernooi: "Tournoi sans nom",
     lijstTest: "Test",

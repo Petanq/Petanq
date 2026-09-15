@@ -115,6 +115,15 @@
   text-align: center;
   padding: 0.6rem 1rem;
 }
+.match13-scope .match13-fout-banner {
+  background: var(--warn-bg);
+  color: var(--warn);
+  font-weight: 600;
+  text-align: center;
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  margin-bottom: 1.2rem;
+}
 .match13-scope .ghost-btn {
   font-family: inherit;
   font-weight: 600;

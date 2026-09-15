@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { nieuwMatch13Toernooi, bewerkMatch13Metadata, type Match13ToernooiRij } from "@/actions/match13";
 import { Match13VerwijderKnop } from "@/components/match13/Match13VerwijderKnop";
@@ -24,6 +25,7 @@ export function Match13Overzicht({
   admin: boolean;
 }) {
   const { t, taal } = useTranslation();
+  const fout = useSearchParams().get("fout");
   // Lokale kopie zodat een wijziging (bv. "afgewerkt" aanvinken) de indeling
   // meteen doet verschuiven, zonder te wachten op een volledige pagina-herlaad.
   const [rows, setRows] = useState(toernooien);
@@ -42,6 +44,9 @@ export function Match13Overzicht({
 
   return (
     <div className="match13-lijst-pagina">
+      {fout === "aanmaken_mislukt" && (
+        <p className="match13-fout-banner">{t.match13.nieuwToernooiMislukt}</p>
+      )}
       <div className="match13-lijst-head">
         <div>
           {admin && (

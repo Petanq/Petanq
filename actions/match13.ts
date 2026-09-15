@@ -95,8 +95,12 @@ export async function nieuwMatch13Toernooi(): Promise<void> {
     .single();
 
   if (error || !data) {
+    // Dit gebeurde vroeger stil (gewoon terug naar dezelfde lijst, geen
+    // uitleg) — voor een piloot-gebruiker wiens Match13-toegang bv. nog
+    // uitstaat, leek dat exact "ik klik en er gebeurt niets". De reden zit
+    // hier in de URL zodat Match13Overzicht.tsx die kan tonen.
     console.error("Kon nieuw Match13-toernooi niet aanmaken:", error?.message);
-    redirect("/beheer/match13");
+    redirect("/beheer/match13?fout=aanmaken_mislukt");
   }
   redirect(`/beheer/match13/${data.id}`);
 }
