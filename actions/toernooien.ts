@@ -46,7 +46,12 @@ export async function toernooiIndienen(
   // nodig omdat een anonieme indiener via RLS geen nog-niet-goedgekeurde
   // tornooien mag lezen, maar we willen ook dubbels tussen twee "in
   // behandeling"-inzendingen tegenhouden, niet enkel tegen al goedgekeurde.
-  if (!negeerDubbelCheck) {
+  //
+  // Categorie "circuit" slaan we hier bewust over: die tornooien draaien
+  // vaak een aparte Dames- en Herenreeks die verder exact dezelfde
+  // club/datum/formule/rondes delen — enkel het volgnummer in de naam
+  // maakt het verschil, en dat zit niet in een apart veld.
+  if (!negeerDubbelCheck && data.categorie !== "circuit") {
     const serviceClient = createServiceRoleClient();
     let dubbelCheck = serviceClient
       .from("toernooien")
