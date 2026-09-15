@@ -96,7 +96,7 @@ export const FORMAT_TEAM_SIZE: Record<Format, number> = {
   tete: 1,
   doublet: 2,
   triplet: 3,
-  poules: 2, // poule play is registered as doublets, same as most real club poule days
+  poules: 2, // unused fallback — Match13App.tsx reads AppState.pouleTeamSize instead for this format
   kwartet: 4,
   sextet: 6,
 };

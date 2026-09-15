@@ -482,6 +482,8 @@ const nl = {
       "Bij Meli-Melo krijgt elke speler elke ronde nieuwe ploegmaats: schutter, pointeur en geen-voorkeur worden telkens opnieuw samengesteld, zonder onnodige herhaling.",
     hintPoules:
       "Bij Poules speel je in poules van 4: winnaars tegen winnaars (rechtstreeks door bij 2 zeges), verliezers tegen verliezers (bij verlies uitgeschakeld), en een barrage om de 2de plaats. Nadien volgt een knock-outfase — elk plein speelt door zodra zijn twee tegenstanders gekend zijn, zonder op de andere pleinen te wachten. Twee ploegen uit dezelfde poule komen elkaar pas in de finale opnieuw tegen.",
+    pouleTeamGrootte: "Teamgrootte binnen de poules",
+    hintPouleTeamGrootte: "Poules kan met Tête-à-tête (1 tegen 1), Doublet (2 tegen 2) of Triplet (3 tegen 3) gespeeld worden.",
     hintAndereFormats:
       "Bepaalt enkel de weergave — de loting werkt hetzelfde voor elk formaat: vaste teams, geen herhaalde tegenstanders. Ronde 1 is een vrije loting; vanaf ronde 2 koppelt de app op stand (winnaars tegen winnaars).",
     hintKwartet:
@@ -1165,6 +1167,8 @@ const fr: typeof nl = {
       "Avec Meli-Melo, chaque joueur reçoit à chaque manche de nouveaux coéquipiers : tireur, pointeur et sans préférence sont recomposés à chaque fois, sans répétition inutile.",
     hintPoules:
       "Avec Poules, vous jouez en poules de 4 : vainqueurs contre vainqueurs (qualification directe après 2 victoires), perdants contre perdants (éliminé en cas de défaite), et une barrage pour la 2e place. Suit ensuite une phase finale — chaque terrain continue dès que ses deux adversaires sont connus, sans attendre les autres terrains. Deux équipes de la même poule ne se rencontrent à nouveau qu'en finale.",
+    pouleTeamGrootte: "Taille d'équipe dans les poules",
+    hintPouleTeamGrootte: "Les poules peuvent se jouer en Tête-à-tête (1 contre 1), Doublet (2 contre 2) ou Triplet (3 contre 3).",
     hintAndereFormats:
       "Ne détermine que l'affichage — le tirage fonctionne de la même façon pour chaque format : équipes fixes, pas d'adversaires répétés. La manche 1 est un tirage libre ; à partir de la manche 2, l'app associe selon le classement (vainqueurs contre vainqueurs).",
     hintKwartet:

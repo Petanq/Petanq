@@ -12,6 +12,11 @@ export interface AppState {
   // Aantal fysiek beschikbare pleinen (bv. beperkt bij binnenspelen 's winters).
   // undefined/0 = onbeperkt, elke wedstrijd speelt meteen (huidig gedrag).
   maxPleinen?: number;
+  // Enkel relevant als format === "poules": Poules is in de praktijk geen
+  // eigen spelvorm maar een keuze bovenop Tête-à-tête/Doublet/Triplet — dit
+  // bepaalt de teamgrootte binnen de poules. undefined = Doublet (2), het
+  // oorspronkelijke, enige gedrag vóór dit veld bestond.
+  pouleTeamSize?: 1 | 2 | 3;
   teams: Team[];
   rounds: Round[];
   pouleBracket: BracketMatch[];

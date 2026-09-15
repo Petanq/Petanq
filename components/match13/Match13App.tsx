@@ -430,13 +430,17 @@ export function Match13App({
     }
   }
 
-  const { clubName, format, entryFee, totalRounds, maxPleinen, teams, rounds, pouleBracket, knockoutBracket } = state;
+  const { clubName, format, entryFee, totalRounds, maxPleinen, pouleTeamSize, teams, rounds, pouleBracket, knockoutBracket } =
+    state;
   const isMeli = format === "meli";
   const isPoules = format === "poules";
   const isKwartet = format === "kwartet";
   const isSextet = format === "sextet";
   const isKwsFormaat = isKwartet || isSextet;
-  const teamSize = FORMAT_TEAM_SIZE[format];
+  // Poules is in de praktijk geen eigen spelvorm maar een keuze bovenop
+  // Tête-à-tête/Doublet/Triplet — de teamgrootte volgt dus het apart gekozen
+  // pouleTeamSize i.p.v. de vaste FORMAT_TEAM_SIZE-tabel.
+  const teamSize = isPoules ? pouleTeamSize ?? 2 : FORMAT_TEAM_SIZE[format];
   const minToPlay = isMeli ? 6 : isPoules ? 3 : 2;
   // Verplicht vóór je nog iets kan doen — maar enkel bij de allereerste
   // start: een toernooi dat al teams heeft (bv. van vóór deze check bestond)
@@ -1596,6 +1600,25 @@ export function Match13App({
                     : t.match13.hintAndereFormats}
                 </div>
               </div>
+              {isPoules && (
+                <div className="field">
+                  <label>{t.match13.pouleTeamGrootte}</label>
+                  <div className={"pill-row" + (teams.length > 0 ? " locked" : "")}>
+                    {([1, 2, 3] as const).map((grootte) => (
+                      <span
+                        key={grootte}
+                        className={"pill" + ((pouleTeamSize ?? 2) === grootte ? " sel" : "")}
+                        onClick={() => teams.length === 0 && setState((s) => ({ ...s, pouleTeamSize: grootte }))}
+                      >
+                        {grootte === 1 ? FORMAT_LABELS.tete : grootte === 2 ? FORMAT_LABELS.doublet : FORMAT_LABELS.triplet}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="hint">
+                    {teams.length > 0 ? t.match13.speltypeVastgezet : t.match13.hintPouleTeamGrootte}
+                  </div>
+                </div>
+              )}
               <div className="field">
                 <label>{t.match13.inlegPerTeam}</label>
                 <input
