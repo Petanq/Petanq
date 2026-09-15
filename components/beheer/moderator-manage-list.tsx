@@ -76,13 +76,21 @@ export function ModeratorManageList({
 
   async function match13ToegangGeven(mod: Moderator) {
     setBezig(mod.id);
-    await match13ToegangGevenAanModerator({
+    const resultaat = await match13ToegangGevenAanModerator({
       userId: mod.user_id,
       naam: mod.naam,
       email: mod.email,
       club: mod.aanmeld_club ?? "",
     });
     setBezig(null);
+    // Faalde dit vroeger stil, dan leek de knop — vooral op een klein
+    // gsm-scherm waar je de rij niet meteen ziet veranderen — gewoon niets
+    // te doen. Reden hier expliciet tonen i.p.v. gewoon te vertrouwen op
+    // router.refresh() om het verschil zichtbaar te maken.
+    if (!resultaat.succes) {
+      const reden = resultaat.fout === "al_geregistreerd" ? t.beheer.foutAlGeregistreerd : resultaat.fout;
+      window.alert(t.beheer.geefMatch13ToegangMislukt(reden));
+    }
     router.refresh();
   }
 
