@@ -132,12 +132,6 @@ function ReizenPromoBox() {
       href="/petanque-reizen"
       className="mb-3.5 flex items-center gap-2.5 rounded-[10px] border-[1.5px] border-[#1a4480]/30 bg-white p-[1.1rem] text-left transition-all hover:border-[#1a4480] hover:shadow-[0_2px_10px_rgba(26,68,128,0.15)]"
     >
-      <span
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#eff6ff] text-base"
-        aria-hidden
-      >
-        ✈️
-      </span>
       <span className="min-w-0 flex-1 text-[0.83rem] font-bold leading-snug text-donker">{t.nav.reizen}</span>
       <span className="shrink-0 text-[#1a4480]" aria-hidden>
         →
