@@ -17,10 +17,19 @@ export interface AppState {
   // bepaalt de teamgrootte binnen de poules. undefined = Doublet (2), het
   // oorspronkelijke, enige gedrag vóór dit veld bestond.
   pouleTeamSize?: 1 | 2 | 3;
+  // Enkel relevant als format === "poules": speel je, naast de gewone
+  // winnaars-piramide, ook een 2de piramide voor wie er in de poule-fase
+  // uitvliegt ("Consolante" in petanque-vaktermen)? Een bewuste keuze, geen
+  // verplichting — undefined/false = enkel Piramide A, zoals voorheen.
+  speelPiramideB?: boolean;
   teams: Team[];
   rounds: Round[];
   pouleBracket: BracketMatch[];
   knockoutBracket: BracketMatch[];
+  // Optioneel (zie speelPiramideB) en pas toegevoegd nadat er al toernooien
+  // bestonden — undefined betekent gewoon "nog niet gebouwd/niet van
+  // toepassing", niet anders behandelen dan een lege array.
+  knockoutBracketB?: BracketMatch[];
 }
 
 export function defaultAppState(): AppState {
@@ -33,5 +42,6 @@ export function defaultAppState(): AppState {
     rounds: [],
     pouleBracket: [],
     knockoutBracket: [],
+    knockoutBracketB: [],
   };
 }

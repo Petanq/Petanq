@@ -22,7 +22,9 @@ import { isCompleteMatch, isInvalidMatch, isCompleteSubScore, isInvalidSubScore 
 import {
   assignPoules,
   buildKnockoutBracket,
+  buildKnockoutBracketB,
   buildPouleBracket,
+  courtsNeededForKnockout,
   courtsNeededForPoule,
   isTrueBye,
   poulesOf,
@@ -47,12 +49,6 @@ function pouleColor(index: number): string {
   return POULE_COLORS[index % POULE_COLORS.length];
 }
 
-// Bij een beperkt aantal fysieke pleinen (bv. binnenspelen 's winters) mag
-// niet elke wedstrijd van de ronde meteen spelen. Enkel nog-niet-gespeelde,
-// echte wedstrijden (geen BYE) tellen mee voor de wachtrij — een reeds
-// afgewerkte wedstrijd telt niet meer mee, dus zodra die zijn score krijgt,
-// schuift de eerstvolgende wachtende vanzelf door (geen eigen opgeslagen
-// toestand nodig, dit wordt elke render opnieuw berekend).
 // Aantal kolommen voor het Zaalscherm-rooster, in functie van het aantal
 // wedstrijden deze ronde — zo blijft het rooster bij weinig pleinen breed en
 // leesbaar, en schuift het bij veel pleinen tegelijk vanzelf naar meer
@@ -66,6 +62,12 @@ function berekenRoosterKolommen(aantalWedstrijden: number): number {
   return Math.ceil(aantalWedstrijden / 3);
 }
 
+// Bij een beperkt aantal fysieke pleinen (bv. binnenspelen 's winters) mag
+// niet elke wedstrijd van de ronde meteen spelen. Enkel nog-niet-gespeelde,
+// echte wedstrijden (geen BYE) tellen mee voor de wachtrij — een reeds
+// afgewerkte wedstrijd telt niet meer mee, dus zodra die zijn score krijgt,
+// schuift de eerstvolgende wachtende vanzelf door (geen eigen opgeslagen
+// toestand nodig, dit wordt elke render opnieuw berekend).
 function berekenWachtPositie(matches: Match[], i: number, maxPleinen: number | undefined): number {
   const limiet = maxPleinen && maxPleinen > 0 ? maxPleinen : Infinity;
   let actief = 0;
@@ -206,17 +208,25 @@ function BracketColumns({
   numNameOf,
   editable,
   onScore,
+  onWin,
   onClear,
   onCourtChange,
   accent,
+  simpleWinLoss,
 }: {
   matches: BracketMatch[];
   numNameOf: (id: string | null) => ReactNode;
   editable?: boolean;
   onScore?: (matchId: string, side: "scoreA" | "scoreB", value: string) => void;
+  onWin?: (matchId: string, kant: "A" | "B") => void;
   onClear?: (matchId: string) => void;
   onCourtChange?: (matchId: string, court: number) => void;
   accent?: string;
+  // Poule-wedstrijden tellen enkel wie doorgaat, geen echte eindstand — geen
+  // scores intikken dus, gewoon "wint"-knoppen per kant. scoreA/scoreB
+  // worden dan onder de motorkap wel gezet (1 tegen 0), maar die getallen
+  // betekenen niets buiten "wie won" en worden dus ook nooit getoond.
+  simpleWinLoss?: boolean;
 }) {
   const { t } = useTranslation();
   const rounds = Array.from(new Set(matches.map((m) => m.round))).sort((a, b) => a - b);
@@ -259,7 +269,13 @@ function BracketColumns({
                   </div>
                   <div className={"bracket-side" + (aWon ? " winner" : bWon ? " loser" : "")}>
                     <span className="bracket-name">{a ? numNameOf(a) : "?"}</span>
-                    {editable && ready ? (
+                    {simpleWinLoss ? (
+                      editable && ready && !done && (
+                        <button className="bracket-win-btn" onClick={() => onWin?.(m.id, "A")}>
+                          {t.match13.wintKnop}
+                        </button>
+                      )
+                    ) : editable && ready ? (
                       <input
                         type="number"
                         min={0}
@@ -274,7 +290,13 @@ function BracketColumns({
                   {!bye && (
                     <div className={"bracket-side" + (bWon ? " winner" : aWon ? " loser" : "")}>
                       <span className="bracket-name">{b ? numNameOf(b) : "?"}</span>
-                      {editable && ready ? (
+                      {simpleWinLoss ? (
+                        editable && ready && !done && (
+                          <button className="bracket-win-btn" onClick={() => onWin?.(m.id, "B")}>
+                            {t.match13.wintKnop}
+                          </button>
+                        )
+                      ) : editable && ready ? (
                         <input
                           type="number"
                           min={0}
@@ -430,8 +452,20 @@ export function Match13App({
     }
   }
 
-  const { clubName, format, entryFee, totalRounds, maxPleinen, pouleTeamSize, teams, rounds, pouleBracket, knockoutBracket } =
-    state;
+  const {
+    clubName,
+    format,
+    entryFee,
+    totalRounds,
+    maxPleinen,
+    pouleTeamSize,
+    speelPiramideB,
+    teams,
+    rounds,
+    pouleBracket,
+    knockoutBracket,
+  } = state;
+  const knockoutBracketB = state.knockoutBracketB ?? [];
   const isMeli = format === "meli";
   const isPoules = format === "poules";
   const isKwartet = format === "kwartet";
@@ -501,6 +535,14 @@ export function Match13App({
   const finalMatch = knockoutBracket[knockoutBracket.length - 1];
   const champion =
     isPoules && knockoutStarted && finalMatch ? winnerLoserOf(knockoutBracket, finalMatch.id, "winner") : null;
+  // Piramide B ("Consolante") is een aparte, optionele nevenwedstrijd — of
+  // die al dan niet afgelopen is, bepaalt nooit of het TORNOOI zelf klaar
+  // is (dat blijft uitsluitend aan Piramide A).
+  const finalMatchB = knockoutBracketB[knockoutBracketB.length - 1];
+  const championB =
+    isPoules && knockoutBracketB.length > 0 && finalMatchB
+      ? winnerLoserOf(knockoutBracketB, finalMatchB.id, "winner")
+      : null;
 
   const tournamentComplete = isPoules
     ? !!champion
@@ -692,8 +734,11 @@ export function Match13App({
     setTab("zaal");
   }
 
-  // Builds the full knock-out pyramid in one shot from every poule's
-  // qualifiers, once every poule has decided its 2 qualifying spots.
+  // Builds the full knock-out pyramid(en) in one shot from every poule's
+  // qualifiers, once every poule has decided al zijn plaatsen. Piramide B
+  // (de "Consolante" voor wie er in de poule-fase uitvloog) wordt enkel mee
+  // opgebouwd als de organisator dat vooraf koos — plaats 3/4 blijven anders
+  // gewoon ongebruikt, geen aparte piramide.
   function startKnockout() {
     setState((s) => {
       const groups = poulesOf(s.teams.filter((t) => t.present));
@@ -701,39 +746,61 @@ export function Match13App({
       for (const [label, pouleTeams] of groups) {
         qualifiers.push(...qualifiersFromPoule(s.pouleBracket, label, pouleTeams));
       }
-      return { ...s, knockoutBracket: buildKnockoutBracket(qualifiers) };
+      const bracketA = buildKnockoutBracket(qualifiers);
+      const bracketB = s.speelPiramideB
+        ? buildKnockoutBracketB(qualifiers, 1 + courtsNeededForKnockout(qualifiers))
+        : [];
+      return { ...s, knockoutBracket: bracketA, knockoutBracketB: bracketB };
     });
   }
 
+  function bracketKey(which: "poule" | "knockout" | "knockoutB"): "pouleBracket" | "knockoutBracket" | "knockoutBracketB" {
+    return which === "poule" ? "pouleBracket" : which === "knockout" ? "knockoutBracket" : "knockoutBracketB";
+  }
+
   function updateBracketScore(
-    which: "poule" | "knockout",
+    which: "poule" | "knockout" | "knockoutB",
     matchId: string,
     side: "scoreA" | "scoreB",
     value: string
   ) {
     setState((s) => {
-      const key = which === "poule" ? "pouleBracket" : "knockoutBracket";
+      const key = bracketKey(which);
       const n = value === "" ? undefined : Math.min(13, Math.max(0, Number(value)));
-      return { ...s, [key]: s[key].map((m) => (m.id === matchId ? { ...m, [side]: n } : m)) };
+      return { ...s, [key]: (s[key] ?? []).map((m) => (m.id === matchId ? { ...m, [side]: n } : m)) };
     });
+  }
+
+  // De poule-wedstrijden zelf tellen enkel wie doorgaat, geen echte
+  // eindstand — daarom hier gewoon "wint"-knoppen i.p.v. scores intikken.
+  // Onder de motorkap zet dit toch scoreA/scoreB (1 tegen 0), want alle
+  // bracket-logica (winnerLoserOf, ...) steunt daarop — enkel de manier
+  // waarop de gebruiker dat invult verandert.
+  function updatePouleWinner(matchId: string, kant: "A" | "B") {
+    setState((s) => ({
+      ...s,
+      pouleBracket: s.pouleBracket.map((m) =>
+        m.id === matchId ? { ...m, scoreA: kant === "A" ? 1 : 0, scoreB: kant === "B" ? 1 : 0 } : m
+      ),
+    }));
   }
 
   // Courts are normally assigned once and never touched again — but a
   // physical plein can be out of use on the day itself, so let the
   // organizer override any match's plein by hand if that's ever needed.
-  function updateBracketCourt(which: "poule" | "knockout", matchId: string, court: number) {
+  function updateBracketCourt(which: "poule" | "knockout" | "knockoutB", matchId: string, court: number) {
     setState((s) => {
-      const key = which === "poule" ? "pouleBracket" : "knockoutBracket";
-      return { ...s, [key]: s[key].map((m) => (m.id === matchId ? { ...m, court } : m)) };
+      const key = bracketKey(which);
+      return { ...s, [key]: (s[key] ?? []).map((m) => (m.id === matchId ? { ...m, court } : m)) };
     });
   }
 
-  function clearBracketMatch(which: "poule" | "knockout", matchId: string) {
+  function clearBracketMatch(which: "poule" | "knockout" | "knockoutB", matchId: string) {
     setState((s) => {
-      const key = which === "poule" ? "pouleBracket" : "knockoutBracket";
+      const key = bracketKey(which);
       return {
         ...s,
-        [key]: s[key].map((m) => (m.id === matchId ? { ...m, scoreA: undefined, scoreB: undefined } : m)),
+        [key]: (s[key] ?? []).map((m) => (m.id === matchId ? { ...m, scoreA: undefined, scoreB: undefined } : m)),
       };
     });
   }
@@ -876,7 +943,7 @@ export function Match13App({
   function resetAll() {
     if (!window.confirm(t.match13.wisBevestiging)) return;
     archiveerMatch13Resultaten(tournamentId, state);
-    setState((s) => ({ ...s, teams: [], rounds: [], pouleBracket: [], knockoutBracket: [] }));
+    setState((s) => ({ ...s, teams: [], rounds: [], pouleBracket: [], knockoutBracket: [], knockoutBracketB: [] }));
     setTab("opzet");
   }
 
@@ -1619,6 +1686,22 @@ export function Match13App({
                   </div>
                 </div>
               )}
+              {isPoules && (
+                <div className="field">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={!!speelPiramideB}
+                      disabled={knockoutStarted}
+                      onChange={(e) => setState((s) => ({ ...s, speelPiramideB: e.target.checked }))}
+                    />
+                    {t.match13.speelPiramideB}
+                  </label>
+                  <div className="hint">
+                    {knockoutStarted ? t.match13.piramideBVastgezet : t.match13.hintPiramideB}
+                  </div>
+                </div>
+              )}
               <div className="field">
                 <label>{t.match13.inlegPerTeam}</label>
                 <input
@@ -1977,7 +2060,8 @@ export function Match13App({
                           matches={pouleBracket.filter((m) => m.poule === label)}
                           numNameOf={numNameOf}
                           editable
-                          onScore={(id, side, v) => updateBracketScore("poule", id, side, v)}
+                          simpleWinLoss
+                          onWin={(id, kant) => updatePouleWinner(id, kant)}
                           onClear={(id) => clearBracketMatch("poule", id)}
                           onCourtChange={(id, court) => updateBracketCourt("poule", id, court)}
                           accent={accent}
@@ -2002,14 +2086,36 @@ export function Match13App({
             )}
 
             {knockoutStarted && (
-              <BracketColumns
-                matches={knockoutBracket}
-                numNameOf={numNameOf}
-                editable
-                onScore={(id, side, v) => updateBracketScore("knockout", id, side, v)}
-                onClear={(id) => clearBracketMatch("knockout", id)}
-                onCourtChange={(id, court) => updateBracketCourt("knockout", id, court)}
-              />
+              <>
+                {knockoutBracketB.length > 0 && <h3 className="piramide-titel">{t.match13.piramideA}</h3>}
+                <BracketColumns
+                  matches={knockoutBracket}
+                  numNameOf={numNameOf}
+                  editable
+                  onScore={(id, side, v) => updateBracketScore("knockout", id, side, v)}
+                  onClear={(id) => clearBracketMatch("knockout", id)}
+                  onCourtChange={(id, court) => updateBracketCourt("knockout", id, court)}
+                />
+              </>
+            )}
+
+            {knockoutBracketB.length > 0 && (
+              <>
+                <h3 className="piramide-titel">{t.match13.piramideB}</h3>
+                {championB && (
+                  <div className="finish-banner">
+                    {t.match13.kampioenPiramideBLabel} {numNameOf(championB)}!
+                  </div>
+                )}
+                <BracketColumns
+                  matches={knockoutBracketB}
+                  numNameOf={numNameOf}
+                  editable
+                  onScore={(id, side, v) => updateBracketScore("knockoutB", id, side, v)}
+                  onClear={(id) => clearBracketMatch("knockoutB", id)}
+                  onCourtChange={(id, court) => updateBracketCourt("knockoutB", id, court)}
+                />
+              </>
             )}
           </section>
         )}
@@ -2531,6 +2637,7 @@ export function Match13App({
                           <BracketColumns
                             matches={pouleBracket.filter((m) => m.poule === label)}
                             numNameOf={numNameOf}
+                            simpleWinLoss
                             accent={accent}
                           />
                           {usesBarrageBracket(pouleTeams.length) && (
@@ -2554,6 +2661,18 @@ export function Match13App({
                     <>
                       <h3>{t.match13.knockoutHeader}</h3>
                       <BracketColumns matches={knockoutBracket} numNameOf={numNameOf} />
+                    </>
+                  )}
+
+                  {knockoutBracketB.length > 0 && (
+                    <>
+                      <h3>{t.match13.piramideB}</h3>
+                      {championB && (
+                        <div className="finish-banner">
+                          {t.match13.kampioenPiramideBLabel} {numNameOf(championB)}!
+                        </div>
+                      )}
+                      <BracketColumns matches={knockoutBracketB} numNameOf={numNameOf} />
                     </>
                   )}
                 </>

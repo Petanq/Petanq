@@ -303,6 +303,25 @@
   font-family: inherit;
   color: var(--ink);
 }
+/* Een checkbox met tekst ernaast (bv. "Speel ook Piramide B?") heeft niets
+   aan de standaard-labelopmaak hierboven (uppercase, blok, klein) — die is
+   voor een label BOVEN een veld, niet een label ERNAAST. */
+.match13-scope .field label.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  margin-bottom: 0;
+}
+.match13-scope .field label.checkbox-label input {
+  width: auto;
+  accent-color: var(--accent);
+}
 .match13-scope .field .value {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -1224,6 +1243,27 @@
 .match13-scope .bracket-score {
   font-variant-numeric: tabular-nums;
   font-weight: 800;
+}
+.match13-scope .bracket-win-btn {
+  flex-shrink: 0;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-muted);
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.match13-scope .bracket-win-btn:hover {
+  border-color: var(--live);
+  color: var(--live);
+  background: var(--live-bg);
+}
+.match13-scope .piramide-titel {
+  margin: 1.6rem 0 0.6rem;
 }
 .match13-scope .poule-qualifiers {
   flex: 0 0 190px;

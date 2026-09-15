@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   assignPoules,
   buildKnockoutBracket,
+  buildKnockoutBracketB,
   buildPouleBracket,
   buildPouleOf3Bracket,
   buildPouleOf4Bracket,
   buildRoundRobinBracket,
+  courtsNeededForKnockout,
   courtsNeededForPoule,
   playableMatches,
   poulesOf,
@@ -128,19 +130,24 @@ describe("buildPouleOf4Bracket — winners/losers/barrage", () => {
 
     expect(pouleQualifiersReady(matches, "A", teams)).toBe(true);
     const qualifiers = qualifiersFromBarrageBracket(matches, "A");
-    expect(qualifiers).toHaveLength(2);
+    // Alle 4 teams krijgen een plaats: 1+2 voeden Piramide A (de winnaars),
+    // 3+4 voeden de optionele Piramide B (de verliezers/"Consolante").
+    expect(qualifiers).toHaveLength(4);
     expect(qualifiers.filter((q) => q.place === 1)).toHaveLength(1);
     expect(qualifiers.filter((q) => q.place === 2)).toHaveLength(1);
-    // the direct qualifier is whoever won A-WIN; the barrage winner is the other qualifier.
+    expect(qualifiers.filter((q) => q.place === 3)).toHaveLength(1);
+    expect(qualifiers.filter((q) => q.place === 4)).toHaveLength(1);
+    // the direct qualifier is whoever won A-WIN; the barrage winner is the other Piramide-A qualifier.
     const directWinner = winnerLoserOf(matches, "A-WIN", "winner");
     const barrageWinner = winnerLoserOf(matches, "A-BAR", "winner");
-    expect(new Set(qualifiers.map((q) => q.teamId))).toEqual(new Set([directWinner, barrageWinner]));
-    // whoever lost the barrage, and whoever lost the losers' match, are eliminated —
-    // i.e. never appear among the qualifiers.
+    const topTwo = qualifiers.filter((q) => q.place === 1 || q.place === 2).map((q) => q.teamId);
+    expect(new Set(topTwo)).toEqual(new Set([directWinner, barrageWinner]));
+    // whoever lost the barrage (place 3), and whoever lost the losers' match
+    // (place 4), are out of Piramide A but still show up for Piramide B.
     const barrageLoser = winnerLoserOf(matches, "A-BAR", "loser");
     const lossLoser = winnerLoserOf(matches, "A-LOSS", "loser");
-    expect(qualifiers.map((q) => q.teamId)).not.toContain(barrageLoser);
-    expect(qualifiers.map((q) => q.teamId)).not.toContain(lossLoser);
+    expect(qualifiers.find((q) => q.place === 3)!.teamId).toBe(barrageLoser);
+    expect(qualifiers.find((q) => q.place === 4)!.teamId).toBe(lossLoser);
   });
 });
 
@@ -183,7 +190,11 @@ describe("buildPouleOf3Bracket — winners/barrage, no losers' match", () => {
     const qualifiers = qualifiersFromBarrageBracket(matches, "A");
     expect(qualifiers.find((q) => q.place === 1)!.teamId).toBe(byeTeam);
     expect(qualifiers.find((q) => q.place === 2)!.teamId).toBe(m1.teamB);
-    expect(qualifiers.map((q) => q.teamId)).not.toContain(m1.teamA); // m1.teamA lost the winners' match and then the barrage
+    // m1.teamA lost the winners' match and then the barrage — place 3 (for
+    // Piramide B), not eliminated outright. A pool of 3 has no losers'
+    // match at all, so there's simply no place 4 here.
+    expect(qualifiers.find((q) => q.place === 3)!.teamId).toBe(m1.teamA);
+    expect(qualifiers.find((q) => q.place === 4)).toBeUndefined();
   });
 });
 
@@ -196,7 +207,7 @@ describe("buildRoundRobinBracket — the rare non-3/4 pool size fallback (n=5)",
     expect(playableMatches(matches)).toHaveLength(10);
   });
 
-  it("ranks the top 2 by matchpunten/saldo once every match is scored", () => {
+  it("ranks every team by matchpunten/saldo once every match is scored (up to 4 places)", () => {
     // Only 3 teams here (pouleQualifiersReady treats 3 as a barrage pool, so
     // it isn't exercised in this test) — this test is specifically about
     // qualifiersFromRoundRobin's ranking, independent of pool size.
@@ -206,9 +217,12 @@ describe("buildRoundRobinBracket — the rare non-3/4 pool size fallback (n=5)",
     matches = score(matches, "B-RR-0-2", 13, 1); // T1 beats T3
     matches = score(matches, "B-RR-1-2", 13, 9); // T2 beats T3
     const qualifiers = qualifiersFromRoundRobin(matches, "B", teams);
-    expect(qualifiers.map((q) => q.teamId)).toEqual(["T1", "T2"]);
+    // Alle 3 teams krijgen een plaats (gekapt op maximum 4) — plaats 1/2
+    // voeden Piramide A, de rest (hier enkel plaats 3) voedt Piramide B.
+    expect(qualifiers.map((q) => q.teamId)).toEqual(["T1", "T2", "T3"]);
     expect(qualifiers[0].place).toBe(1);
     expect(qualifiers[1].place).toBe(2);
+    expect(qualifiers[2].place).toBe(3);
   });
 });
 
@@ -430,5 +444,88 @@ describe("buildKnockoutBracket — static, per-half plein blocks with the final 
     const topR2Court = top.find((m) => m.round === 2)!.court;
     expect(new Set(topR1Courts).size).toBe(2);
     expect(topR2Court).toBe(Math.min(...(topR1Courts as number[])));
+  });
+});
+
+describe("buildKnockoutBracketB — the optional 'Consolante' for poule-fase losers", () => {
+  // 3 pools of 4 => plaats 3 en 4 per poule, 3 van elk = 6 total, net als
+  // Piramide A hierboven maar dan gevoed door de andere twee plaatsen.
+  const qualifiers = [
+    { teamId: "A-first", poule: "A", place: 1 as const, tiebreak: 0 },
+    { teamId: "A-second", poule: "A", place: 2 as const, tiebreak: 0 },
+    { teamId: "A-third", poule: "A", place: 3 as const, tiebreak: 0 },
+    { teamId: "A-fourth", poule: "A", place: 4 as const, tiebreak: 0 },
+    { teamId: "B-first", poule: "B", place: 1 as const, tiebreak: 0 },
+    { teamId: "B-second", poule: "B", place: 2 as const, tiebreak: 0 },
+    { teamId: "B-third", poule: "B", place: 3 as const, tiebreak: 0 },
+    { teamId: "B-fourth", poule: "B", place: 4 as const, tiebreak: 0 },
+    { teamId: "C-first", poule: "C", place: 1 as const, tiebreak: 0 },
+    { teamId: "C-second", poule: "C", place: 2 as const, tiebreak: 0 },
+    { teamId: "C-third", poule: "C", place: 3 as const, tiebreak: 0 },
+    { teamId: "C-fourth", poule: "C", place: 4 as const, tiebreak: 0 },
+  ];
+
+  it("is seeded from place 3/4 only, never touching place 1/2 (Piramide A's own teams)", () => {
+    const bracket = buildKnockoutBracketB(qualifiers, 10);
+    const idsInB = new Set(
+      bracket.flatMap((m) => [m.teamA, m.teamB]).filter((id): id is string => id !== null)
+    );
+    expect(idsInB.has("A-first")).toBe(false);
+    expect(idsInB.has("A-second")).toBe(false);
+    expect(idsInB.has("A-third")).toBe(true);
+    expect(idsInB.has("A-fourth")).toBe(true);
+  });
+
+  it("keeps each pool's two Piramide-B qualifiers in opposite halves, so they only meet in Piramide B's own final", () => {
+    const bracket = buildKnockoutBracketB(qualifiers, 10);
+    let matches = bracket;
+    const meetings: [string, string][] = [];
+    for (let guard = 0; guard < 10; guard++) {
+      const playable = playableMatches(matches);
+      if (playable.length === 0) break;
+      for (const m of playable) {
+        const [a, b] = resolvedTeams(matches, m);
+        meetings.push([a!, b!]);
+        const aWins = a! < b!;
+        matches = matches.map((x) => (x.id === m.id ? { ...x, scoreA: aWins ? 13 : 5, scoreB: aWins ? 5 : 13 } : x));
+      }
+    }
+    const samePoolMeetingsBeforeFinal = meetings
+      .slice(0, -1)
+      .filter(([a, b]) => a.split("-")[0] === b.split("-")[0]);
+    expect(samePoolMeetingsBeforeFinal).toEqual([]);
+  });
+
+  it("never reuses a plein Piramide A already claimed — everything starts at the given courtStart", () => {
+    const courtStart = 10;
+    const bracket = buildKnockoutBracketB(qualifiers, courtStart);
+    expect(bracket.every((m) => (m.court ?? courtStart) >= courtStart)).toBe(true);
+  });
+
+  it("has its own, separate id namespace (KOB-...) so it can never collide with Piramide A's (KO-...)", () => {
+    const bracket = buildKnockoutBracketB(qualifiers, 10);
+    expect(bracket.every((m) => m.id.startsWith("KOB-"))).toBe(true);
+  });
+});
+
+describe("courtsNeededForKnockout", () => {
+  it("adds up plein 1 (the final) plus both halves' own needs, so Piramide B knows where to start", () => {
+    const qualifiers = [
+      { teamId: "A-first", poule: "A", place: 1 as const, tiebreak: 0 },
+      { teamId: "A-second", poule: "A", place: 2 as const, tiebreak: 0 },
+      { teamId: "B-first", poule: "B", place: 1 as const, tiebreak: 0 },
+      { teamId: "B-second", poule: "B", place: 2 as const, tiebreak: 0 },
+      { teamId: "C-first", poule: "C", place: 1 as const, tiebreak: 0 },
+      { teamId: "C-second", poule: "C", place: 2 as const, tiebreak: 0 },
+    ];
+    // Same shape as the "gives each half its own dedicated ... block of
+    // pleinen" test above: half size 3 each -> 2 pleinen per half + plein 1.
+    expect(courtsNeededForKnockout(qualifiers)).toBe(1 + 2 + 2);
+
+    const bracketA = buildKnockoutBracket(qualifiers);
+    const bracketB = buildKnockoutBracketB(qualifiers, courtsNeededForKnockout(qualifiers));
+    const courtsA = new Set(bracketA.map((m) => m.court));
+    const courtsB = new Set(bracketB.map((m) => m.court));
+    expect([...courtsA].every((c) => !courtsB.has(c))).toBe(true);
   });
 });

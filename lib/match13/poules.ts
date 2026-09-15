@@ -159,17 +159,6 @@ export function autoByeMatches(matches: BracketMatch[]): BracketMatch[] {
   return matches.filter((m) => isTrueBye(m) && resolvedTeams(matches, m)[0] !== null);
 }
 
-function totalPointDiff(matches: BracketMatch[], teamId: string): number {
-  let diff = 0;
-  for (const m of matches) {
-    if (m.scoreA === undefined || m.scoreB === undefined) continue;
-    const [a, b] = resolvedTeams(matches, m);
-    if (a === teamId) diff += m.scoreA - m.scoreB;
-    else if (b === teamId) diff += m.scoreB - m.scoreA;
-  }
-  return diff;
-}
-
 // ---- Pool of 4: the winners/losers/barrage mini-bracket ----
 //
 // Real club court assignment, not a global renumbering: each poule keeps 2
@@ -324,28 +313,41 @@ export function pouleQualifiersReady(matches: BracketMatch[], poule: string, pou
 export interface PouleQualifier {
   teamId: string;
   poule: string;
-  place: 1 | 2;
+  place: 1 | 2 | 3 | 4;
   tiebreak: number;
 }
 
-/** The pool's winner (place 1, direct 2-0 qualification) and its barrage winner (place 2) — pools of 3 and 4 alike. */
+/**
+ * Every team a pool of 3 or 4 actually produces a result for: place 1 (the
+ * winners'-match winner, direct 2-0) and place 2 (the barrage winner) feed
+ * Piramide A; place 3 (the barrage loser — won their first match) and place
+ * 4 (the losers'-match loser — never won a match) feed the optional
+ * Piramide B. A pool of 3 has no losers'-match (only one round-1 loser to
+ * begin with), so it never produces a place 4 — `winnerLoserOf` simply
+ * returns null for an id that doesn't exist in that pool's bracket.
+ */
 export function qualifiersFromBarrageBracket(matches: BracketMatch[], poule: string): PouleQualifier[] {
-  const winnerId = winnerLoserOf(matches, `${poule}-WIN`, "winner");
-  const barrageWinnerId = winnerLoserOf(matches, `${poule}-BAR`, "winner");
+  const ids: Record<1 | 2 | 3 | 4, string | null> = {
+    1: winnerLoserOf(matches, `${poule}-WIN`, "winner"),
+    2: winnerLoserOf(matches, `${poule}-BAR`, "winner"),
+    3: winnerLoserOf(matches, `${poule}-BAR`, "loser"),
+    4: winnerLoserOf(matches, `${poule}-LOSS`, "loser"),
+  };
   const qualifiers: PouleQualifier[] = [];
-  if (winnerId) qualifiers.push({ teamId: winnerId, poule, place: 1, tiebreak: totalPointDiff(matches, winnerId) });
-  if (barrageWinnerId) {
-    qualifiers.push({
-      teamId: barrageWinnerId,
-      poule,
-      place: 2,
-      tiebreak: totalPointDiff(matches, barrageWinnerId),
-    });
-  }
+  ([1, 2, 3, 4] as const).forEach((place) => {
+    const teamId = ids[place];
+    // Geen echt puntenverschil meer om op te sorteren zodra de poule-fase
+    // met simpele winst/verlies-knoppen gespeeld wordt (zie updatePouleWinner
+    // in Match13App.tsx) — tiebreak blijft daarom gewoon 0, en de stabiele
+    // sort hieronder in buildPyramideVanPlaatsen valt dan vanzelf terug op
+    // poule-volgorde (A, B, C, ...), een even eerlijke, deterministische
+    // volgorde zonder score-data nodig te hebben.
+    if (teamId) qualifiers.push({ teamId, poule, place, tiebreak: 0 });
+  });
   return qualifiers;
 }
 
-/** Top 2 of a round-robin pool, ranked the same way as the rest of the app (matchpunten then saldo). */
+/** Volledige rangschikking van een round-robin poule (plaats 1 t.e.m. 4) — dezelfde matchpunten/saldo-regel als overal elders. */
 export function qualifiersFromRoundRobin(
   matches: BracketMatch[],
   poule: string,
@@ -359,8 +361,8 @@ export function qualifiersFromRoundRobin(
   };
   const standings = computeStandings(pouleTeams, [fakeRound]);
   return standings
-    .slice(0, 2)
-    .map((s, i) => ({ teamId: s.teamId, poule, place: (i === 0 ? 1 : 2) as 1 | 2, tiebreak: s.saldo }));
+    .slice(0, 4)
+    .map((s, i) => ({ teamId: s.teamId, poule, place: (i + 1) as 1 | 2 | 3 | 4, tiebreak: s.saldo }));
 }
 
 export function qualifiersFromPoule(matches: BracketMatch[], poule: string, pouleTeams: Team[]): PouleQualifier[] {
@@ -479,57 +481,96 @@ function buildSingleBracket(seeds: string[], idPrefix: string, courtStart: numbe
 }
 
 /**
- * Builds the entire knockout pyramid in one shot, from the qualifiers of
- * every pool. Place-1 qualifiers (direct, 2-0) seed one half of the pyramid,
- * place-2 qualifiers (via the barrage) seed the other half — since the two
- * qualifiers from any one pool always land one in each half, they can only
- * possibly meet again in the grand final, never earlier.
+ * Builds one full pyramid from two of the four poule-places, e.g. plaats 1+2
+ * (Piramide A, de winnaars) of plaats 3+4 (Piramide B, de verliezers/
+ * "Consolante" — een erkend petanque-format, een parallelle troostronde
+ * zodat wie er in de poule uitvliegt toch nog een volwaardige tweede ronde
+ * heeft). Beide helften worden op exact dezelfde manier opgebouwd: de
+ * hoogste van de 2 plaatsen zaait de ene helft, de laagste de andere — de 2
+ * teams uit eenzelfde poule komen zo pas in DEZE piramide's eigen finale
+ * terug tegen elkaar, nooit eerder.
  */
-export function buildKnockoutBracket(qualifiers: PouleQualifier[]): BracketMatch[] {
-  const firstPlace = qualifiers
-    .filter((q) => q.place === 1)
+function buildPyramideVanPlaatsen(
+  qualifiers: PouleQualifier[],
+  plaatsTop: 1 | 2 | 3 | 4,
+  plaatsOnder: 1 | 2 | 3 | 4,
+  idPrefix: string,
+  courtStart: number,
+  finaleCourt: number
+): BracketMatch[] {
+  const top = qualifiers
+    .filter((q) => q.place === plaatsTop)
     .sort((a, b) => b.tiebreak - a.tiebreak)
     .map((q) => q.teamId);
-  const secondPlace = qualifiers
-    .filter((q) => q.place === 2)
+  const onder = qualifiers
+    .filter((q) => q.place === plaatsOnder)
     .sort((a, b) => b.tiebreak - a.tiebreak)
     .map((q) => q.teamId);
 
-  // Plein 1 is reserved for the grand final alone; the two halves get their
-  // own dedicated, non-overlapping blocks of pleinen after that.
-  const top = buildSingleBracket(firstPlace, "KO-A", 2);
-  const bottom = buildSingleBracket(secondPlace, "KO-B", 2 + courtsNeededForHalf(firstPlace.length));
+  const topBracket = buildSingleBracket(top, `${idPrefix}-A`, courtStart);
+  const onderBracket = buildSingleBracket(onder, `${idPrefix}-B`, courtStart + courtsNeededForHalf(top.length));
 
   const topRef: BracketRef | { teamId: string } | null =
-    top.length > 0
-      ? { matchId: top[top.length - 1].id, result: "winner" }
-      : firstPlace.length === 1
-      ? { teamId: firstPlace[0] }
+    topBracket.length > 0
+      ? { matchId: topBracket[topBracket.length - 1].id, result: "winner" }
+      : top.length === 1
+      ? { teamId: top[0] }
       : null;
-  const bottomRef: BracketRef | { teamId: string } | null =
-    bottom.length > 0
-      ? { matchId: bottom[bottom.length - 1].id, result: "winner" }
-      : secondPlace.length === 1
-      ? { teamId: secondPlace[0] }
+  const onderRef: BracketRef | { teamId: string } | null =
+    onderBracket.length > 0
+      ? { matchId: onderBracket[onderBracket.length - 1].id, result: "winner" }
+      : onder.length === 1
+      ? { teamId: onder[0] }
       : null;
 
-  if (!topRef && !bottomRef) return [];
-  if (!bottomRef) return top;
-  if (!topRef) return bottom;
+  if (!topRef && !onderRef) return [];
+  if (!onderRef) return topBracket;
+  if (!topRef) return onderBracket;
 
-  if (top.length > 0) top[top.length - 1] = { ...top[top.length - 1], label: "Halve finale" };
-  if (bottom.length > 0) bottom[bottom.length - 1] = { ...bottom[bottom.length - 1], label: "Halve finale" };
+  if (topBracket.length > 0) topBracket[topBracket.length - 1] = { ...topBracket[topBracket.length - 1], label: "Halve finale" };
+  if (onderBracket.length > 0)
+    onderBracket[onderBracket.length - 1] = { ...onderBracket[onderBracket.length - 1], label: "Halve finale" };
 
-  const maxRound = Math.max(top[top.length - 1]?.round ?? 0, bottom[bottom.length - 1]?.round ?? 0);
+  const maxRound = Math.max(topBracket[topBracket.length - 1]?.round ?? 0, onderBracket[onderBracket.length - 1]?.round ?? 0);
   const grandFinal: BracketMatch = {
-    id: "KO-FINAL",
+    id: `${idPrefix}-FINAL`,
     round: maxRound + 1,
     label: "Finale",
-    court: 1,
+    court: finaleCourt,
     teamA: "teamId" in topRef ? topRef.teamId : null,
-    teamB: "teamId" in bottomRef ? bottomRef.teamId : null,
+    teamB: "teamId" in onderRef ? onderRef.teamId : null,
     sourceA: "matchId" in topRef ? topRef : undefined,
-    sourceB: "matchId" in bottomRef ? bottomRef : undefined,
+    sourceB: "matchId" in onderRef ? onderRef : undefined,
   };
-  return [...top, ...bottom, grandFinal];
+  return [...topBracket, ...onderBracket, grandFinal];
+}
+
+/**
+ * Builds the entire knockout pyramid (Piramide A) in one shot, from the
+ * qualifiers of every pool. Place-1 qualifiers (direct, 2-0) seed one half
+ * of the pyramid, place-2 qualifiers (via the barrage) seed the other half —
+ * since the two qualifiers from any one pool always land one in each half,
+ * they can only possibly meet again in the grand final, never earlier.
+ */
+export function buildKnockoutBracket(qualifiers: PouleQualifier[]): BracketMatch[] {
+  // Plein 1 is reserved for de grand final van Piramide A alleen.
+  return buildPyramideVanPlaatsen(qualifiers, 1, 2, "KO", 2, 1);
+}
+
+/**
+ * Optionele "Piramide B" (Consolante): dezelfde opbouw als Piramide A, maar
+ * gevoed door plaats 3 en 4 van elke poule — de teams die er in de poule-
+ * fase uitvlogen. `courtStart` moet na Piramide A's eigen pleinen beginnen,
+ * zodat er nooit een plein dubbel gebruikt wordt.
+ */
+export function buildKnockoutBracketB(qualifiers: PouleQualifier[], courtStart: number): BracketMatch[] {
+  return buildPyramideVanPlaatsen(qualifiers, 3, 4, "KOB", courtStart, courtStart);
+}
+
+/** Hoeveel pleinen Piramide A in totaal nodig heeft — zodat Piramide B daarna, zonder overlap, kan verderstarten. */
+export function courtsNeededForKnockout(qualifiers: PouleQualifier[]): number {
+  const firstPlace = qualifiers.filter((q) => q.place === 1).length;
+  const secondPlace = qualifiers.filter((q) => q.place === 2).length;
+  if (firstPlace + secondPlace <= 1) return 0;
+  return 1 + courtsNeededForHalf(firstPlace) + courtsNeededForHalf(secondPlace);
 }
