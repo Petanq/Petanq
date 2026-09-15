@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { Categorie, Formule, Speelvorm, Club, KwalificatieDatum } from "@/lib/types";
-import { toernooiIndienen } from "@/actions/toernooien";
+import { toernooiIndienen, BestaandDubbelTornooi } from "@/actions/toernooien";
 import { uploadNaarStorage } from "@/lib/upload-bestand";
 import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
 import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
@@ -53,6 +53,7 @@ export function TournamentForm() {
   const { t, taal } = useTranslation();
   const [status, setStatus] = useState<"idle" | "bezig" | "ok" | "fout">("idle");
   const [foutReden, setFoutReden] = useState<string | null>(null);
+  const [bestaandDubbel, setBestaandDubbel] = useState<BestaandDubbelTornooi | null>(null);
 
   const [naamIndiener, setNaamIndiener] = useState("");
   const [datum, setDatum] = useState("");
@@ -306,6 +307,7 @@ export function TournamentForm() {
     }
 
     setStatus("bezig");
+    setBestaandDubbel(null);
 
     if (reeksModus) {
       const items = herhaalDatums.filter((d) => d.datum);
@@ -313,6 +315,7 @@ export function TournamentForm() {
         const resultaat = await toernooiIndienen(gedeeldeVelden(item.datum, item), taal);
         if (!resultaat.succes) {
           setFoutReden(resultaat.fout);
+          setBestaandDubbel(resultaat.bestaand ?? null);
           setStatus("fout");
           return;
         }
@@ -325,6 +328,7 @@ export function TournamentForm() {
     const resultaat = await toernooiIndienen(gedeeldeVelden(datum), taal);
     if (!resultaat.succes) {
       setFoutReden(resultaat.fout);
+      setBestaandDubbel(resultaat.bestaand ?? null);
       setStatus("fout");
       return;
     }
@@ -338,6 +342,23 @@ export function TournamentForm() {
       return;
     }
     setFoutReden(null);
+    setStatus("ok");
+  }
+
+  // Enkel voor de gewone (niet-reeks) inzending: de indiener heeft de
+  // bestaande affiche bekeken en bevestigt dat het toch om een ander
+  // tornooi gaat, dus verstuur zonder de dubbel-check.
+  async function verstuurTochOndanksDubbel() {
+    setStatus("bezig");
+    const resultaat = await toernooiIndienen(gedeeldeVelden(datum), taal, true);
+    if (!resultaat.succes) {
+      setFoutReden(resultaat.fout);
+      setBestaandDubbel(resultaat.bestaand ?? null);
+      setStatus("fout");
+      return;
+    }
+    setFoutReden(null);
+    setBestaandDubbel(null);
     setStatus("ok");
   }
 
@@ -768,7 +789,37 @@ export function TournamentForm() {
             speelvorm === "rondes" ? aantalRonden : aantalPoules,
           ].some((v) => !v) && <p className="text-sm font-medium text-rood-2">{t.form.foutVerplichteVelden}</p>}
 
-        {status === "fout" && (
+        {status === "fout" && foutReden === "dubbel_toernooi" && bestaandDubbel && (
+          <div className="rounded-md border border-[#fecaca] bg-[#fef2f2] p-3 text-sm text-rood-2">
+            <p className="font-semibold">{t.form.foutDubbel}</p>
+            <p className="mt-1 text-donker">
+              {(taal === "fr" ? bestaandDubbel.naam_fr : bestaandDubbel.naam_nl) || bestaandDubbel.naam_nl}
+              {" — "}
+              {new Date(bestaandDubbel.datum).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE")}
+              {" — "}
+              {bestaandDubbel.clubnaam}
+            </p>
+            {bestaandDubbel.affiche_url && (
+              <a href={bestaandDubbel.affiche_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">
+                <img
+                  src={bestaandDubbel.affiche_url}
+                  alt=""
+                  className="max-h-48 rounded-md border border-rand"
+                />
+              </a>
+            )}
+            {!reeksModus && (
+              <button
+                type="button"
+                onClick={verstuurTochOndanksDubbel}
+                className="mt-3 rounded-md border border-rood-2 px-3 py-1.5 text-sm font-semibold text-rood-2 transition-all hover:bg-[#fecaca] active:scale-95"
+              >
+                {t.form.knopTochVersturen}
+              </button>
+            )}
+          </div>
+        )}
+        {status === "fout" && !(foutReden === "dubbel_toernooi" && bestaandDubbel) && (
           <p className="text-sm font-medium text-rood-2">
             {foutReden === "dubbel_toernooi"
               ? t.form.foutDubbel

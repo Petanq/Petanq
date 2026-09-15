@@ -247,7 +247,8 @@ const nl = {
     bezigMetVersturen: "Bezig met versturen...",
     verzonden: "Bedankt! Je toernooi is ontvangen en wordt binnen 48 uur bekeken.",
     fout: "Er ging iets mis bij het versturen. Probeer het later opnieuw.",
-    foutDubbel: "Dit toernooi (zelfde club, datum en naam) staat al in de kalender.",
+    foutDubbel: "Dit lijkt al in de kalender te staan — controleer hieronder of het om hetzelfde tornooi gaat:",
+    knopTochVersturen: "Toch versturen — dit is een ander tornooi",
     foutOngeldigeInvoer:
       "Er staat iets ongeldig in het formulier — controleer zeker of alle datums (ook de schiftingsdata) niet per ongeluk in het verleden liggen.",
     foutVerplichteVelden: "Vul de rood omrande velden nog in voor je verstuurt.",
@@ -932,7 +933,8 @@ const fr: typeof nl = {
     bezigMetVersturen: "Envoi en cours...",
     verzonden: "Merci ! Votre tournoi a été reçu et sera examiné sous 48 heures.",
     fout: "Une erreur est survenue lors de l'envoi. Réessayez plus tard.",
-    foutDubbel: "Ce tournoi (même club, date et nom) figure déjà dans le calendrier.",
+    foutDubbel: "Celui-ci semble déjà figurer dans le calendrier — vérifiez ci-dessous s'il s'agit du même tournoi :",
+    knopTochVersturen: "Envoyer quand même — c'est un autre tournoi",
     foutOngeldigeInvoer:
       "Un champ du formulaire n'est pas valide — vérifiez que toutes les dates (y compris les dates d'éliminatoires) ne sont pas accidentellement dans le passé.",
     foutVerplichteVelden: "Remplissez les champs entourés en rouge avant d'envoyer.",

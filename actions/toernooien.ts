@@ -12,11 +12,22 @@ import { siteUrl } from "@/lib/site-url";
 import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
 import { Provincie } from "@/lib/provincies";
 
-export type ToernooiActieResultaat = { succes: true } | { succes: false; fout: string };
+export type BestaandDubbelTornooi = {
+  naam_nl: string;
+  naam_fr: string;
+  datum: string;
+  clubnaam: string;
+  affiche_url: string | null;
+};
+
+export type ToernooiActieResultaat =
+  | { succes: true }
+  | { succes: false; fout: string; bestaand?: BestaandDubbelTornooi };
 
 export async function toernooiIndienen(
   input: unknown,
-  taalFormulier: "nl" | "fr"
+  taalFormulier: "nl" | "fr",
+  negeerDubbelCheck?: boolean
 ): Promise<ToernooiActieResultaat> {
   const parsed = toernooiSchema.safeParse(input);
   if (!parsed.success) {
@@ -35,28 +46,30 @@ export async function toernooiIndienen(
   // nodig omdat een anonieme indiener via RLS geen nog-niet-goedgekeurde
   // tornooien mag lezen, maar we willen ook dubbels tussen twee "in
   // behandeling"-inzendingen tegenhouden, niet enkel tegen al goedgekeurde.
-  const serviceClient = createServiceRoleClient();
-  let dubbelCheck = serviceClient
-    .from("toernooien")
-    .select("id")
-    .eq("datum", data.datum)
-    .eq("categorie", data.categorie)
-    .eq("formule", data.formule)
-    .eq("speelvorm", data.speelvorm)
-    .is("verwijderd_op", null)
-    .neq("status", "geweigerd");
-  dubbelCheck =
-    data.speelvorm === "rondes"
-      ? dubbelCheck.eq("aantal_ronden", data.aantal_ronden ?? null)
-      : dubbelCheck.eq("aantal_poules", data.aantal_poules ?? null);
-  dubbelCheck = data.club_id
-    ? dubbelCheck.eq("club_id", data.club_id)
-    : dubbelCheck.ilike("clubnaam", data.clubnaam.trim());
+  if (!negeerDubbelCheck) {
+    const serviceClient = createServiceRoleClient();
+    let dubbelCheck = serviceClient
+      .from("toernooien")
+      .select("naam_nl, naam_fr, datum, clubnaam, affiche_url")
+      .eq("datum", data.datum)
+      .eq("categorie", data.categorie)
+      .eq("formule", data.formule)
+      .eq("speelvorm", data.speelvorm)
+      .is("verwijderd_op", null)
+      .neq("status", "geweigerd");
+    dubbelCheck =
+      data.speelvorm === "rondes"
+        ? dubbelCheck.eq("aantal_ronden", data.aantal_ronden ?? null)
+        : dubbelCheck.eq("aantal_poules", data.aantal_poules ?? null);
+    dubbelCheck = data.club_id
+      ? dubbelCheck.eq("club_id", data.club_id)
+      : dubbelCheck.ilike("clubnaam", data.clubnaam.trim());
 
-  const { data: mogelijkeDubbels, error: dubbelFout } = await dubbelCheck.limit(1);
-  if (dubbelFout) console.error("Dubbel-check mislukt:", dubbelFout.message);
-  if (mogelijkeDubbels && mogelijkeDubbels.length > 0) {
-    return { succes: false, fout: "dubbel_toernooi" };
+    const { data: mogelijkeDubbels, error: dubbelFout } = await dubbelCheck.limit(1);
+    if (dubbelFout) console.error("Dubbel-check mislukt:", dubbelFout.message);
+    if (mogelijkeDubbels && mogelijkeDubbels.length > 0) {
+      return { succes: false, fout: "dubbel_toernooi", bestaand: mogelijkeDubbels[0] };
+    }
   }
 
   const supabase = await createClient();
