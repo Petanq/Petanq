@@ -471,6 +471,31 @@ function PiramideKop({ label }: { label: string }) {
   );
 }
 
+// De donkere kaartjes (poules + knock-out) krijgen zo hun eigen Petanque13-
+// merktekens: een klein rond embleem rechtsboven, en dezelfde "Gemaakt door
+// Petanque13"-badge als de paginavoet, maar dan rechtsonder in het kaartje
+// zelf — zichtbaar zowel op het scherm als op "Dit scherm afdrukken".
+function BracketDonkerBlok({ children, style }: { children: ReactNode; style?: CSSProperties }) {
+  const { t } = useTranslation();
+  return (
+    <div className="bracket-donker-blok" style={style}>
+      <img className="bracket-donker-embleem" src="/images/logo-icon.png" alt="" />
+      {children}
+      <a
+        className="bracket-donker-credit"
+        href="https://petanque13.be"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="/images/logo-icon.png" alt="" />
+        <span>
+          {t.match13.gemaaktDoor} petanque13.be
+        </span>
+      </a>
+    </div>
+  );
+}
+
 // A small "who's through" callout next to a poule-of-4's mini-bracket — the
 // direct winner is already known as soon as the Winnaars match is played
 // (even before the barrage decides the 2nd spot), so this fills in as soon
@@ -2440,7 +2465,7 @@ export function Match13App({
                   const pouleTeams = pouleTeamsByLabel.get(label)!;
                   const accent = pouleColor(pi);
                   return (
-                    <div key={label} style={{ marginBottom: "1.8rem" }} className="bracket-donker-blok">
+                    <BracketDonkerBlok key={label} style={{ marginBottom: "1.8rem" }}>
                       <h4 style={{ margin: "0 0 0.6rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <span className="poule-dot" style={{ background: accent }} />
                         {t.match13.pouleLabel(label)}
@@ -2474,14 +2499,14 @@ export function Match13App({
                           rows={roundRobinStandings(pouleTeams, pouleBracket.filter((m) => m.poule === label))}
                         />
                       )}
-                    </div>
+                    </BracketDonkerBlok>
                   );
                 })}
               </>
             )}
 
             {knockoutStarted && (
-              <div className="bracket-donker-blok">
+              <BracketDonkerBlok>
                 {knockoutBracketB.length > 0 && <PiramideKop label={t.match13.piramideA} />}
                 <BracketColumns
                   matches={knockoutBracket}
@@ -2493,11 +2518,11 @@ export function Match13App({
                   onCourtChange={(id, court) => updateBracketCourt("knockout", id, court)}
                   onStart={(id) => startBracketMatch("knockout", id)}
                 />
-              </div>
+              </BracketDonkerBlok>
             )}
 
             {knockoutBracketB.length > 0 && (
-              <div className="bracket-donker-blok">
+              <BracketDonkerBlok>
                 <PiramideKop label={t.match13.piramideB} />
                 {championB && (
                   <div className="finish-banner">
@@ -2514,7 +2539,7 @@ export function Match13App({
                   onCourtChange={(id, court) => updateBracketCourt("knockoutB", id, court)}
                   onStart={(id) => startBracketMatch("knockoutB", id)}
                 />
-              </div>
+              </BracketDonkerBlok>
             )}
           </section>
         )}
@@ -3034,7 +3059,7 @@ export function Match13App({
                     const pouleTeams = pouleTeamsByLabel.get(label)!;
                     const accent = pouleColor(pi);
                     return (
-                      <div key={label} style={{ marginBottom: "1.8rem" }} className="bracket-donker-blok">
+                      <BracketDonkerBlok key={label} style={{ marginBottom: "1.8rem" }}>
                         <h4 style={{ margin: "0 0 0.6rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                           <span className="poule-dot" style={{ background: accent }} />
                           {t.match13.pouleLabel(label)}
@@ -3063,19 +3088,19 @@ export function Match13App({
                             rows={roundRobinStandings(pouleTeams, pouleBracket.filter((m) => m.poule === label))}
                           />
                         )}
-                      </div>
+                      </BracketDonkerBlok>
                     );
                   })}
 
                   {knockoutStarted && (
-                    <div className="bracket-donker-blok">
+                    <BracketDonkerBlok>
                       <PiramideKop label={t.match13.knockoutHeader} />
                       <BracketColumns matches={knockoutBracket} numNameOf={numNameOf} showConnectors />
-                    </div>
+                    </BracketDonkerBlok>
                   )}
 
                   {knockoutBracketB.length > 0 && (
-                    <div className="bracket-donker-blok">
+                    <BracketDonkerBlok>
                       <PiramideKop label={t.match13.piramideB} />
                       {championB && (
                         <div className="finish-banner">
@@ -3083,7 +3108,7 @@ export function Match13App({
                         </div>
                       )}
                       <BracketColumns matches={knockoutBracketB} numNameOf={numNameOf} showConnectors />
-                    </div>
+                    </BracketDonkerBlok>
                   )}
 
                   {eindklassement.length > 0 && (

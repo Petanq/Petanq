@@ -1404,9 +1404,43 @@
    Petanque13 zelf i.p.v. er een nieuwe kleur (bv. blauw) bij te verzinnen.
    ================================================================ */
 .match13-scope .bracket-donker-blok {
+  position: relative;
   background: linear-gradient(160deg, #2f2f2f, #242424);
   border-radius: 16px;
   padding: 1.6rem 1.8rem;
+}
+.match13-scope .bracket-donker-embleem {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.3rem;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  opacity: 0.5;
+}
+.match13-scope .bracket-donker-credit {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
+  margin-left: auto;
+  padding: 0.4rem 0.9rem;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 999px;
+  text-decoration: none;
+}
+.match13-scope .bracket-donker-credit img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.match13-scope .bracket-donker-credit span {
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 .match13-scope .bracket-donker-blok h4 {
   color: #fff;
