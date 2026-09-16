@@ -1166,12 +1166,29 @@
 
 /* ---- Bracket / pyramid (poule-of-4 mini-bracket + knock-out) ---- */
 .match13-scope .bracket {
+  position: relative;
   display: flex;
+  justify-content: center;
   gap: 1.4rem;
   overflow-x: auto;
   padding-bottom: 0.4rem;
 }
+.match13-scope .bracket-connectors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.match13-scope .bracket-connectors path {
+  fill: none;
+  stroke: #f4c430;
+  stroke-width: 2;
+  opacity: 0.85;
+}
 .match13-scope .bracket-col {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -1205,6 +1222,7 @@
   flex-shrink: 0;
 }
 .match13-scope .bracket-side {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1316,14 +1334,13 @@
   margin: 0;
 }
 .match13-scope .piramide-kop-logo {
-  width: 30px;
-  height: 30px;
+  /* Het echte logo heeft zijn gouden ring al ingebakken — op een klein
+     formaat vervaagt dat fijne randje tot een donkere vlek, dus groot genoeg
+     houden, en geen eigen achtergrondkleur/ring er nog eens overheen zetten. */
+  width: 46px;
+  height: 46px;
   object-fit: contain;
   flex-shrink: 0;
-  background: #000;
-  border-radius: 50%;
-  padding: 3px;
-  box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.5);
 }
 .match13-scope .poule-qualifiers {
   flex: 0 0 190px;
@@ -1372,6 +1389,137 @@
   padding: 0.3rem 0;
   font-size: 0.72rem;
   background: var(--surface-2);
+}
+
+/* ================================================================
+   De donkere, gouden kaartjes-stijl voor de poules en de knock-out-
+   piramide — dezelfde antracietkleur als de bovenste balk van de site
+   (--header-bg), zodat dit aansluit bij het bestaande zwart/wit/goud van
+   Petanque13 zelf i.p.v. er een nieuwe kleur (bv. blauw) bij te verzinnen.
+   ================================================================ */
+.match13-scope .bracket-donker-blok {
+  background: linear-gradient(160deg, #2f2f2f, #242424);
+  border-radius: 16px;
+  padding: 1.6rem 1.8rem;
+}
+.match13-scope .bracket-donker-blok h4 {
+  color: #fff;
+}
+.match13-scope .bracket-donker-blok .piramide-kop h3 {
+  color: #fff;
+}
+.match13-scope .bracket-donker-blok .bracket-match {
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid var(--accent);
+}
+.match13-scope .bracket-donker-blok .bracket-match.done {
+  border-color: var(--accent);
+}
+.match13-scope .bracket-donker-blok .bracket-match.finale {
+  background: rgba(244, 196, 48, 0.1);
+  box-shadow: 0 0 26px rgba(244, 196, 48, 0.4);
+}
+.match13-scope .bracket-donker-blok .bracket-finale-banner {
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+.match13-scope .bracket-donker-blok .bracket-finale-icoon {
+  font-size: 1.5rem;
+  display: block;
+}
+.match13-scope .bracket-donker-blok .bracket-finale-titel {
+  color: var(--accent);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+}
+.match13-scope .bracket-donker-blok .bracket-match-label {
+  color: #c7c7c7;
+}
+.match13-scope .bracket-donker-blok .bracket-match-label.centered {
+  text-align: center;
+}
+.match13-scope .bracket-donker-blok .bracket-side + .bracket-side {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+.match13-scope .bracket-donker-blok .bracket-side + .bracket-side::before {
+  content: "vs";
+  position: absolute;
+  top: -0.6rem;
+  left: 1.9rem;
+  background: #2b2b2b;
+  color: #999;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 0 0.3rem;
+  text-transform: uppercase;
+}
+.match13-scope .bracket-donker-blok .bracket-name {
+  color: #fff;
+}
+.match13-scope .bracket-donker-blok .bracket-side.loser .bracket-name {
+  color: #9a9a9a;
+}
+.match13-scope .bracket-donker-blok .bracket-side.winner {
+  background: rgba(244, 196, 48, 0.12);
+}
+.match13-scope .bracket-donker-blok .bracket-score {
+  color: #fff;
+}
+.match13-scope .bracket-donker-blok .bracket-win-btn,
+.match13-scope .bracket-donker-blok .bracket-start-btn {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.07);
+  color: #eee;
+}
+.match13-scope .bracket-donker-blok .bracket-win-btn:hover,
+.match13-scope .bracket-donker-blok .bracket-start-btn:hover {
+  border-color: var(--live);
+  color: var(--live);
+  background: var(--live-bg);
+}
+.match13-scope .bracket-donker-blok .bracket-side input {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+.match13-scope .bracket-donker-blok .bracket-plein-input {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+.match13-scope .bracket-donker-blok .bracket-clear {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ccc;
+}
+.match13-scope .bracket-donker-blok .poule-qualifiers {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(244, 196, 48, 0.4);
+}
+.match13-scope .bracket-donker-blok .poule-qualifier-row {
+  color: #eee;
+}
+.match13-scope .bracket-donker-blok .poule-qualifier-row + .poule-qualifier-row {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+.match13-scope .bracket-donker-blok .tabel-scroll {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+.match13-scope .bracket-donker-blok .standings th {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ccc;
+}
+.match13-scope .bracket-donker-blok .standings td {
+  color: #fff;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+.match13-scope .bracket-donker-blok .standings tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.03);
+}
+.match13-scope .bracket-donker-blok .standings tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Op een smal scherm mag niemand zijwaarts moeten scrollen om een kolom
