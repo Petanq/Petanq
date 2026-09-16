@@ -601,6 +601,44 @@ export function Match13App({
     }
   }
 
+  // Op het volledig-scherm Zaalscherm (de projector/tv aan de zaal) moet
+  // alles in 1 oogopslag zichtbaar zijn, zonder te moeten scrollen — een
+  // grote piramide is anders al snel hoger dan het scherm. We meten hoe hoog
+  // het Zaalscherm écht is (ongeschaald) t.o.v. de beschikbare hoogte, en
+  // schalen het geheel dan met een CSS-transform naar beneden tot het past.
+  // Buiten volledig scherm (of op de andere tabbladen) blijft alles gewoon
+  // normaal, ongeschaald.
+  const zaalFitBuitenRef = useRef<HTMLDivElement>(null);
+  const zaalFitBinnenRef = useRef<HTMLDivElement>(null);
+  const [zaalSchaal, setZaalSchaal] = useState(1);
+  useLayoutEffect(() => {
+    if (!isFullscreen || tab !== "zaal") {
+      setZaalSchaal(1);
+      return;
+    }
+    function herbereken() {
+      const binnen = zaalFitBinnenRef.current;
+      const buiten = zaalFitBuitenRef.current;
+      if (!binnen || !buiten) return;
+      binnen.style.transform = "none";
+      const natuurlijkeHoogte = binnen.scrollHeight;
+      const beschikbaar = window.innerHeight - buiten.getBoundingClientRect().top - 24;
+      setZaalSchaal(natuurlijkeHoogte > beschikbaar ? Math.max(0.4, beschikbaar / natuurlijkeHoogte) : 1);
+    }
+    herbereken();
+    window.addEventListener("resize", herbereken);
+    const observer = new ResizeObserver(herbereken);
+    if (zaalFitBinnenRef.current) observer.observe(zaalFitBinnenRef.current);
+    return () => {
+      window.removeEventListener("resize", herbereken);
+      observer.disconnect();
+    };
+  }, [isFullscreen, tab, state]);
+  const zaalFitBuitenStyle: CSSProperties | undefined =
+    isFullscreen && tab === "zaal" ? { height: zaalFitBinnenRef.current ? zaalFitBinnenRef.current.scrollHeight * zaalSchaal : undefined, overflow: "hidden" } : undefined;
+  const zaalFitBinnenStyle: CSSProperties | undefined =
+    isFullscreen && tab === "zaal" ? { transform: `scale(${zaalSchaal})`, transformOrigin: "top center" } : undefined;
+
   const {
     clubName,
     format,
@@ -2299,7 +2337,10 @@ export function Match13App({
           </section>
         )}
 
-        {tab === "zaal" && isPoules && (
+        {tab === "zaal" && (
+          <div ref={zaalFitBuitenRef} style={zaalFitBuitenStyle}>
+          <div ref={zaalFitBinnenRef} style={zaalFitBinnenStyle}>
+          {isPoules && (
           <section className="card fade-in">
             <div className="zaal-head">
               <h2>
@@ -2451,7 +2492,7 @@ export function Match13App({
           </section>
         )}
 
-        {tab === "zaal" && !isPoules && (
+        {!isPoules && (
           <section className="card fade-in">
             <div className="zaal-head">
               <h2>{t.match13.rondeVan(currentRound ? currentRound.number : "—", totalRounds)}</h2>
@@ -2931,6 +2972,9 @@ export function Match13App({
               </details>
             )}
           </section>
+          )}
+          </div>
+          </div>
         )}
 
         {tab === "klassement" && (

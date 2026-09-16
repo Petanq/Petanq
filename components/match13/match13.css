@@ -41,7 +41,13 @@
   min-height: 100vh;
 }
 .match13-scope .app-shell:fullscreen {
-  background: var(--bg);
+  /* Het element dat volledig scherm gaat, valt buiten de normale opmaak van
+     .match13-scope (de achtergrondfoto van de ouder schijnt daar niet meer
+     doorheen) — zonder deze eigen achtergrond zou volledig scherm dus gewoon
+     zwart zijn. Dezelfde foto hier dus nog eens expliciet zetten. */
+  background: linear-gradient(rgba(245, 245, 245, 0.45), rgba(245, 245, 245, 0.6)), url("/images/match13-achtergrond.png");
+  background-size: cover;
+  background-position: center;
   overflow-y: auto;
 }
 
