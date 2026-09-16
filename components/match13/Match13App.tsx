@@ -376,7 +376,8 @@ function PouleQualifiersBadge({
 function PouleStandingsTable({ rows }: { rows: StandingRow[] }) {
   const { t } = useTranslation();
   return (
-    <table className="standings" style={{ marginTop: "0.6rem" }}>
+    <div className="tabel-scroll" style={{ marginTop: "0.6rem" }}>
+    <table className="standings">
       <thead>
         <tr>
           <th></th>
@@ -407,6 +408,7 @@ function PouleStandingsTable({ rows }: { rows: StandingRow[] }) {
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
@@ -2730,6 +2732,7 @@ export function Match13App({
             ) : standings.length === 0 ? (
               <p className="hint">{t.match13.nogGeenTeams}</p>
             ) : (
+              <div className="tabel-scroll">
               <table className="standings">
                 <thead>
                   <tr>
@@ -2769,6 +2772,7 @@ export function Match13App({
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </section>
         )}

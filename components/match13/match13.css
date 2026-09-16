@@ -910,6 +910,14 @@
   text-align: left;
 }
 
+/* Klassement-tabellen hebben te veel kolommen (rang, team, gespeeld,
+   overwinningen, pnt voor/tegen, saldo) om altijd op een smal scherm te
+   passen — de tabel zelf mag dan zijwaarts scrollen, maar de rest van de
+   pagina niet. */
+.match13-scope .tabel-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .match13-scope .standings {
   width: 100%;
   border-collapse: collapse;

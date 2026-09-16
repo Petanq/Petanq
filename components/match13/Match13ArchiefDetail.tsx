@@ -64,6 +64,7 @@ export function Match13ArchiefDetail({ item }: { item: Match13ArchiefItem }) {
             ))}
         </>
       ) : (
+        <div className="tabel-scroll">
         <table className="archief-tabel">
           <thead>
             <tr>
@@ -92,6 +93,7 @@ export function Match13ArchiefDetail({ item }: { item: Match13ArchiefItem }) {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );
