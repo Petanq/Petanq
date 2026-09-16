@@ -402,9 +402,16 @@ function labelForRound(matchesInRound: number): string {
   return `Ronde met ${matchesInRound} wedstrijden`;
 }
 
-/** How many dedicated pleinen one half of the pyramid needs for its whole run (its round-1 match count). */
-function courtsNeededForHalf(seedCount: number): number {
-  return seedCount <= 1 ? 0 : nextPowerOfTwo(seedCount) / 2;
+/**
+ * How many dedicated pleinen one half of the pyramid needs for its whole
+ * run (its round-1 match count) — `minSize` laat deze helft desnoods groter
+ * opvullen dan haar eigen aantal plaatsen strikt nodig heeft, zodat ze qua
+ * pleinen in de pas blijft lopen met een grotere zusterhelft (zie
+ * buildPyramideVanPlaatsen).
+ */
+function courtsNeededForHalf(seedCount: number, minSize?: number): number {
+  const size = Math.max(nextPowerOfTwo(seedCount), minSize ?? 1);
+  return size <= 1 ? 0 : size / 2;
 }
 
 /**
@@ -418,10 +425,16 @@ function courtsNeededForHalf(seedCount: number): number {
  * "Achtste/Kwart/Halve finale" names. This half keeps its own dedicated
  * block of pleinen for its whole run, reused position-by-position as rounds
  * progress (fewer matches each round, same courts).
+ *
+ * `minSize` laat deze helft desnoods méér opvullen met bye's dan haar eigen
+ * aantal plaatsen strikt nodig heeft — nodig zodra de zusterhelft (de
+ * andere kant van de piramide) groter is, zodat beide helften altijd
+ * evenveel rondes spelen (zie buildPyramideVanPlaatsen hieronder).
  */
-function buildSingleBracket(seeds: string[], idPrefix: string, courtStart: number): BracketMatch[] {
-  if (seeds.length <= 1) return [];
-  const size = nextPowerOfTwo(seeds.length);
+function buildSingleBracket(seeds: string[], idPrefix: string, courtStart: number, minSize?: number): BracketMatch[] {
+  if (seeds.length === 0) return [];
+  const size = Math.max(nextPowerOfTwo(seeds.length), minSize ?? 0);
+  if (size <= 1) return [];
   const hasByes = size > seeds.length;
   const order = seedOrder(size);
   const matches: BracketMatch[] = [];
@@ -509,8 +522,23 @@ function buildPyramideVanPlaatsen(
     .sort((a, b) => b.tiebreak - a.tiebreak)
     .map((q) => q.teamId);
 
-  const topBracket = buildSingleBracket(top, `${idPrefix}-A`, courtStart);
-  const onderBracket = buildSingleBracket(onder, `${idPrefix}-B`, courtStart + courtsNeededForHalf(top.length));
+  // Bij Piramide B (plaats 3+4) kan een poule van 3 (round-robin) wel een
+  // plaats 3 opleveren maar nooit een plaats 4 op — er is gewoon geen 4de
+  // team. De twee helften kunnen daardoor ongelijk groot zijn. Zonder
+  // ingrijpen zou de kleinere helft dan een hele ronde "overslaan"
+  // (rechtstreeks naar de halve finale i.p.v. eerst een kwartfinale) terwijl
+  // de andere helft die ronde wél speelt — een scheve piramide. Beide
+  // helften daarom altijd naar dezelfde grootte opvullen met bye's, zodat ze
+  // altijd evenveel rondes spelen (Piramide A heeft dit nooit nodig: elke
+  // poule levert altijd precies 1 plaats-1 én 1 plaats-2 op).
+  const gedeeldeGrootte = Math.max(nextPowerOfTwo(top.length), nextPowerOfTwo(onder.length));
+  const topBracket = buildSingleBracket(top, `${idPrefix}-A`, courtStart, gedeeldeGrootte);
+  const onderBracket = buildSingleBracket(
+    onder,
+    `${idPrefix}-B`,
+    courtStart + courtsNeededForHalf(top.length, gedeeldeGrootte),
+    gedeeldeGrootte
+  );
 
   const topRef: BracketRef | { teamId: string } | null =
     topBracket.length > 0

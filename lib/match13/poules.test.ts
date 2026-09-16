@@ -508,6 +508,52 @@ describe("buildKnockoutBracketB — the optional 'Consolante' for poule-fase los
     const bracket = buildKnockoutBracketB(qualifiers, 10);
     expect(bracket.every((m) => m.id.startsWith("KOB-"))).toBe(true);
   });
+
+  it("padt de kleinere helft bij tot dezelfde rondediepte als de grotere, i.p.v. een ronde over te slaan", () => {
+    // Een poule van 3 (round-robin) levert wel een plaats 3 op maar nooit een
+    // plaats 4 — hier gesimuleerd door 4 plaats-3's (2 echte poules van 4 +
+    // 2 "kale" plaats-3's zoals een poule van 3 zou opleveren) tegenover
+    // maar 2 plaats-4's. Zonder de fix zou de plaats-4-helft rechtstreeks
+    // naar de halve finale springen (2 -> 1) terwijl de plaats-3-helft wél
+    // een kwartfinale speelt (4 -> 2 -> 1) — een scheve piramide.
+    const qualifiers = [
+      { teamId: "P3-1", poule: "A", place: 3 as const, tiebreak: 0 },
+      { teamId: "P3-2", poule: "B", place: 3 as const, tiebreak: 0 },
+      { teamId: "P3-3", poule: "C", place: 3 as const, tiebreak: 0 },
+      { teamId: "P3-4", poule: "D", place: 3 as const, tiebreak: 0 },
+      { teamId: "P4-1", poule: "A", place: 4 as const, tiebreak: 0 },
+      { teamId: "P4-2", poule: "B", place: 4 as const, tiebreak: 0 },
+    ];
+    const bracket = buildKnockoutBracketB(qualifiers, 1);
+
+    // Geen enkele ronde-1-wedstrijd (rechtstreeks op teamA/teamB gezet, niet
+    // via sourceA/sourceB zoals latere rondes of de finale) mag aan geen van
+    // beide kanten een echt team hebben — dat zou een "bye tegen bye" zijn,
+    // een teken dat er te ver is opgepad t.o.v. het echte aantal deelnemers.
+    expect(bracket.filter((m) => m.round === 1).every((m) => m.teamA !== null || m.teamB !== null)).toBe(true);
+
+    // Beide helften moeten nu evenveel rondes spelen: de plaats-4-helft
+    // (2 echte teams) krijgt er dus een "kwartfinale"-ronde met 2 bye's bij,
+    // net als de plaats-3-helft die al 4 echte teams had.
+    const onderHelftRondes = new Set(bracket.filter((m) => m.id.startsWith("KOB-B-")).map((m) => m.round));
+    const topHelftRondes = new Set(bracket.filter((m) => m.id.startsWith("KOB-A-")).map((m) => m.round));
+    expect(onderHelftRondes.size).toBe(topHelftRondes.size);
+
+    // De uiteindelijke halve finales (laatste ronde van elke helft) staan
+    // beide op "Halve finale", en geen van beide pleinen overlapt.
+    const gespeeld = speelVolledigeBracketUit(bracket);
+    const finale = gespeeld.find((m) => m.label === "Finale")!;
+    const [finaleA, finaleB] = resolvedTeams(gespeeld, finale);
+    expect(finaleA).not.toBeNull();
+    expect(finaleB).not.toBeNull();
+
+    // Elke helft hergebruikt haar eigen pleinen ronde na ronde (bestaand,
+    // gewenst gedrag) — maar de twee helften onderling mogen elkaars pleinen
+    // nooit overlappen.
+    const topCourts = new Set(bracket.filter((m) => m.id.startsWith("KOB-A-")).map((m) => m.court));
+    const onderCourts = new Set(bracket.filter((m) => m.id.startsWith("KOB-B-")).map((m) => m.court));
+    expect([...topCourts].some((c) => onderCourts.has(c))).toBe(false);
+  });
 });
 
 describe("courtsNeededForKnockout", () => {
