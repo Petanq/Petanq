@@ -9,6 +9,7 @@ import {
   buildRoundRobinBracket,
   courtsNeededForKnockout,
   courtsNeededForPoule,
+  knockoutRanking,
   playableMatches,
   poulesOf,
   pouleQualifiersReady,
@@ -527,5 +528,105 @@ describe("courtsNeededForKnockout", () => {
     const courtsA = new Set(bracketA.map((m) => m.court));
     const courtsB = new Set(bracketB.map((m) => m.court));
     expect([...courtsA].every((c) => !courtsB.has(c))).toBe(true);
+  });
+});
+
+// Speelt een volledige piramide helemaal uit (deterministisch: wie
+// alfabetisch eerst komt "wint"), net als de meeting-tests hierboven.
+function speelVolledigeBracketUit(bracket: BracketMatch[]): BracketMatch[] {
+  let matches = bracket;
+  for (let guard = 0; guard < 10; guard++) {
+    const playable = playableMatches(matches);
+    if (playable.length === 0) break;
+    for (const m of playable) {
+      const [a, b] = resolvedTeams(matches, m);
+      const aWins = a! < b!;
+      matches = matches.map((x) => (x.id === m.id ? { ...x, scoreA: aWins ? 13 : 5, scoreB: aWins ? 5 : 13 } : x));
+    }
+  }
+  return matches;
+}
+
+describe("knockoutRanking", () => {
+  it("groups 1, 2, 3-4, 5-8 for a clean 4-pool (8-qualifier) piramide", () => {
+    const qualifiers = [
+      { teamId: "A-first", poule: "A", place: 1 as const, tiebreak: 0 },
+      { teamId: "A-second", poule: "A", place: 2 as const, tiebreak: 0 },
+      { teamId: "B-first", poule: "B", place: 1 as const, tiebreak: 0 },
+      { teamId: "B-second", poule: "B", place: 2 as const, tiebreak: 0 },
+      { teamId: "C-first", poule: "C", place: 1 as const, tiebreak: 0 },
+      { teamId: "C-second", poule: "C", place: 2 as const, tiebreak: 0 },
+      { teamId: "D-first", poule: "D", place: 1 as const, tiebreak: 0 },
+      { teamId: "D-second", poule: "D", place: 2 as const, tiebreak: 0 },
+    ];
+    const gespeeld = speelVolledigeBracketUit(buildKnockoutBracket(qualifiers));
+    const groepen = knockoutRanking(gespeeld);
+    expect(groepen.map((g) => [g.vanaf, g.tot])).toEqual([
+      [1, 1],
+      [2, 2],
+      [3, 4],
+      [5, 8],
+    ]);
+    expect(groepen[0].teamIds).toHaveLength(1);
+    expect(groepen[1].teamIds).toHaveLength(1);
+    expect(groepen[2].teamIds).toHaveLength(2);
+    expect(groepen[3].teamIds).toHaveLength(4);
+    // Alle 8 teams komen exact 1 keer voor, niemand dubbel of ontbrekend.
+    const alleIds = groepen.flatMap((g) => g.teamIds);
+    expect(new Set(alleIds).size).toBe(8);
+    expect(alleIds).toHaveLength(8);
+  });
+
+  it("laat Piramide B verder tellen vanaf startRank, na Piramide A", () => {
+    const qualifiers = [
+      { teamId: "A-first", poule: "A", place: 1 as const, tiebreak: 0 },
+      { teamId: "A-second", poule: "A", place: 2 as const, tiebreak: 0 },
+      { teamId: "B-first", poule: "B", place: 1 as const, tiebreak: 0 },
+      { teamId: "B-second", poule: "B", place: 2 as const, tiebreak: 0 },
+    ];
+    const gespeeld = speelVolledigeBracketUit(buildKnockoutBracket(qualifiers));
+    const groepen = knockoutRanking(gespeeld, 9);
+    expect(groepen.map((g) => [g.vanaf, g.tot])).toEqual([
+      [9, 9],
+      [10, 10],
+      [11, 12],
+    ]);
+  });
+
+  it("telt een bye-plek mee in de reeks, maar geeft ze geen echte verliezer", () => {
+    // 3 poules => halve grootte 3, rondt af naar 4: 1 bye per helft.
+    const qualifiers = [
+      { teamId: "A-first", poule: "A", place: 1 as const, tiebreak: 30 },
+      { teamId: "A-second", poule: "A", place: 2 as const, tiebreak: 3 },
+      { teamId: "B-first", poule: "B", place: 1 as const, tiebreak: 20 },
+      { teamId: "B-second", poule: "B", place: 2 as const, tiebreak: 2 },
+      { teamId: "C-first", poule: "C", place: 1 as const, tiebreak: 10 },
+      { teamId: "C-second", poule: "C", place: 2 as const, tiebreak: 1 },
+    ];
+    const gespeeld = speelVolledigeBracketUit(buildKnockoutBracket(qualifiers));
+    const groepen = knockoutRanking(gespeeld);
+    expect(groepen.map((g) => [g.vanaf, g.tot])).toEqual([
+      [1, 1],
+      [2, 2],
+      [3, 4],
+      [5, 8],
+    ]);
+    // 6 teams total: 1 + 1 + 2 + (enkel de echte verliezers, geen 4 want 2 waren bye-plekken)
+    expect(groepen[3].teamIds.length).toBeLessThan(4);
+    const alleIds = groepen.flatMap((g) => g.teamIds);
+    expect(new Set(alleIds).size).toBe(6);
+  });
+
+  it("geeft gewoon plaats 1 en 2 bij een rechtstreekse finale zonder bracket (1 poule)", () => {
+    const qualifiers = [
+      { teamId: "only-first", poule: "A", place: 1 as const, tiebreak: 0 },
+      { teamId: "only-second", poule: "A", place: 2 as const, tiebreak: 0 },
+    ];
+    const gespeeld = speelVolledigeBracketUit(buildKnockoutBracket(qualifiers));
+    const groepen = knockoutRanking(gespeeld);
+    expect(groepen).toEqual([
+      { vanaf: 1, tot: 1, teamIds: ["only-first"] },
+      { vanaf: 2, tot: 2, teamIds: ["only-second"] },
+    ]);
   });
 });

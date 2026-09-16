@@ -36,6 +36,7 @@ import {
   courtsNeededForKnockout,
   courtsNeededForPoule,
   isTrueBye,
+  knockoutRanking,
   poulesOf,
   pouleQualifiersReady,
   qualifiersFromPoule,
@@ -43,6 +44,7 @@ import {
   usesBarrageBracket,
   winnerLoserOf,
   type BracketMatch,
+  type KnockoutRankGroep,
   type PouleQualifier,
 } from "@/lib/match13/poules";
 import { slaMatch13OpAsync, archiveerMatch13Resultaten, bewerkMatch13Metadata } from "@/actions/match13";
@@ -723,6 +725,17 @@ export function Match13App({
     isPoules && knockoutBracketB.length > 0 && finalMatchB
       ? winnerLoserOf(knockoutBracketB, finalMatchB.id, "winner")
       : null;
+
+  // Eindklassement: plaats 1/2 uit de finale, 3-4 uit de halve finales, 5-8
+  // uit de kwartfinales, enz. — Piramide B (wie er in de poule-fase uitvloog)
+  // telt gewoon verder na waar Piramide A stopte, want die teams eindigden
+  // per definitie lager dan wie wél naar Piramide A doorstootte.
+  const eindklassementA = knockoutStarted ? knockoutRanking(knockoutBracket) : [];
+  const eindklassementB =
+    knockoutBracketB.length > 0
+      ? knockoutRanking(knockoutBracketB, (eindklassementA[eindklassementA.length - 1]?.tot ?? 0) + 1)
+      : [];
+  const eindklassement: KnockoutRankGroep[] = [...eindklassementA, ...eindklassementB];
 
   const tournamentComplete = isPoules
     ? !!champion
@@ -2913,6 +2926,39 @@ export function Match13App({
                       )}
                       <BracketColumns matches={knockoutBracketB} numNameOf={numNameOf} showConnectors />
                     </div>
+                  )}
+
+                  {eindklassement.length > 0 && (
+                    <>
+                      <h3 style={{ marginTop: "1.8rem" }}>{t.match13.eindklassementHeader}</h3>
+                      <div className="tabel-scroll">
+                        <table className="standings">
+                          <thead>
+                            <tr>
+                              <th className="num">{t.match13.plaatsKolom}</th>
+                              <th>{t.match13.teamKolom}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {eindklassement.map((groep) => (
+                              <tr key={groep.vanaf}>
+                                <td className="num">{groep.vanaf === groep.tot ? groep.vanaf : `${groep.vanaf}-${groep.tot}`}</td>
+                                <td>
+                                  {groep.teamIds.length === 0
+                                    ? "?"
+                                    : groep.teamIds.map((id, i) => (
+                                        <span key={id}>
+                                          {i > 0 && ", "}
+                                          {numNameOf(id)}
+                                        </span>
+                                      ))}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
                   )}
                 </>
               )

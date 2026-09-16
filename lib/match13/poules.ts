@@ -576,3 +576,55 @@ export function courtsNeededForKnockout(qualifiers: PouleQualifier[]): number {
   if (firstPlace + secondPlace <= 1) return 0;
   return 1 + courtsNeededForHalf(firstPlace) + courtsNeededForHalf(secondPlace);
 }
+
+export interface KnockoutRankGroep {
+  vanaf: number;
+  tot: number;
+  teamIds: string[];
+}
+
+/**
+ * Het eindklassement van één piramide, af te leiden uit de boomstructuur
+ * zelf (sourceA/sourceB) in plaats van vaste rondenamen — dat blijft correct
+ * ook bij een barrage/bye in ronde 1. Winnaar van de finale = plaats 1,
+ * verliezer = plaats 2; de verliezers van de halve finales delen plaats 3-4;
+ * de verliezers van de kwartfinales delen plaats 5-8; enzovoort, telkens
+ * verdubbelend richting de eerste ronde. `startRank` laat een 2de piramide
+ * (Piramide B) verder tellen na waar de 1ste piramide stopte.
+ */
+export function knockoutRanking(matches: BracketMatch[], startRank = 1): KnockoutRankGroep[] {
+  if (matches.length === 0) return [];
+  const bronIds = new Set<string>();
+  for (const m of matches) {
+    if (m.sourceA) bronIds.add(m.sourceA.matchId);
+    if (m.sourceB) bronIds.add(m.sourceB.matchId);
+  }
+  // De finale is de enige wedstrijd waar geen andere wedstrijd naar verwijst
+  // als bron — alles in de boom leidt er uiteindelijk naartoe.
+  const finale = matches.find((m) => !bronIds.has(m.id));
+  if (!finale) return [];
+
+  function winnerLoser(m: BracketMatch): [string | null, string | null] {
+    const [a, b] = resolvedTeams(matches, m);
+    if (m.scoreA === undefined || m.scoreB === undefined) return [null, null];
+    return m.scoreA > m.scoreB ? [a, b] : [b, a];
+  }
+
+  const groepen: KnockoutRankGroep[] = [];
+  const [winnaar, verliezer] = winnerLoser(finale);
+  groepen.push({ vanaf: startRank, tot: startRank, teamIds: winnaar ? [winnaar] : [] });
+  groepen.push({ vanaf: startRank + 1, tot: startRank + 1, teamIds: verliezer ? [verliezer] : [] });
+
+  let rank = startRank + 2;
+  let laag: BracketMatch[] = [finale];
+  for (;;) {
+    const bronMatchIds = laag.flatMap((m) => [m.sourceA?.matchId, m.sourceB?.matchId]).filter((id): id is string => !!id);
+    const volgendeLaag = matches.filter((m) => bronMatchIds.includes(m.id));
+    if (volgendeLaag.length === 0) break;
+    const verliezers = volgendeLaag.filter((m) => !isTrueBye(m)).map((m) => winnerLoser(m)[1]).filter((id): id is string => !!id);
+    groepen.push({ vanaf: rank, tot: rank + volgendeLaag.length - 1, teamIds: verliezers });
+    rank += volgendeLaag.length;
+    laag = volgendeLaag;
+  }
+  return groepen;
+}
