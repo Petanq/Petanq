@@ -337,6 +337,19 @@ function BracketColumns({
   );
 }
 
+// Een klein Petanque13-gebrand kopje boven de knock-outpiramide (Finale,
+// Halve finale, ...) — zelfde opzet (logo + gouden lijn) als de kop op de
+// afdrukbladen, zodat dit deel van het scherm er ook wat feestelijker uitziet
+// dan een kale grijze titel.
+function PiramideKop({ label }: { label: string }) {
+  return (
+    <div className="piramide-kop">
+      <img className="piramide-kop-logo" src="/images/logo-icon.png" alt="" />
+      <h3 className="piramide-titel">{label}</h3>
+    </div>
+  );
+}
+
 // A small "who's through" callout next to a poule-of-4's mini-bracket — the
 // direct winner is already known as soon as the Winnaars match is played
 // (even before the barrage decides the 2nd spot), so this fills in as soon
@@ -515,18 +528,51 @@ export function Match13App({
   // first render (that's just `initialState` we already fetched from there).
   const isFirstRender = useRef(true);
   const [opslaanMislukt, setOpslaanMislukt] = useState(false);
+  // De laatste state + of er nog een opslag "in de wacht" staat — bijgehouden
+  // in een ref (niet enkel via de timeout-closure) zodat forceerOpslaan()
+  // hieronder altijd de meest recente stand kan wegschrijven, ook als dat
+  // gebeurt vanuit een event dat buiten deze useEffect afgaat.
+  const laatsteState = useRef(state);
+  laatsteState.current = state;
+  const opslagInWacht = useRef(false);
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
+    opslagInWacht.current = true;
     const timeout = setTimeout(() => {
-      slaMatch13OpAsync(tournamentId, state)
+      opslagInWacht.current = false;
+      slaMatch13OpAsync(tournamentId, laatsteState.current)
         .then((result) => setOpslaanMislukt(!result.succes))
         .catch(() => setOpslaanMislukt(true));
     }, 600);
     return () => clearTimeout(timeout);
   }, [state, tournamentId]);
+
+  // Verlaat iemand het scherm (terugknop, tab sluiten, naar een ander
+  // toernooi springen) binnen die 600ms na de laatste wijziging, dan werd de
+  // hierboven geplande opslag straks gewoon geannuleerd zonder ooit
+  // uitgevoerd te zijn — de laatste ingevoerde score/winnaar ging dan
+  // spoorloos verloren, ook al leek alles normaal opgeslagen. Forceer die
+  // opslag dus onmiddellijk zodra de pagina (mogelijk) verdwijnt.
+  useEffect(() => {
+    function forceerOpslaan() {
+      if (!opslagInWacht.current) return;
+      opslagInWacht.current = false;
+      slaMatch13OpAsync(tournamentId, laatsteState.current).catch(() => {});
+    }
+    function onVisibilityChange() {
+      if (document.visibilityState === "hidden") forceerOpslaan();
+    }
+    window.addEventListener("pagehide", forceerOpslaan);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.removeEventListener("pagehide", forceerOpslaan);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      forceerOpslaan();
+    };
+  }, [tournamentId]);
 
   const presentTeams = useMemo(() => teams.filter((t) => t.present), [teams]);
   const paidCount = useMemo(() => teams.filter((t) => t.paid).length, [teams]);
@@ -767,6 +813,19 @@ export function Match13App({
         : [];
       return { ...s, knockoutBracket: bracketA, knockoutBracketB: bracketB };
     });
+  }
+
+  // Voor als "Start knockout" per ongeluk (te vroeg, of vóór alle poules
+  // eigenlijk klaar waren) werd aangeklikt — enkel mogelijk zolang er nog
+  // geen enkele knockout-wedstrijd gespeeld is, anders zou dit stilzwijgend
+  // echte resultaten weggooien.
+  const knockoutNogNietGespeeld =
+    knockoutBracket.every((m) => m.scoreA === undefined && m.scoreB === undefined) &&
+    knockoutBracketB.every((m) => m.scoreA === undefined && m.scoreB === undefined);
+
+  function undoKnockoutStart() {
+    if (!window.confirm(t.match13.knockoutOngedaanMakenBevestiging)) return;
+    setState((s) => ({ ...s, knockoutBracket: [], knockoutBracketB: [] }));
   }
 
   function bracketKey(which: "poule" | "knockout" | "knockoutB"): "pouleBracket" | "knockoutBracket" | "knockoutBracketB" {
@@ -2063,6 +2122,11 @@ export function Match13App({
                     {t.match13.startKnockout}
                   </button>
                 )}
+                {knockoutStarted && knockoutNogNietGespeeld && (
+                  <button className="match13-actie-knop gevaar" onClick={undoKnockoutStart}>
+                    {t.match13.knockoutOngedaanMaken}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -2134,7 +2198,7 @@ export function Match13App({
 
             {knockoutStarted && (
               <>
-                {knockoutBracketB.length > 0 && <h3 className="piramide-titel">{t.match13.piramideA}</h3>}
+                {knockoutBracketB.length > 0 && <PiramideKop label={t.match13.piramideA} />}
                 <BracketColumns
                   matches={knockoutBracket}
                   numNameOf={numNameOf}
@@ -2149,7 +2213,7 @@ export function Match13App({
 
             {knockoutBracketB.length > 0 && (
               <>
-                <h3 className="piramide-titel">{t.match13.piramideB}</h3>
+                <PiramideKop label={t.match13.piramideB} />
                 {championB && (
                   <div className="finish-banner">
                     {t.match13.kampioenPiramideBLabel} {numNameOf(championB)}!
@@ -2711,14 +2775,14 @@ export function Match13App({
 
                   {knockoutStarted && (
                     <>
-                      <h3>{t.match13.knockoutHeader}</h3>
+                      <PiramideKop label={t.match13.knockoutHeader} />
                       <BracketColumns matches={knockoutBracket} numNameOf={numNameOf} />
                     </>
                   )}
 
                   {knockoutBracketB.length > 0 && (
                     <>
-                      <h3>{t.match13.piramideB}</h3>
+                      <PiramideKop label={t.match13.piramideB} />
                       {championB && (
                         <div className="finish-banner">
                           {t.match13.kampioenPiramideBLabel} {numNameOf(championB)}!

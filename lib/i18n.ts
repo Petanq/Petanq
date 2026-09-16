@@ -549,6 +549,9 @@ const nl = {
     groepsfaseKlaar: "Groepsfase klaar",
     groepsfase: "Groepsfase",
     startKnockout: "Start knock-out →",
+    knockoutOngedaanMaken: "← Knock-out ongedaan maken",
+    knockoutOngedaanMakenBevestiging:
+      "Knock-out ongedaan maken en terug naar de poules? Dit kan enkel zolang er nog geen enkele knock-out-wedstrijd gespeeld is.",
     minimumZieOnthaal: (n: number) => `Minstens ${n} aanwezige teams nodig — zie Onthaal.`,
     nogGeenWedstrijden: "Nog geen wedstrijden gegenereerd — zie Onthaal.",
     kampioenLabel: "🏆 Kampioen:",
@@ -1253,6 +1256,9 @@ const fr: typeof nl = {
     groepsfaseKlaar: "Phase de poules terminée",
     groepsfase: "Phase de poules",
     startKnockout: "Démarrer la phase finale →",
+    knockoutOngedaanMaken: "← Annuler la phase finale",
+    knockoutOngedaanMakenBevestiging:
+      "Annuler la phase finale et revenir aux poules ? Possible uniquement tant qu'aucun match de la phase finale n'a été joué.",
     minimumZieOnthaal: (n: number) => `Au moins ${n} équipes présentes nécessaires — voir Accueil.`,
     nogGeenWedstrijden: "Pas encore de matchs générés — voir Accueil.",
     kampioenLabel: "🏆 Champion :",

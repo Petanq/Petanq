@@ -1304,6 +1304,27 @@
 .match13-scope .piramide-titel {
   margin: 1.6rem 0 0.6rem;
 }
+.match13-scope .piramide-kop {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1.8rem 0 0.9rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent);
+}
+.match13-scope .piramide-kop .piramide-titel {
+  margin: 0;
+}
+.match13-scope .piramide-kop-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: #000;
+  border-radius: 50%;
+  padding: 3px;
+  box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.5);
+}
 .match13-scope .poule-qualifiers {
   flex: 0 0 190px;
   border: 1.5px solid var(--poule-accent, var(--border));
