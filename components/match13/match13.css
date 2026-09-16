@@ -2510,9 +2510,12 @@
   font-weight: 800;
 }
 
-/* Volledig poule-schema (Groepsfase, "Volledig schema afdrukken") — een
-   compacte tabel per poule, met een lege lijn per wedstrijd om de score met
-   de hand op in te vullen zodra die gespeeld wordt. */
+/* Volledig poule-schema (Groepsfase, "Volledig schema afdrukken") — dezelfde
+   gouden-kaartjes-opbouw als het Zaalscherm (Ronde 1 / Winnaars / Verliezers
+   / Barrage / Piramide, in kolommen), maar op wit papier i.p.v. donker (dat
+   zou bij elke afdruk enorm veel inkt verbruiken) en zonder de
+   verbindingslijntjes (die worden pas op het scherm zelf getekend, nadat
+   alles al zichtbaar is — op een afgedrukt blad kan dat niet betrouwbaar). */
 .match13-scope .print-poule-blok {
   break-inside: avoid;
   margin-bottom: 6mm;
@@ -2523,20 +2526,55 @@
   font-weight: 800;
   color: #1f1f1f;
 }
-.match13-scope table.print-poule-tabel th,
-.match13-scope table.print-poule-tabel td {
-  padding: 1.8mm 2mm;
-  font-size: 9pt;
+.match13-scope .print-poule-rij {
+  display: flex;
+  gap: 3mm;
 }
-.match13-scope table.print-poule-tabel td.team-naam-print {
-  width: 34%;
+.match13-scope .print-poule-kol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2mm;
+  min-width: 0;
+}
+.match13-scope .print-poule-kol-titel {
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b8860b;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 0.5mm;
+}
+.match13-scope .print-poule-match {
+  border: 0.4mm solid #f4c430;
+  border-radius: 2mm;
+  padding: 1.4mm 1.8mm 1.8mm;
+}
+.match13-scope .print-poule-kwalificatie-kaart {
+  border-color: #b8860b;
+}
+.match13-scope .print-poule-lbl {
+  font-size: 6.5pt;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 700;
+  margin-bottom: 1mm;
+}
+.match13-scope .print-poule-side {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5mm;
+  padding: 0.6mm 0;
+  font-size: 8pt;
+  font-weight: 600;
+}
+.match13-scope .print-poule-side + .print-poule-side {
+  border-top: 0.15mm dashed #eee;
 }
 .match13-scope .print-poule-score-lijn {
-  width: 16mm;
+  width: 10mm;
+  flex-shrink: 0;
   border-bottom: 0.3mm solid #b3ab98;
-}
-.match13-scope .print-poule-kwalificatie {
-  margin: 2mm 0 0;
-  font-size: 8.5pt;
-  color: #6b665c;
 }

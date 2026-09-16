@@ -1758,45 +1758,55 @@ export function Match13App({
         const pouleMatches = pouleBracket.filter((m) => m.poule === label);
         const winner = winnerLoserOf(pouleMatches, `${label}-WIN`, "winner");
         const barrageWinner = winnerLoserOf(pouleMatches, `${label}-BAR`, "winner");
+        const rondes = Array.from(new Set(pouleMatches.map((m) => m.round))).sort((a, b) => a - b);
         return (
           <div key={label} className="print-poule-blok">
             <h4 className="print-poule-titel">{t.match13.pouleLabel(label)}</h4>
-            <table className="print-klassement-tabel print-poule-tabel">
-              <thead>
-                <tr>
-                  <th>{t.match13.printRangKolom}</th>
-                  <th className="team-kolom">{t.match13.teamKolom} A</th>
-                  <th className="vs-kolom"></th>
-                  <th className="team-kolom">{t.match13.teamKolom} B</th>
-                  <th>{t.match13.printUitslag}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pouleMatches
-                  .filter((m) => !isTrueBye(m))
-                  .map((m) => {
-                    const [aId, bId] = resolvedTeams(pouleMatches, m);
-                    const aTeam = teamOf(aId);
-                    const bTeam = teamOf(bId);
-                    return (
-                      <tr key={m.id}>
-                        <td className="team-naam-print">{printPoulesLabel(m)}</td>
-                        <td className="team-naam-print">{aTeam ? `${aTeam.number}. ${aTeam.name}` : "?"}</td>
-                        <td className="vs-kolom">
-                          <span className="vs-pil">{t.match13.tegenLabel}</span>
-                        </td>
-                        <td className="team-naam-print">{bTeam ? `${bTeam.number}. ${bTeam.name}` : "?"}</td>
-                        <td className="print-poule-score-lijn"></td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-            <p className="print-poule-kwalificatie">
-              {t.match13.doorNaarPiramide}: 1.{" "}
-              {winner ? `${teamOf(winner)?.number}. ${teamOf(winner)?.name}` : "____________"} — 2.{" "}
-              {barrageWinner ? `${teamOf(barrageWinner)?.number}. ${teamOf(barrageWinner)?.name}` : "____________"}
-            </p>
+            <div className="print-poule-rij">
+              {rondes.map((r) => (
+                <div className="print-poule-kol" key={r}>
+                  {pouleMatches
+                    .filter((m) => m.round === r && !isTrueBye(m))
+                    .map((m) => {
+                      const [aId, bId] = resolvedTeams(pouleMatches, m);
+                      const aTeam = teamOf(aId);
+                      const bTeam = teamOf(bId);
+                      return (
+                        <div key={m.id}>
+                          <div className="print-poule-kol-titel">{m.label}</div>
+                          <div className="print-poule-match">
+                            <div className="print-poule-lbl">{t.match13.plein(m.court ?? 0)}</div>
+                            <div className="print-poule-side">
+                              <span>{aTeam ? `${aTeam.number}. ${aTeam.name}` : "?"}</span>
+                              <span className="print-poule-score-lijn"></span>
+                            </div>
+                            <div className="print-poule-side">
+                              <span>{bTeam ? `${bTeam.number}. ${bTeam.name}` : "?"}</span>
+                              <span className="print-poule-score-lijn"></span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {r === rondes[rondes.length - 1] && (
+                    <div>
+                      <div className="print-poule-kol-titel">{t.match13.doorNaarPiramide}</div>
+                      <div className="print-poule-match print-poule-kwalificatie-kaart">
+                        <div className="print-poule-lbl">{t.match13.doorNaarPiramide}</div>
+                        <div className="print-poule-side">
+                          <span>1. {winner ? `${teamOf(winner)?.number}. ${teamOf(winner)?.name}` : "____________"}</span>
+                        </div>
+                        <div className="print-poule-side">
+                          <span>
+                            2. {barrageWinner ? `${teamOf(barrageWinner)?.number}. ${teamOf(barrageWinner)?.name}` : "____________"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         );
       })}
