@@ -12,6 +12,7 @@ import {
   knockoutRanking,
   playableMatches,
   poulesOf,
+  poulesRestRanking,
   pouleQualifiersReady,
   qualifiersFromBarrageBracket,
   qualifiersFromRoundRobin,
@@ -628,5 +629,67 @@ describe("knockoutRanking", () => {
       { vanaf: 1, tot: 1, teamIds: ["only-first"] },
       { vanaf: 2, tot: 2, teamIds: ["only-second"] },
     ]);
+  });
+});
+
+describe("poulesRestRanking", () => {
+  // buildPouleOf4Bracket husselt zelf welk team op teamA/teamB terechtkomt,
+  // dus deze uitslagen zijn bewust uitgedrukt in termen van sourceA/sourceB
+  // (winnaar/verliezer van m1/m2) i.p.v. vaste teamnamen — dat blijft
+  // ondubbelzinnig ongeacht de husseling, en levert exact plaats 1 t.e.m. 4
+  // met respectievelijk 2, 2, 1 en 0 overwinningen op.
+  function speelPouleVan4Uit(matches: BracketMatch[], prefix: string): BracketMatch[] {
+    const [m1, m2] = matches;
+    matches = score(matches, m1.id, 13, 5); // m1.teamA wint (1 overwinning)
+    matches = score(matches, m2.id, 13, 6); // m2.teamA wint (1 overwinning)
+    matches = score(matches, `${prefix}-WIN`, 13, 9); // winnaar m1 wint -> plaats 1 (2 overwinningen)
+    matches = score(matches, `${prefix}-LOSS`, 13, 4); // verliezer m1 wint (1 overwinning tot nu toe)
+    matches = score(matches, `${prefix}-BAR`, 4, 13); // winnaar A-LOSS wint de barrage -> plaats 2 (2 overwinningen)
+    return matches;
+  }
+
+  it("geeft wie nooit een piramide bereikte alsnog een plaats, op basis van hun aantal overwinningen in de poule", () => {
+    const teams = ["T1", "T2", "T3", "T4"].map(makeTeam).map((t) => ({ ...t, poule: "A" }));
+    const matches = speelPouleVan4Uit(buildPouleOf4Bracket("A", teams, 1), "A");
+    const qualifiers = qualifiersFromBarrageBracket(matches, "A");
+    const plaats = (n: 1 | 2 | 3 | 4) => qualifiers.find((q) => q.place === n)!.teamId;
+
+    // Plaats 1 en 2 stel je voor als al gerangschikt via Piramide A — enkel
+    // plaats 3 (1 overwinning) en plaats 4 (0 overwinningen) bereikten nooit
+    // een piramide, en horen dus niet samen in dezelfde reeks.
+    const groepen = poulesRestRanking(teams, matches, new Set([plaats(1), plaats(2)]), 3);
+    expect(groepen).toEqual([
+      { vanaf: 3, tot: 3, teamIds: [plaats(3)] }, // 1 overwinning
+      { vanaf: 4, tot: 4, teamIds: [plaats(4)] }, // 0 overwinningen
+    ]);
+  });
+
+  it("groepeert teams uit verschillende poules samen als ze evenveel overwinningen hebben", () => {
+    const teamsA = ["A1", "A2", "A3", "A4"].map(makeTeam).map((t) => ({ ...t, poule: "A" }));
+    const teamsB = ["B1", "B2", "B3", "B4"].map(makeTeam).map((t) => ({ ...t, poule: "B" }));
+    const matchesA = speelPouleVan4Uit(buildPouleOf4Bracket("A", teamsA, 1), "A");
+    const matchesB = speelPouleVan4Uit(buildPouleOf4Bracket("B", teamsB, 5), "B");
+    const alleMatches = [...matchesA, ...matchesB];
+    const alleTeams = [...teamsA, ...teamsB];
+
+    const qualifiersA = qualifiersFromBarrageBracket(matchesA, "A");
+    const qualifiersB = qualifiersFromBarrageBracket(matchesB, "B");
+    const plaatsA = (n: 1 | 2 | 3 | 4) => qualifiersA.find((q) => q.place === n)!.teamId;
+    const plaatsB = (n: 1 | 2 | 3 | 4) => qualifiersB.find((q) => q.place === n)!.teamId;
+
+    // Enkel plaats 1/2 van elke poule bereikte een piramide — plaats 3 van
+    // beide poules (1 overwinning elk) en plaats 4 van beide (0 elk) horen
+    // dus samen in dezelfde reeks.
+    const gedekt = new Set([plaatsA(1), plaatsA(2), plaatsB(1), plaatsB(2)]);
+    const groepen = poulesRestRanking(alleTeams, alleMatches, gedekt, 5);
+    expect(groepen).toEqual([
+      { vanaf: 5, tot: 6, teamIds: expect.arrayContaining([plaatsA(3), plaatsB(3)]) },
+      { vanaf: 7, tot: 8, teamIds: expect.arrayContaining([plaatsA(4), plaatsB(4)]) },
+    ]);
+  });
+
+  it("geeft niets terug als iedereen al een plaats heeft", () => {
+    const teams = ["T1", "T2"].map(makeTeam).map((t) => ({ ...t, poule: "A" }));
+    expect(poulesRestRanking(teams, [], new Set(["T1", "T2"]), 3)).toEqual([]);
   });
 });

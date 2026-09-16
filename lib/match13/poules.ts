@@ -628,3 +628,48 @@ export function knockoutRanking(matches: BracketMatch[], startRank = 1): Knockou
   }
   return groepen;
 }
+
+/** Hoeveel poule-wedstrijden (Ronde 1/Winnaars/Verliezers/Barrage) dit team won. */
+function poulesOverwinningen(teamId: string, pouleBracket: BracketMatch[]): number {
+  let overwinningen = 0;
+  for (const m of pouleBracket) {
+    if (isTrueBye(m) || m.scoreA === undefined || m.scoreB === undefined) continue;
+    const [a, b] = resolvedTeams(pouleBracket, m);
+    if ((m.scoreA > m.scoreB ? a : b) === teamId) overwinningen++;
+  }
+  return overwinningen;
+}
+
+/**
+ * Vervolg van knockoutRanking(): teams die nooit een piramide bereikten (bv.
+ * plaats 3/4 van hun poule zonder dat Piramide B gespeeld wordt) hadden tot
+ * nu toe helemaal geen eindplaats — enkel wie de piramide haalde stond in
+ * het klassement. Zij komen hier verder te staan, gegroepeerd op hun aantal
+ * overwinningen in de poule-fase (meeste overwinningen eerst) zodat echt elke
+ * deelnemer een plaats krijgt.
+ */
+export function poulesRestRanking(
+  teams: Team[],
+  pouleBracket: BracketMatch[],
+  reedsGerangschikt: Set<string>,
+  startRank: number
+): KnockoutRankGroep[] {
+  const rest = teams.filter((t) => t.poule && !reedsGerangschikt.has(t.id));
+  if (rest.length === 0) return [];
+
+  const perOverwinningen = new Map<number, string[]>();
+  for (const t of rest) {
+    const w = poulesOverwinningen(t.id, pouleBracket);
+    perOverwinningen.set(w, [...(perOverwinningen.get(w) ?? []), t.id]);
+  }
+
+  let rank = startRank;
+  const groepen: KnockoutRankGroep[] = [];
+  const overwinningenAflopend = Array.from(perOverwinningen.keys()).sort((a, b) => b - a);
+  for (const w of overwinningenAflopend) {
+    const teamIds = perOverwinningen.get(w)!;
+    groepen.push({ vanaf: rank, tot: rank + teamIds.length - 1, teamIds });
+    rank += teamIds.length;
+  }
+  return groepen;
+}

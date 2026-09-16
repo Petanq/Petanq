@@ -38,6 +38,7 @@ import {
   isTrueBye,
   knockoutRanking,
   poulesOf,
+  poulesRestRanking,
   pouleQualifiersReady,
   qualifiersFromPoule,
   resolvedTeams,
@@ -645,7 +646,16 @@ export function Match13App({
       const binnen = zaalFitBinnenRef.current;
       const buiten = zaalFitBuitenRef.current;
       if (!binnen || !buiten) return;
-      binnen.style.transform = "none";
+      // scrollHeight is de eigen, onvervormde layout-hoogte van dit element —
+      // een CSS transform (waaronder onze eigen scale hieronder) verandert
+      // die nooit, dus dit meet altijd de echte ongeschaalde hoogte, ook
+      // terwijl er al een schaal actief staat. Vroeger werd de transform
+      // hiervoor eerst manueel op de DOM zelf op "none" gezet — buiten React
+      // om — wat React's eigen vergelijking in de war kon sturen zodra de
+      // nieuw berekende schaal toevallig gelijk bleef aan de vorige (React
+      // ziet dan geen wijziging en zet de transform nooit meer terug), met
+      // als gevolg dat de piramide ongeschaald bleef staan terwijl de
+      // verbindingslijntjes wél op de geschaalde maten rekenden.
       const natuurlijkeHoogte = binnen.scrollHeight;
       const beschikbaar = window.innerHeight - buiten.getBoundingClientRect().top - 24;
       setZaalSchaal(natuurlijkeHoogte > beschikbaar ? Math.max(0.4, beschikbaar / natuurlijkeHoogte) : 1);
@@ -798,7 +808,20 @@ export function Match13App({
     knockoutBracketB.length > 0
       ? knockoutRanking(knockoutBracketB, (eindklassementA[eindklassementA.length - 1]?.tot ?? 0) + 1)
       : [];
-  const eindklassement: KnockoutRankGroep[] = [...eindklassementA, ...eindklassementB];
+  // Wie nooit een piramide bereikte (bv. plaats 3/4 zonder Piramide B) stond
+  // tot hier nergens in het klassement — die komen nu verder te staan,
+  // gegroepeerd op hun aantal overwinningen in de poule-fase, zodat echt
+  // elke deelnemer een eindplaats krijgt.
+  const eindklassementPiramides = [...eindklassementA, ...eindklassementB];
+  const eindklassementRest = isPoules
+    ? poulesRestRanking(
+        teams,
+        pouleBracket,
+        new Set(eindklassementPiramides.flatMap((g) => g.teamIds)),
+        (eindklassementPiramides[eindklassementPiramides.length - 1]?.tot ?? 0) + 1
+      )
+    : [];
+  const eindklassement: KnockoutRankGroep[] = [...eindklassementPiramides, ...eindklassementRest];
 
   const tournamentComplete = isPoules
     ? !!champion
