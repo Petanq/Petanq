@@ -1225,6 +1225,27 @@
   border-color: var(--live);
   border-left-color: var(--poule-accent, var(--live));
 }
+/* Basisversie (licht) van de finale-kaart -- .bracket-donker-blok herkleurt
+   dit hieronder voor op het donkere Zaalscherm. */
+.match13-scope .bracket-match.finale {
+  background: rgba(244, 196, 48, 0.12);
+  box-shadow: 0 0 0 2px rgba(244, 196, 48, 0.4);
+}
+.match13-scope .bracket-finale-banner {
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+.match13-scope .bracket-finale-icoon {
+  font-size: 1.5rem;
+  display: block;
+}
+.match13-scope .bracket-finale-titel {
+  color: #a6740a;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+}
 .match13-scope .poule-dot {
   display: inline-block;
   width: 0.7rem;
@@ -2100,6 +2121,16 @@
     size: A4 portrait;
     margin: 0;
   }
+  /* De piramide-afdruk kan, met meer rondes, breder uitvallen dan een
+     rechtopstaand blad -- een liggend blad geeft meer ruimte zodat kolommen
+     nooit aan de rand afgesneden worden. */
+  .match13-scope .print-piramide-pagina {
+    page: piramide-print;
+  }
+  @page piramide-print {
+    size: A4 landscape;
+    margin: 0;
+  }
 
   /* .fade-in start bij opacity:0 en animeert naar 1 — normaal allang voorbij
      tegen de tijd dat iemand op een afdrukknop klikt, maar bij "Dit scherm
@@ -2650,4 +2681,22 @@
   width: 10mm;
   flex-shrink: 0;
   border-bottom: 0.3mm solid #b3ab98;
+}
+
+/* Witte piramide-afdruk ("Piramide afdrukken") -- hergebruikt de echte
+   BracketColumns/PiramideKop-weergave (zie printKnockoutOverzichtBlad) i.p.v.
+   een eigen opbouw, dus enkel wat kader/marge nodig, geen eigen kaart-CSS. */
+.match13-scope .print-piramide-blok {
+  break-inside: avoid;
+  margin-bottom: 6mm;
+}
+.match13-scope .print-piramide-kampioen {
+  margin: -1mm 0 3mm;
+  font-size: 9pt;
+  font-weight: 700;
+  color: #a6740a;
+}
+.match13-scope .print-piramide-blok .bracket-clear,
+.match13-scope .print-piramide-blok .bracket-timer-row {
+  display: none;
 }

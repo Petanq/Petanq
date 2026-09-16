@@ -267,10 +267,17 @@ function BracketConnectors({
     }
     bereken();
     window.addEventListener("resize", bereken);
+    // Een afdrukblad (zoals de witte piramide-afdruk) staat normaal op
+    // display:none en heeft dus nog geen echte afmetingen op het moment dat
+    // deze component mount — pas zodra de browser effectief gaat afdrukken
+    // (en @media print het blok zichtbaar maakt) is er iets om te meten.
+    // "beforeprint" vuurt net voor die afdruklayout, dus daar herberekenen.
+    window.addEventListener("beforeprint", bereken);
     const observer = new ResizeObserver(bereken);
     if (containerRef.current) observer.observe(containerRef.current);
     return () => {
       window.removeEventListener("resize", bereken);
+      window.removeEventListener("beforeprint", bereken);
       observer.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1885,12 +1892,18 @@ export function Match13App({
     </div>
   );
 
-  // Zelfde witte, print-vriendelijke opzet als printPoulesOverzichtBlad
-  // hierboven, maar dan voor de knock-outpiramide(s) -- handig zodra je in de
-  // finale rondes zit en de donkere Zaalscherm-kaartjes te veel inkt/te
-  // weinig contrast geven op papier.
+  // Bewust géén eigen, vereenvoudigde weergave: dit moet "echt hetzelfde"
+  // zijn als de piramide op het Zaalscherm zelf (rondes, pleinen, ploegen,
+  // verbindingslijnen) zodat het bij een computerpanne 1-op-1 als
+  // papieren vervanging dienst kan doen -- vandaar hergebruik van exact
+  // dezelfde PiramideKop/BracketColumns als de live weergave, enkel niet in
+  // een donker kaartje (dat is inkt-onvriendelijk op papier). "editable"
+  // staat aan zodat nog te spelen wedstrijden een leeg scorevakje krijgen
+  // om tijdens het toernooi met de hand in te vullen, net zoals op het
+  // scherm zelf; er zijn geen onChange-handlers nodig want dit blad wordt
+  // nooit echt bewerkt, enkel afgedrukt.
   const printKnockoutOverzichtBlad = isPoules && knockoutStarted && (
-    <div className="print-klassement-blad">
+    <div className="print-klassement-blad print-piramide-pagina">
       <div className="print-klassement-kop">
         <img className="print-klassement-logo" src="/images/logo-icon.png" alt="" />
         <div className="print-klassement-titel">
@@ -1905,46 +1918,17 @@ export function Match13App({
         { label: t.match13.piramideB, matches: knockoutBracketB, kampioen: championB },
       ]
         .filter((p) => p.matches.length > 0)
-        .map((p) => {
-          const rondes = Array.from(new Set(p.matches.map((m) => m.round))).sort((a, b) => a - b);
-          return (
-            <div key={p.label} className="print-poule-blok">
-              <h4 className="print-poule-titel">
-                {p.label}
-                {p.kampioen && ` — ${t.match13.kampioenLabel} ${teamOf(p.kampioen)?.number}. ${teamOf(p.kampioen)?.name}`}
-              </h4>
-              <div className="print-poule-rij">
-                {rondes.map((r) => (
-                  <div className="print-poule-kol" key={r}>
-                    {p.matches
-                      .filter((m) => m.round === r && !isTrueBye(m))
-                      .map((m) => {
-                        const [aId, bId] = resolvedTeams(p.matches, m);
-                        const aTeam = teamOf(aId);
-                        const bTeam = teamOf(bId);
-                        return (
-                          <div key={m.id}>
-                            <div className="print-poule-kol-titel">{m.label}</div>
-                            <div className="print-poule-match">
-                              <div className="print-poule-lbl">{t.match13.plein(m.court ?? 0)}</div>
-                              <div className="print-poule-side">
-                                <span>{aTeam ? `${aTeam.number}. ${aTeam.name}` : "?"}</span>
-                                <span className="print-poule-score-lijn"></span>
-                              </div>
-                              <div className="print-poule-side">
-                                <span>{bTeam ? `${bTeam.number}. ${bTeam.name}` : "?"}</span>
-                                <span className="print-poule-score-lijn"></span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
+        .map((p) => (
+          <div key={p.label} className="print-piramide-blok">
+            <PiramideKop label={p.label} />
+            {p.kampioen && (
+              <p className="print-piramide-kampioen">
+                {t.match13.kampioenLabel} {teamOf(p.kampioen)?.number}. {teamOf(p.kampioen)?.name}
+              </p>
+            )}
+            <BracketColumns matches={p.matches} numNameOf={numNameOf} editable showConnectors />
+          </div>
+        ))}
       <div className="print-klassement-credit">
         www.petanque<span className="m13-gold">13</span>.be
       </div>
