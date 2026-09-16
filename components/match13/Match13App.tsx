@@ -1700,6 +1700,74 @@ export function Match13App({
     </div>
   );
 
+  // Eén blad met het volledige poule-schema (alle poules, alle wedstrijden
+  // van de groepsfase) om op papier mee te nemen als back-up — in
+  // tegenstelling tot de kaartjes hierboven staat hier ook wat nog niet
+  // speelbaar is al op, met een lege lijn om de score met de hand bij te
+  // schrijven zodra die wedstrijd wél gespeeld wordt.
+  const printPoulesOverzichtBlad = isPoules && (
+    <div className="print-klassement-blad">
+      <div className="print-klassement-kop">
+        <img className="print-klassement-logo" src="/images/logo-icon.png" alt="" />
+        <div className="print-klassement-titel">
+          <b>
+            MATCH<span className="m13-gold">13</span>
+          </b>
+          <span>{clubName}</span>
+        </div>
+      </div>
+      {pouleLabelsSorted.map((label) => {
+        const pouleMatches = pouleBracket.filter((m) => m.poule === label);
+        const winner = winnerLoserOf(pouleMatches, `${label}-WIN`, "winner");
+        const barrageWinner = winnerLoserOf(pouleMatches, `${label}-BAR`, "winner");
+        return (
+          <div key={label} className="print-poule-blok">
+            <h4 className="print-poule-titel">{t.match13.pouleLabel(label)}</h4>
+            <table className="print-klassement-tabel print-poule-tabel">
+              <thead>
+                <tr>
+                  <th>{t.match13.printRangKolom}</th>
+                  <th className="team-kolom">{t.match13.teamKolom} A</th>
+                  <th className="vs-kolom"></th>
+                  <th className="team-kolom">{t.match13.teamKolom} B</th>
+                  <th>{t.match13.printUitslag}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pouleMatches
+                  .filter((m) => !isTrueBye(m))
+                  .map((m) => {
+                    const [aId, bId] = resolvedTeams(pouleMatches, m);
+                    const aTeam = teamOf(aId);
+                    const bTeam = teamOf(bId);
+                    return (
+                      <tr key={m.id}>
+                        <td className="team-naam-print">{printPoulesLabel(m)}</td>
+                        <td className="team-naam-print">{aTeam ? `${aTeam.number}. ${aTeam.name}` : "?"}</td>
+                        <td className="vs-kolom">
+                          <span className="vs-pil">{t.match13.tegenLabel}</span>
+                        </td>
+                        <td className="team-naam-print">{bTeam ? `${bTeam.number}. ${bTeam.name}` : "?"}</td>
+                        <td className="print-poule-score-lijn"></td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+            <p className="print-poule-kwalificatie">
+              {t.match13.doorNaarPiramide}: 1.{" "}
+              {winner ? `${teamOf(winner)?.number}. ${teamOf(winner)?.name}` : "____________"} — 2.{" "}
+              {barrageWinner ? `${teamOf(barrageWinner)?.number}. ${teamOf(barrageWinner)?.name}` : "____________"}
+            </p>
+          </div>
+        );
+      })}
+      <div className="print-klassement-credit">
+        www.petanque<span className="m13-gold">13</span>.be
+      </div>
+    </div>
+  );
+
   const printKlassementBlad = (
     <div className="print-klassement-blad">
       <div className="print-klassement-kop">
@@ -2245,10 +2313,25 @@ export function Match13App({
               </h2>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
                 {playablePoulesMatches.length > 0 && (
-                  <button className="match13-actie-knop" onClick={() => window.print()}>
+                  <button
+                    className="match13-actie-knop"
+                    onClick={() => {
+                      flushSync(() => setPrintRondeModus("kaartjes"));
+                      window.print();
+                    }}
+                  >
                     {t.match13.printKaartjes}
                   </button>
                 )}
+                <button
+                  className="match13-actie-knop"
+                  onClick={() => {
+                    flushSync(() => setPrintRondeModus("overzicht"));
+                    window.print();
+                  }}
+                >
+                  {t.match13.printPoulesSchema}
+                </button>
                 {groupStageDone && !knockoutStarted && (
                   <button className="cta" onClick={startKnockout}>
                     {t.match13.startKnockout}
@@ -2262,7 +2345,7 @@ export function Match13App({
               </div>
             </div>
 
-            {printPoulesKaartjesBlad}
+            {printRondeModus === "kaartjes" ? printPoulesKaartjesBlad : printPoulesOverzichtBlad}
 
             {presentTeams.length < minToPlay && (
               <p className="hint" style={{ marginTop: "1rem" }}>

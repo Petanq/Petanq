@@ -2503,3 +2503,34 @@
   color: #b8860b;
   font-weight: 800;
 }
+
+/* Volledig poule-schema (Groepsfase, "Volledig schema afdrukken") — een
+   compacte tabel per poule, met een lege lijn per wedstrijd om de score met
+   de hand op in te vullen zodra die gespeeld wordt. */
+.match13-scope .print-poule-blok {
+  break-inside: avoid;
+  margin-bottom: 6mm;
+}
+.match13-scope .print-poule-titel {
+  margin: 0 0 2mm;
+  font-size: 12pt;
+  font-weight: 800;
+  color: #1f1f1f;
+}
+.match13-scope table.print-poule-tabel th,
+.match13-scope table.print-poule-tabel td {
+  padding: 1.8mm 2mm;
+  font-size: 9pt;
+}
+.match13-scope table.print-poule-tabel td.team-naam-print {
+  width: 34%;
+}
+.match13-scope .print-poule-score-lijn {
+  width: 16mm;
+  border-bottom: 0.3mm solid #b3ab98;
+}
+.match13-scope .print-poule-kwalificatie {
+  margin: 2mm 0 0;
+  font-size: 8.5pt;
+  color: #6b665c;
+}
