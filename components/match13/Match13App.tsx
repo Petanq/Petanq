@@ -656,9 +656,18 @@ export function Match13App({
       // ziet dan geen wijziging en zet de transform nooit meer terug), met
       // als gevolg dat de piramide ongeschaald bleef staan terwijl de
       // verbindingslijntjes wél op de geschaalde maten rekenden.
+      // Niet enkel verkleinen als het niet past, maar ook vergroten als er
+      // nog ruimte over is — anders blijft de piramide op groot scherm/
+      // projector onnodig klein staan terwijl er nog veel lege ruimte is.
+      // Zowel hoogte als breedte tellen mee (transform: scale schaalt beide
+      // richtingen gelijk), anders zou opschalen op hoogte de piramide
+      // breder kunnen maken dan het scherm.
       const natuurlijkeHoogte = binnen.scrollHeight;
-      const beschikbaar = window.innerHeight - buiten.getBoundingClientRect().top - 24;
-      setZaalSchaal(natuurlijkeHoogte > beschikbaar ? Math.max(0.4, beschikbaar / natuurlijkeHoogte) : 1);
+      const natuurlijkeBreedte = binnen.scrollWidth;
+      const beschikbareHoogte = window.innerHeight - buiten.getBoundingClientRect().top - 24;
+      const beschikbareBreedte = buiten.getBoundingClientRect().width - 24;
+      const schaal = Math.min(beschikbareHoogte / natuurlijkeHoogte, beschikbareBreedte / natuurlijkeBreedte);
+      setZaalSchaal(Math.min(2, Math.max(0.4, schaal)));
     }
     herbereken();
     window.addEventListener("resize", herbereken);
@@ -670,9 +679,21 @@ export function Match13App({
     };
   }, [isFullscreen, tab, state]);
   const zaalFitBuitenStyle: CSSProperties | undefined =
-    isFullscreen && tab === "zaal" ? { height: zaalFitBinnenRef.current ? zaalFitBinnenRef.current.scrollHeight * zaalSchaal : undefined, overflow: "hidden" } : undefined;
+    isFullscreen && tab === "zaal"
+      ? {
+          height: zaalFitBinnenRef.current ? zaalFitBinnenRef.current.scrollHeight * zaalSchaal : undefined,
+          overflow: "hidden",
+          textAlign: "center",
+        }
+      : undefined;
+  // display: inline-block laat "binnen" krimpen tot zijn eigen natuurlijke
+  // breedte (i.p.v. altijd 100% van de pagina te vullen) — nodig om in
+  // herbereken() de échte content-breedte te kunnen meten, zodat opschalen
+  // (zie hierboven) nooit buiten het scherm uitsteekt.
   const zaalFitBinnenStyle: CSSProperties | undefined =
-    isFullscreen && tab === "zaal" ? { transform: `scale(${zaalSchaal})`, transformOrigin: "top center" } : undefined;
+    isFullscreen && tab === "zaal"
+      ? { display: "inline-block", transform: `scale(${zaalSchaal})`, transformOrigin: "top center" }
+      : undefined;
 
   const {
     clubName,
