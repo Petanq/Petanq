@@ -230,6 +230,8 @@ const nl = {
     verstuurReeks: (n: number) => (n === 1 ? "Versturen (1 tornooi)" : `Versturen (${n} tornooien)`),
     adresVanClubIngevuld: "Adres, gemeente en provincie automatisch ingevuld op basis van deze club.",
     clubNietGekoppeld: "Nog niet gekoppeld — klik hierboven op de club in de lijst om te bevestigen (anders kan je niet opslaan).",
+    clubStaatErNietBij: "Staat je club er niet bij?",
+    clubHierAanmelden: "Meld ze hier aan →",
     linkInschrijving: "Link naar inschrijving",
     opmerking: "Opmerking",
     kwalificatieData: "Schiftingsdata (optioneel)",
@@ -931,6 +933,8 @@ const fr: typeof nl = {
     adresVanClubIngevuld: "Adresse, commune et province automatiquement remplies à partir de ce club.",
     clubNietGekoppeld:
       "Pas encore confirmé — cliquez sur le club dans la liste ci-dessus pour valider (sinon impossible d'enregistrer).",
+    clubStaatErNietBij: "Votre club n'apparaît pas dans la liste ?",
+    clubHierAanmelden: "Ajoutez-le ici →",
     linkInschrijving: "Lien d'inscription",
     opmerking: "Remarque",
     kwalificatieData: "Dates d'éliminatoires (optionnel)",

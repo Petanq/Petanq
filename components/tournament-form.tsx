@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { Categorie, Formule, Speelvorm, Club, KwalificatieDatum } from "@/lib/types";
-import { toernooiIndienen, BestaandDubbelTornooi } from "@/actions/toernooien";
+import { toernooiIndienen, checkDubbelToernooi, BestaandDubbelTornooi } from "@/actions/toernooien";
 import { uploadNaarStorage } from "@/lib/upload-bestand";
 import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
 import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
@@ -233,6 +233,24 @@ export function TournamentForm() {
 
     vulVeldenInVanAffiche(resultaten[0]);
 
+    // Meteen na het scannen al checken op een mogelijke dubbel — met enkel de
+    // AI-gegevens, nog vóór de indiener de rest van het formulier invult. Zo
+    // hoeft die niet voor niets tijd te steken in een tornooi dat achteraf
+    // toch al blijkt te bestaan.
+    const eersteItem = resultaten[0];
+    const matchClub = eersteItem.clubnaam ? vindClubBijNaam(eersteItem.clubnaam, clubs) : undefined;
+    const vroegeDubbel = await checkDubbelToernooi({
+      datum: eersteItem.datum ?? "",
+      categorie: eersteItem.categorie ?? "",
+      formule: eersteItem.formule ?? "",
+      speelvorm: eersteItem.speelvorm ?? "",
+      aantal_ronden: eersteItem.aantal_ronden ?? null,
+      aantal_poules: eersteItem.aantal_poules ?? null,
+      club_id: matchClub?.id ?? null,
+      clubnaam: matchClub?.naam ?? eersteItem.clubnaam ?? "",
+    });
+    setBestaandDubbel(vroegeDubbel);
+
     if (resultaten.length > 1 && isHerhalendeReeks(resultaten)) {
       // Exact hetzelfde tornooi, enkel andere datums: meteen alle datums
       // samen invullen i.p.v. een wachtrij van aparte inzendingen.
@@ -418,6 +436,37 @@ export function TournamentForm() {
                 {t.form.reeksHerkend(herhaalDatums.length)}
               </p>
             )}
+            {bestaandDubbel && (
+              <div className="mt-2 rounded-md border border-[#fecaca] bg-[#fef2f2] p-3 text-sm text-rood-2">
+                <p className="font-semibold">{t.form.foutDubbel}</p>
+                <p className="mt-1 text-donker">
+                  {(taal === "fr" ? bestaandDubbel.naam_fr : bestaandDubbel.naam_nl) || bestaandDubbel.naam_nl}
+                  {" — "}
+                  {new Date(bestaandDubbel.datum).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE")}
+                  {" — "}
+                  {bestaandDubbel.clubnaam}
+                </p>
+                {bestaandDubbel.affiche_url && (
+                  <a
+                    href={bestaandDubbel.affiche_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 block"
+                  >
+                    <img src={bestaandDubbel.affiche_url} alt="" className="max-h-48 rounded-md border border-rand" />
+                  </a>
+                )}
+                {!reeksModus && status === "fout" && (
+                  <button
+                    type="button"
+                    onClick={verstuurTochOndanksDubbel}
+                    className="mt-3 rounded-md border border-rood-2 px-3 py-1.5 text-sm font-semibold text-rood-2 transition-all hover:bg-[#fecaca] active:scale-95"
+                  >
+                    {t.form.knopTochVersturen}
+                  </button>
+                )}
+              </div>
+            )}
           </Veld>
         </fieldset>
 
@@ -556,6 +605,15 @@ export function TournamentForm() {
                 fout={veldFout(clubId ?? "")}
               />
               {adresVanClub && <p className="mt-1 text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</p>}
+              {clubnaam.trim() && !clubId && (
+                <p className="mt-1 text-xs font-semibold text-rood-2">{t.form.clubNietGekoppeld}</p>
+              )}
+              <p className="mt-1 text-xs text-grijs">
+                {t.form.clubStaatErNietBij}{" "}
+                <Link href="/clubs/toevoegen" target="_blank" className="font-semibold text-blauw-2 underline">
+                  {t.form.clubHierAanmelden}
+                </Link>
+              </p>
             </Veld>
           )}
           <Veld label={t.form.naamToernooi} verplicht>
@@ -789,43 +847,9 @@ export function TournamentForm() {
             speelvorm === "rondes" ? aantalRonden : aantalPoules,
           ].some((v) => !v) && <p className="text-sm font-medium text-rood-2">{t.form.foutVerplichteVelden}</p>}
 
-        {status === "fout" && foutReden === "dubbel_toernooi" && bestaandDubbel && (
-          <div className="rounded-md border border-[#fecaca] bg-[#fef2f2] p-3 text-sm text-rood-2">
-            <p className="font-semibold">{t.form.foutDubbel}</p>
-            <p className="mt-1 text-donker">
-              {(taal === "fr" ? bestaandDubbel.naam_fr : bestaandDubbel.naam_nl) || bestaandDubbel.naam_nl}
-              {" — "}
-              {new Date(bestaandDubbel.datum).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE")}
-              {" — "}
-              {bestaandDubbel.clubnaam}
-            </p>
-            {bestaandDubbel.affiche_url && (
-              <a href={bestaandDubbel.affiche_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">
-                <img
-                  src={bestaandDubbel.affiche_url}
-                  alt=""
-                  className="max-h-48 rounded-md border border-rand"
-                />
-              </a>
-            )}
-            {!reeksModus && (
-              <button
-                type="button"
-                onClick={verstuurTochOndanksDubbel}
-                className="mt-3 rounded-md border border-rood-2 px-3 py-1.5 text-sm font-semibold text-rood-2 transition-all hover:bg-[#fecaca] active:scale-95"
-              >
-                {t.form.knopTochVersturen}
-              </button>
-            )}
-          </div>
-        )}
-        {status === "fout" && !(foutReden === "dubbel_toernooi" && bestaandDubbel) && (
+        {status === "fout" && !bestaandDubbel && (
           <p className="text-sm font-medium text-rood-2">
-            {foutReden === "dubbel_toernooi"
-              ? t.form.foutDubbel
-              : foutReden === "ongeldige_invoer"
-              ? t.form.foutOngeldigeInvoer
-              : t.form.fout}
+            {foutReden === "ongeldige_invoer" ? t.form.foutOngeldigeInvoer : t.form.fout}
           </p>
         )}
 

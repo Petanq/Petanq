@@ -24,6 +24,67 @@ export type ToernooiActieResultaat =
   | { succes: true }
   | { succes: false; fout: string; bestaand?: BestaandDubbelTornooi };
 
+export type DubbelCheckVelden = {
+  datum: string;
+  categorie: string;
+  formule: string;
+  speelvorm: string;
+  aantal_ronden: number | null;
+  aantal_poules: number | null;
+  club_id: string | null;
+  clubnaam: string;
+};
+
+// Losstaand van toernooiIndienen zodat de client dit ook meteen na het
+// scannen van een affiche kan aanroepen — vóór de indiener alle ontbrekende
+// velden (adres, prijs, ...) manueel is gaan invullen. Zo niet, dan merkt de
+// indiener pas bij het versturen dat het al een dubbel is, en heeft die voor
+// niets tijd gestoken in het aanvullen van het formulier.
+export async function checkDubbelToernooi(velden: DubbelCheckVelden): Promise<BestaandDubbelTornooi | null> {
+  // Mensen dienen hetzelfde tornooi soms twee keer in met lichtjes andere
+  // bewoording (typo, ander lidwoord, "Doublettes" vs "Doublettes Formées",
+  // ...) — een exacte naam-vergelijking mist die dan. We vergelijken daarom
+  // op de structurele velden (net als bij het herkennen van een herhalende
+  // reeks affiches), niet op de vrije naamtekst. De service-role client is
+  // nodig omdat een anonieme indiener via RLS geen nog-niet-goedgekeurde
+  // tornooien mag lezen, maar we willen ook dubbels tussen twee "in
+  // behandeling"-inzendingen tegenhouden, niet enkel tegen al goedgekeurde.
+  //
+  // Categorie "circuit" slaan we hier bewust over: die tornooien draaien
+  // vaak een aparte Dames- en Herenreeks die verder exact dezelfde
+  // club/datum/formule/rondes delen — enkel het volgnummer in de naam
+  // maakt het verschil, en dat zit niet in een apart veld.
+  if (velden.categorie === "circuit") return null;
+  if (!velden.datum || !velden.categorie || !velden.formule || !velden.speelvorm || !velden.clubnaam.trim()) {
+    return null;
+  }
+
+  const serviceClient = createServiceRoleClient();
+  let dubbelCheck = serviceClient
+    .from("toernooien")
+    .select("naam_nl, naam_fr, datum, clubnaam, affiche_url")
+    .eq("datum", velden.datum)
+    .eq("categorie", velden.categorie)
+    .eq("formule", velden.formule)
+    .eq("speelvorm", velden.speelvorm)
+    .is("verwijderd_op", null)
+    .neq("status", "geweigerd");
+  dubbelCheck =
+    velden.speelvorm === "rondes"
+      ? dubbelCheck.eq("aantal_ronden", velden.aantal_ronden ?? null)
+      : dubbelCheck.eq("aantal_poules", velden.aantal_poules ?? null);
+  dubbelCheck = velden.club_id
+    ? dubbelCheck.eq("club_id", velden.club_id)
+    : dubbelCheck.ilike("clubnaam", velden.clubnaam.trim());
+
+  const { data: mogelijkeDubbels, error: dubbelFout } = await dubbelCheck.limit(1);
+  if (dubbelFout) {
+    console.error("Dubbel-check mislukt:", dubbelFout.message);
+    return null;
+  }
+  return mogelijkeDubbels?.[0] ?? null;
+}
+
 export async function toernooiIndienen(
   input: unknown,
   taalFormulier: "nl" | "fr",
@@ -38,42 +99,19 @@ export async function toernooiIndienen(
     .filter((k) => k.datum)
     .map((k) => ({ datum: k.datum, uur: k.uur || null, opmerking: k.opmerking || null }));
 
-  // Mensen dienen hetzelfde tornooi soms twee keer in met lichtjes andere
-  // bewoording (typo, ander lidwoord, "Doublettes" vs "Doublettes Formées",
-  // ...) — een exacte naam-vergelijking mist die dan. We vergelijken daarom
-  // op de structurele velden (net als bij het herkennen van een herhalende
-  // reeks affiches), niet op de vrije naamtekst. De service-role client is
-  // nodig omdat een anonieme indiener via RLS geen nog-niet-goedgekeurde
-  // tornooien mag lezen, maar we willen ook dubbels tussen twee "in
-  // behandeling"-inzendingen tegenhouden, niet enkel tegen al goedgekeurde.
-  //
-  // Categorie "circuit" slaan we hier bewust over: die tornooien draaien
-  // vaak een aparte Dames- en Herenreeks die verder exact dezelfde
-  // club/datum/formule/rondes delen — enkel het volgnummer in de naam
-  // maakt het verschil, en dat zit niet in een apart veld.
-  if (!negeerDubbelCheck && data.categorie !== "circuit") {
-    const serviceClient = createServiceRoleClient();
-    let dubbelCheck = serviceClient
-      .from("toernooien")
-      .select("naam_nl, naam_fr, datum, clubnaam, affiche_url")
-      .eq("datum", data.datum)
-      .eq("categorie", data.categorie)
-      .eq("formule", data.formule)
-      .eq("speelvorm", data.speelvorm)
-      .is("verwijderd_op", null)
-      .neq("status", "geweigerd");
-    dubbelCheck =
-      data.speelvorm === "rondes"
-        ? dubbelCheck.eq("aantal_ronden", data.aantal_ronden ?? null)
-        : dubbelCheck.eq("aantal_poules", data.aantal_poules ?? null);
-    dubbelCheck = data.club_id
-      ? dubbelCheck.eq("club_id", data.club_id)
-      : dubbelCheck.ilike("clubnaam", data.clubnaam.trim());
-
-    const { data: mogelijkeDubbels, error: dubbelFout } = await dubbelCheck.limit(1);
-    if (dubbelFout) console.error("Dubbel-check mislukt:", dubbelFout.message);
-    if (mogelijkeDubbels && mogelijkeDubbels.length > 0) {
-      return { succes: false, fout: "dubbel_toernooi", bestaand: mogelijkeDubbels[0] };
+  if (!negeerDubbelCheck) {
+    const bestaand = await checkDubbelToernooi({
+      datum: data.datum,
+      categorie: data.categorie,
+      formule: data.formule,
+      speelvorm: data.speelvorm,
+      aantal_ronden: data.aantal_ronden ?? null,
+      aantal_poules: data.aantal_poules ?? null,
+      club_id: data.club_id ?? null,
+      clubnaam: data.clubnaam,
+    });
+    if (bestaand) {
+      return { succes: false, fout: "dubbel_toernooi", bestaand };
     }
   }
 

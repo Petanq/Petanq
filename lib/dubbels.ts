@@ -9,6 +9,17 @@ export function normaliseer(tekst: string): string {
   return tekst.trim().toLowerCase().normalize("NFD").replace(DIAKRITISCHE_TEKENS, "");
 }
 
+// Franstalige clubs schrijven het lidwoord ("La", "Le", "Les", "L'") er soms
+// wel bij en soms niet ("La Petanque Montoise" vs "Pétanque Montoise") — dat
+// mag een naam-vergelijking niet laten mislukken, dus dit wegen we apart uit
+// normaliseer() (dat ook voor gemeentenamen gebruikt wordt, waar een lidwoord
+// wél tot de officiële naam kan horen).
+const LEIDEND_LIDWOORD = /^(la |le |les |l')/;
+
+export function normaliseerClubnaam(naam: string): string {
+  return normaliseer(naam).replace(LEIDEND_LIDWOORD, "");
+}
+
 // Mensen die hetzelfde toernooi indienen, typen de clubnaam/toernooinaam zelden
 // exact hetzelfde (andere schrijfwijze, hoofdletters, afkortingen...). Dezelfde
 // datum + gemeente is een veel betrouwbaardere aanwijzing dat het om hetzelfde

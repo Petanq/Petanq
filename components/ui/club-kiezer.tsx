@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Club } from "@/lib/types";
+import { normaliseer } from "@/lib/dubbels";
 
 // Zoek-en-kies-veld voor een bestaande club, i.p.v. een vrij tekstveld waar
 // dezelfde club telkens weer anders gespeld kan worden ("PC De Evers" / "PK
@@ -34,10 +35,10 @@ export function ClubKiezer({
     return () => document.removeEventListener("mousedown", onClickBuiten);
   }, []);
 
-  const zoekterm = waarde.trim().toLowerCase();
+  const zoekterm = normaliseer(waarde);
   const suggesties = (
     zoekterm
-      ? clubs.filter((c) => c.naam.toLowerCase().includes(zoekterm) || c.gemeente.toLowerCase().includes(zoekterm))
+      ? clubs.filter((c) => normaliseer(c.naam).includes(zoekterm) || normaliseer(c.gemeente).includes(zoekterm))
       : clubs
   ).slice(0, 30);
 

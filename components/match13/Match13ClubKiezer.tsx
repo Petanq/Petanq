@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import type { EchteClub } from "@/actions/match13-toegang";
+import { normaliseer } from "@/lib/dubbels";
 
 // Een eigen zoekveld i.p.v. een native <select>/<datalist> — die twee bleken
 // allebei niet goed genoeg: een <datalist> was niet duidelijk klikbaar, en
@@ -34,12 +35,10 @@ export function Match13ClubKiezer({
     return () => document.removeEventListener("mousedown", onClickBuiten);
   }, []);
 
-  const zoekterm = value.trim().toLowerCase();
+  const zoekterm = normaliseer(value);
   const suggesties = (
     zoekterm
-      ? echteClubs.filter(
-          (c) => c.naam.toLowerCase().includes(zoekterm) || c.gemeente.toLowerCase().includes(zoekterm)
-        )
+      ? echteClubs.filter((c) => normaliseer(c.naam).includes(zoekterm) || normaliseer(c.gemeente).includes(zoekterm))
       : echteClubs
   ).slice(0, 30);
 
