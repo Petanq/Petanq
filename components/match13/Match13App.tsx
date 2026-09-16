@@ -606,7 +606,7 @@ export function Match13App({
   // Welk afdrukblad er getoond wordt op het Zaalscherm — de kaartjes (default)
   // of het rondeoverzicht — via flushSync omgewisseld vlak vóór window.print()
   // zodat de browser het net-gekozen blad print, niet het vorige.
-  const [printRondeModus, setPrintRondeModus] = useState<"kaartjes" | "overzicht" | "scherm">("kaartjes");
+  const [printRondeModus, setPrintRondeModus] = useState<"kaartjes" | "overzicht" | "piramide" | "scherm">("kaartjes");
 
   // Volledig scherm: handig om het Zaalscherm groot te tonen op een
   // projector/tv aan de zaal. Luistert ook naar Esc (of de browser-eigen
@@ -1885,6 +1885,72 @@ export function Match13App({
     </div>
   );
 
+  // Zelfde witte, print-vriendelijke opzet als printPoulesOverzichtBlad
+  // hierboven, maar dan voor de knock-outpiramide(s) -- handig zodra je in de
+  // finale rondes zit en de donkere Zaalscherm-kaartjes te veel inkt/te
+  // weinig contrast geven op papier.
+  const printKnockoutOverzichtBlad = isPoules && knockoutStarted && (
+    <div className="print-klassement-blad">
+      <div className="print-klassement-kop">
+        <img className="print-klassement-logo" src="/images/logo-icon.png" alt="" />
+        <div className="print-klassement-titel">
+          <b>
+            MATCH<span className="m13-gold">13</span>
+          </b>
+          <span>{clubName}</span>
+        </div>
+      </div>
+      {[
+        { label: t.match13.piramideA, matches: knockoutBracket, kampioen: champion },
+        { label: t.match13.piramideB, matches: knockoutBracketB, kampioen: championB },
+      ]
+        .filter((p) => p.matches.length > 0)
+        .map((p) => {
+          const rondes = Array.from(new Set(p.matches.map((m) => m.round))).sort((a, b) => a - b);
+          return (
+            <div key={p.label} className="print-poule-blok">
+              <h4 className="print-poule-titel">
+                {p.label}
+                {p.kampioen && ` — ${t.match13.kampioenLabel} ${teamOf(p.kampioen)?.number}. ${teamOf(p.kampioen)?.name}`}
+              </h4>
+              <div className="print-poule-rij">
+                {rondes.map((r) => (
+                  <div className="print-poule-kol" key={r}>
+                    {p.matches
+                      .filter((m) => m.round === r && !isTrueBye(m))
+                      .map((m) => {
+                        const [aId, bId] = resolvedTeams(p.matches, m);
+                        const aTeam = teamOf(aId);
+                        const bTeam = teamOf(bId);
+                        return (
+                          <div key={m.id}>
+                            <div className="print-poule-kol-titel">{m.label}</div>
+                            <div className="print-poule-match">
+                              <div className="print-poule-lbl">{t.match13.plein(m.court ?? 0)}</div>
+                              <div className="print-poule-side">
+                                <span>{aTeam ? `${aTeam.number}. ${aTeam.name}` : "?"}</span>
+                                <span className="print-poule-score-lijn"></span>
+                              </div>
+                              <div className="print-poule-side">
+                                <span>{bTeam ? `${bTeam.number}. ${bTeam.name}` : "?"}</span>
+                                <span className="print-poule-score-lijn"></span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      <div className="print-klassement-credit">
+        www.petanque<span className="m13-gold">13</span>.be
+      </div>
+    </div>
+  );
+
   const printKlassementBlad = (
     <div className="print-klassement-blad">
       <div className="print-klassement-kop">
@@ -2426,7 +2492,7 @@ export function Match13App({
           {isPoules && (
           <section className="card fade-in">
             <div className="zaal-head">
-              <h2>
+              <h2 className={knockoutStarted ? "zaal-titel-knockout" : undefined}>
                 {champion
                   ? t.match13.kampioenBekend
                   : knockoutStarted
@@ -2436,6 +2502,11 @@ export function Match13App({
                   : t.match13.groepsfase}
               </h2>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+                {knockoutStarted && (
+                  <button className="link-btn" onClick={() => setTab("klassement")}>
+                    {t.match13.terugNaarPoules}
+                  </button>
+                )}
                 {playablePoulesMatches.length > 0 && (
                   <button
                     className="match13-actie-knop"
@@ -2456,6 +2527,17 @@ export function Match13App({
                 >
                   {t.match13.printPoulesSchema}
                 </button>
+                {knockoutStarted && (
+                  <button
+                    className="match13-actie-knop"
+                    onClick={() => {
+                      flushSync(() => setPrintRondeModus("piramide"));
+                      window.print();
+                    }}
+                  >
+                    {t.match13.printPiramideSchema}
+                  </button>
+                )}
                 <button
                   className="match13-actie-knop"
                   onClick={() => {
@@ -2482,6 +2564,8 @@ export function Match13App({
               ? printPoulesKaartjesBlad
               : printRondeModus === "overzicht"
               ? printPoulesOverzichtBlad
+              : printRondeModus === "piramide"
+              ? printKnockoutOverzichtBlad
               : null}
 
             {presentTeams.length < minToPlay && (

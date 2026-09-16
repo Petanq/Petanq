@@ -575,6 +575,11 @@
   flex-wrap: wrap;
   margin-bottom: 1rem;
 }
+/* Iets donkerder dan de volle accentkleur, anders is geel op een wit kaartje
+   niet meer leesbaar. */
+.match13-scope .zaal-titel-knockout {
+  color: #a6740a;
+}
 .match13-scope .round-badge {
   font-weight: 700;
   font-size: 0.85rem;

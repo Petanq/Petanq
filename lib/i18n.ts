@@ -548,6 +548,7 @@ const nl = {
     knockOut: "Knock-out",
     groepsfaseKlaar: "Groepsfase klaar",
     groepsfase: "Groepsfase",
+    terugNaarPoules: "← Bekijk poule-uitslagen",
     startKnockout: "Start knock-out →",
     knockoutOngedaanMaken: "← Knock-out ongedaan maken",
     knockoutOngedaanMakenBevestiging:
@@ -609,6 +610,7 @@ const nl = {
     printLijst: "🖨 Lijst afdrukken",
     printRondeOverzicht: "🖨 Rondeoverzicht afdrukken",
     printPoulesSchema: "🖨 Volledig schema afdrukken",
+    printPiramideSchema: "🖨 Piramide afdrukken (wit)",
     printDitScherm: "🖨 Dit scherm afdrukken",
     tegenLabel: "vs",
     printRondeKort: "RONDE",
@@ -1260,6 +1262,7 @@ const fr: typeof nl = {
     knockOut: "Phase finale",
     groepsfaseKlaar: "Phase de poules terminée",
     groepsfase: "Phase de poules",
+    terugNaarPoules: "← Voir les résultats des poules",
     startKnockout: "Démarrer la phase finale →",
     knockoutOngedaanMaken: "← Annuler la phase finale",
     knockoutOngedaanMakenBevestiging:
@@ -1321,6 +1324,7 @@ const fr: typeof nl = {
     printLijst: "🖨 Imprimer la liste",
     printRondeOverzicht: "🖨 Imprimer l'aperçu de la manche",
     printPoulesSchema: "🖨 Imprimer le schéma complet",
+    printPiramideSchema: "🖨 Imprimer la pyramide (blanc)",
     printDitScherm: "🖨 Imprimer cet écran",
     tegenLabel: "vs",
     printRondeKort: "MANCHE",
