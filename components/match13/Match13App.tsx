@@ -267,17 +267,10 @@ function BracketConnectors({
     }
     bereken();
     window.addEventListener("resize", bereken);
-    // Een afdrukblad (zoals de witte piramide-afdruk) staat normaal op
-    // display:none en heeft dus nog geen echte afmetingen op het moment dat
-    // deze component mount — pas zodra de browser effectief gaat afdrukken
-    // (en @media print het blok zichtbaar maakt) is er iets om te meten.
-    // "beforeprint" vuurt net voor die afdruklayout, dus daar herberekenen.
-    window.addEventListener("beforeprint", bereken);
     const observer = new ResizeObserver(bereken);
     if (containerRef.current) observer.observe(containerRef.current);
     return () => {
       window.removeEventListener("resize", bereken);
-      window.removeEventListener("beforeprint", bereken);
       observer.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -613,7 +606,7 @@ export function Match13App({
   // Welk afdrukblad er getoond wordt op het Zaalscherm — de kaartjes (default)
   // of het rondeoverzicht — via flushSync omgewisseld vlak vóór window.print()
   // zodat de browser het net-gekozen blad print, niet het vorige.
-  const [printRondeModus, setPrintRondeModus] = useState<"kaartjes" | "overzicht" | "piramide" | "scherm">("kaartjes");
+  const [printRondeModus, setPrintRondeModus] = useState<"kaartjes" | "overzicht">("kaartjes");
 
   // Volledig scherm: handig om het Zaalscherm groot te tonen op een
   // projector/tv aan de zaal. Luistert ook naar Esc (of de browser-eigen
@@ -1892,49 +1885,6 @@ export function Match13App({
     </div>
   );
 
-  // Bewust géén eigen, vereenvoudigde weergave: dit moet "echt hetzelfde"
-  // zijn als de piramide op het Zaalscherm zelf (rondes, pleinen, ploegen,
-  // verbindingslijnen) zodat het bij een computerpanne 1-op-1 als
-  // papieren vervanging dienst kan doen -- vandaar hergebruik van exact
-  // dezelfde PiramideKop/BracketColumns als de live weergave, enkel niet in
-  // een donker kaartje (dat is inkt-onvriendelijk op papier). "editable"
-  // staat aan zodat nog te spelen wedstrijden een leeg scorevakje krijgen
-  // om tijdens het toernooi met de hand in te vullen, net zoals op het
-  // scherm zelf; er zijn geen onChange-handlers nodig want dit blad wordt
-  // nooit echt bewerkt, enkel afgedrukt.
-  const printKnockoutOverzichtBlad = isPoules && knockoutStarted && (
-    <div className="print-klassement-blad print-piramide-pagina">
-      <div className="print-klassement-kop">
-        <img className="print-klassement-logo" src="/images/logo-icon.png" alt="" />
-        <div className="print-klassement-titel">
-          <b>
-            MATCH<span className="m13-gold">13</span>
-          </b>
-          <span>{clubName}</span>
-        </div>
-      </div>
-      {[
-        { label: t.match13.piramideA, matches: knockoutBracket, kampioen: champion },
-        { label: t.match13.piramideB, matches: knockoutBracketB, kampioen: championB },
-      ]
-        .filter((p) => p.matches.length > 0)
-        .map((p) => (
-          <div key={p.label} className="print-piramide-blok">
-            <PiramideKop label={p.label} />
-            {p.kampioen && (
-              <p className="print-piramide-kampioen">
-                {t.match13.kampioenLabel} {teamOf(p.kampioen)?.number}. {teamOf(p.kampioen)?.name}
-              </p>
-            )}
-            <BracketColumns matches={p.matches} numNameOf={numNameOf} editable showConnectors />
-          </div>
-        ))}
-      <div className="print-klassement-credit">
-        www.petanque<span className="m13-gold">13</span>.be
-      </div>
-    </div>
-  );
-
   const printKlassementBlad = (
     <div className="print-klassement-blad">
       <div className="print-klassement-kop">
@@ -2467,11 +2417,7 @@ export function Match13App({
         )}
 
         {tab === "zaal" && (
-          <div
-            ref={zaalFitBuitenRef}
-            style={zaalFitBuitenStyle}
-            className={printRondeModus === "scherm" ? "print-live-scherm" : undefined}
-          >
+          <div ref={zaalFitBuitenRef} style={zaalFitBuitenStyle}>
           <div ref={zaalFitBinnenRef} style={zaalFitBinnenStyle}>
           {isPoules && (
           <section className="card fade-in">
@@ -2511,26 +2457,6 @@ export function Match13App({
                 >
                   {t.match13.printPoulesSchema}
                 </button>
-                {knockoutStarted && (
-                  <button
-                    className="match13-actie-knop"
-                    onClick={() => {
-                      flushSync(() => setPrintRondeModus("piramide"));
-                      window.print();
-                    }}
-                  >
-                    {t.match13.printPiramideSchema}
-                  </button>
-                )}
-                <button
-                  className="match13-actie-knop"
-                  onClick={() => {
-                    flushSync(() => setPrintRondeModus("scherm"));
-                    window.print();
-                  }}
-                >
-                  {t.match13.printDitScherm}
-                </button>
                 {groupStageDone && !knockoutStarted && (
                   <button className="cta" onClick={startKnockout}>
                     {t.match13.startKnockout}
@@ -2548,8 +2474,6 @@ export function Match13App({
               ? printPoulesKaartjesBlad
               : printRondeModus === "overzicht"
               ? printPoulesOverzichtBlad
-              : printRondeModus === "piramide"
-              ? printKnockoutOverzichtBlad
               : null}
 
             {presentTeams.length < minToPlay && (
