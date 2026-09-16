@@ -2061,6 +2061,40 @@
     size: A4 portrait;
     margin: 0;
   }
+
+  /* .fade-in start bij opacity:0 en animeert naar 1 — normaal allang voorbij
+     tegen de tijd dat iemand op een afdrukknop klikt, maar bij "Dit scherm
+     afdrukken" print je precies het live scherm zélf (dat in zo'n
+     .fade-in-sectie zit), dus voor de zekerheid hier vastzetten op zichtbaar. */
+  .match13-scope .fade-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* "Dit scherm afdrukken" — drukt het Zaalscherm/Knock-out gewoon af
+     zoals het er al op het scherm bij staat (donkere kaartjes, reeds
+     ingevulde scores incluis) i.p.v. een apart afdrukblad — handig om op
+     te hangen als er geen scherm/projector beschikbaar is in de zaal.
+     Werkt enkel goed als de browser's afdrukoptie "achtergrondafbeeldingen"
+     aanstaat, anders vallen de donkere kaartjes weg tot enkel hun rand. */
+  .match13-scope .print-live-scherm,
+  .match13-scope .print-live-scherm * {
+    visibility: visible;
+  }
+  .match13-scope .print-live-scherm {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: #242424;
+    padding: 6mm;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+  .match13-scope .print-live-scherm .zaal-head {
+    display: none;
+  }
 }
 
 .match13-scope .print-kaarten-grid {

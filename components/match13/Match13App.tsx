@@ -580,7 +580,7 @@ export function Match13App({
   // Welk afdrukblad er getoond wordt op het Zaalscherm — de kaartjes (default)
   // of het rondeoverzicht — via flushSync omgewisseld vlak vóór window.print()
   // zodat de browser het net-gekozen blad print, niet het vorige.
-  const [printRondeModus, setPrintRondeModus] = useState<"kaartjes" | "overzicht">("kaartjes");
+  const [printRondeModus, setPrintRondeModus] = useState<"kaartjes" | "overzicht" | "scherm">("kaartjes");
 
   // Volledig scherm: handig om het Zaalscherm groot te tonen op een
   // projector/tv aan de zaal. Luistert ook naar Esc (of de browser-eigen
@@ -2348,7 +2348,11 @@ export function Match13App({
         )}
 
         {tab === "zaal" && (
-          <div ref={zaalFitBuitenRef} style={zaalFitBuitenStyle}>
+          <div
+            ref={zaalFitBuitenRef}
+            style={zaalFitBuitenStyle}
+            className={printRondeModus === "scherm" ? "print-live-scherm" : undefined}
+          >
           <div ref={zaalFitBinnenRef} style={zaalFitBinnenStyle}>
           {isPoules && (
           <section className="card fade-in">
@@ -2383,6 +2387,15 @@ export function Match13App({
                 >
                   {t.match13.printPoulesSchema}
                 </button>
+                <button
+                  className="match13-actie-knop"
+                  onClick={() => {
+                    flushSync(() => setPrintRondeModus("scherm"));
+                    window.print();
+                  }}
+                >
+                  {t.match13.printDitScherm}
+                </button>
                 {groupStageDone && !knockoutStarted && (
                   <button className="cta" onClick={startKnockout}>
                     {t.match13.startKnockout}
@@ -2396,7 +2409,11 @@ export function Match13App({
               </div>
             </div>
 
-            {printRondeModus === "kaartjes" ? printPoulesKaartjesBlad : printPoulesOverzichtBlad}
+            {printRondeModus === "kaartjes"
+              ? printPoulesKaartjesBlad
+              : printRondeModus === "overzicht"
+              ? printPoulesOverzichtBlad
+              : null}
 
             {presentTeams.length < minToPlay && (
               <p className="hint" style={{ marginTop: "1rem" }}>
@@ -2842,7 +2859,11 @@ export function Match13App({
               </div>
             )}
 
-            {printRondeModus === "kaartjes" ? printKaartjesBlad : printRondeOverzichtBlad}
+            {printRondeModus === "kaartjes"
+              ? printKaartjesBlad
+              : printRondeModus === "overzicht"
+              ? printRondeOverzichtBlad
+              : null}
 
             {rounds.length > 1 && (
               <details className="prev-rounds" open>
