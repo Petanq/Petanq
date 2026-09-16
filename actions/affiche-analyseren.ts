@@ -104,11 +104,13 @@ const TOERNOOI_ITEM_SCHEMA = {
   ],
 };
 
+export type AfficheAfbeelding = { data: string; mediaType: string };
+
 export async function afficheAnalyseren(
-  afbeeldingBase64: string,
-  mediaType: string
+  afbeeldingen: AfficheAfbeelding[]
 ): Promise<AfficheVelden[] | null> {
   if (!process.env.ANTHROPIC_API_KEY) return null;
+  if (afbeeldingen.length === 0) return null;
   if (!(await magAiAfbeeldingAnalyseren())) return null;
 
   const vandaag = new Date().toISOString().slice(0, 10);
@@ -116,9 +118,11 @@ export async function afficheAnalyseren(
   // Sommige GSM-browsers geven een leeg/onbekend mediatype door (bv. bij een
   // rechtstreekse camera-foto) terwijl de bytes wel degelijk een gewone foto
   // zijn — in dat geval gokken we op jpeg i.p.v. de aanvraag te laten falen.
-  const veiligMediaType = (GELDIGE_MEDIA_TYPES as readonly string[]).includes(mediaType)
-    ? (mediaType as (typeof GELDIGE_MEDIA_TYPES)[number])
-    : "image/jpeg";
+  function veiligeMediaType(mediaType: string) {
+    return (GELDIGE_MEDIA_TYPES as readonly string[]).includes(mediaType)
+      ? (mediaType as (typeof GELDIGE_MEDIA_TYPES)[number])
+      : "image/jpeg";
+  }
 
   try {
     const anthropic = getClient();
@@ -129,17 +133,19 @@ export async function afficheAnalyseren(
         {
           role: "user",
           content: [
-            {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: veiligMediaType,
-                data: afbeeldingBase64,
-              },
-            },
+            ...afbeeldingen.map(
+              (afbeelding): Anthropic.ImageBlockParam => ({
+                type: "image",
+                source: {
+                  type: "base64",
+                  media_type: veiligeMediaType(afbeelding.mediaType),
+                  data: afbeelding.data,
+                },
+              })
+            ),
             {
               type: "text",
-              text: `Dit is een affiche voor een petanquetoernooi in België. Lees de tekst op de affiche en vul het formulier zo goed mogelijk in. Vandaag is het ${vandaag} — als het jaartal op de affiche ontbreekt, reken dan per datum apart uit wat het eerstvolgende jaar is waarin die dag-en-maand nog in de toekomst valt t.o.v. ${vandaag}. Gebruik NOOIT een datum die al voorbij is — ook niet als de affiche een schifting/kwalificatiereeks toont die een jaargrens overschrijdt (bv. schiftingen in oktober-december gevolgd door een finale in januari: reken dan uit in welk jaar die oktober-december-reeks nog moet komen, en de finale valt in het jaar daarna). Vul een veld in met null als je het echt niet met voldoende zekerheid uit de affiche kan halen. Verzin niets.
+              text: `Dit ${afbeeldingen.length > 1 ? `zijn ${afbeeldingen.length} affiches` : "is een affiche"} voor een petanquetoernooi in België. ${afbeeldingen.length > 1 ? "Soms geeft een club twee aparte affiches mee voor hetzelfde tornooi — bv. één met enkel de speeldata en een andere met het reglement/prijzengeld/inschrijvingsinfo. Behandel de meegegeven affiches dan ook als informatie over HETZELFDE tornooi (tenzij ze duidelijk over iets anders gaan) en combineer alle info uit alle affiches tot één (of meerdere, indien van toepassing — zie hieronder) volledig ingevulde item. Info die nergens anders past (bv. reglement, prijzengeld, poule-verloop) zet je bij de opmerking. " : ""}Lees de tekst op de affiche${afbeeldingen.length > 1 ? "s" : ""} en vul het formulier zo goed mogelijk in. Vandaag is het ${vandaag} — als het jaartal op de affiche ontbreekt, reken dan per datum apart uit wat het eerstvolgende jaar is waarin die dag-en-maand nog in de toekomst valt t.o.v. ${vandaag}. Gebruik NOOIT een datum die al voorbij is — ook niet als de affiche een schifting/kwalificatiereeks toont die een jaargrens overschrijdt (bv. schiftingen in oktober-december gevolgd door een finale in januari: reken dan uit in welk jaar die oktober-december-reeks nog moet komen, en de finale valt in het jaar daarna). Vul een veld in met null als je het echt niet met voldoende zekerheid uit de affiche kan halen. Verzin niets.
 
 Let op — er zijn drie verschillende situaties met meerdere datums op een affiche, die je niet mag verwarren:
 

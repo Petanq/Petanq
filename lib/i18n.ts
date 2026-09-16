@@ -215,7 +215,8 @@ const nl = {
     affiche: "Affiche (optioneel)",
     afficheUploaden: "Affiche uploaden...",
     afficheKiezen: "Kies een afbeelding",
-    afficheHint: "Tip: je kan hier gewoon met je GSM een foto van de affiche nemen.",
+    afficheHint:
+      "Tip: je kan hier gewoon met je GSM een foto van de affiche nemen. Heb je 2 affiches voor hetzelfde tornooi (bv. één met de data, één met het reglement)? Selecteer ze dan gewoon samen.",
     afficheFout: "Uploaden mislukt. Probeer een andere foto of probeer het later opnieuw.",
     afficheAnalyseren: "De affiche wordt gelezen...",
     afficheAutoIngevuld:
@@ -917,7 +918,8 @@ const fr: typeof nl = {
     affiche: "Affiche (optionnel)",
     afficheUploaden: "Téléchargement de l'affiche...",
     afficheKiezen: "Choisissez une image",
-    afficheHint: "Astuce : vous pouvez simplement prendre une photo de l'affiche avec votre GSM.",
+    afficheHint:
+      "Astuce : vous pouvez simplement prendre une photo de l'affiche avec votre GSM. 2 affiches pour le même tournoi (par ex. une avec les dates, une avec le règlement) ? Sélectionnez-les simplement ensemble.",
     afficheFout: "Échec du téléchargement. Essayez une autre photo ou réessayez plus tard.",
     afficheAnalyseren: "Lecture de l'affiche en cours...",
     afficheAutoIngevuld:

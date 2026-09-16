@@ -569,12 +569,15 @@ function AddForm({
     setAutoIngevuld(true);
   }
 
-  async function afficheGekozen(bestand: File | null) {
-    if (!bestand) return;
+  async function afficheGekozen(bestanden: FileList | null) {
+    if (!bestanden || bestanden.length === 0) return;
     setAfficheFout(false);
     setAfficheBezig(true);
-    const verwerkt = await verwerkAfficheAfbeelding(bestand);
-    const url = await uploadNaarStorage("affiches", verwerkt);
+    const verwerkt = await Promise.all(Array.from(bestanden).map((b) => verwerkAfficheAfbeelding(b)));
+    // Enkel de eerste affiche bewaren we als "de" affiche van het tornooi —
+    // een eventuele tweede (bv. enkel reglement/prijzengeld) dient alleen om
+    // de AI meer context te geven, niet om apart getoond te worden.
+    const url = await uploadNaarStorage("affiches", verwerkt[0]);
     setAfficheBezig(false);
 
     if (!url) {
@@ -584,8 +587,10 @@ function AddForm({
     setAfficheUrl(url);
 
     setAiBezig(true);
-    const base64 = await bestandNaarBase64(verwerkt);
-    const resultaten = await afficheAnalyseren(base64, verwerkt.type);
+    const afbeeldingen = await Promise.all(
+      verwerkt.map(async (b) => ({ data: await bestandNaarBase64(b), mediaType: b.type }))
+    );
+    const resultaten = await afficheAnalyseren(afbeeldingen);
     setAiBezig(false);
     if (resultaten && resultaten.length > 0) {
       vulVeldenInVanAffiche(resultaten[0]);
@@ -993,7 +998,8 @@ function AddForm({
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => afficheGekozen(e.target.files?.[0] ?? null)}
+          multiple
+          onChange={(e) => afficheGekozen(e.target.files)}
           className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
         />
         <p className="text-xs text-grijs">{t.form.afficheHint}</p>

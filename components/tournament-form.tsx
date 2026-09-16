@@ -209,14 +209,18 @@ export function TournamentForm() {
     setAutoIngevuld(true);
   }
 
-  async function afficheGekozen(bestand: File | null) {
-    if (!bestand) return;
-    setAfficheNaam(bestand.name);
+  async function afficheGekozen(bestanden: FileList | null) {
+    if (!bestanden || bestanden.length === 0) return;
+    const lijst = Array.from(bestanden);
+    setAfficheNaam(lijst.map((b) => b.name).join(", "));
     setAfficheFout(false);
     setAfficheBezig(true);
 
-    const verwerkt = await verwerkAfficheAfbeelding(bestand);
-    const url = await uploadNaarStorage("affiches", verwerkt);
+    const verwerkt = await Promise.all(lijst.map((b) => verwerkAfficheAfbeelding(b)));
+    // Enkel de eerste affiche bewaren we als "de" affiche van het tornooi —
+    // een eventuele tweede (bv. enkel reglement/prijzengeld) dient alleen om
+    // de AI meer context te geven, niet om apart getoond te worden.
+    const url = await uploadNaarStorage("affiches", verwerkt[0]);
     setAfficheBezig(false);
 
     if (!url) {
@@ -226,8 +230,10 @@ export function TournamentForm() {
     setAfficheUrl(url);
 
     setAiBezig(true);
-    const base64 = await bestandNaarBase64(verwerkt);
-    const resultaten = await afficheAnalyseren(base64, verwerkt.type);
+    const afbeeldingen = await Promise.all(
+      verwerkt.map(async (b) => ({ data: await bestandNaarBase64(b), mediaType: b.type }))
+    );
+    const resultaten = await afficheAnalyseren(afbeeldingen);
     setAiBezig(false);
     if (!resultaten || resultaten.length === 0) return;
 
@@ -405,7 +411,8 @@ export function TournamentForm() {
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => afficheGekozen(e.target.files?.[0] ?? null)}
+              multiple
+              onChange={(e) => afficheGekozen(e.target.files)}
               className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
             />
             <p className="mt-1 text-xs text-grijs">{t.form.afficheHint}</p>
