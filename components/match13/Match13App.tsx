@@ -53,6 +53,18 @@ import type { AppState } from "@/lib/match13/state";
 
 type Tab = "opzet" | "onthaal" | "zaal" | "klassement";
 
+// Minimale vorm van een ScreenDetailed-object uit de (nog niet overal
+// ondersteunde) Window Management API — enkel de velden die we effectief
+// gebruiken om een nieuw venster op dat scherm te positioneren.
+interface ExternScherm {
+  isPrimary: boolean;
+  availLeft: number;
+  availTop: number;
+  availWidth: number;
+  availHeight: number;
+  label?: string;
+}
+
 // A distinct accent color per poule, cycled if there are more poules than
 // colors — just enough to tell "Poule A" apart from "Poule B" at a glance
 // when several are stacked on one screen.
@@ -629,6 +641,48 @@ export function Match13App({
       appShellRef.current?.requestFullscreen();
     }
   }
+
+  // "Toon op extern scherm": opent hetzelfde toernooi in een nieuw venster,
+  // gepositioneerd op een specifiek aangesloten scherm (bv. een TV aan de
+  // muur) i.p.v. gewoon volledig scherm te tonen op het scherm van de eigen
+  // laptop. Enkel ondersteund in Chromium-browsers (Chrome/Edge) via de
+  // Window Management API — valt overal anders gewoon terug op de
+  // bestaande "volledig scherm hier"-knop.
+  const [schermKeuze, setSchermKeuze] = useState<ExternScherm[] | null>(null);
+  async function toonOpExternScherm() {
+    const w = window as unknown as { getScreenDetails?: () => Promise<{ screens: ExternScherm[] }> };
+    if (!w.getScreenDetails) {
+      toggleFullscreen();
+      return;
+    }
+    try {
+      const details = await w.getScreenDetails();
+      const extra = details.screens.filter((s) => !s.isPrimary);
+      if (extra.length > 0) {
+        setSchermKeuze(extra);
+        return;
+      }
+    } catch {
+      // Geen toestemming gegeven, of niet ondersteund door deze browser.
+    }
+    toggleFullscreen();
+  }
+  function kiesExternScherm(scherm: ExternScherm) {
+    setSchermKeuze(null);
+    const features = `left=${scherm.availLeft},top=${scherm.availTop},width=${scherm.availWidth},height=${scherm.availHeight}`;
+    const win = window.open(`${window.location.pathname}?tvmode=1`, "_blank", features);
+    if (!win) window.alert(t.match13.popupGeblokkeerd);
+  }
+  // Het nieuw geopende venster herkent "?tvmode=1" en springt zelf naar het
+  // Zaalscherm in volledig scherm — precies op het scherm waarop dat venster
+  // net geopend is.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("tvmode") === "1") {
+      setTab("zaal");
+      appShellRef.current?.requestFullscreen();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Op het volledig-scherm Zaalscherm (de projector/tv aan de zaal) moet
   // alles in 1 oogopslag zichtbaar zijn, zonder te moeten scrollen — een
@@ -2010,6 +2064,27 @@ export function Match13App({
               <button className="ghost-btn" onClick={toggleFullscreen}>
                 {isFullscreen ? t.match13.volledigSchermSluiten : t.match13.volledigScherm}
               </button>
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <button className="ghost-btn" onClick={toonOpExternScherm}>
+                  {t.match13.toonOpExternScherm}
+                </button>
+                {schermKeuze && (
+                  <>
+                    <div className="scherm-kiezer-overlay" onClick={() => setSchermKeuze(null)} />
+                    <div className="scherm-kiezer">
+                      <div className="scherm-kiezer-titel">{t.match13.kiesScherm}</div>
+                      {schermKeuze.map((scherm, i) => (
+                        <button key={i} className="scherm-kiezer-optie" onClick={() => kiesExternScherm(scherm)}>
+                          {scherm.label || t.match13.schermLabel(i + 1)}
+                        </button>
+                      ))}
+                      <button className="scherm-kiezer-optie scherm-kiezer-annuleer" onClick={() => setSchermKeuze(null)}>
+                        {t.match13.schermAnnuleren}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
               <button className="ghost-btn" onClick={resetAll}>
                 {t.match13.ditToernooiWissen}
               </button>

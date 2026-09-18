@@ -146,6 +146,58 @@
   color: #fff;
 }
 
+.match13-scope .scherm-kiezer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+}
+.match13-scope .scherm-kiezer {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  z-index: 501;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 0.5rem;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.match13-scope .scherm-kiezer-titel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  font-weight: 700;
+  padding: 0.2rem 0.5rem 0.4rem;
+}
+.match13-scope .scherm-kiezer-optie {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+.match13-scope .scherm-kiezer-optie:hover {
+  background: var(--surface-2);
+}
+.match13-scope .scherm-kiezer-annuleer {
+  color: var(--ink-muted);
+  border-top: 1px solid var(--border);
+  margin-top: 0.2rem;
+  padding-top: 0.6rem;
+  border-radius: 0;
+}
+
 .match13-scope .page {
   max-width: 1600px;
   margin: 0 auto;
