@@ -1571,7 +1571,13 @@
    (bv. de finale, of "winnaars/verliezers") te zien — zeker niet de plein-
    invoer of "wis score" die daar dan in staat. Kolommen komen dus gewoon
    onder elkaar te staan i.p.v. naast elkaar. */
-@media (max-width: 640px) {
+/* 900px i.p.v. het gebruikelijke 640px-telefoon-breakpoint: 3 kolommen van
+   190px naast elkaar (plus de "Door naar de piramide"-kaart) hebben simpelweg
+   ~900px nodig om niet verdrukt te worden -- dat is breder dan een telefoon
+   in staand ÉN liggend formaat, dus zonder deze verhoging bleef een
+   liggende telefoon (of een kleine tablet) alsnog de te krappe kolommenrij
+   krijgen in plaats van de gestapelde weergave. */
+@media (max-width: 900px) {
   .match13-scope .bracket {
     flex-direction: column;
     overflow-x: visible;

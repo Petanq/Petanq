@@ -239,7 +239,10 @@ function BracketConnectors({
   useLayoutEffect(() => {
     function bereken() {
       const container = containerRef.current;
-      if (!container || window.innerWidth <= 640) {
+      // Moet gelijk lopen met het @media (max-width: 900px)-breakpoint in
+      // match13.css dat de kolommen onder elkaar zet — anders proberen we
+      // hier lijnen te tekenen tussen kaartjes die intussen gestapeld staan.
+      if (!container || window.innerWidth <= 900) {
         setPaths([]);
         return;
       }
