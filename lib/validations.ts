@@ -117,6 +117,16 @@ export type ClubFormData = z.infer<typeof clubSchema>;
 // Voor het bewerken van een bestaande club: elk veld optioneel.
 export const clubWijzigenSchema = clubSchema.partial();
 
+export const match13AanvraagSchema = z.object({
+  club: z.string().trim().min(2).max(120),
+  naam: z.string().trim().min(2).max(120),
+  email: z.string().trim().email(),
+  telefoon: z.string().trim().max(30).nullable().optional().or(z.literal("")),
+  bericht: z.string().trim().max(600).nullable().optional().or(z.literal("")),
+});
+
+export type Match13AanvraagFormData = z.infer<typeof match13AanvraagSchema>;
+
 export const nieuwsbriefSchema = z.object({
   email: z.string().trim().email(),
   provincie: provincieEnum.nullable().optional(),

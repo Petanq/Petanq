@@ -13,15 +13,19 @@ import {
   match13ToegangWijzigen,
   type Match13Gebruiker,
   type EchteClub,
+  type Match13Aanvraag,
 } from "@/actions/match13-toegang";
 import { Match13ClubKiezer } from "@/components/match13/Match13ClubKiezer";
+import { Match13AanvraagList } from "@/components/match13/Match13AanvraagList";
 
 export function Match13ToegangList({
   gebruikers,
   echteClubs,
+  aanvragen,
 }: {
   gebruikers: Match13Gebruiker[];
   echteClubs: EchteClub[];
+  aanvragen: Match13Aanvraag[];
 }) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -189,6 +193,8 @@ export function Match13ToegangList({
         </h1>
         <p style={{ color: "var(--ink-muted)", margin: 0 }}>{t.match13.toegangUitleg}</p>
       </div>
+
+      <Match13AanvraagList aanvragen={aanvragen} />
 
       <form className="match13-uitnodig-balk" style={{ marginBottom: "1.6rem" }} onSubmit={uitnodigen}>
         <h2>{t.match13.pilootclubToevoegen}</h2>

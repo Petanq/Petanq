@@ -2,9 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
-import { isAdmin } from "@/lib/auth-helpers";
+import { isAdmin, huidigeModeratorNaam } from "@/lib/auth-helpers";
 import { maakKorteLink } from "@/lib/korte-link";
 import { siteUrl } from "@/lib/site-url";
+import { match13AanvraagSchema } from "@/lib/validations";
+import { getResendClient, AFZENDER } from "@/lib/resend";
+import { MeldingMatch13AanvraagEmail, meldingMatch13AanvraagOnderwerp } from "@/lib/emails/melding-match13-aanvraag";
+import {
+  BevestigingMatch13AanvraagEmail,
+  bevestigingMatch13AanvraagOnderwerp,
+} from "@/lib/emails/bevestiging-match13-aanvraag";
 
 export type Match13ToegangActieResultaat = { succes: true } | { succes: false; fout: string };
 export type Match13UitnodigenResultaat =
@@ -402,6 +409,147 @@ export async function match13GebruikerVerwijderen(id: string): Promise<Match13To
     const serviceClient = createServiceRoleClient();
     await serviceClient.auth.admin.deleteUser(gebruiker.user_id);
   }
+
+  revalidatePath("/beheer/match13/toegang");
+  return { succes: true };
+}
+
+export type Match13AanvraagStatus = "in_behandeling" | "goedgekeurd" | "geweigerd";
+
+export interface Match13Aanvraag {
+  id: string;
+  club: string;
+  naam: string;
+  email: string;
+  telefoon: string | null;
+  bericht: string | null;
+  status: Match13AanvraagStatus;
+  ingediend_op: string;
+}
+
+// Publiek: een club vraagt zelf toegang aan i.p.v. dat enkel Frederic iemand
+// kan uitnodigen. Geen isAdmin()-gate — dit moet werken voor een bezoeker die
+// niet ingelogd is. De databank staat bij een publieke insert enkel
+// status='in_behandeling' toe (zie migratie 0058), dus niemand kan zichzelf
+// via deze weg meteen goedkeuren.
+export async function match13ToegangAanvragen(
+  input: unknown,
+  taalFormulier: "nl" | "fr" = "nl"
+): Promise<Match13ToegangActieResultaat> {
+  const parsed = match13AanvraagSchema.safeParse(input);
+  if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("match13_aanvragen").insert({
+    club: parsed.data.club,
+    naam: parsed.data.naam,
+    email: parsed.data.email,
+    telefoon: parsed.data.telefoon || null,
+    bericht: parsed.data.bericht || null,
+  });
+  if (error) {
+    console.error("Match13-aanvraag indienen mislukt:", error.message);
+    return { succes: false, fout: "server_fout" };
+  }
+
+  try {
+    const resend = getResendClient();
+    await resend.emails.send({
+      from: AFZENDER,
+      to: parsed.data.email,
+      subject: bevestigingMatch13AanvraagOnderwerp(taalFormulier),
+      react: BevestigingMatch13AanvraagEmail({ taal: taalFormulier, club: parsed.data.club }),
+    });
+
+    const serviceClient = createServiceRoleClient();
+    const { data: moderatoren } = await serviceClient.from("moderatoren").select("email").eq("rol", "admin");
+    const adminEmails = (moderatoren ?? []).map((m) => m.email);
+    if (adminEmails.length > 0) {
+      await resend.emails.send({
+        from: AFZENDER,
+        to: adminEmails,
+        subject: meldingMatch13AanvraagOnderwerp,
+        react: MeldingMatch13AanvraagEmail({
+          club: parsed.data.club,
+          naam: parsed.data.naam,
+          email: parsed.data.email,
+          beheerLink: `${siteUrl()}/beheer/match13/toegang`,
+        }),
+      });
+    }
+  } catch (mailFout) {
+    console.error("Meldingsmail voor Match13-aanvraag versturen mislukt:", mailFout);
+  }
+
+  return { succes: true };
+}
+
+// Voor de wachtrij bovenaan de toegangspagina.
+export async function haalMatch13Aanvragen(): Promise<Match13Aanvraag[]> {
+  if (!(await isAdmin())) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("match13_aanvragen")
+    .select("id, club, naam, email, telefoon, bericht, status, ingediend_op")
+    .eq("status", "in_behandeling")
+    .order("ingediend_op", { ascending: true });
+  if (error) {
+    console.error("Kon Match13-aanvragen niet ophalen:", error.message);
+    return [];
+  }
+  return data;
+}
+
+// Keurt de aanvraag goed door meteen de bestaande uitnodig-actie aan te
+// roepen (zelfde link-genererende logica, geen dubbele implementatie), en
+// zet de aanvraag pas op 'goedgekeurd' als dat effectief lukte.
+export async function match13AanvraagGoedkeuren(id: string): Promise<Match13UitnodigenResultaat> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const supabase = await createClient();
+  const { data: aanvraag, error } = await supabase
+    .from("match13_aanvragen")
+    .select("club, naam, email")
+    .eq("id", id)
+    .single();
+  if (error || !aanvraag) return { succes: false, fout: "server_fout" };
+
+  const resultaat = await match13GebruikerUitnodigen({
+    email: aanvraag.email,
+    naam: aanvraag.naam,
+    club: aanvraag.club,
+  });
+  if (!resultaat.succes) return resultaat;
+
+  const naam = await huidigeModeratorNaam();
+  await supabase
+    .from("match13_aanvragen")
+    .update({ status: "goedgekeurd", behandeld_door: naam, behandeld_op: new Date().toISOString() })
+    .eq("id", id);
+
+  revalidatePath("/beheer/match13/toegang");
+  return resultaat;
+}
+
+export async function match13AanvraagWeigeren(
+  id: string,
+  reden: string | null
+): Promise<Match13ToegangActieResultaat> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const supabase = await createClient();
+  const naam = await huidigeModeratorNaam();
+  const { error } = await supabase
+    .from("match13_aanvragen")
+    .update({
+      status: "geweigerd",
+      weiger_reden: reden,
+      behandeld_door: naam,
+      behandeld_op: new Date().toISOString(),
+    })
+    .eq("id", id);
+  if (error) return { succes: false, fout: "server_fout" };
 
   revalidatePath("/beheer/match13/toegang");
   return { succes: true };
