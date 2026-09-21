@@ -1444,51 +1444,60 @@ export function Match13App({
   // "eigen team" om een kaartje aan toe te wijzen).
   const dubbeleKaartjes = !isMeli && format !== "tete";
 
-  // Gedeeld door alle "gewone" kaartjes (dus niet Poules, en niet Kwartet
-  // dat zijn eigen renderer heeft): kop + team-headers + volle rij
-  // telbolletjes + voet. `label` is het optionele geel badge in de hoek
-  // (enkel gebruikt door Kwartet's enkelspel/triplet-kaartjes hieronder).
-  const renderKaartLichaam = (rondeNummer: number, label?: string) => (
-    <>
-      <div className="mk-kop">
-        <img className="mk-logo" src="/images/logo-icon.png" alt="" />
-        <div className="mk-titel">
-          <b>
-            MATCH<span className="m13-gold">13</span>
-          </b>
-          <span>{clubName}</span>
-        </div>
-        <div className="mk-meta">
-          {t.match13.printRondeKort}
-          <br />
-          <b>{rondeNummer}</b>
-          {label && (
-            <>
-              <br />
-              <span className="mk-deel-label">{label}</span>
-            </>
-          )}
-        </div>
+  // Gedeeld door elk wedstrijdkaartje (gewone kaartjes, Kwartet/Sextet en
+  // Poules): kop met Ronde/Poule-, Plein- en (optioneel) deel-badge. Voor de
+  // gewone rondes staat er een rondenummer in `metaWaarde`; Poules geeft er
+  // in plaats daarvan al een kant-en-klare tekst (bv. "Poule A") door.
+  const renderKaartKop = (metaLabel: string, metaWaarde: ReactNode, plein?: ReactNode, deelLabel?: string) => (
+    <div className="mk-kop">
+      <img className="mk-logo" src="/images/logo-icon.png" alt="" />
+      <div className="mk-titel">
+        <b>
+          MATCH<span className="m13-gold">13</span>
+        </b>
+        <span>{clubName}</span>
       </div>
-    </>
+      <div className="mk-badges">
+        <div className="mk-badge">
+          {metaLabel && <span className="lbl">{metaLabel}</span>}
+          <b>{metaWaarde}</b>
+        </div>
+        {plein !== undefined && (
+          <div className="mk-badge">
+            <span className="lbl">{t.match13.pleinLabelKort}</span>
+            <b>{plein}</b>
+          </div>
+        )}
+        {deelLabel && (
+          <div className="mk-badge mk-badge-deel">
+            <span className="lbl">{deelLabel}</span>
+          </div>
+        )}
+      </div>
+    </div>
   );
 
-  const renderTelbolletjes = () => (
-    <div className="mk-score">
-      <ul className="mk-tally">
-        {Array.from({ length: 13 }).map((_, n) => (
-          <li key={n} />
-        ))}
-      </ul>
-      <div className="mk-mid">
-        <span>{t.match13.printUitslag}</span>
-        <span className="lijn" />
-      </div>
-      <ul className="mk-tally">
-        {Array.from({ length: 13 }).map((_, n) => (
-          <li key={n} />
-        ))}
-      </ul>
+  // De telling 1-13 als klokwijzerplaat i.p.v. een lange kolom — neemt veel
+  // minder hoogte in, dus meer ruimte voor grotere namen ernaast (Frederic's
+  // eigen ontwerp-idee, na het vergelijken van een paar varianten).
+  const renderKlok = (key: string) => (
+    <div className="mk-klok" key={key}>
+      <span className="mk-klok-midden">{t.match13.printUitslag}</span>
+      {Array.from({ length: 13 }).map((_, n) => (
+        <span className="mk-klok-getal" style={{ "--i": n } as CSSProperties} key={n}>
+          {n + 1}
+        </span>
+      ))}
+    </div>
+  );
+
+  // De rechterstrook (rond logo + verticale "petanque13.be"-tekst) i.p.v. de
+  // vroegere kleine credit-regel onderaan het kaartje — past beter bij het
+  // liggende formaat.
+  const renderCreditStrook = () => (
+    <div className="mk-credit-strook">
+      <img src="/images/logo-icon.png" alt="" />
+      <span>petanque13.be</span>
     </div>
   );
 
@@ -1496,28 +1505,24 @@ export function Match13App({
     const tweedeZijde = eersteZijde === "A" ? "B" : "A";
     return (
       <article className="mk-kaart" key={key}>
-        {renderKaartLichaam(rondeNummer)}
-        <div className="mk-teams">
-          <div className="mk-team">{printTeamHeader(m, eersteZijde)}</div>
-          <div className="mk-plein">
-            {t.match13.pleinLabelKort}
-            <br />
-            <b>{m.court}</b>
+        <div className="mk-lichaam">
+          {renderKaartKop(t.match13.printRondeKort, rondeNummer, m.court)}
+          <div className="mk-lijf">
+            <div className="mk-team">{printTeamHeader(m, eersteZijde)}</div>
+            {renderKlok("a")}
+            {renderKlok("b")}
+            <div className="mk-team">{printTeamHeader(m, tweedeZijde)}</div>
           </div>
-          <div className="mk-team">{printTeamHeader(m, tweedeZijde)}</div>
-        </div>
-        {renderTelbolletjes()}
-        <div className="mk-voet">
-          <div className="mk-vak" />
-          <div className="mk-mid2">
-            <span className="lbl">{t.match13.printTotaal}</span>
-            <span className="hand">{t.match13.printHandtekening}</span>
+          <div className="mk-voet">
+            <div className="mk-vak" />
+            <div className="mk-mid2">
+              <span className="lbl">{t.match13.printTotaal}</span>
+              <span className="hand">{t.match13.printHandtekening}</span>
+            </div>
+            <div className="mk-vak" />
           </div>
-          <div className="mk-vak" />
         </div>
-        <div className="mk-credit">
-          www.petanque<span className="m13-gold">13</span>.be
-        </div>
+        {renderCreditStrook()}
       </article>
     );
   };
@@ -1534,38 +1539,34 @@ export function Match13App({
 
     const enkelKaart = (
       <article className="mk-kaart" key={`${key}-enkel`}>
-        {renderKaartLichaam(rondeNummer, t.match13.enkelspelLabel)}
-        <div className="mk-teams">
-          <div className="mk-team">
-            <span className="mk-nr">{teamA?.number ?? "?"}</span>
-            <div className="mk-namen">
-              <span className="mk-letter">{m.alleenLetterA}</span>. {m.alleenNaamA}
+        <div className="mk-lichaam">
+          {renderKaartKop(t.match13.printRondeKort, rondeNummer, m.court, t.match13.enkelspelLabel)}
+          <div className="mk-lijf">
+            <div className="mk-team">
+              <span className="mk-nr">{teamA?.number ?? "?"}</span>
+              <div className="mk-namen">
+                <span className="mk-letter">{m.alleenLetterA}</span>. {m.alleenNaamA}
+              </div>
+            </div>
+            {renderKlok("a")}
+            {renderKlok("b")}
+            <div className="mk-team">
+              <span className="mk-nr">{teamB?.number ?? "?"}</span>
+              <div className="mk-namen">
+                <span className="mk-letter">{m.alleenLetterB}</span>. {m.alleenNaamB}
+              </div>
             </div>
           </div>
-          <div className="mk-plein">
-            {t.match13.pleinLabelKort}
-            <br />
-            <b>{m.court}</b>
-          </div>
-          <div className="mk-team">
-            <span className="mk-nr">{teamB?.number ?? "?"}</span>
-            <div className="mk-namen">
-              <span className="mk-letter">{m.alleenLetterB}</span>. {m.alleenNaamB}
+          <div className="mk-voet">
+            <div className="mk-vak" />
+            <div className="mk-mid2">
+              <span className="lbl">{t.match13.printTotaal}</span>
+              <span className="hand">{t.match13.printHandtekening}</span>
             </div>
+            <div className="mk-vak" />
           </div>
         </div>
-        {renderTelbolletjes()}
-        <div className="mk-voet">
-          <div className="mk-vak" />
-          <div className="mk-mid2">
-            <span className="lbl">{t.match13.printTotaal}</span>
-            <span className="hand">{t.match13.printHandtekening}</span>
-          </div>
-          <div className="mk-vak" />
-        </div>
-        <div className="mk-credit">
-          www.petanque<span className="m13-gold">13</span>.be
-        </div>
+        {renderCreditStrook()}
       </article>
     );
 
@@ -1577,34 +1578,30 @@ export function Match13App({
       const tweedeLetter = eersteZijde === "A" ? m.alleenLetterB : m.alleenLetterA;
       return (
         <article className="mk-kaart" key={key2}>
-          {renderKaartLichaam(rondeNummer, t.match13.tripletLabel)}
-          <div className="mk-teams">
-            <div className="mk-team">
-              <span className="mk-nr">{eersteTeam?.number ?? "?"}</span>
-              <div className="mk-namen">{kwartetTripletLeden(eersteTeam, eersteLetter)}</div>
+          <div className="mk-lichaam">
+            {renderKaartKop(t.match13.printRondeKort, rondeNummer, m.courtTriplet, t.match13.tripletLabel)}
+            <div className="mk-lijf">
+              <div className="mk-team">
+                <span className="mk-nr">{eersteTeam?.number ?? "?"}</span>
+                <div className="mk-namen">{kwartetTripletLeden(eersteTeam, eersteLetter)}</div>
+              </div>
+              {renderKlok("a")}
+              {renderKlok("b")}
+              <div className="mk-team">
+                <span className="mk-nr">{tweedeTeam?.number ?? "?"}</span>
+                <div className="mk-namen">{kwartetTripletLeden(tweedeTeam, tweedeLetter)}</div>
+              </div>
             </div>
-            <div className="mk-plein">
-              {t.match13.pleinLabelKort}
-              <br />
-              <b>{m.courtTriplet}</b>
-            </div>
-            <div className="mk-team">
-              <span className="mk-nr">{tweedeTeam?.number ?? "?"}</span>
-              <div className="mk-namen">{kwartetTripletLeden(tweedeTeam, tweedeLetter)}</div>
+            <div className="mk-voet">
+              <div className="mk-vak" />
+              <div className="mk-mid2">
+                <span className="lbl">{t.match13.printTotaal}</span>
+                <span className="hand">{t.match13.printHandtekening}</span>
+              </div>
+              <div className="mk-vak" />
             </div>
           </div>
-          {renderTelbolletjes()}
-          <div className="mk-voet">
-            <div className="mk-vak" />
-            <div className="mk-mid2">
-              <span className="lbl">{t.match13.printTotaal}</span>
-              <span className="hand">{t.match13.printHandtekening}</span>
-            </div>
-            <div className="mk-vak" />
-          </div>
-          <div className="mk-credit">
-            www.petanque<span className="m13-gold">13</span>.be
-          </div>
+          {renderCreditStrook()}
         </article>
       );
     };
@@ -1622,38 +1619,34 @@ export function Match13App({
 
     const enkelKaart = (
       <article className="mk-kaart" key={`${key}-enkel`}>
-        {renderKaartLichaam(rondeNummer, t.match13.enkelspelLabel)}
-        <div className="mk-teams">
-          <div className="mk-team">
-            <span className="mk-nr">{teamA?.number ?? "?"}</span>
-            <div className="mk-namen">
-              <span className="mk-letter">{m.alleenLetterA}</span>. {m.alleenNaamA}
+        <div className="mk-lichaam">
+          {renderKaartKop(t.match13.printRondeKort, rondeNummer, m.court, t.match13.enkelspelLabel)}
+          <div className="mk-lijf">
+            <div className="mk-team">
+              <span className="mk-nr">{teamA?.number ?? "?"}</span>
+              <div className="mk-namen">
+                <span className="mk-letter">{m.alleenLetterA}</span>. {m.alleenNaamA}
+              </div>
+            </div>
+            {renderKlok("a")}
+            {renderKlok("b")}
+            <div className="mk-team">
+              <span className="mk-nr">{teamB?.number ?? "?"}</span>
+              <div className="mk-namen">
+                <span className="mk-letter">{m.alleenLetterB}</span>. {m.alleenNaamB}
+              </div>
             </div>
           </div>
-          <div className="mk-plein">
-            {t.match13.pleinLabelKort}
-            <br />
-            <b>{m.court}</b>
-          </div>
-          <div className="mk-team">
-            <span className="mk-nr">{teamB?.number ?? "?"}</span>
-            <div className="mk-namen">
-              <span className="mk-letter">{m.alleenLetterB}</span>. {m.alleenNaamB}
+          <div className="mk-voet">
+            <div className="mk-vak" />
+            <div className="mk-mid2">
+              <span className="lbl">{t.match13.printTotaal}</span>
+              <span className="hand">{t.match13.printHandtekening}</span>
             </div>
+            <div className="mk-vak" />
           </div>
         </div>
-        {renderTelbolletjes()}
-        <div className="mk-voet">
-          <div className="mk-vak" />
-          <div className="mk-mid2">
-            <span className="lbl">{t.match13.printTotaal}</span>
-            <span className="hand">{t.match13.printHandtekening}</span>
-          </div>
-          <div className="mk-vak" />
-        </div>
-        <div className="mk-credit">
-          www.petanque<span className="m13-gold">13</span>.be
-        </div>
+        {renderCreditStrook()}
       </article>
     );
 
@@ -1667,34 +1660,30 @@ export function Match13App({
       const plein = deel === "doublet" ? m.courtDoublet : m.courtTriplet;
       return (
         <article className="mk-kaart" key={key2}>
-          {renderKaartLichaam(rondeNummer, label)}
-          <div className="mk-teams">
-            <div className="mk-team">
-              <span className="mk-nr">{eersteTeam?.number ?? "?"}</span>
-              <div className="mk-namen">{sextetLeden(eersteTeam, eersteLetter, deel)}</div>
+          <div className="mk-lichaam">
+            {renderKaartKop(t.match13.printRondeKort, rondeNummer, plein, label)}
+            <div className="mk-lijf">
+              <div className="mk-team">
+                <span className="mk-nr">{eersteTeam?.number ?? "?"}</span>
+                <div className="mk-namen">{sextetLeden(eersteTeam, eersteLetter, deel)}</div>
+              </div>
+              {renderKlok("a")}
+              {renderKlok("b")}
+              <div className="mk-team">
+                <span className="mk-nr">{tweedeTeam?.number ?? "?"}</span>
+                <div className="mk-namen">{sextetLeden(tweedeTeam, tweedeLetter, deel)}</div>
+              </div>
             </div>
-            <div className="mk-plein">
-              {t.match13.pleinLabelKort}
-              <br />
-              <b>{plein}</b>
-            </div>
-            <div className="mk-team">
-              <span className="mk-nr">{tweedeTeam?.number ?? "?"}</span>
-              <div className="mk-namen">{sextetLeden(tweedeTeam, tweedeLetter, deel)}</div>
+            <div className="mk-voet">
+              <div className="mk-vak" />
+              <div className="mk-mid2">
+                <span className="lbl">{t.match13.printTotaal}</span>
+                <span className="hand">{t.match13.printHandtekening}</span>
+              </div>
+              <div className="mk-vak" />
             </div>
           </div>
-          {renderTelbolletjes()}
-          <div className="mk-voet">
-            <div className="mk-vak" />
-            <div className="mk-mid2">
-              <span className="lbl">{t.match13.printTotaal}</span>
-              <span className="hand">{t.match13.printHandtekening}</span>
-            </div>
-            <div className="mk-vak" />
-          </div>
-          <div className="mk-credit">
-            www.petanque<span className="m13-gold">13</span>.be
-          </div>
+          {renderCreditStrook()}
         </article>
       );
     };
@@ -1798,58 +1787,30 @@ export function Match13App({
     const tweedeTeam = teamOf(tweedeId);
     return (
       <article className="mk-kaart" key={key}>
-        <div className="mk-kop">
-          <img className="mk-logo" src="/images/logo-icon.png" alt="" />
-          <div className="mk-titel">
-            <b>
-              MATCH<span className="m13-gold">13</span>
-            </b>
-            <span>{clubName}</span>
+        <div className="mk-lichaam">
+          {renderKaartKop("", printPoulesLabel(m), m.court ?? "—")}
+          <div className="mk-lijf">
+            <div className="mk-team">
+              <span className="mk-nr">{eersteTeam?.number ?? "?"}</span>
+              <div className="mk-namen">{eersteTeam?.name ?? ""}</div>
+            </div>
+            {renderKlok("a")}
+            {renderKlok("b")}
+            <div className="mk-team">
+              <span className="mk-nr">{tweedeTeam?.number ?? "?"}</span>
+              <div className="mk-namen">{tweedeTeam?.name ?? ""}</div>
+            </div>
           </div>
-          <div className="mk-meta mk-meta-tekst">{printPoulesLabel(m)}</div>
-        </div>
-        <div className="mk-teams">
-          <div className="mk-team">
-            <span className="mk-nr">{eersteTeam?.number ?? "?"}</span>
-            <div className="mk-namen">{eersteTeam?.name ?? ""}</div>
-          </div>
-          <div className="mk-plein">
-            {t.match13.pleinLabelKort}
-            <br />
-            <b>{m.court ?? "—"}</b>
-          </div>
-          <div className="mk-team">
-            <span className="mk-nr">{tweedeTeam?.number ?? "?"}</span>
-            <div className="mk-namen">{tweedeTeam?.name ?? ""}</div>
+          <div className="mk-voet">
+            <div className="mk-vak" />
+            <div className="mk-mid2">
+              <span className="lbl">{t.match13.printTotaal}</span>
+              <span className="hand">{t.match13.printHandtekening}</span>
+            </div>
+            <div className="mk-vak" />
           </div>
         </div>
-        <div className="mk-score">
-          <ul className="mk-tally">
-            {Array.from({ length: 13 }).map((_, n) => (
-              <li key={n} />
-            ))}
-          </ul>
-          <div className="mk-mid">
-            <span>{t.match13.printUitslag}</span>
-            <span className="lijn" />
-          </div>
-          <ul className="mk-tally">
-            {Array.from({ length: 13 }).map((_, n) => (
-              <li key={n} />
-            ))}
-          </ul>
-        </div>
-        <div className="mk-voet">
-          <div className="mk-vak" />
-          <div className="mk-mid2">
-            <span className="lbl">{t.match13.printTotaal}</span>
-            <span className="hand">{t.match13.printHandtekening}</span>
-          </div>
-          <div className="mk-vak" />
-        </div>
-        <div className="mk-credit">
-          www.petanque<span className="m13-gold">13</span>.be
-        </div>
+        {renderCreditStrook()}
       </article>
     );
   };
