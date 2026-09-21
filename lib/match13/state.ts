@@ -22,6 +22,12 @@ export interface AppState {
   // uitvliegt ("Consolante" in petanque-vaktermen)? Een bewuste keuze, geen
   // verplichting — undefined/false = enkel Piramide A, zoals voorheen.
   speelPiramideB?: boolean;
+  // Enkel relevant als format === "melee": probeert de loting zoveel
+  // mogelijk 2v2-duo's te vormen i.p.v. de standaard 3v3-tripletten, en valt
+  // enkel op een triplet terug wanneer het aantal aanwezige spelers niet
+  // netjes in paren te verdelen is. undefined/false = het oorspronkelijke
+  // gedrag (zoveel mogelijk tripletten).
+  meleeVoorkeurDoubletten?: boolean;
   teams: Team[];
   rounds: Round[];
   pouleBracket: BracketMatch[];

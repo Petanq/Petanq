@@ -306,6 +306,47 @@ describe("generateMeleeRound", () => {
     expect(matches[0].playersB).toHaveLength(2);
   });
 
+  describe("voorkeurDoubletten", () => {
+    function twelvePlayers() {
+      return [
+        ...sixPlayers(),
+        makePlayer("S3", "schutter"),
+        makePlayer("S4", "schutter"),
+        makePlayer("P3", "pointeur"),
+        makePlayer("P4", "pointeur"),
+        makePlayer("F3", "flex"),
+        makePlayer("F4", "flex"),
+      ];
+    }
+
+    it("forms all-2v2 matches from 12 players when on, instead of the default 3v3s", () => {
+      const { matches, restIds } = generateMeleeRound(1, twelvePlayers(), buildMeleeHistory([]), true);
+      expect(restIds).toHaveLength(0);
+      expect(matches).toHaveLength(3);
+      for (const m of matches) {
+        expect(m.playersA).toHaveLength(2);
+        expect(m.playersB).toHaveLength(2);
+      }
+    });
+
+    it("still defaults to 3v3s from 12 players when off", () => {
+      const { matches, restIds } = generateMeleeRound(1, twelvePlayers(), buildMeleeHistory([]));
+      expect(restIds).toHaveLength(0);
+      expect(matches).toHaveLength(2);
+      for (const m of matches) {
+        expect(m.playersA).toHaveLength(3);
+        expect(m.playersB).toHaveLength(3);
+      }
+    });
+
+    it("never rests someone extra just to satisfy the doublet preference (7 players)", () => {
+      const players = [...sixPlayers(), makePlayer("F3", "flex")];
+      const metVoorkeur = generateMeleeRound(1, players, buildMeleeHistory([]), true);
+      const zonderVoorkeur = generateMeleeRound(1, players, buildMeleeHistory([]));
+      expect(metVoorkeur.restIds).toHaveLength(zonderVoorkeur.restIds.length);
+    });
+  });
+
   it("still rests everyone when fewer than four are present — no valid match exists at all", () => {
     const players = sixPlayers().slice(0, 3);
     const { matches, restIds } = generateMeleeRound(1, players, buildMeleeHistory([]));

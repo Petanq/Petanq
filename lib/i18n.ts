@@ -604,6 +604,9 @@ const nl = {
     hintPiramideB:
       "Naast de gewone piramide (Piramide A) voor de winnaars van elke poule, speelt Piramide B eenzelfde uitschakelingstoernooi voor wie er in de poule-fase uitvloog — zo speelt iedereen een volwaardige tweede ronde.",
     piramideBVastgezet: "Niet meer te wijzigen nadat de knock-out gestart is.",
+    voorkeurDoubletten: "Voorkeur voor doubletten",
+    hintVoorkeurDoubletten:
+      "De loting probeert dan zoveel mogelijk duo's (2 tegen 2) te vormen i.p.v. de gewone trio's, en valt enkel op een trio terug als het aantal aanwezige spelers niet netjes in paren te verdelen is.",
     rondeVan: (huidig: number | string, totaal: number) => `Ronde ${huidig} van ${totaal}`,
     rondeOngedaanMaken: (n: number) => `← Ronde ${n} ongedaan maken`,
     genereerRonde: (n: number) => `Genereer ronde ${n} →`,
@@ -1354,6 +1357,9 @@ const fr: typeof nl = {
     hintPiramideB:
       "En plus de la pyramide classique (Pyramide A) pour les gagnants de chaque poule, la Pyramide B joue le même tournoi à élimination pour les équipes sorties dès la phase de poules — ainsi tout le monde joue une vraie deuxième manche.",
     piramideBVastgezet: "Plus modifiable une fois la phase finale démarrée.",
+    voorkeurDoubletten: "Préférence pour les doublettes",
+    hintVoorkeurDoubletten:
+      "Le tirage au sort essaie alors de former le plus possible de duos (2 contre 2) au lieu des trios habituels, et ne revient à un trio que si le nombre de joueurs présents ne se divise pas proprement en paires.",
     rondeVan: (huidig: number | string, totaal: number) => `Manche ${huidig} sur ${totaal}`,
     rondeOngedaanMaken: (n: number) => `← Annuler la manche ${n}`,
     genereerRonde: (n: number) => `Générer la manche ${n} →`,

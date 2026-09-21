@@ -258,20 +258,41 @@ function scoreMeleeRound(matches: MeleeCandidateMatch[], history: MeleeHistory):
  * that leftover). Only truly unavoidable cases (e.g. exactly 7 players, which
  * cannot be split into any combination of 4/5/6-sized matches without a
  * remainder) fall back to resting the smallest possible number of players.
+ *
+ * `voorkeurDoubletten` flips that priority: the club's own preference is
+ * mostly-doubletten, triplet-matches only when the group really can't be
+ * split into 2v2/2v3 without resting someone extra. Byes-avoidance (the
+ * `covered` search) always wins over either preference — nobody sits out
+ * just to satisfy a team-size wish.
  */
-function planMeleeMatchSizes(n: number): {
+function planMeleeMatchSizes(
+  n: number,
+  voorkeurDoubletten = false
+): {
   triple: number;
   duoVsTriple: number;
   duoVsDuo: number;
   covered: number;
 } {
   for (let covered = n; covered >= 4; covered--) {
-    for (let triple = Math.floor(covered / 6); triple >= 0; triple--) {
-      const afterTriples = covered - triple * 6;
-      for (let duoVsTriple = Math.floor(afterTriples / 5); duoVsTriple >= 0; duoVsTriple--) {
-        const afterDuoTriple = afterTriples - duoVsTriple * 5;
-        if (afterDuoTriple % 4 === 0) {
-          return { triple, duoVsTriple, duoVsDuo: afterDuoTriple / 4, covered };
+    if (voorkeurDoubletten) {
+      for (let duoVsDuo = Math.floor(covered / 4); duoVsDuo >= 0; duoVsDuo--) {
+        const afterDuoDuo = covered - duoVsDuo * 4;
+        for (let duoVsTriple = Math.floor(afterDuoDuo / 5); duoVsTriple >= 0; duoVsTriple--) {
+          const afterDuoTriple = afterDuoDuo - duoVsTriple * 5;
+          if (afterDuoTriple % 6 === 0) {
+            return { triple: afterDuoTriple / 6, duoVsTriple, duoVsDuo, covered };
+          }
+        }
+      }
+    } else {
+      for (let triple = Math.floor(covered / 6); triple >= 0; triple--) {
+        const afterTriples = covered - triple * 6;
+        for (let duoVsTriple = Math.floor(afterTriples / 5); duoVsTriple >= 0; duoVsTriple--) {
+          const afterDuoTriple = afterTriples - duoVsTriple * 5;
+          if (afterDuoTriple % 4 === 0) {
+            return { triple, duoVsTriple, duoVsDuo: afterDuoTriple / 4, covered };
+          }
         }
       }
     }
@@ -381,9 +402,10 @@ function repairMeleeRoles(
 export function generateMeleeRound(
   roundNumber: number,
   presentPlayers: Team[],
-  history: MeleeHistory
+  history: MeleeHistory,
+  voorkeurDoubletten = false
 ): { matches: Match[]; restIds: string[] } {
-  const plan = planMeleeMatchSizes(presentPlayers.length);
+  const plan = planMeleeMatchSizes(presentPlayers.length, voorkeurDoubletten);
   const specs = buildMeleeMatchSpecs(plan);
   if (specs.length === 0) {
     return { matches: [], restIds: presentPlayers.map((p) => p.id) };

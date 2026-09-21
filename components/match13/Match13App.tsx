@@ -760,6 +760,7 @@ export function Match13App({
     maxPleinen,
     pouleTeamSize,
     speelPiramideB,
+    meleeVoorkeurDoubletten,
     teams,
     rounds,
     pouleBracket,
@@ -1017,7 +1018,7 @@ export function Match13App({
 
     if (isMeli) {
       const history = buildMeleeHistory(rounds);
-      const { matches, restIds } = generateMeleeRound(roundNumber, presentTeams, history);
+      const { matches, restIds } = generateMeleeRound(roundNumber, presentTeams, history, meleeVoorkeurDoubletten);
       setState((s) => ({
         ...s,
         rounds: [...s.rounds, { number: roundNumber, matches, rest: restIds, startedAt: Date.now() }],
@@ -2164,6 +2165,22 @@ export function Match13App({
                     : t.match13.hintAndereFormats}
                 </div>
               </div>
+              {isMeli && (
+                <div className="field">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={!!meleeVoorkeurDoubletten}
+                      disabled={rounds.length > 0}
+                      onChange={(e) => setState((s) => ({ ...s, meleeVoorkeurDoubletten: e.target.checked }))}
+                    />
+                    {t.match13.voorkeurDoubletten}
+                  </label>
+                  <div className="hint">
+                    {rounds.length > 0 ? t.match13.speltypeVastgezet : t.match13.hintVoorkeurDoubletten}
+                  </div>
+                </div>
+              )}
               {isPoules && (
                 <div className="field">
                   <label>{t.match13.pouleTeamGrootte}</label>
