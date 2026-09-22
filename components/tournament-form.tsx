@@ -309,24 +309,36 @@ export function TournamentForm() {
     };
   }
 
+  function verplichteVeldenLijst(): { waarde: string; id: string }[] {
+    return [
+      { waarde: naamIndiener, id: "veld-naamIndiener" },
+      reeksModus
+        ? { waarde: herhaalDatums.filter((d) => d.datum).length > 0 ? "ok" : "", id: "veld-herhaaldatums" }
+        : { waarde: datum, id: "veld-datum" },
+      { waarde: uur, id: "veld-uur" },
+      openToernooi ? { waarde: clubnaam, id: "veld-organisator" } : { waarde: clubId ?? "", id: "veld-club" },
+      { waarde: openToernooi ? adres : "ok", id: "veld-adres" },
+      { waarde: naamNl, id: "veld-naamNl" },
+      { waarde: gemeente, id: "veld-gemeente" },
+      { waarde: provincie, id: "veld-provincie" },
+      { waarde: categorie, id: "veld-categorie" },
+      { waarde: formule, id: "veld-formule" },
+      speelvorm === "rondes"
+        ? { waarde: aantalRonden, id: "veld-aantalRonden" }
+        : { waarde: aantalPoules, id: "veld-aantalPoules" },
+    ];
+  }
+
   async function versturen(e: React.FormEvent) {
     e.preventDefault();
 
-    const verplichteVelden = [
-      naamIndiener,
-      reeksModus ? (herhaalDatums.filter((d) => d.datum).length > 0 ? "ok" : "") : datum,
-      uur,
-      openToernooi ? clubnaam : clubId,
-      openToernooi ? adres : "ok",
-      naamNl,
-      gemeente,
-      provincie,
-      categorie,
-      formule,
-      speelvorm === "rondes" ? aantalRonden : aantalPoules,
-    ];
-    if (verplichteVelden.some((veld) => !veld)) {
+    const eersteFout = verplichteVeldenLijst().find((veld) => !veld.waarde);
+    if (eersteFout) {
       setVerzendPoging(true);
+      // Bij een lang formulier (bv. na een affiche-scan) valt een blokkerend
+      // verplicht veld verderop makkelijk niet op — spring er expliciet naartoe
+      // i.p.v. enkel de algemene foutmelding onderaan te tonen.
+      document.getElementById(eersteFout.id)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -481,7 +493,7 @@ export function TournamentForm() {
           <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
             {t.form.sectieBasis}
           </legend>
-          <Veld label={t.form.jouwNaam} verplicht>
+          <Veld label={t.form.jouwNaam} verplicht id="veld-naamIndiener">
             <input
               required
               value={naamIndiener}
@@ -491,7 +503,7 @@ export function TournamentForm() {
             <p className="mt-1 text-xs text-grijs">{t.form.jouwNaamHint}</p>
           </Veld>
           {reeksModus && (
-            <div className="flex flex-col gap-1.5">
+            <div id="veld-herhaaldatums" className="flex scroll-mt-4 flex-col gap-1.5">
               <span className="text-[0.8rem] font-bold text-donker">
                 {t.form.herhaalDatums} <span className="text-rood">*</span>
               </span>
@@ -537,7 +549,7 @@ export function TournamentForm() {
           )}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {!reeksModus && (
-              <Veld label={t.form.datum} verplicht>
+              <Veld label={t.form.datum} verplicht id="veld-datum">
                 <input
                   type="date"
                   required
@@ -547,7 +559,7 @@ export function TournamentForm() {
                 />
               </Veld>
             )}
-            <Veld label={t.form.uur} verplicht>
+            <Veld label={t.form.uur} verplicht id="veld-uur">
               <input
                 type="time"
                 required
@@ -584,7 +596,7 @@ export function TournamentForm() {
             </div>
           </Veld>
           {openToernooi ? (
-            <Veld label={t.form.organisator} verplicht>
+            <Veld label={t.form.organisator} verplicht id="veld-organisator">
               <input
                 required
                 value={clubnaam}
@@ -593,7 +605,7 @@ export function TournamentForm() {
               />
             </Veld>
           ) : (
-            <Veld label={t.form.clubnaam} verplicht>
+            <Veld label={t.form.clubnaam} verplicht id="veld-club">
               <ClubKiezer
                 waarde={clubnaam}
                 onWaardeChange={(v) => {
@@ -623,7 +635,7 @@ export function TournamentForm() {
               </p>
             </Veld>
           )}
-          <Veld label={t.form.naamToernooi} verplicht>
+          <Veld label={t.form.naamToernooi} verplicht id="veld-naamNl">
             <input
               required
               value={naamNl}
@@ -634,7 +646,11 @@ export function TournamentForm() {
               className={`veld-input ${veldFout(naamNl)}`}
             />
           </Veld>
-          <Veld label={openToernooi ? t.form.adres : `${t.form.adres} (${t.form.optioneel})`} verplicht={openToernooi}>
+          <Veld
+            label={openToernooi ? t.form.adres : `${t.form.adres} (${t.form.optioneel})`}
+            verplicht={openToernooi}
+            id="veld-adres"
+          >
             <input
               required={openToernooi}
               value={adres}
@@ -643,7 +659,7 @@ export function TournamentForm() {
             />
           </Veld>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Veld label={t.form.gemeente} verplicht>
+            <Veld label={t.form.gemeente} verplicht id="veld-gemeente">
               <input
                 required
                 value={gemeente}
@@ -651,7 +667,7 @@ export function TournamentForm() {
                 className={`veld-input ${veldFout(gemeente)}`}
               />
             </Veld>
-            <Veld label={t.form.provincie} verplicht>
+            <Veld label={t.form.provincie} verplicht id="veld-provincie">
               <select
                 required
                 value={provincie}
@@ -676,7 +692,7 @@ export function TournamentForm() {
             {t.form.sectieDetails}
           </legend>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Veld label={t.form.categorie} verplicht>
+            <Veld label={t.form.categorie} verplicht id="veld-categorie">
               <select
                 required
                 value={categorie}
@@ -693,7 +709,7 @@ export function TournamentForm() {
                 ))}
               </select>
             </Veld>
-            <Veld label={t.form.formule} verplicht>
+            <Veld label={t.form.formule} verplicht id="veld-formule">
               <select
                 required
                 value={formule}
@@ -732,7 +748,7 @@ export function TournamentForm() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {speelvorm === "rondes" ? (
-              <Veld label={t.form.aantalRonden} verplicht>
+              <Veld label={t.form.aantalRonden} verplicht id="veld-aantalRonden">
                 <input
                   type="number"
                   min={1}
@@ -753,7 +769,7 @@ export function TournamentForm() {
                 </label>
               </Veld>
             ) : (
-              <Veld label={t.form.aantalPoules} verplicht>
+              <Veld label={t.form.aantalPoules} verplicht id="veld-aantalPoules">
                 <input
                   type="number"
                   min={1}
@@ -840,19 +856,9 @@ export function TournamentForm() {
         </fieldset>
 
         {verzendPoging &&
-          [
-            naamIndiener,
-            reeksModus ? (herhaalDatums.filter((d) => d.datum).length > 0 ? "ok" : "") : datum,
-            uur,
-            openToernooi ? clubnaam : clubId,
-            openToernooi ? adres : "ok",
-            naamNl,
-            gemeente,
-            provincie,
-            categorie,
-            formule,
-            speelvorm === "rondes" ? aantalRonden : aantalPoules,
-          ].some((v) => !v) && <p className="text-sm font-medium text-rood-2">{t.form.foutVerplichteVelden}</p>}
+          verplichteVeldenLijst().some((v) => !v.waarde) && (
+            <p className="text-sm font-medium text-rood-2">{t.form.foutVerplichteVelden}</p>
+          )}
 
         {status === "fout" && !bestaandDubbel && (
           <p className="text-sm font-medium text-rood-2">
@@ -886,14 +892,16 @@ export function TournamentForm() {
 function Veld({
   label,
   verplicht,
+  id,
   children,
 }: {
   label: string;
   verplicht?: boolean;
+  id?: string;
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex flex-col gap-1.5">
+    <label id={id} className="flex scroll-mt-4 flex-col gap-1.5">
       <span className="text-[0.8rem] font-bold text-donker">
         {label} {verplicht && <span className="text-rood">*</span>}
       </span>
