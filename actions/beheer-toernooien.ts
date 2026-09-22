@@ -15,6 +15,7 @@ import { Toernooi } from "@/lib/types";
 import { isModerator, isAdmin, huidigeModeratorNaam } from "@/lib/auth-helpers";
 import { VerwijderAanvraagEmail, verwijderAanvraagOnderwerp } from "@/lib/emails/verwijder-aanvraag";
 import { siteUrl } from "@/lib/site-url";
+import { geocodeAdres } from "@/lib/geocode";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -99,6 +100,8 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
     .filter((k) => k.datum)
     .map((k) => ({ datum: k.datum, uur: k.uur || null, opmerking: k.opmerking || null }));
 
+  const geocode = await geocodeAdres(data.adres || null, data.gemeente, data.provincie);
+
   const supabase = await createClient();
   const moderatorNaam = await huidigeModeratorNaam();
 
@@ -136,6 +139,9 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
       ingediend_door: moderatorNaam,
       goedgekeurd_door: moderatorNaam,
       goedgekeurd_op: new Date().toISOString(),
+      lat: geocode?.lat ?? null,
+      lng: geocode?.lng ?? null,
+      geocoded_provincie: geocode?.provincie ?? null,
     })
     .select()
     .single();
@@ -330,10 +336,24 @@ export async function toernooiBewerken(
   // Een leeg "club_id" (open toernooi zonder gekoppelde club) is geldig
   // volgens het schema, maar een lege string is geen geldige uuid voor de
   // databank — die moet dan effectief leeg (null) worden opgeslagen.
-  const updateData = { ...parsed.data };
+  const updateData: typeof parsed.data & { lat?: number | null; lng?: number | null; geocoded_provincie?: string | null } =
+    { ...parsed.data };
   if (updateData.club_id === "") updateData.club_id = null;
 
   const supabase = await createClient();
+
+  // Enkel opnieuw geocoden als het adres of de gemeente effectief wijzigt.
+  if (updateData.adres !== undefined || updateData.gemeente !== undefined) {
+    const { data: huidig } = await supabase.from("toernooien").select("adres, gemeente, provincie").eq("id", id).single();
+    const adres = updateData.adres !== undefined ? updateData.adres : huidig?.adres ?? null;
+    const gemeente = updateData.gemeente ?? huidig?.gemeente ?? "";
+    const provincie = updateData.provincie ?? huidig?.provincie ?? "";
+    const geocode = await geocodeAdres(adres, gemeente, provincie);
+    updateData.lat = geocode?.lat ?? null;
+    updateData.lng = geocode?.lng ?? null;
+    updateData.geocoded_provincie = geocode?.provincie ?? null;
+  }
+
   const { error } = await supabase.from("toernooien").update(updateData).eq("id", id);
   if (error) {
     console.error("Toernooi bewerken mislukt:", error.message);

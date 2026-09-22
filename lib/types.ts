@@ -62,6 +62,9 @@ export type Toernooi = {
   verwijder_aanvraag_door: string | null;
   verwijder_aanvraag_reden: string | null;
   verwijder_aanvraag_op: string | null;
+  lat: number | null;
+  lng: number | null;
+  geocoded_provincie: Provincie | null;
 };
 
 export type NieuwToernooi = Omit<
@@ -76,6 +79,9 @@ export type NieuwToernooi = Omit<
   | "verwijder_aanvraag_door"
   | "verwijder_aanvraag_reden"
   | "verwijder_aanvraag_op"
+  | "lat"
+  | "lng"
+  | "geocoded_provincie"
 >;
 
 export type Club = {
@@ -97,6 +103,9 @@ export type Club = {
   verwijder_aanvraag_door: string | null;
   verwijder_aanvraag_reden: string | null;
   verwijder_aanvraag_op: string | null;
+  lat: number | null;
+  lng: number | null;
+  geocoded_provincie: Provincie | null;
 };
 
 export type NieuweClub = Omit<
@@ -109,6 +118,9 @@ export type NieuweClub = Omit<
   | "verwijder_aanvraag_door"
   | "verwijder_aanvraag_reden"
   | "verwijder_aanvraag_op"
+  | "lat"
+  | "lng"
+  | "geocoded_provincie"
 >;
 
 export type NieuwsbriefInschrijving = {

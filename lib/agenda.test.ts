@@ -41,6 +41,9 @@ const basisToernooi: Toernooi = {
   verwijder_aanvraag_door: null,
   verwijder_aanvraag_reden: null,
   verwijder_aanvraag_op: null,
+  lat: null,
+  lng: null,
+  geocoded_provincie: null,
 };
 
 describe("googleAgendaLink", () => {

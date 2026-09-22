@@ -7,7 +7,9 @@ import {
   DubbelBevinding,
   AdresBevinding,
   OpenstaandBevinding,
+  ProvincieMismatchBevinding,
 } from "@/lib/emails/data-controle";
+import { vertaalProvincie, Provincie } from "@/lib/provincies";
 
 // Draait via Vercel Cron, twee keer per week (zie vercel.json). Vercel voegt
 // zelf de "Authorization: Bearer <CRON_SECRET>" header toe, dus deze route
@@ -77,6 +79,26 @@ export async function GET(request: NextRequest) {
     dagen: Math.floor((Date.now() - new Date(r.aangemaakt_op).getTime()) / (24 * 60 * 60 * 1000)),
   }));
 
+  // 5. Het geocode-adres wijst op een andere provincie dan wat werd
+  // ingevuld (bv. Zottegem ingevuld terwijl het adres in Destelbergen ligt).
+  // Enkel toekomstige tornooien: geen zin om oude, al voorbije fouten te
+  // blijven melden.
+  const { data: provincieRuw } = await supabase
+    .from("toernooien")
+    .select("id, naam_nl, provincie, geocoded_provincie")
+    .not("geocoded_provincie", "is", null)
+    .eq("status", "goedgekeurd")
+    .is("verwijderd_op", null)
+    .gte("datum", new Date().toISOString().slice(0, 10));
+
+  const provincieMismatch: ProvincieMismatchBevinding[] = (provincieRuw ?? [])
+    .filter((r) => r.geocoded_provincie !== r.provincie)
+    .map((r) => ({
+      naam: r.naam_nl,
+      opgegeven: vertaalProvincie(r.provincie as Provincie, "nl"),
+      gevonden: vertaalProvincie(r.geocoded_provincie as Provincie, "nl"),
+    }));
+
   // 4. Nog niet aan een echte club uit de directory gekoppeld.
   const { count: aantalZonderClub } = await supabase
     .from("toernooien")
@@ -99,6 +121,7 @@ export async function GET(request: NextRequest) {
           dubbels,
           ontbrekendAdres,
           langOpenstaand,
+          provincieMismatch,
           aantalZonderClub: aantalZonderClub ?? 0,
         }),
       });
@@ -114,6 +137,7 @@ export async function GET(request: NextRequest) {
     dubbels: dubbels.length,
     ontbrekendAdres: ontbrekendAdres.length,
     langOpenstaand: langOpenstaand.length,
+    provincieMismatch: provincieMismatch.length,
     aantalZonderClub: aantalZonderClub ?? 0,
   });
 }

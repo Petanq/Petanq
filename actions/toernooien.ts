@@ -11,6 +11,7 @@ import { MeldingModeratorEmail, meldingModeratorOnderwerp } from "@/lib/emails/m
 import { siteUrl } from "@/lib/site-url";
 import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
 import { Provincie } from "@/lib/provincies";
+import { geocodeAdres } from "@/lib/geocode";
 
 export type BestaandDubbelTornooi = {
   naam_nl: string;
@@ -115,6 +116,10 @@ export async function toernooiIndienen(
     }
   }
 
+  // Best-effort: mislukt geocoding, dan slaan we gewoon zonder coördinaten
+  // op — dat mag een inzending nooit laten mislukken.
+  const geocode = await geocodeAdres(data.adres || null, data.gemeente, data.provincie);
+
   const supabase = await createClient();
   const { error } = await supabase.from("toernooien").insert({
     datum: data.datum,
@@ -144,6 +149,9 @@ export async function toernooiIndienen(
     kwalificatie_uur: data.kwalificatie_uur || null,
     status: "in_behandeling",
     ingediend_door: data.ingediend_door || null,
+    lat: geocode?.lat ?? null,
+    lng: geocode?.lng ?? null,
+    geocoded_provincie: geocode?.provincie ?? null,
   });
 
   // Let op: geen .select() na deze insert — de indiener (anoniem/publiek) mag

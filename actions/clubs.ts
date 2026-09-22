@@ -11,6 +11,7 @@ import {
 import { siteUrl } from "@/lib/site-url";
 import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
 import { Provincie } from "@/lib/provincies";
+import { geocodeAdres } from "@/lib/geocode";
 
 export type ClubActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -23,6 +24,10 @@ export async function clubVoorstellen(
     return { succes: false, fout: "ongeldige_invoer" };
   }
 
+  // Best-effort: mislukt geocoding, dan slaan we gewoon zonder coördinaten
+  // op — dat mag een club-aanmelding nooit laten mislukken.
+  const geocode = await geocodeAdres(parsed.data.adres || null, parsed.data.gemeente, parsed.data.provincie);
+
   const supabase = await createClient();
   const { error } = await supabase.from("clubs").insert({
     naam: parsed.data.naam,
@@ -33,6 +38,9 @@ export async function clubVoorstellen(
     contact_email: parsed.data.contact_email || null,
     ingediend_door: parsed.data.ingediend_door || null,
     actief: false,
+    lat: geocode?.lat ?? null,
+    lng: geocode?.lng ?? null,
+    geocoded_provincie: geocode?.provincie ?? null,
   });
 
   if (error) {

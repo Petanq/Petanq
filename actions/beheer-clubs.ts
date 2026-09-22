@@ -8,6 +8,7 @@ import { isModerator, isAdmin, huidigeModeratorNaam } from "@/lib/auth-helpers";
 import { getResendClient, AFZENDER } from "@/lib/resend";
 import { VerwijderAanvraagEmail, verwijderAanvraagOnderwerp } from "@/lib/emails/verwijder-aanvraag";
 import { siteUrl } from "@/lib/site-url";
+import { geocodeAdres } from "@/lib/geocode";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -16,6 +17,8 @@ export async function clubToevoegen(input: unknown): Promise<BeheerActieResultaa
 
   const parsed = clubSchema.safeParse(input);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
+
+  const geocode = await geocodeAdres(parsed.data.adres || null, parsed.data.gemeente, parsed.data.provincie);
 
   const supabase = await createClient();
   const { error } = await supabase.from("clubs").insert({
@@ -29,6 +32,9 @@ export async function clubToevoegen(input: unknown): Promise<BeheerActieResultaa
     openingsuren: parsed.data.openingsuren || null,
     foto_url: parsed.data.foto_url || null,
     actief: true,
+    lat: geocode?.lat ?? null,
+    lng: geocode?.lng ?? null,
+    geocoded_provincie: geocode?.provincie ?? null,
   });
 
   if (error) return { succes: false, fout: error.message };
@@ -59,8 +65,25 @@ export async function clubBewerken(
   const parsed = clubWijzigenSchema.safeParse(wijzigingen);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
 
+  // Enkel opnieuw geocoden als het adres of de gemeente effectief wijzigt —
+  // anders zouden we bij élke bewerking (ook bv. enkel het telefoonnummer)
+  // onnodig een externe aanvraag doen.
+  const updateData: typeof parsed.data & { lat?: number | null; lng?: number | null; geocoded_provincie?: string | null } =
+    { ...parsed.data };
+  if (updateData.adres !== undefined || updateData.gemeente !== undefined) {
+    const supabaseHuidig = await createClient();
+    const { data: huidig } = await supabaseHuidig.from("clubs").select("adres, gemeente, provincie").eq("id", id).single();
+    const adres = updateData.adres !== undefined ? updateData.adres : huidig?.adres ?? null;
+    const gemeente = updateData.gemeente ?? huidig?.gemeente ?? "";
+    const provincie = updateData.provincie ?? huidig?.provincie ?? "";
+    const geocode = await geocodeAdres(adres, gemeente, provincie);
+    updateData.lat = geocode?.lat ?? null;
+    updateData.lng = geocode?.lng ?? null;
+    updateData.geocoded_provincie = geocode?.provincie ?? null;
+  }
+
   const supabase = await createClient();
-  const { error } = await supabase.from("clubs").update(parsed.data).eq("id", id);
+  const { error } = await supabase.from("clubs").update(updateData).eq("id", id);
   if (error) return { succes: false, fout: error.message };
   revalidatePath("/beheer/clubs");
   revalidatePath("/clubs");
