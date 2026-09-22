@@ -7,9 +7,25 @@ import { dagVanWeekKort, dagNummer, maandKort, formatUur, countdownTekst } from 
 import { vertaalProvincie } from "@/lib/provincies";
 import { CATEGORIE_STREEP, CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
 
-export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
+export function TournamentCard({
+  toernooi,
+  weergaveDatum,
+  weergaveUur,
+  kwalificatie,
+}: {
+  toernooi: Toernooi;
+  // Voor een kwalificatiedatum (zie lib/agenda-items.ts): welke specifieke
+  // speeldag/uur dit kaartje weergeeft, i.p.v. altijd de hoofddatum/-uur van
+  // het toernooi — anders zou elke speeldag van een meerdaagse "challenge"
+  // toch gewoon de einddatum tonen.
+  weergaveDatum?: string;
+  weergaveUur?: string;
+  kwalificatie?: boolean;
+}) {
   const { t, taal } = useTranslation();
   const naam = taal === "fr" ? toernooi.naam_fr : toernooi.naam_nl;
+  const datum = weergaveDatum ?? toernooi.datum;
+  const uur = weergaveUur ?? toernooi.uur;
 
   return (
     <Link
@@ -23,13 +39,13 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
       <div className="flex items-center gap-3 sm:contents">
         <div className="w-14 shrink-0 rounded-xl bg-donker px-0.5 py-2 text-center">
           <div className="font-body text-[0.58rem] font-bold uppercase tracking-wide text-white/50">
-            {dagVanWeekKort(toernooi.datum, taal)}
+            {dagVanWeekKort(datum, taal)}
           </div>
           <div className="font-titel text-2xl leading-none text-geel">
-            {dagNummer(toernooi.datum)}
+            {dagNummer(datum)}
           </div>
           <div className="font-body text-[0.58rem] font-bold uppercase tracking-wider text-white/50">
-            {maandKort(toernooi.datum, taal)}
+            {maandKort(datum, taal)}
           </div>
         </div>
 
@@ -44,7 +60,7 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
             <span className="text-[0.74rem] text-grijs">
               📍 {toernooi.gemeente}, {vertaalProvincie(toernooi.provincie, taal)}
             </span>
-            <span className="text-[0.74rem] text-grijs">🕐 {formatUur(toernooi.uur)}</span>
+            <span className="text-[0.74rem] text-grijs">🕐 {formatUur(uur)}</span>
             {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
               <span className="text-[0.74rem] text-grijs">
                 {toernooi.aantal_ronden} {t.lijst.ronden}
@@ -61,6 +77,11 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 sm:flex-col sm:items-end sm:gap-1">
+        {kwalificatie && (
+          <span className="whitespace-nowrap rounded-full bg-[#fdf3d9] px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[#8a6d1f]">
+            {t.lijst.kwalificatieRondeBadge}
+          </span>
+        )}
         {toernooi.geannuleerd && (
           <span className="whitespace-nowrap rounded-full bg-rood px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
             {t.lijst.geannuleerdBadge}
@@ -87,7 +108,7 @@ export function TournamentCard({ toernooi }: { toernooi: Toernooi }) {
           </span>
         )}
         <span className="whitespace-nowrap text-[0.68rem] font-semibold text-grijs">
-          {countdownTekst(toernooi.datum, taal)}
+          {countdownTekst(datum, taal)}
         </span>
       </div>
     </Link>

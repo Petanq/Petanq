@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { Toernooi } from "@/lib/types";
-import { maandVolledig, parseDatum, vandaag } from "@/lib/datum";
+import { maandVolledig, vandaag } from "@/lib/datum";
+import { agendaItems, type AgendaItem } from "@/lib/agenda-items";
 import { TournamentCard } from "./tournament-card";
 
 const ACHTERGRONDEN = ["/images/boules-vrienden.jpg", "/images/petanque-speler.jpg", "/images/boules-koppel.jpg"];
@@ -23,11 +24,15 @@ export function MonthCalendar({ toernooien }: { toernooien: Toernooi[] }) {
   const maandIndex = weergegevenMaand.getMonth();
 
   const perDag = useMemo(() => {
-    const map = new Map<string, Toernooi[]>();
-    for (const tn of toernooien) {
-      const sleutel = tn.datum;
+    const map = new Map<string, AgendaItem[]>();
+    // Elke speeldag telt mee, niet enkel de hoofddatum — een meerdaagse
+    // "challenge" (bv. wekelijkse kwalificatierondes die naar 1 finale
+    // toeleiden) verscheen voordien enkel op zijn einddatum in de kalender,
+    // terwijl alle andere speeldagen nergens zichtbaar waren.
+    for (const item of agendaItems(toernooien)) {
+      const sleutel = item.datum;
       if (!map.has(sleutel)) map.set(sleutel, []);
-      map.get(sleutel)!.push(tn);
+      map.get(sleutel)!.push(item);
     }
     return map;
   }, [toernooien]);
@@ -126,7 +131,15 @@ export function MonthCalendar({ toernooien }: { toernooien: Toernooi[] }) {
             {toernooienVanDag.length === 0 ? (
               <p className="text-center text-sm text-white/60">{t.lijst.geenResultaten}</p>
             ) : (
-              toernooienVanDag.map((tn) => <TournamentCard key={tn.id} toernooi={tn} />)
+              toernooienVanDag.map((item) => (
+                <TournamentCard
+                  key={`${item.toernooi.id}-${item.datum}`}
+                  toernooi={item.toernooi}
+                  weergaveDatum={item.datum}
+                  weergaveUur={item.uur}
+                  kwalificatie={item.isKwalificatie}
+                />
+              ))
             )}
           </div>
         )}

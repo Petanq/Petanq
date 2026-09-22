@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/lib/language-context";
 import { KwalificatieDatum } from "@/lib/types";
-import { formatDatumKort, formatUur } from "@/lib/datum";
+import { formatDatumKort, formatUur, dagVanWeekKort } from "@/lib/datum";
 
 export function KwalificatieDataVeld({
   waarden,
@@ -19,7 +19,7 @@ export function KwalificatieDataVeld({
   hoofdDatum: string;
   hoofdUur: string;
 }) {
-  const { t } = useTranslation();
+  const { t, taal } = useTranslation();
 
   function datumWijzigen(index: number, waarde: string) {
     const nieuw = [...waarden];
@@ -75,6 +75,14 @@ export function KwalificatieDataVeld({
               onChange={(e) => datumWijzigen(index, e.target.value)}
               className="veld-input"
             />
+            {/* Toont meteen de dag van de week — zo valt een verkeerde datum
+                (manueel getypt, of fout uitgelezen van een affiche) meteen
+                op vóór het toernooi ingediend wordt. */}
+            {/^\d{4}-\d{2}-\d{2}$/.test(waarde.datum) && (
+              <span className="whitespace-nowrap rounded-full bg-[#fdf3d9] px-2 py-1 text-xs font-bold text-[#8a6d1f]">
+                {dagVanWeekKort(waarde.datum, taal)}
+              </span>
+            )}
             <input
               type="time"
               value={waarde.uur ?? ""}
