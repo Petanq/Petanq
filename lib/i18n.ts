@@ -249,6 +249,8 @@ const nl = {
     afficheAnalyseren: "De affiche wordt gelezen...",
     afficheAutoIngevuld:
       "We hebben op basis van de affiche alvast enkele velden ingevuld — controleer ze zeker voor je verstuurt.",
+    schiftingHint:
+      "Dit lijkt een schiftingen-toernooi (kwalificatiedagen die naar 1 finale leiden). Dat staat meestal niet als \"categorie\" of \"speelvorm\" op de affiche — we hebben Categorie vast op Heren gezet en het aantal rondes/poules leeg gelaten. Vul de rood omrande velden hieronder zelf aan.",
     afficheOverzicht: (n: number) => `Dit affiche bevat ${n} tornooien:`,
     verstuurEnVolgende: (n: number) => `Versturen en volgende (${n} nog te gaan)`,
     reeksHerkend: (n: number) =>
@@ -1002,6 +1004,8 @@ const fr: typeof nl = {
     afficheAnalyseren: "Lecture de l'affiche en cours...",
     afficheAutoIngevuld:
       "Nous avons déjà rempli certains champs à partir de l'affiche — vérifiez-les bien avant d'envoyer.",
+    schiftingHint:
+      "Ceci ressemble à un tournoi à éliminatoires (journées de qualification menant à 1 finale). L'affiche ne précise généralement pas de \"catégorie\" ou de \"formule\" — nous avons mis Catégorie sur Hommes par défaut et laissé le nombre de tours/poules vide. Complétez vous-même les champs entourés en rouge ci-dessous.",
     afficheOverzicht: (n: number) => `Cette affiche contient ${n} tournois :`,
     verstuurEnVolgende: (n: number) => `Envoyer et suivant (${n} restants)`,
     reeksHerkend: (n: number) =>

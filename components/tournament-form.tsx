@@ -86,6 +86,7 @@ export function TournamentForm() {
   const [afficheFout, setAfficheFout] = useState(false);
   const [aiBezig, setAiBezig] = useState(false);
   const [autoIngevuld, setAutoIngevuld] = useState(false);
+  const [schiftingHint, setSchiftingHint] = useState(false);
   const [verzendPoging, setVerzendPoging] = useState(false);
   const [clubs, setClubs] = useState<Club[]>([]);
   const [adresVanClub, setAdresVanClub] = useState(false);
@@ -179,10 +180,20 @@ export function TournamentForm() {
       }
     }
 
+    // Een schiftingen-toernooi (kwalificatiedagen die naar 1 finale leiden)
+    // vermeldt op de affiche zelf zelden een categorie of een rondes/poules-
+    // indeling — dat concept bestaat daar gewoon niet.
+    const isSchifting = !!(velden.kwalificatiedata && velden.kwalificatiedata.length > 0);
+
     if (velden.naam_nl) setNaamNl(velden.naam_nl);
     if (velden.naam_fr) setNaamFr(velden.naam_fr);
     if (velden.categorie && CATEGORIEEN.includes(velden.categorie as Categorie)) {
       setCategorie(velden.categorie as Categorie);
+    } else {
+      // Geen categorie op de affiche te herkennen: "heren" is verreweg de
+      // meest voorkomende, dus dat is een veiliger startpunt dan het veld
+      // leeg en rood laten staan — de indiener past dit anders wel aan.
+      setCategorie("heren");
     }
     if (velden.formule && FORMULES.includes(velden.formule as Formule)) {
       setFormule(velden.formule as Formule);
@@ -190,8 +201,21 @@ export function TournamentForm() {
     if (velden.speelvorm === "rondes" || velden.speelvorm === "poules") {
       setSpeelvorm(velden.speelvorm);
     }
-    if (velden.aantal_ronden) setAantalRonden(String(velden.aantal_ronden));
-    if (velden.aantal_poules) setAantalPoules(String(velden.aantal_poules));
+    if (velden.aantal_ronden) {
+      setAantalRonden(String(velden.aantal_ronden));
+    } else if (isSchifting) {
+      // In tegenstelling tot categorie is hier geen veilige gok mogelijk —
+      // laat het veld bewust leeg (en dus rood) staan zodat de indiener zelf
+      // een speelvorm kiest i.p.v. de generieke standaardwaarde "4 rondes"
+      // ongemerkt mee te sturen voor een toernooi dat geen rondes speelt.
+      setAantalRonden("");
+    }
+    if (velden.aantal_poules) {
+      setAantalPoules(String(velden.aantal_poules));
+    } else if (isSchifting) {
+      setAantalPoules("");
+    }
+    setSchiftingHint(isSchifting && !velden.aantal_ronden && !velden.aantal_poules);
     if (velden.contact_email) setContactEmail(velden.contact_email);
     if (velden.gratis) setGratis(true);
     if (velden.inschrijvingsprijs != null) setInschrijvingsprijs(String(velden.inschrijvingsprijs));
@@ -691,6 +715,11 @@ export function TournamentForm() {
           <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
             {t.form.sectieDetails}
           </legend>
+          {schiftingHint && (
+            <p className="rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
+              {t.form.schiftingHint}
+            </p>
+          )}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Veld label={t.form.categorie} verplicht id="veld-categorie">
               <select
