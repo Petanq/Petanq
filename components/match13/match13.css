@@ -2175,14 +2175,15 @@
   grid-template-columns: 1fr;
   gap: 3mm;
 }
-/* Liggend kaartje (Frederic's gekozen ontwerp, na het vergelijken van een
-   paar varianten): een dunne rechterstrook met beide logo's/petanque13.be,
-   en de telling als klokwijzerplaat i.p.v. een lange kolom — dat maakt
-   ruimte vrij voor een flink grotere naam/nummer ernaast. */
+/* Liggend kaartje, compacte versie (Frederic's finale keuze na een lange
+   reeks voorbeelden): 6 kaartjes per A4-blad i.p.v. 3. Namen, spelersnummers
+   en Ronde/Plein blijven zo groot mogelijk; de telling 1-13 is een dunne
+   voortgangsbalk met tikjes per punt i.p.v. een klokwijzerplaat of losse
+   bolletjes, en elk team krijgt een eigen TOTAAL-vak naast zijn eigen balk. */
 .match13-scope .mk-kaart {
   break-inside: avoid;
   width: 190mm;
-  height: 90mm;
+  height: 45mm;
   background: #fff;
   border-radius: 2.4mm;
   box-shadow: 0 1.2mm 2.8mm rgba(31, 31, 31, 0.16);
@@ -2199,18 +2200,18 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  padding: 3mm 4mm;
+  padding: 0.9mm 2.2mm;
   box-sizing: border-box;
 }
 .match13-scope .mk-kop {
   display: flex;
   align-items: center;
-  gap: 1.6mm;
-  margin-bottom: 2mm;
+  gap: 1mm;
+  margin-bottom: 0.5mm;
 }
 .match13-scope .mk-logo {
-  width: 10mm;
-  height: 10mm;
+  width: 6mm;
+  height: 6mm;
   flex: 0 0 auto;
   object-fit: contain;
 }
@@ -2221,12 +2222,12 @@
 }
 .match13-scope .mk-titel b {
   display: block;
-  font-size: 10pt;
+  font-size: 7pt;
   font-weight: 800;
 }
 .match13-scope .mk-titel > span {
   display: block;
-  font-size: 6.4pt;
+  font-size: 4.6pt;
   font-weight: 700;
   color: #3d3730;
   white-space: nowrap;
@@ -2235,27 +2236,27 @@
 }
 .match13-scope .mk-badges {
   display: flex;
-  gap: 1.5mm;
+  gap: 1.6mm;
   flex: 0 0 auto;
 }
 .match13-scope .mk-badge {
   background: #1f1f1f;
   color: #f4c430;
   border-radius: 1.6mm;
-  padding: 0.8mm 2mm;
+  padding: 0.9mm 2.4mm;
   text-align: center;
   flex: 0 0 auto;
 }
 .match13-scope .mk-badge .lbl {
   display: block;
-  font-size: 4.8pt;
+  font-size: 5.6pt;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .match13-scope .mk-badge b {
   display: block;
-  font-size: 11pt;
+  font-size: 17pt;
   line-height: 1.1;
 }
 .match13-scope .mk-badge-deel {
@@ -2265,47 +2266,24 @@
 .match13-scope .mk-badge-deel .lbl {
   font-size: 6pt;
 }
-.match13-scope .mk-lijf {
+/* De 2 teams: elk een eigen volle-breedte rij (naam(en) + teltrook + TOTAAL),
+   i.p.v. het vroegere naast-elkaar-grid met een klok in het midden. */
+.match13-scope .mk-teams {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr auto auto 1fr;
-  align-items: center;
-  gap: 4mm;
-  min-height: 0;
-}
-.match13-scope .mk-team {
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.4mm;
-  text-align: center;
+  justify-content: space-evenly;
+  min-height: 0;
 }
-.match13-scope .mk-nr {
-  width: 15mm;
-  height: 15mm;
-  border-radius: 50%;
-  flex: 0 0 auto;
-  background: #1f1f1f;
-  color: #f4c430;
+.match13-scope .mk-team-rij {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 15pt;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
+  gap: 3mm;
 }
-.match13-scope .mk-namen {
-  font-size: 11pt;
-  font-weight: 700;
-  line-height: 1.25;
-  color: #1f1f1f;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.match13-scope .mk-team-scheiding {
+  border: none;
+  border-top: 0.3mm dashed #d9d2c1;
+  margin: 0;
 }
 .match13-scope .mk-letter {
   color: #b8860b;
@@ -2313,19 +2291,18 @@
 }
 .match13-scope .mk-boule-rij {
   display: flex;
-  gap: 1.6mm;
-  justify-content: center;
-  flex-wrap: wrap;
+  gap: 2mm;
+  flex: 0 0 auto;
 }
 .match13-scope .mk-speler {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 0.6mm;
+  gap: 1mm;
 }
 .match13-scope .mk-boule {
-  width: 10mm;
-  height: 10mm;
+  width: 8.6mm;
+  height: 8.6mm;
   border-radius: 50%;
   flex: 0 0 auto;
   background: radial-gradient(circle at 32% 28%, #fbfbfb, #c7c7c7 55%, #949494 100%);
@@ -2333,111 +2310,85 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9pt;
+  font-size: 6.6pt;
   font-weight: 800;
   color: #1f1f1f;
   font-variant-numeric: tabular-nums;
   box-shadow: inset 0 0.2mm 0.3mm rgba(255, 255, 255, 0.75), 0 0.2mm 0.4mm rgba(0, 0, 0, 0.2);
 }
 .match13-scope .mk-speler-naam {
-  font-size: 7.6pt;
+  font-size: 12pt;
   font-weight: 700;
   color: #1f1f1f;
-  max-width: 22mm;
-  text-align: center;
-  line-height: 1.15;
+  white-space: nowrap;
 }
-/* De telling 1-13 als klokwijzerplaat i.p.v. een lange kolom. */
-.match13-scope .mk-klok {
+/* De telling 1-13 als voortgangsbalk met tikjes i.p.v. een klokwijzerplaat
+   of losse bolletjes — leest als 1 doorlopende lijn, het laatste puntje (13)
+   in het goud uitgelicht. */
+.match13-scope .mk-meter {
+  flex: 1;
+}
+.match13-scope .mk-meter-balk {
+  height: 2.6mm;
+  border-radius: 1.3mm;
+  background: #f3f0e8;
+  border: 0.3mm solid #d9d2c1;
   position: relative;
-  width: 36mm;
-  height: 36mm;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  border: 0.3mm dashed #c9c2b2;
+  overflow: hidden;
 }
-.match13-scope .mk-klok-getal {
+.match13-scope .mk-meter-tik {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 6.6mm;
-  height: 6.6mm;
-  margin: -3.3mm 0 0 -3.3mm;
-  border-radius: 50%;
-  border: 0.35mm solid #8a8378;
+  top: 0;
+  bottom: 0;
+  width: 0.3mm;
+  background: #d9d2c1;
+}
+.match13-scope .mk-meter-nrs {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 4pt;
+  justify-content: space-between;
+  margin-top: 0.8mm;
+}
+.match13-scope .mk-meter-nrs span {
+  font-size: 3pt;
   font-weight: 700;
+  color: #3d3730;
   font-variant-numeric: tabular-nums;
-  color: #1f1f1f;
-  background: #fff;
-  transform: rotate(calc(var(--i) * 27.7deg)) translateY(-13.4mm) rotate(calc(var(--i) * -27.7deg));
 }
-.match13-scope .mk-klok-getal:last-child {
-  border-color: #1f1f1f;
-  border-width: 0.6mm;
+.match13-scope .mk-meter-nrs span:last-child {
   font-weight: 800;
-}
-.match13-scope .mk-klok-midden {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 3.6pt;
-  font-weight: 800;
-  letter-spacing: 0.03em;
   color: #b8860b;
 }
-.match13-scope .mk-voet {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr 1fr;
-  gap: 2mm;
-  align-items: stretch;
-  margin-top: 2mm;
-  flex: 0 0 auto;
-}
-.match13-scope .mk-vak {
-  border: 0.35mm solid #8a8378;
-  border-radius: 1mm;
-  background: #faf8f3;
-  min-height: 6mm;
-}
-.match13-scope .mk-mid2 {
+.match13-scope .mk-totaal-mini {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.4mm;
+  gap: 0.8mm;
+  flex: 0 0 auto;
 }
-.match13-scope .mk-mid2 .lbl {
-  font-size: 5pt;
+.match13-scope .mk-totaal-mini .lbl {
+  font-size: 3.4pt;
   font-weight: 800;
   letter-spacing: 0.03em;
   color: #1f1f1f;
 }
-.match13-scope .mk-mid2 .hand {
-  width: 100%;
-  text-align: center;
-  font-size: 4.4pt;
-  font-weight: 700;
-  color: #3d3730;
-  border-top: 0.25mm dashed #1f1f1f;
-  padding-top: 0.4mm;
+.match13-scope .mk-totaal-mini .vak {
+  width: 9mm;
+  height: 5mm;
+  border: 0.45mm solid #1f1f1f;
+  border-radius: 1.2mm;
+  background: #faf8f3;
 }
-/* De rechterstrook: rond logo + verticale "petanque13.be"-tekst, i.p.v. de
-   vroegere kleine credit-tekstregel onderaan. */
+/* De rechterstrook: rond logo + verticale "petanque13.be"-tekst. */
 .match13-scope .mk-credit-strook {
   flex: 0 0 auto;
-  width: 20mm;
+  width: 11mm;
   background: #1f1f1f;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2.4mm;
-  padding: 3mm;
+  gap: 0.8mm;
+  padding: 1mm;
   box-sizing: border-box;
 }
 .match13-scope .mk-credit-strook img {
@@ -2446,10 +2397,10 @@
 }
 .match13-scope .mk-credit-strook span {
   writing-mode: vertical-rl;
-  font-size: 5.4pt;
-  font-weight: 800;
-  color: #f4c430;
-  letter-spacing: 0.04em;
+  font-size: 3.4pt;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.09em;
 }
 
 /* Klassement afdrukken: rangschikkingstabel op 1 staand blad, met de

@@ -1,0 +1,641 @@
+<meta charset="UTF-8">
+<title>Petanque13 Sponsordossier</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap');
+
+  :root {
+    --ink: #1F1F1F;
+    --ink-soft: #4b4b4b;
+    --paper: #F5F5F5;
+    --card: #ffffff;
+    --line: #e5e5e5;
+    --gold: #F4C430;
+    --gold-ink: #6b4e00;
+    --red: #D62828;
+    --red-soft: #fdecec;
+    --gold-soft: #fdf3d9;
+    --hero-foto: url("data:image/jpeg;base64,__HERO_BASE64__");
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #f2f0ec;
+      --ink-soft: #b9b6ae;
+      --paper: #15130f;
+      --card: #1d1a15;
+      --line: #34312a;
+      --gold: #F4C430;
+      --gold-ink: #F4C430;
+      --red: #e8635a;
+      --red-soft: #341c1a;
+      --gold-soft: #2c2410;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #f2f0ec;
+    --ink-soft: #b9b6ae;
+    --paper: #15130f;
+    --card: #1d1a15;
+    --line: #34312a;
+    --gold: #F4C430;
+    --gold-ink: #F4C430;
+    --red: #e8635a;
+    --red-soft: #341c1a;
+    --gold-soft: #2c2410;
+  }
+
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    line-height: 1.55;
+    padding: 0 20px;
+  }
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+  @media print {
+    body { padding: 0; margin: 0 auto; }
+    .wrap { max-width: 700px; margin: 0 auto; }
+    .pakketten { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .hero, .stat, .pakket, .flagship, .cta,
+    .kaartje-mock, .publiek-item, .quote {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  .disp { font-family: 'Montserrat', 'Arial Black', sans-serif; }
+
+  /* ---------- hero ---------- */
+  /* Zelfde recept als de echte homepage-hero (components/hero.tsx): de
+     tornooifoto op 60% dekking, met een donkere gradient erover zodat de
+     tekst leesbaar blijft — bewust altijd donker, ongeacht het thema van de
+     kijker (net als de site zelf). */
+  .hero {
+    margin: 32px 0 0;
+    padding: 44px 32px 38px;
+    background-color: #1F1F1F;
+    background-image:
+      linear-gradient(90deg, rgba(31,31,31,0.97) 0%, rgba(31,31,31,0.9) 45%, rgba(31,31,31,0.62) 100%),
+      var(--hero-foto);
+    background-size: cover, cover;
+    background-position: center, center 35%;
+    border-radius: 20px;
+    color: #fdfbf6;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -40% -10% auto auto;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244,196,48,0.22), transparent 70%);
+  }
+  .hero-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-top img { width: 40px; height: 40px; border-radius: 50%; display: block; }
+  .hero-top span {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.01em;
+    color: #fdfbf6;
+  }
+  .hero-top span b { color: var(--gold); }
+  .kicker {
+    position: relative; z-index: 1;
+    margin: 26px 0 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .hero h1 {
+    position: relative; z-index: 1;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.7rem, 5.2vw, 2.5rem);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+    color: #fdfbf6;
+  }
+  .hero p {
+    position: relative; z-index: 1;
+    max-width: 46ch;
+    margin: 0;
+    font-size: 1.02rem;
+    color: #d9d6cd;
+  }
+
+  /* ---------- stat strip ---------- */
+  .stats {
+    margin-top: -26px;
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 0 8px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1.5px solid var(--gold);
+    border-radius: 14px;
+    padding: 16px 8px 14px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(244,196,48,0.14);
+  }
+  .stat b {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.1rem, 3.4vw, 1.5rem);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+  .stat span {
+    display: block;
+    margin-top: 2px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--gold-ink);
+  }
+
+  /* ---------- sections ---------- */
+  section { margin-top: 52px; }
+  .eyebrow {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin: 0 0 8px;
+  }
+  h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.3rem, 3.6vw, 1.7rem);
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .lede { font-size: 1.05rem; color: var(--ink-soft); max-width: 62ch; }
+
+  .quote {
+    margin: 22px 0 0;
+    padding: 16px 20px;
+    border-left: 3px solid var(--gold);
+    background: var(--gold-soft);
+    border-radius: 0 12px 12px 0;
+    font-style: italic;
+    color: var(--ink);
+  }
+
+  /* ---------- match13 card mockup ---------- */
+  /* Deze kaart stelt het fysieke, gedrukte kaartje voor — bewust altijd
+     "papier-wit", ongeacht het licht/donker-thema van de kijker. */
+  .kaartje-mock {
+    margin-top: 22px;
+    max-width: 360px;
+    background: #ffffff;
+    border: 1.5px dashed #c9c6bd;
+    border-radius: 12px;
+    padding: 14px 16px 12px;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+    color: #1F1F1F;
+  }
+  .km-kop { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .km-logo {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #1F1F1F; color: #F4C430;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: 900;
+  }
+  .km-titel { font-weight: 800; font-size: 0.85rem; letter-spacing: 0.02em; color: #1F1F1F; }
+  .km-badge {
+    margin-left: auto;
+    font-size: 0.68rem; font-weight: 700;
+    background: #fdf3d9; color: #6b4e00;
+    padding: 3px 8px; border-radius: 20px;
+  }
+  .km-teams { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .km-team {
+    flex: 1; font-size: 0.82rem; font-weight: 600;
+    display: flex; align-items: center; gap: 7px; color: #1F1F1F;
+  }
+  .km-nr {
+    width: 20px; height: 20px; border-radius: 5px;
+    background: #F5F5F5; border: 1px solid #e5e5e5;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 800; flex-shrink: 0; color: #1F1F1F;
+  }
+  .km-vs { font-size: 0.74rem; color: #767267; }
+  .km-voet {
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px dashed #c9c6bd; padding-top: 9px;
+    font-size: 0.68rem; color: #767267;
+  }
+  .km-sponsor {
+    color: #D62828; font-weight: 700;
+    border: 1px dashed #D62828; border-radius: 6px;
+    padding: 3px 7px;
+  }
+
+  /* ---------- packages ---------- */
+  .pakketten {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  /* Elk pakket krijgt de kleur van zijn "medaille" — brons/zilver/goud,
+     oplopend in waarde. --tier-kleur stuurt het nummer, de rand en de
+     vinkjes; --tier-zacht is de lichte tint voor de badge. */
+  .pakket {
+    --tier-kleur: var(--red);
+    --tier-zacht: var(--red-soft);
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-top: 5px solid var(--tier-kleur);
+    border-radius: 16px;
+    padding: 22px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+  }
+  .pakket--brons { --tier-kleur: #AD7F4B; --tier-zacht: #f3e8db; }
+  .pakket--zilver {
+    --tier-kleur: #8b909a; --tier-zacht: #eef0f2;
+    box-shadow: 0 10px 26px rgba(139,144,154,0.2);
+  }
+  .pakket--goud {
+    --tier-kleur: var(--gold); --tier-zacht: var(--gold-soft);
+    box-shadow: 0 10px 26px rgba(244,196,48,0.22);
+  }
+  .pakket--zilver::after,
+  .pakket--goud::after {
+    position: absolute;
+    top: -11px; right: 18px;
+    color: #1F1F1F;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--tier-kleur);
+  }
+  .pakket--zilver::after { content: "Meest gekozen"; color: #fff; }
+  .pakket--goud::after { content: "Meeste zichtbaarheid"; }
+  .pk-num {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    color: var(--tier-kleur);
+  }
+  .pk-naam {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .pk-prijs {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 1.65rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+  .pk-prijs span {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .pk-sub { font-family: 'Montserrat', sans-serif; font-size: 0.78rem; color: var(--ink-soft); margin-top: -10px; }
+  .pk-lijst {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.95rem;
+    flex: 1;
+  }
+  .pk-lijst li {
+    padding-left: 20px;
+    position: relative;
+    color: var(--ink);
+  }
+  .pk-lijst li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--tier-kleur);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+  .pk-note {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .flagship {
+    margin-top: 18px;
+    background: var(--ink);
+    border-radius: 16px;
+    padding: 26px 28px;
+    color: #fdfbf6;
+    position: relative;
+    overflow: hidden;
+  }
+  :root[data-theme="dark"] .flagship,
+  :root:not([data-theme="light"]) .flagship { background: #0e0d0a; }
+  .flagship::before {
+    content: "";
+    position: absolute;
+    inset: auto -15% -60% auto;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244,196,48,0.18), transparent 70%);
+  }
+  .fs-head { position: relative; z-index: 1; }
+  .fs-num {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+  .fs-naam {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 1.35rem;
+    margin: 6px 0 12px;
+    color: #fdfbf6;
+  }
+  .fs-tekst {
+    position: relative; z-index: 1;
+    color: #d9d6cd;
+    font-size: 0.94rem;
+    max-width: 56ch;
+    margin: 0 0 20px;
+  }
+  .fs-onder {
+    position: relative; z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 18px;
+    border-top: 1px solid rgba(255,255,255,0.14);
+    padding-top: 16px;
+  }
+  .fs-prijs {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  .fs-prijs span {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 400;
+    font-size: 0.7rem;
+    color: #b8b4a9;
+  }
+  .fs-note {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    color: #b8b4a9;
+    max-width: 40ch;
+    margin: 0;
+  }
+
+  .founding {
+    margin-top: 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+  .founding b { color: var(--ink); }
+
+  /* ---------- audience list ---------- */
+  .publiek-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .publiek-item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 13px 15px;
+    font-size: 0.93rem;
+  }
+  .publiek-item b {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+  }
+
+  /* ---------- CTA footer ---------- */
+  .cta {
+    margin: 56px 0 40px;
+    padding: 38px 32px;
+    background: var(--ink);
+    border-radius: 20px;
+    color: #fdfbf6;
+    text-align: center;
+  }
+  :root[data-theme="dark"] .cta,
+  :root:not([data-theme="light"]) .cta { background: #0e0d0a; }
+  .cta h2 { color: #fdfbf6; }
+  .cta p { color: #d9d6cd; margin: 0 auto 20px; max-width: 46ch; }
+  .cta a.mail {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #1F1F1F;
+    background: var(--gold);
+    padding: 13px 26px;
+    border-radius: 10px;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+  }
+  .cta .sub { margin-top: 14px; font-size: 0.78rem; color: #9b988e; }
+
+  @media (max-width: 620px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .pakketten { grid-template-columns: 1fr; }
+    .publiek-grid { grid-template-columns: 1fr; }
+    .hero { padding: 34px 22px 30px; border-radius: 16px; }
+    .cta { padding: 30px 22px; }
+    .flagship { padding: 22px 20px; }
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-top">
+      <img src="data:image/png;base64,__LOGO_BASE64__" alt="Petanque13" />
+      <span>Petanque<b>13</b></span>
+    </div>
+    <p class="kicker">Sponsordossier — 2026-2027</p>
+    <h1>Het enige platform van dit soort in België. Geen vergelijkbaar alternatief.</h1>
+    <p>Petanque13 is dé centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel — en met Match13 ook het tool waarmee clubs hun tornooidag effectief runnen. Geen enkele andere site in België combineert beide.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>475+</b><span>Tornooien dit seizoen</span></div>
+    <div class="stat"><b>208+</b><span>Actieve clubs</span></div>
+    <div class="stat"><b>50.000+</b><span>Bezoeken per jaar</span></div>
+    <div class="stat"><b>11</b><span>Provincies gedekt</span></div>
+  </div>
+
+  <section>
+    <p class="eyebrow">Waarom Petanque13</p>
+    <h2>Duizenden petanquespelers, op het moment dat het telt</h2>
+    <p class="lede">Wie op Petanque13 landt, is geen toevallige voorbijganger — het is iemand die op dat moment actief zoekt naar een petanquetornooi in zijn of haar buurt. Dat is precies het moment waarop een merk, winkel of streek zich wil tonen.</p>
+    <div class="publiek-grid">
+      <div class="publiek-item"><b>Actieve spelers</b>zoeken zelf naar een tornooi om aan deel te nemen — vaak wekelijks.</div>
+      <div class="publiek-item"><b>Clubbestuurders</b>beheren tornooien en zien de site geregeld terug.</div>
+      <div class="publiek-item"><b>Vlaanderen & Wallonië</b>de site is volledig tweetalig, dus je bereik stopt niet aan de taalgrens.</div>
+      <div class="publiek-item"><b>27 vrijwilligers</b>controleren elk tornooi — de gegevens zijn betrouwbaar, en dat vertrouwen straalt af op wie ernaast staat.</div>
+      <div class="publiek-item"><b>Actief op Facebook</b>met filmpjes en sfeerbeelden van tornooien — ook daar kan een sponsor mee in beeld komen.</div>
+    </div>
+    <p class="quote">"Geen verspreide Facebookposts meer. Petanque13 brengt alle toernooien samen voor heel België." — de belofte waarmee elke bezoeker binnenkomt.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">Uniek in België</p>
+    <h2>Meer dan een kalender: Match13</h2>
+    <p class="lede">Naast de kalender heeft Petanque13 ook <b>Match13</b> — het tool waarmee clubs hun tornooidag zelf runnen: automatische rondes en loting (Tête-à-tête, Doublet, Triplet, Kwartet, Sextet, Meli-Melo, Poules), live scoreverwerking, een klassement dat zichzelf berekent, en een "Zaalscherm" dat op een groot scherm in de zaal geprojecteerd wordt met de rondes en pleinindeling.</p>
+    <p class="lede" style="margin-top:12px">En daar zit de échte troef: elke ronde krijgt <b>elk team een eigen gedrukte wedstrijdkaart</b> — met de spelersnamen, het plein, een scoreschijf tot 13, en een vast logovak onderaan. Dat is fysieke zichtbaarheid die letterlijk van hand tot hand gaat, ronde na ronde, tornooi na tornooi. Geen enkele andere petanquesite in België biedt dat.</p>
+
+    <div class="kaartje-mock">
+      <div class="km-kop">
+        <span class="km-logo">P13</span>
+        <span class="km-titel">MATCH13</span>
+        <span class="km-badge">Ronde 3 · Plein 4</span>
+      </div>
+      <div class="km-teams">
+        <div class="km-team"><span class="km-nr">7</span>Van Damme / Peeters</div>
+        <span class="km-vs">—</span>
+        <div class="km-team"><span class="km-nr">12</span>Dubois / Lambert</div>
+      </div>
+      <div class="km-voet">
+        <span>Handtekening: ______________</span>
+        <span class="km-sponsor">Logovak sponsor →</span>
+      </div>
+    </div>
+    <p class="pk-note" style="margin-top:10px">Match13 wordt vandaag al gebruikt door een groeiende groep pilootclubs. Een sponsorlogo op deze kaartjes bestaat nog niet, maar is een kleine technische toevoeging die we voor de juiste partner meteen bouwen.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">Sponsorpakketten</p>
+    <h2>Vier manieren om erbij te horen</h2>
+    <p class="lede">Prijzen per jaar (het hele jaar door tornooien, niet enkel een zomerseizoen). Petanque13 heeft geen vergelijkbaar alternatief in België — deze tarieven weerspiegelen die unieke, landelijke positie.</p>
+
+    <div class="pakketten">
+      <div class="pakket pakket--brons">
+        <span class="pk-num">01 — BASIS</span>
+        <h3 class="pk-naam">Vriend van Petanque13</h3>
+        <div class="pk-prijs">€250 <span>/ jaar</span></div>
+        <ul class="pk-lijst">
+          <li>Logo + link op de partnerpagina</li>
+          <li>Eén vermelding op de Facebookpagina</li>
+          <li>Vermeld als "steunt Petanque13"</li>
+        </ul>
+        <p class="pk-note">Ideaal om laagdrempelig te starten.</p>
+      </div>
+
+      <div class="pakket pakket--zilver">
+        <span class="pk-num">02 — PARTNER</span>
+        <h3 class="pk-naam">Partner</h3>
+        <div class="pk-prijs">€600 <span>/ jaar</span></div>
+        <ul class="pk-lijst">
+          <li>Alles uit "Vriend van Petanque13"</li>
+          <li>Logo zichtbaar op de homepage</li>
+          <li>Vermelding bij lancering + halverwege het jaar in de nieuwsbrief</li>
+          <li>Vermeld/getagd in minstens 1 sfeervideo op Facebook</li>
+        </ul>
+        <p class="pk-note">Het meest gekozen pakket voor regionale spelers.</p>
+      </div>
+
+      <div class="pakket pakket--goud">
+        <span class="pk-num">03 — HOOFDSPONSOR</span>
+        <h3 class="pk-naam">Hoofdsponsor</h3>
+        <div class="pk-prijs">€1.500 <span>/ jaar</span></div>
+        <ul class="pk-lijst">
+          <li>Alles uit "Partner"</li>
+          <li>Prominente banner bovenaan de homepage</li>
+          <li>Eigen pagina, zoals "Op reis met Claudy"</li>
+          <li>Vermelding in élke nieuwsbriefeditie</li>
+          <li>Eigen vermelding/shoutout in elke tornooivideo op Facebook</li>
+          <li>Exclusief: max. 2 hoofdsponsors per jaar</li>
+        </ul>
+        <p class="pk-note">Voor wie écht herkend wil worden door elke petanquespeler.</p>
+      </div>
+    </div>
+
+    <div class="flagship">
+      <div class="fs-head">
+        <span class="fs-num">04 — EXCLUSIEF, MAX. 1 PER JAAR</span>
+        <h3 class="fs-naam">Match13-hoofdpartner</h3>
+      </div>
+      <p class="fs-tekst">Jouw logo op élke gedrukte wedstrijdkaart, elke ronde, bij élk tornooi dat via Match13 gespeeld wordt — plus op het Zaalscherm dat live geprojecteerd wordt tijdens het tornooi. Fysieke, herhaalde zichtbaarheid, letterlijk van hand tot hand. Dit bestaat nergens anders in de Belgische petanquewereld.</p>
+      <div class="fs-onder">
+        <div class="fs-prijs">€2.500 <span>/ jaar</span></div>
+        <p class="fs-note">Inclusief: alles uit "Hoofdsponsor" + het logovak op de wedstrijdkaartjes en het Zaalscherm (kleine technische toevoeging, gebouwd zodra deze partner instapt).</p>
+      </div>
+    </div>
+
+    <p class="founding"><b>Founding sponsor-prijzen</b> — dit zijn de tarieven voor het allereerste jaar. Zodra het bereik verder groeit, kunnen latere jaren anders geprijsd worden.</p>
+  </section>
+
+  <div class="cta">
+    <p class="eyebrow" style="color:var(--gold)">Interesse?</p>
+    <h2>Laten we samen een jaar bouwen.</h2>
+    <p>Stuur een mailtje en we bekijken samen welk pakket het beste bij je past — ook maatwerk is bespreekbaar.</p>
+    <a class="mail" href="mailto:info@petanque13.be">info@petanque13.be</a>
+    <p class="sub">Petanque13 — de Belgische petanquekalender · petanque13.be</p>
+  </div>
+
+</div>
