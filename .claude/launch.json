@@ -8,6 +8,12 @@
       "port": 3000
     },
     {
+      "name": "petanque13-dev",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "set PATH=C:\\Program Files\\nodejs;%PATH% && npm run dev"],
+      "port": 3000
+    },
+    {
       "name": "le-bouliste-prod",
       "runtimeExecutable": "cmd.exe",
       "runtimeArgs": ["/c", "set PATH=C:\\Program Files\\nodejs;%PATH% && npm run start"],
@@ -21,6 +27,15 @@
         "set PATH=C:\\Program Files\\nodejs;%PATH% && cd /d \"C:\\Users\\Frederic\\Desktop\\cochonnet-test\" && npm run dev"
       ],
       "port": 5173
+    },
+    {
+      "name": "events13-dev",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": [
+        "/c",
+        "set PATH=C:\\Program Files\\nodejs;%PATH% && cd /d C:\\Users\\Frederic\\Desktop\\events13 && npm run dev"
+      ],
+      "port": 3100
     }
   ]
 }

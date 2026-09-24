@@ -12,6 +12,25 @@ import {
   BevestigingMatch13AanvraagEmail,
   bevestigingMatch13AanvraagOnderwerp,
 } from "@/lib/emails/bevestiging-match13-aanvraag";
+import { Match13ToegangLinkEmail, match13ToegangLinkOnderwerp } from "@/lib/emails/match13-toegang-link";
+
+// De link blijft ook gewoon zichtbaar in de UI (zie wachtwoordLink hieronder)
+// zodat Frederic hem alsnog manueel via WhatsApp/sms kan doorsturen als deze
+// mail de ontvanger toch niet bereikt — dit is een extra kanaal, geen
+// vervanging.
+async function stuurToegangLinkMail(club: string, email: string, link: string) {
+  try {
+    const resend = getResendClient();
+    await resend.emails.send({
+      from: AFZENDER,
+      to: email,
+      subject: match13ToegangLinkOnderwerp("nl"),
+      react: Match13ToegangLinkEmail({ taal: "nl", club, link }),
+    });
+  } catch (mailFout) {
+    console.error("Match13-toegangslink mailen mislukt:", mailFout);
+  }
+}
 
 export type Match13ToegangActieResultaat = { succes: true } | { succes: false; fout: string };
 export type Match13UitnodigenResultaat =
@@ -223,7 +242,9 @@ export async function match13GebruikerUitnodigen(input: {
       }
 
       revalidatePath("/beheer/match13/toegang");
-      return { succes: true, link: await maakKorteLink(wachtwoordLink(linkData.properties.hashed_token, "recovery")) };
+      const linkBestaand = await maakKorteLink(wachtwoordLink(linkData.properties.hashed_token, "recovery"));
+      await stuurToegangLinkMail(club, input.email, linkBestaand);
+      return { succes: true, link: linkBestaand };
     }
     console.error("Match13-gebruiker uitnodigen mislukt:", error?.message);
     return { succes: false, fout: "server_fout" };
@@ -245,7 +266,9 @@ export async function match13GebruikerUitnodigen(input: {
   }
 
   revalidatePath("/beheer/match13/toegang");
-  return { succes: true, link: await maakKorteLink(wachtwoordLink(data.properties.hashed_token, "invite")) };
+  const linkNieuw = await maakKorteLink(wachtwoordLink(data.properties.hashed_token, "invite"));
+  await stuurToegangLinkMail(club, input.email, linkNieuw);
+  return { succes: true, link: linkNieuw };
 }
 
 // Voor een club die al in de lijst staat: hun link is verlopen (7 dagen) of
@@ -255,7 +278,11 @@ export async function match13LinkOpnieuwSturen(id: string): Promise<Match13Uitno
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = await createClient();
-  const { data: gebruiker } = await supabase.from("match13_gebruikers").select("email").eq("id", id).single();
+  const { data: gebruiker } = await supabase
+    .from("match13_gebruikers")
+    .select("email, club")
+    .eq("id", id)
+    .single();
   if (!gebruiker) return { succes: false, fout: "server_fout" };
 
   const serviceClient = createServiceRoleClient();
@@ -269,7 +296,9 @@ export async function match13LinkOpnieuwSturen(id: string): Promise<Match13Uitno
     return { succes: false, fout: "server_fout" };
   }
 
-  return { succes: true, link: await maakKorteLink(wachtwoordLink(linkData.properties.hashed_token, "recovery")) };
+  const link = await maakKorteLink(wachtwoordLink(linkData.properties.hashed_token, "recovery"));
+  await stuurToegangLinkMail(gebruiker.club, gebruiker.email, link);
+  return { succes: true, link };
 }
 
 // Aangeroepen vanuit wachtwoord-resetten-form.tsx zodra iemand daadwerkelijk

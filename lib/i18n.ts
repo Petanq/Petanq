@@ -150,6 +150,7 @@ const nl = {
     tekst: "Alle gegevens worden gecontroleerd door vrijwilligers. Ontbreekt er een toernooi?",
     link: "Stuur een melding.",
     privacybeleid: "Privacybeleid",
+    copyright: `© ${new Date().getFullYear()} Petanque13`,
   },
   clubsPagina: {
     titel: "Clubs",
@@ -726,7 +727,8 @@ const nl = {
     emailadresPlaceholder: "jan@club.be",
     uitnodigen: "Uitnodigen →",
     bezig: "Bezig...",
-    linkUitleg: "Stuur deze link zelf door naar de club (WhatsApp, sms, e-mail...) — hij werkt 7 dagen:",
+    linkUitleg:
+      "Deze link is net gemaild naar de club. Bereikt de mail hen niet? Stuur 'm dan zelf door (WhatsApp, sms...) — hij werkt 7 dagen:",
     aanvragenTitel: (n: number) => `Aanvragen (${n})`,
     aanvraagGoedkeuren: "Goedkeuren",
     aanvraagWeigeren: "Weigeren",
@@ -905,6 +907,7 @@ const fr: typeof nl = {
     tekst: "Toutes les données sont vérifiées par des bénévoles. Un tournoi manque ?",
     link: "Envoyez un signalement.",
     privacybeleid: "Politique de confidentialité",
+    copyright: `© ${new Date().getFullYear()} Petanque13`,
   },
   clubsPagina: {
     titel: "Clubs",
@@ -1480,7 +1483,8 @@ const fr: typeof nl = {
     emailadresPlaceholder: "jean@club.be",
     uitnodigen: "Inviter →",
     bezig: "En cours...",
-    linkUitleg: "Transmettez ce lien vous-même au club (WhatsApp, SMS, e-mail...) — il reste valable 7 jours :",
+    linkUitleg:
+      "Ce lien vient d'être envoyé par e-mail au club. Le mail ne les atteint pas ? Transmettez-le vous-même (WhatsApp, SMS...) — il reste valable 7 jours :",
     aanvragenTitel: (n: number) => `Demandes (${n})`,
     aanvraagGoedkeuren: "Approuver",
     aanvraagWeigeren: "Refuser",
