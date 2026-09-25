@@ -155,7 +155,7 @@
   }
   .stat {
     background: var(--card);
-    border: 1.5px solid var(--gold);
+    border: 2.5px solid var(--gold);
     border-radius: 14px;
     padding: 16px 8px 14px;
     text-align: center;
@@ -275,13 +275,20 @@
     --tier-zacht: var(--red-soft);
     background: var(--card);
     border: 1.5px solid var(--line);
-    border-top: 5px solid var(--tier-kleur);
-    border-radius: 16px;
-    padding: 22px 20px 24px;
+    border-radius: 20px;
+    padding: 26px 20px 24px;
     display: flex;
     flex-direction: column;
     gap: 14px;
     position: relative;
+  }
+  .pakket::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    border-radius: 20px 20px 0 0;
+    background: var(--tier-kleur);
   }
   .pakket--brons { --tier-kleur: #AD7F4B; --tier-zacht: #f3e8db; }
   .pakket--zilver {
@@ -373,7 +380,7 @@
   .flagship {
     margin-top: 18px;
     background: var(--ink);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 26px 28px;
     color: #fdfbf6;
     position: relative;
@@ -384,10 +391,13 @@
   .flagship::before {
     content: "";
     position: absolute;
-    inset: auto -15% -60% auto;
+    inset: auto -60px -60px auto;
     width: 260px; height: 260px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(244,196,48,0.18), transparent 70%);
+    background-image: url("data:image/png;base64,__LOGO_BASE64__");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    transform: rotate(-8deg);
   }
   .fs-head { position: relative; z-index: 1; }
   .fs-num {
@@ -460,7 +470,7 @@
   }
   .publiek-item {
     background: var(--card);
-    border: 1px solid var(--line);
+    border: 1.5px solid var(--gold);
     border-radius: 12px;
     padding: 13px 15px;
     font-size: 0.93rem;
@@ -481,9 +491,23 @@
     border-radius: 20px;
     color: #fdfbf6;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta::before {
+    content: "";
+    position: absolute;
+    inset: auto auto -70px -70px;
+    width: 280px; height: 280px;
+    background-image: url("data:image/png;base64,__LOGO_BASE64__");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.08;
+    transform: rotate(10deg);
   }
   :root[data-theme="dark"] .cta,
   :root:not([data-theme="light"]) .cta { background: #0e0d0a; }
+  .cta h2, .cta p, .cta a.mail, .cta > small { position: relative; z-index: 1; }
   .cta h2 { color: #fdfbf6; }
   .cta p { color: #d9d6cd; margin: 0 auto 20px; max-width: 46ch; }
   .cta a.mail {
@@ -620,7 +644,7 @@
         <span class="fs-num">04 — EXCLUSIEF, MAX. 1 PER JAAR</span>
         <h3 class="fs-naam">Match13-hoofdpartner</h3>
       </div>
-      <p class="fs-tekst">Jouw logo op élke gedrukte wedstrijdkaart, elke ronde, bij élk tornooi dat via Match13 gespeeld wordt — plus op het Zaalscherm dat live geprojecteerd wordt tijdens het tornooi. Fysieke, herhaalde zichtbaarheid, letterlijk van hand tot hand. Dit bestaat nergens anders in de Belgische petanquewereld.</p>
+      <p class="fs-tekst">Jouw logo op élke gedrukte wedstrijdkaart, elke ronde, bij élk tornooi dat via Match13 gespeeld wordt — én op het Zaalscherm, live geprojecteerd tijdens het tornooi. Fysieke zichtbaarheid die van hand tot hand gaat, tornooi na tornooi. Dit bestaat nergens anders in de Belgische petanquewereld.</p>
       <div class="fs-onder">
         <div class="fs-prijs">€2.500 <span>/ jaar</span></div>
         <p class="fs-note">Inclusief: alles uit "Hoofdsponsor" + het logovak op de wedstrijdkaartjes en het Zaalscherm (kleine technische toevoeging, gebouwd zodra deze partner instapt).</p>

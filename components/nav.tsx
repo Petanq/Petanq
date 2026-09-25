@@ -59,7 +59,7 @@ export function Nav() {
             {t.nav.overOns}
           </Link>
           <Link href="/match13" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
-            {t.nav.match13}
+            Match<span className="text-geel">13</span>
           </Link>
         </div>
 
@@ -145,7 +145,7 @@ export function Nav() {
             onClick={() => setMenuOpen(false)}
             className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >
-            {t.nav.match13}
+            Match<span className="text-geel">13</span>
           </Link>
           <Link
             href="/toernooi-toevoegen"
