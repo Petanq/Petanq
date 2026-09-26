@@ -1,91 +1,56 @@
 <meta charset="UTF-8">
-<title>Petanque13 Sponsordossier</title>
+<title>Petanque13 — Sponsordossier</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
 
   :root {
     --ink: #1F1F1F;
-    --ink-soft: #4b4b4b;
+    --ink2: #2E2E2E;
+    --ink3: #3D3D3D;
+    --grey: #555555;
     --paper: #F5F5F5;
     --card: #ffffff;
     --line: #e5e5e5;
     --gold: #F4C430;
-    --gold-ink: #6b4e00;
-    --red: #D62828;
-    --red-soft: #fdecec;
     --gold-soft: #fdf3d9;
-    --hero-foto: url("data:image/jpeg;base64,__HERO_BASE64__");
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ink: #f2f0ec;
-      --ink-soft: #b9b6ae;
-      --paper: #15130f;
-      --card: #1d1a15;
-      --line: #34312a;
-      --gold: #F4C430;
-      --gold-ink: #F4C430;
-      --red: #e8635a;
-      --red-soft: #341c1a;
-      --gold-soft: #2c2410;
-    }
-  }
-  :root[data-theme="dark"] {
-    --ink: #f2f0ec;
-    --ink-soft: #b9b6ae;
-    --paper: #15130f;
-    --card: #1d1a15;
-    --line: #34312a;
-    --gold: #F4C430;
-    --gold-ink: #F4C430;
-    --red: #e8635a;
-    --red-soft: #341c1a;
-    --gold-soft: #2c2410;
+    --red: #D62828;
+    --red-hover: #E15252;
+    --red-soft: #fdecec;
+    --heren: #1a4480;
+    --dames: #be185d;
+    --jeugd: #059669;
   }
 
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
+  html, body { margin: 0; }
   body {
     background: var(--paper);
     color: var(--ink);
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Montserrat', 'Arial', sans-serif;
     line-height: 1.55;
     padding: 0 20px;
   }
-  @page {
-    size: A4;
-    margin: 14mm 12mm;
-  }
+  @page { size: A4; margin: 14mm 12mm; }
   @media print {
     body { padding: 0; margin: 0 auto; }
     .wrap { max-width: 700px; margin: 0 auto; }
     .pakketten { grid-template-columns: 1fr; }
     .stats { grid-template-columns: repeat(2, 1fr); }
     .hero, .stat, .pakket, .flagship, .cta,
-    .kaartje-mock, .publiek-item, .quote {
+    .mk-echt-wrap, .publiek-item, .quote {
       break-inside: avoid;
       page-break-inside: avoid;
     }
   }
   .wrap { max-width: 760px; margin: 0 auto; }
 
-  .disp { font-family: 'Montserrat', 'Arial Black', sans-serif; }
-
-  /* ---------- hero ---------- */
-  /* Zelfde recept als de echte homepage-hero (components/hero.tsx): de
-     tornooifoto op 60% dekking, met een donkere gradient erover zodat de
-     tekst leesbaar blijft — bewust altijd donker, ongeacht het thema van de
-     kijker (net als de site zelf). */
+  /* ---------- hero (zelfde donkere navy als de echte nav/hero) ---------- */
   .hero {
     margin: 32px 0 0;
     padding: 44px 32px 38px;
-    background-color: #1F1F1F;
-    background-image:
-      linear-gradient(90deg, rgba(31,31,31,0.97) 0%, rgba(31,31,31,0.9) 45%, rgba(31,31,31,0.62) 100%),
-      var(--hero-foto);
-    background-size: cover, cover;
-    background-position: center, center 35%;
+    background: var(--ink);
     border-radius: 20px;
-    color: #fdfbf6;
+    color: #ffffff;
     position: relative;
     overflow: hidden;
   }
@@ -96,8 +61,30 @@
     width: 340px;
     height: 340px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(244,196,48,0.22), transparent 70%);
+    background: radial-gradient(circle, rgba(244,196,48,0.20), transparent 70%);
   }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: auto auto -50% -8%;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214,40,40,0.16), transparent 70%);
+  }
+  /* Logo-watermerk in de donkere vakken (hero/flagship/cta) — een echte
+     laag i.p.v. een 3e pseudo-element, want ::before/::after zijn al bezet
+     door de kleurgloed hierboven. */
+  .logo-mark {
+    position: absolute;
+    z-index: 0;
+    background-image: url("data:image/png;base64,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");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.09;
+    pointer-events: none;
+  }
+  .hero .logo-mark { width: 220px; height: 220px; inset: auto -30px -50px auto; transform: rotate(8deg); }
   .hero-top {
     display: flex;
     align-items: center;
@@ -105,42 +92,41 @@
     position: relative;
     z-index: 1;
   }
-  .hero-top img { width: 40px; height: 40px; border-radius: 50%; display: block; }
-  .hero-top span {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 1.15rem;
-    letter-spacing: 0.01em;
-    color: #fdfbf6;
+  .hero-top img {
+    width: 40px; height: 40px; border-radius: 50%; display: block;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
   }
-  .hero-top span b { color: var(--gold); }
-  .kicker {
-    position: relative; z-index: 1;
-    margin: 26px 0 10px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--gold);
+  .hero-top .lockup { display: flex; flex-direction: column; }
+  .hero-top .naam { font-weight: 800; font-size: 1.1rem; letter-spacing: 0.01em; color: #ffffff; }
+  .hero-top .sub {
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: rgba(255,255,255,0.45); margin-top: 1px;
+  }
+  .badge-line { position: relative; z-index: 1; margin: 26px 0 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    display: inline-block;
+    font-weight: 700; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 999px;
+    background: rgba(244,196,48,0.14); color: var(--gold);
+    border: 1px solid rgba(244,196,48,0.35);
   }
   .hero h1 {
     position: relative; z-index: 1;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 900;
     font-size: clamp(1.7rem, 5.2vw, 2.5rem);
-    line-height: 1.12;
+    line-height: 1.14;
     letter-spacing: -0.01em;
     margin: 0 0 14px;
     text-wrap: balance;
-    color: #fdfbf6;
+    color: #ffffff;
   }
   .hero p {
     position: relative; z-index: 1;
-    max-width: 46ch;
+    max-width: 50ch;
     margin: 0;
     font-size: 1.02rem;
-    color: #d9d6cd;
+    font-weight: 400;
+    color: rgba(255,255,255,0.72);
   }
 
   /* ---------- stat strip ---------- */
@@ -155,15 +141,14 @@
   }
   .stat {
     background: var(--card);
-    border: 2.5px solid var(--gold);
-    border-radius: 14px;
+    border: 1.5px solid var(--gold);
+    border-radius: 16px;
     padding: 16px 8px 14px;
     text-align: center;
-    box-shadow: 0 8px 20px rgba(244,196,48,0.14);
+    box-shadow: 0 8px 20px rgba(31,31,31,0.08);
   }
   .stat b {
     display: block;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 900;
     font-size: clamp(1.1rem, 3.4vw, 1.5rem);
     font-variant-numeric: tabular-nums;
@@ -172,17 +157,25 @@
   .stat span {
     display: block;
     margin-top: 2px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.02em;
-    color: var(--gold-ink);
+    color: var(--grey);
   }
 
   /* ---------- sections ---------- */
-  section { margin-top: 52px; }
+  section { margin-top: 52px; position: relative; }
+  .sec-num {
+    position: absolute;
+    top: -14px; right: -4px;
+    font-weight: 900;
+    font-size: clamp(3.6rem, 11vw, 6rem);
+    line-height: 1;
+    color: rgba(31,31,31,0.05);
+    z-index: -1;
+    user-select: none;
+  }
   .eyebrow {
-    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     font-size: 0.72rem;
     letter-spacing: 0.14em;
@@ -191,75 +184,178 @@
     margin: 0 0 8px;
   }
   h2 {
-    font-family: 'Montserrat', sans-serif;
     font-weight: 800;
     font-size: clamp(1.3rem, 3.6vw, 1.7rem);
     letter-spacing: -0.01em;
     margin: 0 0 14px;
     text-wrap: balance;
   }
-  .lede { font-size: 1.05rem; color: var(--ink-soft); max-width: 62ch; }
+  .lede { font-size: 1.02rem; font-weight: 400; color: var(--grey); max-width: 62ch; }
 
   .quote {
-    margin: 22px 0 0;
-    padding: 16px 20px;
-    border-left: 3px solid var(--gold);
-    background: var(--gold-soft);
-    border-radius: 0 12px 12px 0;
-    font-style: italic;
+    position: relative;
+    margin: 26px 0 0;
+    padding: 26px 28px 24px 56px;
+    background: var(--card);
+    border: 1.5px solid var(--gold);
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.5;
     color: var(--ink);
+    box-shadow: 0 10px 26px rgba(244,196,48,0.14);
+  }
+  .quote::before {
+    content: "“";
+    position: absolute;
+    top: 6px;
+    left: 18px;
+    font-size: 3.4rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--gold);
+    font-family: Georgia, 'Times New Roman', serif;
   }
 
-  /* ---------- match13 card mockup ---------- */
-  /* Deze kaart stelt het fysieke, gedrukte kaartje voor — bewust altijd
-     "papier-wit", ongeacht het licht/donker-thema van de kijker. */
-  .kaartje-mock {
-    margin-top: 22px;
-    max-width: 360px;
-    background: #ffffff;
-    border: 1.5px dashed #c9c6bd;
-    border-radius: 12px;
-    padding: 14px 16px 12px;
-    font-family: 'Montserrat', sans-serif;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.16);
-    color: #1F1F1F;
+  /* ---------- category chips (echte in-app kleuren) ---------- */
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-weight: 700; font-size: 0.76rem;
+    padding: 6px 12px 6px 8px; border-radius: 999px;
+    background: var(--card); border: 1.5px solid var(--gold);
   }
-  .km-kop { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-  .km-logo {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: #1F1F1F; color: #F4C430;
+  .chip i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+  .chip--heren i { background: var(--heren); }
+  .chip--dames i { background: var(--dames); }
+  .chip--jeugd i { background: var(--jeugd); }
+
+  /* ---------- audience list ---------- */
+  .publiek-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .publiek-item {
+    background: var(--card);
+    border: 1.5px solid var(--gold);
+    border-radius: 14px;
+    padding: 13px 15px;
+    font-size: 0.93rem;
+    font-weight: 400;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    box-shadow: 0 4px 14px rgba(31,31,31,0.05);
+  }
+  .publiek-item .pi-ico {
+    flex-shrink: 0;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--gold-soft); color: #6b4e00;
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.6rem; font-weight: 900;
+    font-weight: 800; font-size: 0.75rem;
+    margin-top: 1px;
   }
-  .km-titel { font-weight: 800; font-size: 0.85rem; letter-spacing: 0.02em; color: #1F1F1F; }
-  .km-badge {
-    margin-left: auto;
-    font-size: 0.68rem; font-weight: 700;
-    background: #fdf3d9; color: #6b4e00;
-    padding: 3px 8px; border-radius: 20px;
+  .publiek-item div { flex: 1; }
+  .publiek-item b { display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 2px; }
+
+  /* ---------- echte Match13-wedstrijdkaart ----------
+     1-op-1 overgenomen uit components/match13/match13.css (.mk-*) — dit is
+     precies de kaart die vandaag al gedrukt wordt, geen fictieve mockup. */
+  .mk-echt-wrap {
+    margin-top: 26px;
+    max-width: 100%;
   }
-  .km-teams { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .km-team {
-    flex: 1; font-size: 0.82rem; font-weight: 600;
-    display: flex; align-items: center; gap: 7px; color: #1F1F1F;
+  .mk-kaart-tilt {
+    display: inline-block;
+    max-width: 100%;
+    transform: rotate(-1.1deg);
+    filter: drop-shadow(0 16px 28px rgba(31,31,31,0.22));
   }
-  .km-nr {
-    width: 20px; height: 20px; border-radius: 5px;
-    background: #F5F5F5; border: 1px solid #e5e5e5;
+  .match13-scope .mk-kaart {
+    break-inside: avoid;
+    width: 190mm;
+    height: 45mm;
+    max-width: 82vw;
+    background: #fff;
+    border-radius: 2.4mm;
+    box-sizing: border-box;
+    display: flex;
+    align-items: stretch;
+    position: relative;
+    overflow: hidden;
+    font-family: "Montserrat", sans-serif;
+    color: #1f1f1f;
+  }
+  .match13-scope .mk-lichaam { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 0.9mm 2.2mm; box-sizing: border-box; }
+  .match13-scope .mk-kop { display: flex; align-items: center; gap: 1mm; margin-bottom: 0.5mm; }
+  .match13-scope .mk-logo { width: 6mm; height: 6mm; flex: 0 0 auto; object-fit: contain; }
+  .match13-scope .mk-titel { flex: 1; min-width: 0; line-height: 1.2; }
+  .match13-scope .mk-titel b { display: block; font-size: 7pt; font-weight: 800; }
+  .match13-scope .mk-titel b .m13-gold { color: var(--gold); }
+  .match13-scope .mk-titel > span { display: block; font-size: 4.6pt; font-weight: 700; color: #3d3730; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .match13-scope .mk-badges { display: flex; gap: 1.6mm; flex: 0 0 auto; }
+  .match13-scope .mk-badge { background: #1f1f1f; color: #f4c430; border-radius: 1.6mm; padding: 0.9mm 2.4mm; text-align: center; flex: 0 0 auto; }
+  .match13-scope .mk-badge .lbl { display: block; font-size: 5.6pt; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .match13-scope .mk-badge b { display: block; font-size: 17pt; line-height: 1.1; }
+  .match13-scope .mk-teams { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; min-height: 0; }
+  .match13-scope .mk-team-rij { display: flex; align-items: center; gap: 3mm; }
+  .match13-scope .mk-team-scheiding { border: none; border-top: 0.3mm dashed #d9d2c1; margin: 0; }
+  .match13-scope .mk-boule-rij { display: flex; gap: 2mm; flex: 0 0 auto; }
+  .match13-scope .mk-speler { display: flex; flex-direction: row; align-items: center; gap: 1mm; }
+  .match13-scope .mk-boule {
+    width: 8.6mm; height: 8.6mm; border-radius: 50%; flex: 0 0 auto;
+    background: radial-gradient(circle at 32% 28%, #fbfbfb, #c7c7c7 55%, #949494 100%);
+    border: 0.3mm solid #9a9a9a; display: flex; align-items: center; justify-content: center;
+    font-size: 6.6pt; font-weight: 800; color: #1f1f1f; font-variant-numeric: tabular-nums;
+    box-shadow: inset 0 0.2mm 0.3mm rgba(255,255,255,0.75), 0 0.2mm 0.4mm rgba(0,0,0,0.2);
+  }
+  .match13-scope .mk-speler-naam { font-size: 12pt; font-weight: 700; color: #1f1f1f; white-space: nowrap; }
+  .match13-scope .mk-meter { flex: 1; }
+  .match13-scope .mk-meter-balk { height: 2.6mm; border-radius: 1.3mm; background: #f3f0e8; border: 0.3mm solid #d9d2c1; position: relative; overflow: hidden; }
+  .match13-scope .mk-meter-tik { position: absolute; top: 0; bottom: 0; width: 0.3mm; background: #d9d2c1; }
+  .match13-scope .mk-meter-nrs { display: flex; justify-content: space-between; margin-top: 0.8mm; }
+  .match13-scope .mk-meter-nrs span { font-size: 3pt; font-weight: 700; color: #3d3730; font-variant-numeric: tabular-nums; }
+  .match13-scope .mk-meter-nrs span:last-child { font-weight: 800; color: #b8860b; }
+  .match13-scope .mk-totaal-mini { display: flex; flex-direction: column; align-items: center; gap: 0.8mm; flex: 0 0 auto; }
+  .match13-scope .mk-totaal-mini .lbl { font-size: 3.4pt; font-weight: 800; letter-spacing: 0.03em; color: #1f1f1f; }
+  .match13-scope .mk-totaal-mini .vak { width: 9mm; height: 5mm; border: 0.45mm solid #1f1f1f; border-radius: 1.2mm; background: #faf8f3; }
+  .match13-scope .mk-credit-strook {
+    flex: 0 0 auto; width: 11mm; background: #1f1f1f; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 0.8mm; padding: 1mm; box-sizing: border-box;
+    position: relative;
+  }
+  .match13-scope .mk-credit-strook img { width: 100%; height: auto; }
+  .match13-scope .mk-credit-strook span { writing-mode: vertical-rl; font-size: 3.4pt; font-weight: 700; color: #fff; letter-spacing: 0.09em; }
+
+  /* Aanduiding waar een sponsorlogo zou komen — bestaat vandaag nog niet op
+     de kaart, dit toont het voorstel, niet iets dat al live staat. */
+  .sponsor-hint {
+    margin-top: 10px;
+    display: flex; align-items: flex-start; gap: 8px;
+    max-width: 480px;
+  }
+  .sponsor-hint .arrow-back { flex-shrink: 0; color: var(--red); font-weight: 900; }
+  .sponsor-hint p {
+    margin: 0; font-size: 0.8rem; font-weight: 600; color: var(--red); line-height: 1.4;
+  }
+
+  .test-note {
+    margin-top: 14px;
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--card); border: 1.5px solid var(--gold);
+    border-radius: 14px; padding: 14px 16px;
+    max-width: 520px;
+  }
+  .test-note .dot {
+    flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--red-soft); color: var(--red);
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem; font-weight: 800; flex-shrink: 0; color: #1F1F1F;
+    font-weight: 800; font-size: 0.75rem; margin-top: 1px;
   }
-  .km-vs { font-size: 0.74rem; color: #767267; }
-  .km-voet {
-    display: flex; justify-content: space-between; align-items: center;
-    border-top: 1px dashed #c9c6bd; padding-top: 9px;
-    font-size: 0.68rem; color: #767267;
-  }
-  .km-sponsor {
-    color: #D62828; font-weight: 700;
-    border: 1px dashed #D62828; border-radius: 6px;
-    padding: 3px 7px;
-  }
+  .test-note p { margin: 0; font-size: 0.88rem; color: var(--ink3); }
+  .test-note b { color: var(--ink); }
 
   /* ---------- packages ---------- */
   .pakketten {
@@ -267,9 +363,6 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
   }
-  /* Elk pakket krijgt de kleur van zijn "medaille" — brons/zilver/goud,
-     oplopend in waarde. --tier-kleur stuurt het nummer, de rand en de
-     vinkjes; --tier-zacht is de lichte tint voor de badge. */
   .pakket {
     --tier-kleur: var(--red);
     --tier-zacht: var(--red-soft);
@@ -291,197 +384,90 @@
     background: var(--tier-kleur);
   }
   .pakket--brons { --tier-kleur: #AD7F4B; --tier-zacht: #f3e8db; }
-  .pakket--zilver {
-    --tier-kleur: #8b909a; --tier-zacht: #eef0f2;
-    box-shadow: 0 10px 26px rgba(139,144,154,0.2);
-  }
-  .pakket--goud {
-    --tier-kleur: var(--gold); --tier-zacht: var(--gold-soft);
-    box-shadow: 0 10px 26px rgba(244,196,48,0.22);
-  }
-  .pakket--zilver::after,
-  .pakket--goud::after {
-    position: absolute;
-    top: -11px; right: 18px;
-    color: #1F1F1F;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 0.62rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 20px;
-    background: var(--tier-kleur);
+  .pakket--zilver { --tier-kleur: #8b909a; --tier-zacht: #eef0f2; box-shadow: 0 10px 26px rgba(139,144,154,0.16); }
+  .pakket--goud { --tier-kleur: var(--gold); --tier-zacht: var(--gold-soft); box-shadow: 0 10px 26px rgba(244,196,48,0.2); }
+  .pakket--zilver::after, .pakket--goud::after {
+    position: absolute; top: -11px; right: 18px; color: var(--ink);
+    font-weight: 700; font-size: 0.62rem; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; background: var(--tier-kleur);
   }
   .pakket--zilver::after { content: "Meest gekozen"; color: #fff; }
   .pakket--goud::after { content: "Meeste zichtbaarheid"; }
-  .pk-num {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 0.76rem;
-    letter-spacing: 0.08em;
-    color: var(--tier-kleur);
-  }
-  .pk-naam {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 1.15rem;
-    margin: 0;
-    letter-spacing: -0.01em;
-  }
-  .pk-prijs {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 1.65rem;
-    font-variant-numeric: tabular-nums;
-    color: var(--ink);
-  }
-  .pk-prijs span {
-    font-family: 'Source Serif 4', serif;
-    font-weight: 400;
-    font-size: 0.72rem;
-    color: var(--ink-soft);
-    text-transform: none;
-    letter-spacing: 0;
-  }
-  .pk-sub { font-family: 'Montserrat', sans-serif; font-size: 0.78rem; color: var(--ink-soft); margin-top: -10px; }
-  .pk-lijst {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    font-size: 0.95rem;
-    flex: 1;
-  }
-  .pk-lijst li {
-    padding-left: 20px;
-    position: relative;
-    color: var(--ink);
-  }
-  .pk-lijst li::before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    color: var(--tier-kleur);
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 0.8rem;
-  }
-  .pk-note {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.8rem;
-    color: var(--ink-soft);
-    padding-top: 8px;
-    border-top: 1px dashed var(--line);
-  }
+  .pk-num { font-weight: 800; font-size: 0.76rem; letter-spacing: 0.08em; color: var(--tier-kleur); }
+  .pk-naam { font-weight: 800; font-size: 1.15rem; margin: 0; letter-spacing: -0.01em; }
+  .pk-prijs { font-weight: 900; font-size: 1.65rem; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .pk-prijs span { font-weight: 500; font-size: 0.68rem; color: var(--grey); text-transform: none; letter-spacing: 0; }
+  .pk-sub { font-size: 0.78rem; color: var(--grey); margin-top: -10px; }
+  .pk-lijst { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.93rem; flex: 1; }
+  .pk-lijst li { padding-left: 20px; position: relative; }
+  .pk-lijst li::before { content: "✓"; position: absolute; left: 0; color: var(--tier-kleur); font-weight: 700; font-size: 0.8rem; }
+  .pk-note { font-size: 0.8rem; color: var(--grey); padding-top: 8px; border-top: 1px dashed var(--line); }
 
   .flagship {
     margin-top: 18px;
     background: var(--ink);
     border-radius: 20px;
     padding: 26px 28px;
-    color: #fdfbf6;
+    color: #ffffff;
     position: relative;
     overflow: hidden;
   }
-  :root[data-theme="dark"] .flagship,
-  :root:not([data-theme="light"]) .flagship { background: #0e0d0a; }
   .flagship::before {
     content: "";
     position: absolute;
-    inset: auto -60px -60px auto;
-    width: 260px; height: 260px;
-    background-image: url("data:image/png;base64,__LOGO_BASE64__");
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.1;
-    transform: rotate(-8deg);
+    inset: -30% -8% auto auto;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244,196,48,0.16), transparent 70%);
   }
+  .flagship .logo-mark { width: 240px; height: 240px; inset: auto -50px -60px auto; transform: rotate(-9deg); }
   .fs-head { position: relative; z-index: 1; }
-  .fs-num {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    color: var(--gold);
-  }
-  .fs-naam {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 1.35rem;
-    margin: 6px 0 12px;
-    color: #fdfbf6;
-  }
-  .fs-tekst {
-    position: relative; z-index: 1;
-    color: #d9d6cd;
-    font-size: 0.94rem;
-    max-width: 56ch;
-    margin: 0 0 20px;
-  }
+  .fs-num { font-weight: 800; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--gold); }
+  .fs-naam { font-weight: 900; font-size: 1.35rem; margin: 6px 0 12px; color: #ffffff; }
+  .fs-tekst { position: relative; z-index: 1; color: rgba(255,255,255,0.72); font-size: 0.94rem; max-width: 56ch; margin: 0 0 20px; }
   .fs-onder {
     position: relative; z-index: 1;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 18px;
-    border-top: 1px solid rgba(255,255,255,0.14);
-    padding-top: 16px;
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px;
+    border-top: 1px solid rgba(255,255,255,0.14); padding-top: 16px;
   }
-  .fs-prijs {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 1.5rem;
-    color: var(--gold);
-    font-variant-numeric: tabular-nums;
-    flex-shrink: 0;
-  }
-  .fs-prijs span {
-    font-family: 'Source Serif 4', serif;
-    font-weight: 400;
-    font-size: 0.7rem;
-    color: #b8b4a9;
-  }
-  .fs-note {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.8rem;
-    color: #b8b4a9;
-    max-width: 40ch;
-    margin: 0;
-  }
+  .fs-prijs { font-weight: 900; font-size: 1.5rem; color: var(--gold); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .fs-prijs span { font-weight: 500; font-size: 0.68rem; color: rgba(255,255,255,0.5); }
+  .fs-note { font-size: 0.8rem; color: rgba(255,255,255,0.5); max-width: 42ch; margin: 0; }
 
-  .founding {
+  .extras {
     margin-top: 18px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.78rem;
-    color: var(--ink-soft);
-    text-align: center;
-  }
-  .founding b { color: var(--ink); }
-
-  /* ---------- audience list ---------- */
-  .publiek-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-top: 18px;
   }
-  .publiek-item {
-    background: var(--card);
-    border: 1.5px solid var(--gold);
-    border-radius: 12px;
-    padding: 13px 15px;
-    font-size: 0.93rem;
+  .extra {
+    background: var(--card); border: 1.5px solid var(--gold); border-radius: 14px;
+    padding: 13px 15px; font-size: 0.86rem; color: var(--ink3);
+    display: flex; gap: 12px; align-items: flex-start;
+    box-shadow: 0 4px 14px rgba(31,31,31,0.05);
   }
-  .publiek-item b {
-    display: block;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-bottom: 2px;
+  .extra .ex-ico {
+    flex-shrink: 0;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--red-soft); color: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.75rem;
+    margin-top: 1px;
   }
+  .extra div { flex: 1; }
+  .extra b { display: block; font-weight: 700; font-size: 0.86rem; color: var(--ink); margin-bottom: 2px; }
+
+  .founding { margin-top: 22px; text-align: center; }
+  .founding .pill {
+    display: inline-block;
+    max-width: 540px;
+    text-align: left;
+    line-height: 1.5;
+    font-size: 0.78rem; font-weight: 500; color: var(--grey);
+    background: var(--card); border: 1.5px dashed var(--line);
+    border-radius: 20px; padding: 10px 20px;
+  }
+  .founding b { color: var(--ink); font-weight: 700; }
 
   /* ---------- CTA footer ---------- */
   .cta {
@@ -489,7 +475,7 @@
     padding: 38px 32px;
     background: var(--ink);
     border-radius: 20px;
-    color: #fdfbf6;
+    color: #ffffff;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -497,37 +483,38 @@
   .cta::before {
     content: "";
     position: absolute;
-    inset: auto auto -70px -70px;
-    width: 280px; height: 280px;
-    background-image: url("data:image/png;base64,__LOGO_BASE64__");
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.08;
-    transform: rotate(10deg);
+    inset: auto auto -30% -6%;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214,40,40,0.18), transparent 70%);
   }
-  :root[data-theme="dark"] .cta,
-  :root:not([data-theme="light"]) .cta { background: #0e0d0a; }
-  .cta h2, .cta p, .cta a.mail, .cta > small { position: relative; z-index: 1; }
-  .cta h2 { color: #fdfbf6; }
-  .cta p { color: #d9d6cd; margin: 0 auto 20px; max-width: 46ch; }
-  .cta a.mail {
-    display: inline-block;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 1rem;
-    color: #1F1F1F;
+  .cta .logo-mark { width: 260px; height: 260px; inset: -20% -40px auto auto; transform: rotate(10deg); }
+  .cta h2, .cta p, .cta .btn, .cta > small { position: relative; z-index: 1; }
+  .cta h2 { color: #ffffff; }
+  .cta p { color: rgba(255,255,255,0.72); margin: 0 auto 22px; max-width: 46ch; font-size: 1rem; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-weight: 800; font-size: 0.98rem; color: var(--ink);
     background: var(--gold);
-    padding: 13px 26px;
-    border-radius: 10px;
+    padding: 8px 8px 8px 22px;
+    border-radius: 999px;
     text-decoration: none;
     letter-spacing: 0.01em;
+    box-shadow: 0 8px 24px rgba(244,196,48,0.4);
   }
-  .cta .sub { margin-top: 14px; font-size: 0.78rem; color: #9b988e; }
+  .btn .arrow {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--ink); color: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .cta .sub { margin-top: 16px; font-size: 0.78rem; color: rgba(255,255,255,0.4); }
 
   @media (max-width: 620px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
     .pakketten { grid-template-columns: 1fr; }
-    .publiek-grid { grid-template-columns: 1fr; }
+    .publiek-grid, .extras { grid-template-columns: 1fr; }
     .hero { padding: 34px 22px 30px; border-radius: 16px; }
     .cta { padding: 30px 22px; }
     .flagship { padding: 22px 20px; }
@@ -537,13 +524,20 @@
 <div class="wrap">
 
   <div class="hero">
+    <div class="logo-mark"></div>
     <div class="hero-top">
-      <img src="data:image/png;base64,__LOGO_BASE64__" alt="Petanque13" />
-      <span>Petanque<b>13</b></span>
+      <img src="data:image/png;base64,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" alt="Petanque13" />
+      <div class="lockup">
+        <span class="naam">Petanque13</span>
+        <span class="sub">Match13 · Belgische petanquekalender</span>
+      </div>
     </div>
-    <p class="kicker">Sponsordossier — 2026-2027</p>
+    <div class="badge-line">
+      <span class="badge">Sponsordossier — seizoen 2026-2027</span>
+      <span class="badge">Sponsoring, geen banner-reclame</span>
+    </div>
     <h1>Het enige platform van dit soort in België. Geen vergelijkbaar alternatief.</h1>
-    <p>Petanque13 is dé centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel — en met Match13 ook het tool waarmee clubs hun tornooidag effectief runnen. Geen enkele andere site in België combineert beide.</p>
+    <p>Petanque13 is dé centrale kalender voor petanquetornooien in Vlaanderen, Wallonië en Brussel — en met Match13 ook het tool waarmee clubs hun tornooidag effectief runnen. Geen enkele andere site in België combineert beide.</p>
   </div>
 
   <div class="stats">
@@ -554,54 +548,123 @@
   </div>
 
   <section>
-    <p class="eyebrow">Waarom Petanque13</p>
-    <h2>Duizenden petanquespelers, op het moment dat het telt</h2>
-    <p class="lede">Wie op Petanque13 landt, is geen toevallige voorbijganger — het is iemand die op dat moment actief zoekt naar een petanquetornooi in zijn of haar buurt. Dat is precies het moment waarop een merk, winkel of streek zich wil tonen.</p>
-    <div class="publiek-grid">
-      <div class="publiek-item"><b>Actieve spelers</b>zoeken zelf naar een tornooi om aan deel te nemen — vaak wekelijks.</div>
-      <div class="publiek-item"><b>Clubbestuurders</b>beheren tornooien en zien de site geregeld terug.</div>
-      <div class="publiek-item"><b>Vlaanderen & Wallonië</b>de site is volledig tweetalig, dus je bereik stopt niet aan de taalgrens.</div>
-      <div class="publiek-item"><b>27 vrijwilligers</b>controleren elk tornooi — de gegevens zijn betrouwbaar, en dat vertrouwen straalt af op wie ernaast staat.</div>
-      <div class="publiek-item"><b>Actief op Facebook</b>met filmpjes en sfeerbeelden van tornooien — ook daar kan een sponsor mee in beeld komen.</div>
-    </div>
-    <p class="quote">"Geen verspreide Facebookposts meer. Petanque13 brengt alle toernooien samen voor heel België." — de belofte waarmee elke bezoeker binnenkomt.</p>
+    <span class="sec-num">01</span>
+    <p class="eyebrow">Waarom Petanque13 bestaat</p>
+    <h2>Ontstaan uit een gemis, gegroeid tot een volwaardig platform</h2>
+    <p class="lede">Petanque13 ontstond uit een eenvoudige frustratie: tornooien stonden verspreid over Facebook-posts, clubwebsites en mond-tot-mondreclame — nergens overzichtelijk samen. Wat begon als een centrale kalender groeide uit tot een platform dat clubs vandaag ook effectief gebruiken om hun tornooidag te runnen. Die groei bracht ook een nood met zich mee: Petanque13 professionaliseerde zich tot een structuur die facturen kan uitschrijven — een noodzakelijke stap om ook grotere bedrijven als volwaardige partner te kunnen verwelkomen.</p>
+    <p class="quote">Sponsoring is geen banner die je koopt — het is je naam verbinden aan een populaire vrijetijdssport en de gemeenschap eromheen. Dat is het verschil met loutere reclame.</p>
   </section>
 
   <section>
+    <span class="sec-num">02</span>
+    <p class="eyebrow">Wie je bereikt</p>
+    <h2>Duizenden spelers, op het moment dat het telt</h2>
+    <p class="lede">Wie op Petanque13 landt, is geen toevallige voorbijganger — het is iemand die op dat moment actief zoekt naar een petanquetornooi in de buurt. Dat is precies het moment waarop een merk, winkel of streek zich wil tonen.</p>
+    <div class="publiek-grid">
+      <div class="publiek-item"><span class="pi-ico">1</span><div><b>Actieve spelers</b>zoeken zelf naar een tornooi om aan deel te nemen — vaak wekelijks.</div></div>
+      <div class="publiek-item"><span class="pi-ico">2</span><div><b>Clubbestuurders</b>beheren tornooien en zien de site geregeld terug.</div></div>
+      <div class="publiek-item"><span class="pi-ico">3</span><div><b>Vlaanderen, Wallonië & Brussel</b>de site is volledig tweetalig — je bereik stopt niet aan de taalgrens.</div></div>
+      <div class="publiek-item"><span class="pi-ico">4</span><div><b>Actief op Facebook</b>met filmpjes en sfeerbeelden van tornooien — ook daar kom je mee in beeld.</div></div>
+    </div>
+    <div class="chips">
+      <span class="chip"><i class="chip--heren-i" style="background:var(--heren);width:9px;height:9px;border-radius:50%;display:inline-block"></i>Heren</span>
+      <span class="chip"><i style="background:var(--dames);width:9px;height:9px;border-radius:50%;display:inline-block"></i>Dames</span>
+      <span class="chip"><i style="background:var(--jeugd);width:9px;height:9px;border-radius:50%;display:inline-block"></i>Jeugd</span>
+    </div>
+    <p class="pk-note" style="border:none;padding-top:8px">Petanque13 dekt alle categorieën — ook jeugd en dames spelen volop mee. Je merk komt dus niet bij één smal publiek terecht, maar bij de volledige breedte van de sport.</p>
+  </section>
+
+  <section>
+    <span class="sec-num">03</span>
     <p class="eyebrow">Uniek in België</p>
     <h2>Meer dan een kalender: Match13</h2>
     <p class="lede">Naast de kalender heeft Petanque13 ook <b>Match13</b> — het tool waarmee clubs hun tornooidag zelf runnen: automatische rondes en loting (Tête-à-tête, Doublet, Triplet, Kwartet, Sextet, Meli-Melo, Poules), live scoreverwerking, een klassement dat zichzelf berekent, en een "Zaalscherm" dat op een groot scherm in de zaal geprojecteerd wordt met de rondes en pleinindeling.</p>
-    <p class="lede" style="margin-top:12px">En daar zit de échte troef: elke ronde krijgt <b>elk team een eigen gedrukte wedstrijdkaart</b> — met de spelersnamen, het plein, een scoreschijf tot 13, en een vast logovak onderaan. Dat is fysieke zichtbaarheid die letterlijk van hand tot hand gaat, ronde na ronde, tornooi na tornooi. Geen enkele andere petanquesite in België biedt dat.</p>
+    <p class="lede" style="margin-top:12px">En daar zit de échte troef: elke ronde krijgt <b>elk team een eigen gedrukte wedstrijdkaart</b> — met de spelersnamen, het plein, een telbalk tot 13 punten, en een eigen logostrook. Dat is fysieke zichtbaarheid die letterlijk van hand tot hand gaat, ronde na ronde, tornooi na tornooi. Geen enkele andere petanquesite in België biedt dat. Hieronder de échte kaart zoals ze vandaag al gedrukt wordt — geen fictieve mockup.</p>
 
-    <div class="kaartje-mock">
-      <div class="km-kop">
-        <span class="km-logo">P13</span>
-        <span class="km-titel">MATCH13</span>
-        <span class="km-badge">Ronde 3 · Plein 4</span>
+    <div class="mk-echt-wrap match13-scope">
+      <div class="mk-kaart-tilt">
+      <article class="mk-kaart">
+        <div class="mk-lichaam">
+          <div class="mk-kop">
+            <img class="mk-logo" src="data:image/png;base64,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" alt="" />
+            <div class="mk-titel">
+              <b>MATCH<span class="m13-gold">13</span></b>
+              <span>Petanque Ternat</span>
+            </div>
+            <div class="mk-badges">
+              <div class="mk-badge"><span class="lbl">Ronde</span><b>3</b></div>
+              <div class="mk-badge"><span class="lbl">Plein</span><b>4</b></div>
+            </div>
+          </div>
+          <div class="mk-teams">
+            <div class="mk-team-rij">
+              <div class="mk-boule-rij">
+                <div class="mk-speler"><span class="mk-boule">7</span><span class="mk-speler-naam">Van Damme</span></div>
+                <div class="mk-speler"><span class="mk-boule">14</span><span class="mk-speler-naam">Peeters</span></div>
+              </div>
+              <div class="mk-meter">
+                <div class="mk-meter-balk">
+                  <span class="mk-meter-tik" style="left:7.7%"></span><span class="mk-meter-tik" style="left:15.4%"></span>
+                  <span class="mk-meter-tik" style="left:23.1%"></span><span class="mk-meter-tik" style="left:30.8%"></span>
+                  <span class="mk-meter-tik" style="left:38.5%"></span><span class="mk-meter-tik" style="left:46.2%"></span>
+                  <span class="mk-meter-tik" style="left:53.8%"></span><span class="mk-meter-tik" style="left:61.5%"></span>
+                  <span class="mk-meter-tik" style="left:69.2%"></span><span class="mk-meter-tik" style="left:76.9%"></span>
+                  <span class="mk-meter-tik" style="left:84.6%"></span><span class="mk-meter-tik" style="left:92.3%"></span>
+                </div>
+                <div class="mk-meter-nrs"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span></div>
+              </div>
+              <div class="mk-totaal-mini"><span class="lbl">TOTAAL</span><div class="vak"></div></div>
+            </div>
+            <hr class="mk-team-scheiding" />
+            <div class="mk-team-rij">
+              <div class="mk-boule-rij">
+                <div class="mk-speler"><span class="mk-boule">3</span><span class="mk-speler-naam">Dubois</span></div>
+                <div class="mk-speler"><span class="mk-boule">21</span><span class="mk-speler-naam">Lambert</span></div>
+              </div>
+              <div class="mk-meter">
+                <div class="mk-meter-balk">
+                  <span class="mk-meter-tik" style="left:7.7%"></span><span class="mk-meter-tik" style="left:15.4%"></span>
+                  <span class="mk-meter-tik" style="left:23.1%"></span><span class="mk-meter-tik" style="left:30.8%"></span>
+                  <span class="mk-meter-tik" style="left:38.5%"></span><span class="mk-meter-tik" style="left:46.2%"></span>
+                  <span class="mk-meter-tik" style="left:53.8%"></span><span class="mk-meter-tik" style="left:61.5%"></span>
+                  <span class="mk-meter-tik" style="left:69.2%"></span><span class="mk-meter-tik" style="left:76.9%"></span>
+                  <span class="mk-meter-tik" style="left:84.6%"></span><span class="mk-meter-tik" style="left:92.3%"></span>
+                </div>
+                <div class="mk-meter-nrs"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span></div>
+              </div>
+              <div class="mk-totaal-mini"><span class="lbl">TOTAAL</span><div class="vak"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mk-credit-strook" style="outline:2px dashed var(--red); outline-offset:2px;">
+          <img src="data:image/png;base64,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" alt="" />
+          <span>petanque13.be</span>
+        </div>
+      </article>
       </div>
-      <div class="km-teams">
-        <div class="km-team"><span class="km-nr">7</span>Van Damme / Peeters</div>
-        <span class="km-vs">—</span>
-        <div class="km-team"><span class="km-nr">12</span>Dubois / Lambert</div>
-      </div>
-      <div class="km-voet">
-        <span>Handtekening: ______________</span>
-        <span class="km-sponsor">Logovak sponsor →</span>
+      <div class="sponsor-hint">
+        <span class="arrow-back">↑</span>
+        <p>Voorbeeld: hier komt het sponsorlogo — bestaat nog niet, wordt gebouwd zodra de eerste hoofdpartner instapt</p>
       </div>
     </div>
-    <p class="pk-note" style="margin-top:10px">Match13 wordt vandaag al gebruikt door een groeiende groep pilootclubs. Een sponsorlogo op deze kaartjes bestaat nog niet, maar is een kleine technische toevoeging die we voor de juiste partner meteen bouwen.</p>
+
+    <div class="test-note">
+      <span class="dot">i</span>
+      <p><b>Voor je tekent, kan je het zien staan.</b> We bouwen een testomgeving waarin je vooraf kan bekijken hoe je logo er op het wedstrijdkaartje en het Zaalscherm exact uitziet — geen belofte op papier, maar een concrete preview.</p>
+    </div>
   </section>
 
   <section>
+    <span class="sec-num">04</span>
     <p class="eyebrow">Sponsorpakketten</p>
     <h2>Vier manieren om erbij te horen</h2>
     <p class="lede">Prijzen per jaar (het hele jaar door tornooien, niet enkel een zomerseizoen). Petanque13 heeft geen vergelijkbaar alternatief in België — deze tarieven weerspiegelen die unieke, landelijke positie.</p>
 
     <div class="pakketten">
       <div class="pakket pakket--brons">
-        <span class="pk-num">01 — BASIS</span>
-        <h3 class="pk-naam">Vriend van Petanque13</h3>
-        <div class="pk-prijs">€250 <span>/ jaar</span></div>
+        <span class="pk-num">01 — BRONS</span>
+        <h3 class="pk-naam">Bronspartner</h3>
+        <div class="pk-prijs">€375 <span>/ jaar</span></div>
         <ul class="pk-lijst">
           <li>Logo + link op de partnerpagina</li>
           <li>Eén vermelding op de Facebookpagina</li>
@@ -611,11 +674,11 @@
       </div>
 
       <div class="pakket pakket--zilver">
-        <span class="pk-num">02 — PARTNER</span>
-        <h3 class="pk-naam">Partner</h3>
-        <div class="pk-prijs">€600 <span>/ jaar</span></div>
+        <span class="pk-num">02 — ZILVER</span>
+        <h3 class="pk-naam">Zilverpartner</h3>
+        <div class="pk-prijs">€750 <span>/ jaar</span></div>
         <ul class="pk-lijst">
-          <li>Alles uit "Vriend van Petanque13"</li>
+          <li>Alles uit "Bronspartner"</li>
           <li>Logo zichtbaar op de homepage</li>
           <li>Vermelding bij lancering + halverwege het jaar in de nieuwsbrief</li>
           <li>Vermeld/getagd in minstens 1 sfeervideo op Facebook</li>
@@ -628,11 +691,12 @@
         <h3 class="pk-naam">Hoofdsponsor</h3>
         <div class="pk-prijs">€1.500 <span>/ jaar</span></div>
         <ul class="pk-lijst">
-          <li>Alles uit "Partner"</li>
+          <li>Alles uit "Zilverpartner"</li>
           <li>Prominente banner bovenaan de homepage</li>
           <li>Eigen pagina, zoals "Op reis met Claudy"</li>
           <li>Vermelding in élke nieuwsbriefeditie</li>
           <li>Eigen vermelding/shoutout in elke tornooivideo op Facebook</li>
+          <li>Gebruiksrecht op foto/video-materiaal van tornooien voor eigen marketing</li>
           <li>Exclusief: max. 2 hoofdsponsors per jaar</li>
         </ul>
         <p class="pk-note">Voor wie écht herkend wil worden door elke petanquespeler.</p>
@@ -640,25 +704,34 @@
     </div>
 
     <div class="flagship">
+      <div class="logo-mark"></div>
       <div class="fs-head">
         <span class="fs-num">04 — EXCLUSIEF, MAX. 1 PER JAAR</span>
         <h3 class="fs-naam">Match13-hoofdpartner</h3>
       </div>
-      <p class="fs-tekst">Jouw logo op élke gedrukte wedstrijdkaart, elke ronde, bij élk tornooi dat via Match13 gespeeld wordt — én op het Zaalscherm, live geprojecteerd tijdens het tornooi. Fysieke zichtbaarheid die van hand tot hand gaat, tornooi na tornooi. Dit bestaat nergens anders in de Belgische petanquewereld.</p>
+      <p class="fs-tekst">Jouw logo op élke gedrukte wedstrijdkaart, elke ronde, bij élk tornooi dat via Match13 gespeeld wordt — én op het Zaalscherm, live geprojecteerd tijdens het tornooi. Fysieke zichtbaarheid die van hand tot hand gaat, tornooi na tornooi. Dit bestaat nergens anders in de Belgische petanquewereld. Interesse om een tornooi naar jouw bedrijf te vernoemen ("Match13 Cup presented by ...")? Dat is vanaf dit niveau bespreekbaar.</p>
       <div class="fs-onder">
-        <div class="fs-prijs">€2.500 <span>/ jaar</span></div>
+        <div class="fs-prijs">€3.000 <span>/ jaar</span></div>
         <p class="fs-note">Inclusief: alles uit "Hoofdsponsor" + het logovak op de wedstrijdkaartjes en het Zaalscherm (kleine technische toevoeging, gebouwd zodra deze partner instapt).</p>
       </div>
     </div>
 
-    <p class="founding"><b>Founding sponsor-prijzen</b> — dit zijn de tarieven voor het allereerste jaar. Zodra het bereik verder groeit, kunnen latere jaren anders geprijsd worden.</p>
+    <div class="extras">
+      <div class="extra"><span class="ex-ico">€</span><div><b>Fiscaal aftrekbaar</b>Sponsoring van Petanque13 is voor je bedrijf te verwerken als reclamekost. We bezorgen je een correcte factuur.</div></div>
+      <div class="extra"><span class="ex-ico">%</span><div><b>Meerjarig? Korting.</b>Teken je voor 3 jaar in plaats van jaarlijks te heronderhandelen, dan reken je een gereduceerd tarief.</div></div>
+      <div class="extra"><span class="ex-ico">📍</span><div><b>Exclusief in je provincie</b>Wil je als enige sponsor zichtbaar zijn in jouw provincie in plaats van landelijk? Bespreekbaar vanaf "Hoofdsponsor".</div></div>
+      <div class="extra"><span class="ex-ico">✎</span><div><b>Op maat</b>Past geen enkel pakket precies bij wat je zoekt? We bouwen graag een voorstel op maat.</div></div>
+    </div>
+
+    <p class="founding"><span class="pill"><b>Founding sponsor-prijzen</b> — dit zijn de tarieven voor het allereerste jaar. Zodra het bereik verder groeit, kunnen latere jaren anders geprijsd worden.</span></p>
   </section>
 
   <div class="cta">
+    <div class="logo-mark"></div>
     <p class="eyebrow" style="color:var(--gold)">Interesse?</p>
     <h2>Laten we samen een jaar bouwen.</h2>
     <p>Stuur een mailtje en we bekijken samen welk pakket het beste bij je past — ook maatwerk is bespreekbaar.</p>
-    <a class="mail" href="mailto:info@petanque13.be">info@petanque13.be</a>
+    <a class="btn" href="mailto:info@petanque13.be">info@petanque13.be<span class="arrow">→</span></a>
     <p class="sub">Petanque13 — de Belgische petanquekalender · petanque13.be</p>
   </div>
 
