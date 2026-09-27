@@ -39,6 +39,10 @@ export function PartnersContent() {
         {t.partnersPagina.ctaTekst}{" "}
         <a href="mailto:info@petanque13.be" className="text-rood hover:underline">
           info@petanque13.be
+        </a>{" "}
+        {t.overOnsPagina.ofBel}{" "}
+        <a href="tel:0479499167" className="text-rood hover:underline">
+          0479 49 91 67
         </a>
       </p>
     </div>
