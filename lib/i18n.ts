@@ -303,6 +303,20 @@ const nl = {
     contact: "Vragen of opmerkingen? Mail naar",
     ofBel: "of bel naar",
   },
+  partnersPagina: {
+    titel: "Partners",
+    intro:
+      "Petanque13 is het enige platform van dit soort in België: dé centrale kalender voor petanquetoernooien in Vlaanderen, Wallonië en Brussel, gebruikt door duizenden spelers per jaar. Als partner verbind je jouw merk aan die zichtbaarheid.",
+    kenmerkenTitel: "Wat krijg je als partner?",
+    kenmerken: [
+      "Je logo op onze site, zichtbaar voor duizenden petanquespelers",
+      "Vermelding op onze Facebookpagina en in onze nieuwsbrief",
+      "Bij de grootste pakketten: jouw logo op de gedrukte Match13-wedstrijdkaartjes — een fysieke vorm van zichtbaarheid die nergens anders in de Belgische petanquewereld bestaat",
+    ],
+    onzePartnersTitel: "Onze partners",
+    nogGeenPartners: "Binnenkort de eerste partners hier — misschien jouw logo?",
+    ctaTekst: "Interesse om partner te worden? Vraag ons sponsordossier op via",
+  },
   reizenPagina: {
     titel: "Op reis met Claudy Weibel",
     intro:
@@ -1074,6 +1088,20 @@ const fr: typeof nl = {
     vrijwilligerKnop: "Devenir bénévole",
     contact: "Des questions ou remarques ? Envoyez un e-mail à",
     ofBel: "ou appelez le",
+  },
+  partnersPagina: {
+    titel: "Partenaires",
+    intro:
+      "Petanque13 est la seule plateforme de ce genre en Belgique : le calendrier central des tournois de pétanque en Flandre, en Wallonie et à Bruxelles, utilisé par des milliers de joueurs chaque année. En tant que partenaire, vous associez votre marque à cette visibilité.",
+    kenmerkenTitel: "Que recevez-vous en tant que partenaire ?",
+    kenmerken: [
+      "Votre logo sur notre site, visible par des milliers de joueurs de pétanque",
+      "Une mention sur notre page Facebook et dans notre newsletter",
+      "Pour les plus grands forfaits : votre logo sur les fiches de match imprimées de Match13 — une forme de visibilité physique qui n'existe nulle part ailleurs dans le monde de la pétanque belge",
+    ],
+    onzePartnersTitel: "Nos partenaires",
+    nogGeenPartners: "Bientôt les premiers partenaires ici — peut-être votre logo ?",
+    ctaTekst: "Envie de devenir partenaire ? Demandez notre dossier de sponsoring à",
   },
   reizenPagina: {
     titel: "En voyage avec Claudy Weibel",

@@ -27,6 +27,10 @@ export function Footer() {
           {t.footer.privacybeleid}
         </Link>
         <span className="text-rand">·</span>
+        <Link href="/partners" className="text-grijs underline hover:text-donker">
+          {t.partnersPagina.titel}
+        </Link>
+        <span className="text-rand">·</span>
         <Link href="/beheer/login" className="text-grijs underline hover:text-donker">
           {t.nav.login}
         </Link>
