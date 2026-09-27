@@ -36,8 +36,12 @@
     .wrap { max-width: 700px; margin: 0 auto; }
     .pakketten { grid-template-columns: 1fr; }
     .stats { grid-template-columns: repeat(2, 1fr); }
-    .hero, .stat, .pakket, .flagship, .cta,
+    .hero, .stat, .pakket, .flagship,
     .mk-echt-wrap, .publiek-item, .quote {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .cta {
       break-inside: avoid;
       page-break-inside: avoid;
     }
@@ -424,7 +428,7 @@
   }
   .pakket--brons { --tier-kleur: #AD7F4B; --tier-zacht: #f3e8db; box-shadow: 0 10px 26px rgba(173,127,75,0.18); }
   .pakket--zilver { --tier-kleur: #8b909a; --tier-zacht: #eef0f2; box-shadow: 0 10px 26px rgba(139,144,154,0.16); }
-  .pakket--goud { --tier-kleur: var(--gold); --tier-zacht: var(--gold-soft); box-shadow: 0 10px 26px rgba(244,196,48,0.2); }
+  .pakket--goud { --tier-kleur: var(--gold); --tier-zacht: var(--gold-soft); --tier-tekst: var(--ink); box-shadow: 0 10px 26px rgba(244,196,48,0.2); }
   .pakket--zilver::after, .pakket--goud::after {
     position: absolute; top: -11px; right: 18px; color: var(--ink);
     font-weight: 700; font-size: 0.62rem; letter-spacing: 0.04em; text-transform: uppercase;
@@ -432,7 +436,17 @@
   }
   .pakket--zilver::after { content: "Le plus choisi"; color: #fff; }
   .pakket--goud::after { content: "Visibilité maximale"; }
-  .pk-num { font-weight: 800; font-size: 0.76rem; letter-spacing: 0.08em; color: var(--tier-kleur); }
+  .pk-num {
+    display: inline-block;
+    font-weight: 900;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    color: var(--tier-tekst, #fff);
+    background: var(--tier-kleur);
+    padding: 5px 14px;
+    border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(31,31,31,0.18);
+  }
   .pk-naam { font-weight: 800; font-size: 1.15rem; margin: 0; letter-spacing: -0.01em; }
   .pk-prijs { font-weight: 900; font-size: 1.65rem; font-variant-numeric: tabular-nums; color: var(--ink); }
   .pk-prijs span { font-weight: 500; font-size: 0.68rem; color: var(--grey); text-transform: none; letter-spacing: 0; }
@@ -461,7 +475,17 @@
   }
   .flagship .logo-mark { width: 240px; height: 240px; inset: auto -50px -60px auto; transform: rotate(-9deg); }
   .fs-head { position: relative; z-index: 1; }
-  .fs-num { font-weight: 800; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--gold); }
+  .fs-num {
+    display: inline-block;
+    font-weight: 900;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    background: var(--gold);
+    padding: 5px 14px;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(244,196,48,0.4);
+  }
   .fs-naam { font-weight: 900; font-size: 1.35rem; margin: 6px 0 12px; color: #ffffff; }
   .fs-tekst { position: relative; z-index: 1; color: rgba(255,255,255,0.72); font-size: 0.94rem; max-width: 56ch; margin: 0 0 20px; }
   .fs-onder {
@@ -698,9 +722,9 @@
 
     <div class="pakketten">
       <div class="pakket pakket--brons">
-        <span class="pk-num">01 — BRONZE</span>
+        <span class="pk-num">BRONZE</span>
         <h3 class="pk-naam">Partenaire Bronze</h3>
-        <div class="pk-prijs">€375 <span>/ an</span></div>
+        <div class="pk-prijs">€350 <span>/ an</span></div>
         <ul class="pk-lijst">
           <li>Logo + lien sur la page partenaires</li>
           <li>5 mentions sur la page Facebook par an</li>
@@ -710,7 +734,7 @@
       </div>
 
       <div class="pakket pakket--zilver">
-        <span class="pk-num">02 — ARGENT</span>
+        <span class="pk-num">ARGENT</span>
         <h3 class="pk-naam">Partenaire Argent</h3>
         <div class="pk-prijs">€750 <span>/ an</span></div>
         <ul class="pk-lijst">
@@ -723,9 +747,9 @@
       </div>
 
       <div class="pakket pakket--goud">
-        <span class="pk-num">03 — SPONSOR PRINCIPAL</span>
+        <span class="pk-num">SPONSOR PRINCIPAL</span>
         <h3 class="pk-naam">Sponsor principal</h3>
-        <div class="pk-prijs">€1.500 <span>/ an</span></div>
+        <div class="pk-prijs">€1.550 <span>/ an</span></div>
         <ul class="pk-lijst">
           <li>Tout de "Partenaire Argent"</li>
           <li>Bannière proéminente en haut de la page d'accueil</li>
@@ -742,10 +766,10 @@
     <div class="flagship">
       <div class="logo-mark"></div>
       <div class="fs-head">
-        <span class="fs-num">04 — EXCLUSIF, MAX. 1 PAR AN</span>
+        <span class="fs-num">EXCLUSIF, MAX. 1 PAR AN</span>
         <h3 class="fs-naam">Partenaire principal Match13</h3>
       </div>
-      <p class="fs-tekst">Votre logo sur chaque carte de match imprimée, à chaque tour, à chaque tournoi joué via Match13 — et sur l'Écran de salle, projeté en direct pendant le tournoi. Une visibilité physique qui passe de main en main, tournoi après tournoi. Cela n'existe nulle part ailleurs dans le monde belge de la pétanque. Envie de donner le nom de votre entreprise à un tournoi ("Match13 Cup presented by ...") ? C'est envisageable à partir de ce niveau.</p>
+      <p class="fs-tekst">C'est le niveau où vous n'êtes pas juste visible — vous devenez le sujet de conversation de la salle. Votre logo sur chaque carte de match imprimée. Chaque tour. Chaque tournoi via Match13. En direct sur l'Écran de salle, sous les yeux de tous ceux qui jouent ce soir-là. De main en main, tournoi après tournoi — cela n'existe nulle part ailleurs dans le monde belge de la pétanque. Envie d'aller plus loin ? À partir de ce niveau, nous donnons même le nom de votre entreprise à un tournoi ("Match13 Cup presented by ...").</p>
       <div class="fs-onder">
         <div class="fs-prijs">€3.000 <span>/ an</span></div>
         <p class="fs-note">Inclus : tout de "Sponsor principal" + l'emplacement logo sur les cartes de match et l'Écran de salle (petit ajout technique, construit dès que ce partenaire s'engage).</p>

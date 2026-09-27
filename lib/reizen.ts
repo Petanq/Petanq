@@ -156,40 +156,4 @@ export const PETANQUE_REIZEN: PetanqueReis[] = [
     afficheUrls: ["/images/reizen/thailande-travel-claudy.jpg"],
     afficheUrlsNl: ["/images/reizen/thailande-travel-claudy-nl.png"],
   },
-  {
-    id: "open-claudy-weibel-2026",
-    naam: "Open Claudy Weibel",
-    organisatorNl: "Club de Pétanque de Saint-Hubert",
-    organisatorFr: "Club de Pétanque de Saint-Hubert",
-    periodeNl: "Zondag 2 augustus 2026",
-    periodeFr: "Dimanche 2 août 2026",
-    locatieNl: "Saint-Hubert (Luxemburg)",
-    locatieFr: "Saint-Hubert (Luxembourg)",
-    prijsVanafNl: "€ 10 per speler",
-    prijsVanafFr: "€ 10 par joueur",
-    beschrijvingNl:
-      "Het eendaags toernooi waar het allemaal begon voor Claudy: triplette, 5 tours, open voor iedereen (licentiehouders en niet-licentiehouders), beperkt tot 40 ploegen.",
-    beschrijvingFr:
-      "Le tournoi d'un jour où tout a commencé pour Claudy : triplette, 5 tours, ouvert à tous (licenciés et non-licenciés), limité à 40 équipes.",
-    link: "mailto:clubpetanquedesainthubert@gmail.com",
-    afficheUrls: ["/images/reizen/open-claudy-weibel.jpg"],
-  },
-  {
-    id: "stage-gouden-knoppen-2026",
-    naam: "Stage Initiatie & Perfectie — Bij de Gouden Knoppen",
-    organisatorNl: "Les Boutons D'Or (Bruno Le Boursicaud & Claudy Weibel)",
-    organisatorFr: "Les Boutons D'Or (Bruno Le Boursicaud & Claudy Weibel)",
-    periodeNl: "Vrijdag 24 juli 2026",
-    periodeFr: "Vendredi 24 juillet 2026",
-    locatieNl: "Flémalle (Luik)",
-    locatieFr: "Flémalle (Liège)",
-    prijsVanafNl: "€ 100 per persoon",
-    prijsVanafFr: "€ 100 par personne",
-    beschrijvingNl:
-      "Volledige dagstage (9u30-17u00, lunch inbegrepen) met 2 wereldkampioenen: Bruno Le Boursicaud en Claudy Weibel. Techniek- en werpworkshops, spelanalyse, persoonlijk advies. Voor alle niveaus, beperkte plaatsen.",
-    beschrijvingFr:
-      "Stage complet d'une journée (9h30-17h00, déjeuner inclus) avec 2 champions du monde : Bruno Le Boursicaud et Claudy Weibel. Ateliers technique et tir, analyse de jeu, conseils personnalisés. Tous niveaux, places limitées.",
-    link: "mailto:lucien.farinella@gmail.com",
-    afficheUrls: ["/images/reizen/stage-gouden-knoppen.png"],
-  },
 ];
