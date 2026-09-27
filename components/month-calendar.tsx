@@ -13,7 +13,7 @@ function datumSleutel(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export function MonthCalendar({ toernooien }: { toernooien: Toernooi[] }) {
+export function MonthCalendar({ toernooien, liveIds }: { toernooien: Toernooi[]; liveIds: Set<string> }) {
   const { t, taal } = useTranslation();
   const vandaagDatum = vandaag();
   const [maandOffset, setMaandOffset] = useState(0);
@@ -138,6 +138,7 @@ export function MonthCalendar({ toernooien }: { toernooien: Toernooi[] }) {
                   weergaveDatum={item.datum}
                   weergaveUur={item.uur}
                   kwalificatie={item.isKwalificatie}
+                  live={liveIds.has(item.toernooi.id)}
                 />
               ))
             )}

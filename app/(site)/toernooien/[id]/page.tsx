@@ -4,6 +4,7 @@ import { getToernooiById } from "@/lib/data";
 import { vertaalProvincie } from "@/lib/provincies";
 import { TournamentDetail } from "@/components/tournament-detail";
 import { siteUrl } from "@/lib/site-url";
+import { haalMatch13LiveKoppeling } from "@/actions/match13";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -30,6 +31,7 @@ export default async function ToernooiDetailPagina(props: Props) {
   const toernooi = await getToernooiById(params.id);
   if (!toernooi) notFound();
 
+  const liveKoppeling = await haalMatch13LiveKoppeling(toernooi.id);
   const startDatum = `${toernooi.datum}T${toernooi.uur.slice(0, 5)}:00+02:00`;
 
   const jsonLd = {
@@ -71,7 +73,7 @@ export default async function ToernooiDetailPagina(props: Props) {
         // pagina niet kan laten uitvoeren als script (opgeslagen-XSS-risico).
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <TournamentDetail toernooi={toernooi} />
+      <TournamentDetail toernooi={toernooi} liveMatch13Id={liveKoppeling?.match13Id ?? null} />
     </>
   );
 }

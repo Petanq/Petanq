@@ -4,10 +4,23 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
-import { nieuwMatch13Toernooi, bewerkMatch13Metadata, type Match13ToernooiRij } from "@/actions/match13";
+import {
+  nieuwMatch13Toernooi,
+  bewerkMatch13Metadata,
+  type Match13ToernooiRij,
+  type EigenToernooiOptie,
+} from "@/actions/match13";
 import { Match13VerwijderKnop } from "@/components/match13/Match13VerwijderKnop";
+import { siteUrl } from "@/lib/site-url";
 
-type Wijziging = { is_test?: boolean; afgewerkt?: boolean; organisator?: string; geplande_datum?: string | null };
+type Wijziging = {
+  is_test?: boolean;
+  afgewerkt?: boolean;
+  organisator?: string;
+  geplande_datum?: string | null;
+  live_delen?: boolean;
+  toernooi_id?: string | null;
+};
 
 // "YYYY-MM-DD" in de lokale tijdzone (niet toISOString: die geeft UTC, wat
 // rond middernacht een dag kan verschuiven t.o.v. de geplande_datum die de
@@ -20,9 +33,11 @@ function vandaagLokaal(): string {
 export function Match13Overzicht({
   toernooien,
   admin,
+  koppelOpties,
 }: {
   toernooien: Match13ToernooiRij[];
   admin: boolean;
+  koppelOpties: EigenToernooiOptie[];
 }) {
   const { t, taal } = useTranslation();
   const fout = useSearchParams().get("fout");
@@ -89,7 +104,7 @@ export function Match13Overzicht({
           {gepland.length > 0 && (
             <Match13Sectie titel={t.match13.sectieGepland(gepland.length)}>
               {gepland.map((tour) => (
-                <Match13LijstRij key={tour.id} tour={tour} taal={taal} onWijzig={wijzigRij} />
+                <Match13LijstRij key={tour.id} tour={tour} taal={taal} onWijzig={wijzigRij} koppelOpties={koppelOpties} />
               ))}
             </Match13Sectie>
           )}
@@ -98,7 +113,7 @@ export function Match13Overzicht({
             {lopend.length === 0 ? (
               <p className="match13-lijst-leeg">{t.match13.geenLopendeToernooien}</p>
             ) : (
-              lopend.map((tour) => <Match13LijstRij key={tour.id} tour={tour} taal={taal} onWijzig={wijzigRij} />)
+              lopend.map((tour) => <Match13LijstRij key={tour.id} tour={tour} taal={taal} onWijzig={wijzigRij} koppelOpties={koppelOpties} />)
             )}
           </Match13Sectie>
 
@@ -107,7 +122,7 @@ export function Match13Overzicht({
               <summary>{t.match13.sectieAfgewerkt(afgewerkt.length)}</summary>
               <ul className="match13-lijst">
                 {afgewerkt.map((tour) => (
-                  <Match13LijstRij key={tour.id} tour={tour} taal={taal} onWijzig={wijzigRij} />
+                  <Match13LijstRij key={tour.id} tour={tour} taal={taal} onWijzig={wijzigRij} koppelOpties={koppelOpties} />
                 ))}
               </ul>
             </details>
@@ -120,10 +135,10 @@ export function Match13Overzicht({
 
 function Match13Sectie({ titel, children }: { titel: string; children: ReactNode }) {
   return (
-    <section className="match13-lijst-sectie">
-      <h2 className="match13-lijst-sectie-titel">{titel}</h2>
+    <details className="match13-lijst-sectie-inklapbaar">
+      <summary>{titel}</summary>
       <ul className="match13-lijst">{children}</ul>
-    </section>
+    </details>
   );
 }
 
@@ -131,14 +146,17 @@ function Match13LijstRij({
   tour,
   taal,
   onWijzig,
+  koppelOpties,
 }: {
   tour: Match13ToernooiRij;
   taal: string;
   onWijzig: (id: string, wijziging: Wijziging) => void;
+  koppelOpties: EigenToernooiOptie[];
 }) {
   const { t } = useTranslation();
   const [organisator, setOrganisator] = useState(tour.organisator ?? "");
   const [geplandeDatum, setGeplandeDatum] = useState(tour.geplande_datum ?? "");
+  const publiekeLink = `${siteUrl()}/live/match13/${tour.id}`;
 
   return (
     <li className="match13-lijst-rij">
@@ -203,6 +221,38 @@ function Match13LijstRij({
           }}
         />
       </div>
+      <div className="match13-lijst-meta">
+        <label className="match13-lijst-checkbox">
+          <input
+            type="checkbox"
+            checked={tour.live_delen}
+            onChange={(e) => onWijzig(tour.id, { live_delen: e.target.checked })}
+          />
+          {t.match13.liveDelenLabel}
+        </label>
+        {tour.live_delen && !tour.toernooi_id && (
+          <select
+            className="match13-lijst-organisator"
+            defaultValue=""
+            onChange={(e) => e.target.value && onWijzig(tour.id, { toernooi_id: e.target.value })}
+          >
+            <option value="" disabled>
+              {t.match13.liveKoppelPlaceholder}
+            </option>
+            {koppelOpties.map((opt) => (
+              <option key={opt.id} value={opt.id}>
+                {opt.naam_nl} — {opt.datum}
+              </option>
+            ))}
+          </select>
+        )}
+        {tour.live_delen && tour.toernooi_id && (
+          <span className="match13-lijst-datum">
+            {t.match13.liveLinkLabel} <code>{publiekeLink}</code>
+          </span>
+        )}
+      </div>
+      {tour.live_delen && <p className="match13-lijst-hint">{t.match13.liveDelenHint}</p>}
     </li>
   );
 }

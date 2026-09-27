@@ -15,7 +15,13 @@ import { googleMapsUrl } from "@/lib/locatie";
 import { WazeLink } from "@/components/waze-link";
 import { siteUrl } from "@/lib/site-url";
 
-export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
+export function TournamentDetail({
+  toernooi,
+  liveMatch13Id,
+}: {
+  toernooi: Toernooi;
+  liveMatch13Id?: string | null;
+}) {
   const { t, taal } = useTranslation();
   const router = useRouter();
   const [gekopieerd, setGekopieerd] = useState(false);
@@ -136,7 +142,17 @@ export function TournamentDetail({ toernooi }: { toernooi: Toernooi }) {
           {toernooi.clubnaam}
         </p>
 
-        <ToernooiOpslaanKnop toernooiId={toernooi.id} />
+        <div className="flex flex-wrap items-center gap-3">
+          <ToernooiOpslaanKnop toernooiId={toernooi.id} />
+          {liveMatch13Id && (
+            <Link
+              href={`/live/match13/${liveMatch13Id}`}
+              className="inline-flex items-center gap-1.5 rounded-full bg-donker px-4 py-2 text-sm font-bold text-geel hover:bg-blauw-2"
+            >
+              {t.match13.liveVolgKnop}
+            </Link>
+          )}
+        </div>
 
         <dl className="grid grid-cols-1 gap-4 border-t border-rand pt-6 sm:grid-cols-2">
           <Detail label={t.form.datum}>

@@ -25,8 +25,17 @@ const LEGE_FILTERS: FilterState = {
   kwalificatie: null,
 };
 
-export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[]; clubs: Club[] }) {
+export function TournamentBrowser({
+  toernooien,
+  clubs,
+  liveToernooiIds,
+}: {
+  toernooien: Toernooi[];
+  clubs: Club[];
+  liveToernooiIds: string[];
+}) {
   const { t, taal } = useTranslation();
+  const liveIds = useMemo(() => new Set(liveToernooiIds), [liveToernooiIds]);
   const [filters, setFilters] = useState<FilterState>(LEGE_FILTERS);
   const [actieveMaand, setActieveMaand] = useState<string | null>(null);
   const [weergave, setWeergave] = useState<"lijst" | "kalender">("lijst");
@@ -140,7 +149,7 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
         )}
 
         {weergave === "kalender" ? (
-          <MonthCalendar toernooien={gefilterd} />
+          <MonthCalendar toernooien={gefilterd} liveIds={liveIds} />
         ) : (
           <div className="flex flex-col gap-2">
             {groepen.length === 0 && (
@@ -159,7 +168,7 @@ export function TournamentBrowser({ toernooien, clubs }: { toernooien: Toernooi[
                   </div>
                   <div className="flex flex-col gap-2">
                     {lijst.map((tn) => (
-                      <TournamentCard key={tn.id} toernooi={tn} />
+                      <TournamentCard key={tn.id} toernooi={tn} live={liveIds.has(tn.id)} />
                     ))}
                   </div>
                 </div>

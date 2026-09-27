@@ -18,6 +18,8 @@ export interface Match13ToernooiRij {
   afgewerkt: boolean;
   organisator: string | null;
   geplande_datum: string | null;
+  live_delen: boolean;
+  toernooi_id: string | null;
 }
 
 // Admin ziet alles; een pilootgebruiker mag enkel Match13 gebruiken (nooit de
@@ -33,7 +35,9 @@ export async function haalMatch13Toernooien(): Promise<Match13ToernooiRij[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("match13_toernooien")
-    .select("id, naam, club, aangemaakt_op, bijgewerkt_op, is_test, afgewerkt, organisator, geplande_datum")
+    .select(
+      "id, naam, club, aangemaakt_op, bijgewerkt_op, is_test, afgewerkt, organisator, geplande_datum, live_delen, toernooi_id"
+    )
     .order("bijgewerkt_op", { ascending: false });
 
   if (error) {
@@ -157,7 +161,14 @@ export async function slaMatch13OpAsync(id: string, state: AppState): Promise<Ma
 // per rij) zodat je die niet per toernooi hoeft te openen om ze te zetten.
 export async function bewerkMatch13Metadata(
   id: string,
-  wijziging: { is_test?: boolean; afgewerkt?: boolean; organisator?: string; geplande_datum?: string | null }
+  wijziging: {
+    is_test?: boolean;
+    afgewerkt?: boolean;
+    organisator?: string;
+    geplande_datum?: string | null;
+    live_delen?: boolean;
+    toernooi_id?: string | null;
+  }
 ): Promise<Match13ActieResultaat> {
   if (!(await magMatch13Gebruiken())) return { succes: false, fout: "niet_geautoriseerd" };
 
@@ -184,4 +195,102 @@ export async function verwijderMatch13Toernooi(id: string): Promise<Match13Actie
   if (error) return { succes: false, fout: "verwijderen_mislukt" };
   revalidatePath("/beheer/match13");
   return { succes: true };
+}
+
+export interface Match13LivePubliek {
+  naam: string;
+  club: string;
+  bijgewerktOp: string;
+  state: AppState;
+}
+
+// Publiek, geen authenticatie — dit is precies waarvoor "live_delen" bestaat.
+// De RLS-policy "match13_toernooien_publiek_live" zorgt dat dit sowieso enkel
+// een rij teruggeeft als live_delen effectief aanstaat; de expliciete
+// .eq("live_delen", true) hieronder is enkel voor de duidelijkheid.
+export async function haalMatch13ToernooiVoorPubliek(id: string): Promise<Match13LivePubliek | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("match13_toernooien")
+    .select("naam, club, data, bijgewerkt_op")
+    .eq("id", id)
+    .eq("live_delen", true)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return { naam: data.naam, club: data.club, bijgewerktOp: data.bijgewerkt_op, state: data.data as AppState };
+}
+
+// Is er, voor dit specifieke Petanque13.be-toernooi, een Match13-toernooi
+// gekoppeld dat live gedeeld wordt? Gebruikt om de "Volg live"-knop op de
+// publieke toernooipagina te tonen (of niet).
+export async function haalMatch13LiveKoppeling(toernooiId: string): Promise<{ match13Id: string } | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("match13_toernooien")
+    .select("id")
+    .eq("toernooi_id", toernooiId)
+    .eq("live_delen", true)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return { match13Id: data.id };
+}
+
+// Voor de "LIVE"-badge op de compacte tornooikaartjes: welke
+// Petanque13.be-toernooien hebben op dit moment een live-gedeeld
+// Match13-toernooi lopen? Eén bulk-query i.p.v. één per kaartje.
+export async function haalLiveGedeeldeToernooiIds(): Promise<string[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("match13_toernooien")
+    .select("toernooi_id")
+    .eq("live_delen", true)
+    .eq("afgewerkt", false)
+    .not("toernooi_id", "is", null);
+
+  if (error || !data) return [];
+  return data.map((r) => r.toernooi_id as string);
+}
+
+export interface EigenToernooiOptie {
+  id: string;
+  naam_nl: string;
+  datum: string;
+}
+
+// Voor de "koppel aan een Petanque13.be-toernooi"-keuzelijst: enkel de eigen
+// club z'n toernooien, opgezocht via de club_id op match13_gebruikers (net
+// als match13ToegangGevenAanModerator elders dat al doet). Een admin zonder
+// eigen match13_gebruikers-rij (bv. Frederic zelf) krijgt gewoon een lege
+// lijst — dit is in de eerste plaats een clubfunctie.
+export async function haalEigenToernooienOmTeKoppelen(): Promise<EigenToernooiOptie[]> {
+  if (!(await magMatch13Gebruiken())) return [];
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const serviceClient = createServiceRoleClient();
+  const { data: gebruikerRij } = await serviceClient
+    .from("match13_gebruikers")
+    .select("club_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!gebruikerRij?.club_id) return [];
+
+  const { data, error } = await supabase
+    .from("toernooien")
+    .select("id, naam_nl, datum")
+    .eq("club_id", gebruikerRij.club_id)
+    .order("datum", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    console.error("Kon eigen toernooien niet ophalen:", error.message);
+    return [];
+  }
+  return data;
 }

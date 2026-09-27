@@ -1856,6 +1856,12 @@
   font-weight: 600;
   color: var(--ink);
 }
+.match13-scope .match13-lijst-hint {
+  margin: 0;
+  padding: 0 1.2rem 0.8rem;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
 .match13-scope .match13-lijst-checkbox {
   display: inline-flex;
   align-items: center;
@@ -1897,17 +1903,6 @@
   font-size: 0.85rem;
   background: var(--surface);
   color: var(--ink);
-}
-.match13-scope .match13-lijst-sectie {
-  margin-bottom: 1.8rem;
-}
-.match13-scope .match13-lijst-sectie-titel {
-  font-size: 1rem;
-  font-weight: 800;
-  color: var(--ink-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  margin: 0 0 0.7rem;
 }
 .match13-scope .match13-lijst-sectie-inklapbaar {
   margin-bottom: 1.8rem;

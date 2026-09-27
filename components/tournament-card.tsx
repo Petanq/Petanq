@@ -12,6 +12,7 @@ export function TournamentCard({
   weergaveDatum,
   weergaveUur,
   kwalificatie,
+  live,
 }: {
   toernooi: Toernooi;
   // Voor een kwalificatiedatum (zie lib/agenda-items.ts): welke specifieke
@@ -21,6 +22,8 @@ export function TournamentCard({
   weergaveDatum?: string;
   weergaveUur?: string;
   kwalificatie?: boolean;
+  // Loopt er nu een live-gedeeld Match13-toernooi voor dit toernooi?
+  live?: boolean;
 }) {
   const { t, taal } = useTranslation();
   const naam = taal === "fr" ? toernooi.naam_fr : toernooi.naam_nl;
@@ -77,6 +80,15 @@ export function TournamentCard({
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 sm:flex-col sm:items-end sm:gap-1">
+        {live && (
+          <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-rood px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/70" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
+            </span>
+            {t.lijst.liveBadge}
+          </span>
+        )}
         {kwalificatie && (
           <span className="whitespace-nowrap rounded-full bg-[#fdf3d9] px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[#8a6d1f]">
             {t.lijst.kwalificatieRondeBadge}
