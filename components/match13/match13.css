@@ -215,11 +215,12 @@
 .match13-scope .app-footer-inner {
   display: inline-flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.6rem 1.3rem;
+  gap: 0.8rem;
+  padding: 0.85rem 1.8rem;
   background: var(--header-bg);
+  border: 1.5px solid var(--accent);
   border-radius: 999px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
   flex-wrap: wrap;
   text-align: center;
 }
@@ -227,23 +228,23 @@
   /* logo-icon.png is already its own complete round gold-ring badge — no
      extra circle/background behind it, that just doubled up the ring and
      looked muddy. Just size it and let it sit on the dark pill as-is. */
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
   flex-shrink: 0;
 }
 .match13-scope .footer-gold {
   color: var(--accent);
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1.3rem;
+  font-weight: 800;
 }
 .match13-scope .app-footer a {
-  color: inherit;
+  color: #fff;
   font-weight: 800;
   text-decoration: underline;
 }
 .match13-scope .app-footer a:hover {
-  color: #fff;
+  color: var(--accent);
 }
 
 .match13-scope .tabs {
@@ -1914,12 +1915,12 @@
   background: var(--accent);
   color: var(--accent-ink);
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   cursor: pointer;
-  padding: 0.7rem 1.2rem;
+  padding: 0.4rem 1.2rem;
   list-style: none;
   transition: filter 0.15s ease;
 }
