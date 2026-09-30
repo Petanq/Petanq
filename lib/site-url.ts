@@ -1,1 +1,1 @@
-export const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://petanque13.be";
+export const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.petanque13.be";
