@@ -49,6 +49,7 @@ import {
   type PouleQualifier,
 } from "@/lib/match13/poules";
 import { slaMatch13OpAsync, archiveerMatch13Resultaten, bewerkMatch13Metadata } from "@/actions/match13";
+import { siteUrl } from "@/lib/site-url";
 import type { AppState } from "@/lib/match13/state";
 
 type Tab = "opzet" | "onthaal" | "zaal" | "klassement";
@@ -605,10 +606,14 @@ export function Match13App({
   tournamentId,
   initialState,
   initialGeplandeDatum,
+  initialLiveDelen,
+  toernooiId,
 }: {
   tournamentId: string;
   initialState: AppState;
   initialGeplandeDatum: string | null;
+  initialLiveDelen: boolean;
+  toernooiId: string | null;
 }) {
   const { t } = useTranslation();
   const [state, setState] = useState<AppState>(initialState);
@@ -616,6 +621,7 @@ export function Match13App({
   // is_test/afgewerkt/organisator), niet iets in de JSON die hierboven wordt
   // opgeslagen — vandaar de aparte state + eigen opslag hieronder.
   const [geplandeDatum, setGeplandeDatum] = useState(initialGeplandeDatum ?? "");
+  const [liveDelen, setLiveDelen] = useState(initialLiveDelen);
   const [tab, setTab] = useState<Tab>("opzet");
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
   // Welk afdrukblad er getoond wordt op het Zaalscherm — de kaartjes (default)
@@ -2100,6 +2106,37 @@ export function Match13App({
                   }}
                   style={{ maxWidth: 200 }}
                 />
+              </div>
+              <div className="field">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={liveDelen}
+                    onChange={(e) => {
+                      const nieuweWaarde = e.target.checked;
+                      setLiveDelen(nieuweWaarde);
+                      void bewerkMatch13Metadata(tournamentId, { live_delen: nieuweWaarde });
+                    }}
+                  />
+                  {t.match13.liveDelenLabel}
+                </label>
+                {toernooiId ? (
+                  <p className="hint">
+                    <Link href={`/toernooien/${toernooiId}`} target="_blank">
+                      {t.match13.bekijkOpPetanque13} →
+                    </Link>
+                  </p>
+                ) : (
+                  <p className="hint">
+                    {t.match13.nogNietGekoppeld}{" "}
+                    <Link href="/beheer/match13">{t.match13.koppelenViaOverzicht}</Link>
+                  </p>
+                )}
+                {liveDelen && (
+                  <p className="hint">
+                    {t.match13.liveLinkLabel} <code>{siteUrl()}/live/match13/{tournamentId}</code>
+                  </p>
+                )}
               </div>
               <div className="field">
                 <label>{t.match13.speltype}</label>
