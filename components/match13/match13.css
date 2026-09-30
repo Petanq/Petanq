@@ -1891,6 +1891,23 @@
   border-color: #d9a900;
   box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.25);
 }
+.match13-scope .match13-toegang-zoekveld {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid #e3cb87;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--ink);
+}
+.match13-scope .match13-toegang-zoekveld:focus {
+  outline: none;
+  border-color: #d9a900;
+  box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.25);
+}
 .match13-scope .match13-lijst-datum-veld {
   display: inline-flex;
   align-items: center;

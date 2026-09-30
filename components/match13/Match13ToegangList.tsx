@@ -50,7 +50,19 @@ export function Match13ToegangList({
     }
     groep.leden.push(g);
   }
-  const groepen = Array.from(groepenMap.values()).sort((a, b) => a.club.localeCompare(b.club));
+  const groepenOngefilterd = Array.from(groepenMap.values()).sort((a, b) => a.club.localeCompare(b.club));
+
+  const [zoekTerm, setZoekTerm] = useState("");
+  const zoekTermSchoon = zoekTerm.trim().toLowerCase();
+  const groepen = zoekTermSchoon
+    ? groepenOngefilterd.filter(
+        (groep) =>
+          groep.club.toLowerCase().includes(zoekTermSchoon) ||
+          groep.leden.some(
+            (lid) => lid.naam.toLowerCase().includes(zoekTermSchoon) || lid.email.toLowerCase().includes(zoekTermSchoon)
+          )
+      )
+    : groepenOngefilterd;
 
   const [club, setClub] = useState("");
   const [naam, setNaam] = useState("");
@@ -238,8 +250,19 @@ export function Match13ToegangList({
         )}
       </form>
 
+      {groepenOngefilterd.length > 0 && (
+        <input
+          type="search"
+          value={zoekTerm}
+          onChange={(e) => setZoekTerm(e.target.value)}
+          placeholder={t.match13.zoekPlaceholder}
+          className="match13-toegang-zoekveld"
+          style={{ marginBottom: "1rem" }}
+        />
+      )}
+
       {groepen.length === 0 ? (
-        <p className="hint">{t.match13.nogGeenPilootclubs}</p>
+        <p className="hint">{groepenOngefilterd.length === 0 ? t.match13.nogGeenPilootclubs : t.match13.geenZoekresultaten}</p>
       ) : (
         <div className="roster">
           {groepen.map((groep) => (

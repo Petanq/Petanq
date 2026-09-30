@@ -16,6 +16,7 @@ import { isModerator, isAdmin, huidigeModeratorNaam } from "@/lib/auth-helpers";
 import { VerwijderAanvraagEmail, verwijderAanvraagOnderwerp } from "@/lib/emails/verwijder-aanvraag";
 import { siteUrl } from "@/lib/site-url";
 import { geocodeAdres } from "@/lib/geocode";
+import { maakGekoppeldMatch13ToernooiVoorPilootclub } from "@/lib/match13/auto-koppel-toernooi";
 
 export type BeheerActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -80,6 +81,13 @@ export async function toernooiGoedkeuren(id: string): Promise<BeheerActieResulta
   } catch (mailFout) {
     console.error("Nieuwsbriefmail versturen mislukt:", mailFout);
   }
+
+  await maakGekoppeldMatch13ToernooiVoorPilootclub({
+    id: toernooi.id,
+    club_id: toernooi.club_id,
+    naam_nl: toernooi.naam_nl,
+    datum: toernooi.datum,
+  });
 
   revalidatePath("/beheer");
   revalidatePath("/beheer/toernooien");
@@ -157,6 +165,13 @@ export async function toernooiToevoegenAlsAdmin(input: unknown): Promise<BeheerA
   } catch (mailFout) {
     console.error("Nieuwsbriefmail versturen mislukt:", mailFout);
   }
+
+  await maakGekoppeldMatch13ToernooiVoorPilootclub({
+    id: toernooi.id,
+    club_id: toernooi.club_id,
+    naam_nl: toernooi.naam_nl,
+    datum: toernooi.datum,
+  });
 
   revalidatePath("/beheer/toernooien");
   revalidatePath("/beheer/schiftingen");
