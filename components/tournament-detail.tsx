@@ -147,8 +147,12 @@ export function TournamentDetail({
           {liveMatch13Id && (
             <Link
               href={`/live/match13/${liveMatch13Id}`}
-              className="inline-flex items-center gap-1.5 rounded-full bg-donker px-4 py-2 text-sm font-bold text-geel hover:bg-blauw-2"
+              className="inline-flex items-center gap-2 rounded-full bg-rood px-4 py-2 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_2px_10px_rgba(214,40,40,0.4)] transition-transform hover:scale-105 hover:bg-rood-2"
             >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/70" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+              </span>
               {t.match13.liveVolgKnop}
             </Link>
           )}
