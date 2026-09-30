@@ -15,7 +15,7 @@ import { flushSync } from "react-dom";
 import "./match13.css";
 import { useTranslation } from "@/lib/language-context";
 import type { Format, Match, Role, Round, Team } from "@/lib/match13/types";
-import { FORMAT_LABELS, FORMAT_TEAM_SIZE, SPEL_LETTERS, SEXTET_SPLIT } from "@/lib/match13/types";
+import { FORMAT_LABELS, FORMAT_TEAM_SIZE, SPEL_LETTERS, SEXTET_SPLIT, pouleColor } from "@/lib/match13/types";
 import {
   assignKwartetRoles,
   assignSextetRoles,
@@ -66,13 +66,6 @@ interface ExternScherm {
   label?: string;
 }
 
-// A distinct accent color per poule, cycled if there are more poules than
-// colors — just enough to tell "Poule A" apart from "Poule B" at a glance
-// when several are stacked on one screen.
-const POULE_COLORS = ["#2563eb", "#c2410c", "#7c3aed", "#0d9488", "#be185d", "#4d7c0f", "#0284c7", "#a16207"];
-function pouleColor(index: number): string {
-  return POULE_COLORS[index % POULE_COLORS.length];
-}
 
 // Aantal kolommen voor het Zaalscherm-rooster, in functie van het aantal
 // wedstrijden deze ronde — zo blijft het rooster bij weinig pleinen breed en
@@ -125,6 +118,14 @@ function cleanName(raw: string): string {
     .split(" & ")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" & ");
+}
+
+// Kapitaliseert enkel de eerste letter, meteen tijdens het typen (i.t.t.
+// cleanName hierboven, die pas bij het effectief toevoegen/bewerken
+// trimt/normaliseert) — zo staat er nooit even een kleine letter op het
+// scherm terwijl iemand nog aan het typen is.
+function capitaliseerEersteLetter(raw: string): string {
+  return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
 
 // A small visual "1 2 3 4 5" stepper: filled once a round is fully played,
@@ -936,7 +937,7 @@ export function Match13App({
   const duplicateNewPlayer = isDuplicateName(cleanName(newPlayerName));
 
   function updatePlayerInput(i: number, value: string) {
-    setPlayerInputs((prev) => prev.map((v, idx) => (idx === i ? value : v)));
+    setPlayerInputs((prev) => prev.map((v, idx) => (idx === i ? capitaliseerEersteLetter(value) : v)));
   }
 
   function addTeam() {
@@ -2108,18 +2109,23 @@ export function Match13App({
                 />
               </div>
               <div className="field">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={liveDelen}
-                    onChange={(e) => {
-                      const nieuweWaarde = e.target.checked;
-                      setLiveDelen(nieuweWaarde);
-                      void bewerkMatch13Metadata(tournamentId, { live_delen: nieuweWaarde });
-                    }}
-                  />
-                  {t.match13.liveDelenLabel}
-                </label>
+                <button
+                  type="button"
+                  className={"match13-live-knop" + (liveDelen ? " actief" : "")}
+                  onClick={() => {
+                    const nieuweWaarde = !liveDelen;
+                    setLiveDelen(nieuweWaarde);
+                    void bewerkMatch13Metadata(tournamentId, { live_delen: nieuweWaarde });
+                  }}
+                >
+                  {liveDelen && (
+                    <span className="match13-live-stip">
+                      <span className="match13-live-stip-ping" />
+                      <span className="match13-live-stip-punt" />
+                    </span>
+                  )}
+                  {liveDelen ? t.match13.liveIsAan : t.match13.liveDelenLabel}
+                </button>
                 {toernooiId ? (
                   <p className="hint">
                     <Link href={`/toernooien/${toernooiId}`} target="_blank">
@@ -2334,7 +2340,7 @@ export function Match13App({
                   <input
                     placeholder={t.match13.naamSpeler}
                     value={newPlayerName}
-                    onChange={(e) => setNewPlayerName(e.target.value)}
+                    onChange={(e) => setNewPlayerName(capitaliseerEersteLetter(e.target.value))}
                   />
                   <div className="pill-row">
                     {(Object.keys(t.match13.roleLabels) as Role[]).map((r) => (

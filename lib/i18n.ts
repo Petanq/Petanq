@@ -681,6 +681,7 @@ const nl = {
     liveNogGeenPoulesWeergave: "De live-weergave voor poules-toernooien volgt binnenkort.",
     liveNietMeerBeschikbaar: "Dit toernooi wordt niet meer live gedeeld.",
     liveDelenLabel: "Live delen",
+    liveIsAan: "LIVE — klik om te stoppen",
     liveDelenHint: "Toon de live stand op de publieke Petanque13.be-pagina van dit toernooi (geen login nodig).",
     liveKoppelPlaceholder: "Koppel aan een Petanque13.be-toernooi…",
     liveLinkLabel: "Publieke link:",
@@ -1475,6 +1476,7 @@ const fr: typeof nl = {
     liveNogGeenPoulesWeergave: "L'affichage live pour les tournois en poules arrive bientôt.",
     liveNietMeerBeschikbaar: "Ce tournoi n'est plus partagé en direct.",
     liveDelenLabel: "Partager en direct",
+    liveIsAan: "EN DIRECT — cliquez pour arrêter",
     liveDelenHint:
       "Affiche le classement en direct sur la page publique Petanque13.be de ce tournoi (sans connexion).",
     liveKoppelPlaceholder: "Lier à un tournoi Petanque13.be…",

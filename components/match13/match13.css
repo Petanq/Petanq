@@ -401,6 +401,63 @@
   color: var(--ink-muted);
   margin: 0.4rem 0 0;
 }
+.match13-scope .match13-live-knop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  align-self: flex-start;
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border: 1.5px solid var(--warn);
+  background: transparent;
+  color: var(--warn);
+  transition: transform 0.1s ease, background 0.15s ease, color 0.15s ease;
+}
+.match13-scope .match13-live-knop:hover {
+  background: var(--warn-bg);
+}
+.match13-scope .match13-live-knop.actief {
+  background: var(--warn);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.4);
+}
+.match13-scope .match13-live-knop.actief:hover {
+  transform: scale(1.03);
+  background: var(--warn);
+}
+.match13-scope .match13-live-stip {
+  position: relative;
+  display: inline-flex;
+  width: 0.5rem;
+  height: 0.5rem;
+}
+.match13-scope .match13-live-stip-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  animation: match13-live-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.match13-scope .match13-live-stip-punt {
+  position: relative;
+  display: inline-flex;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #fff;
+}
+@keyframes match13-live-ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
 
 .match13-scope .pill-row {
   display: flex;

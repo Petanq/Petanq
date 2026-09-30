@@ -106,3 +106,12 @@ export const ROLE_LABELS: Record<Role, string> = {
   pointeur: "Pointeur",
   flex: "Geen voorkeur",
 };
+
+// Gedeeld tussen het Zaalscherm (Match13App.tsx) en de publieke live-weergave
+// (Match13LiveView.tsx), zodat plein 1 er overal exact dezelfde kleur bij
+// draagt — herkenbaar of je nu achter de tafel staat of thuis meekijkt.
+export const POULE_COLORS = ["#2563eb", "#c2410c", "#7c3aed", "#0d9488", "#be185d", "#4d7c0f", "#0284c7", "#a16207"];
+
+export function pouleColor(index: number): string {
+  return POULE_COLORS[index % POULE_COLORS.length];
+}
