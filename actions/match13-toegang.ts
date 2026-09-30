@@ -50,6 +50,9 @@ export interface Match13Gebruiker {
   bevestigd: boolean;
   aangemaakt_op: string;
   toernooiAantal: number;
+  gespeeldAantal: number;
+  komendAantal: number;
+  liveAantal: number;
 }
 
 export interface EchteClub {
@@ -146,7 +149,7 @@ export async function haalMatch13Gebruikers(): Promise<Match13Gebruiker[]> {
       .from("match13_gebruikers")
       .select("id, naam, club, club_id, email, actief, status, bevestigd, aangemaakt_op")
       .order("aangemaakt_op", { ascending: false }),
-    supabase.from("match13_toernooien").select("club"),
+    supabase.from("match13_toernooien").select("club, afgewerkt, live_delen"),
   ]);
 
   if (error) {
@@ -156,14 +159,28 @@ export async function haalMatch13Gebruikers(): Promise<Match13Gebruiker[]> {
 
   // Aantal toernooien per club — meerdere uitgenodigde personen van dezelfde
   // club delen dezelfde toernooien, dus dit telt per club, niet per persoon.
+  // Apart bijgehouden per status (gespeeld/komend/live), zodat in één
+  // oogopslag duidelijk is of een club nog effectief actief speelt, niet
+  // enkel hoeveel ze er ooit hadden.
   const aantalPerClub = new Map<string, number>();
+  const gespeeldPerClub = new Map<string, number>();
+  const komendPerClub = new Map<string, number>();
+  const livePerClub = new Map<string, number>();
   for (const tour of toernooien ?? []) {
     aantalPerClub.set(tour.club, (aantalPerClub.get(tour.club) ?? 0) + 1);
+    const doel = tour.afgewerkt ? gespeeldPerClub : komendPerClub;
+    doel.set(tour.club, (doel.get(tour.club) ?? 0) + 1);
+    if (tour.live_delen) livePerClub.set(tour.club, (livePerClub.get(tour.club) ?? 0) + 1);
   }
 
-  return (data as Omit<Match13Gebruiker, "toernooiAantal">[]).map((g) => ({
+  return (
+    data as Omit<Match13Gebruiker, "toernooiAantal" | "gespeeldAantal" | "komendAantal" | "liveAantal">[]
+  ).map((g) => ({
     ...g,
     toernooiAantal: aantalPerClub.get(g.club) ?? 0,
+    gespeeldAantal: gespeeldPerClub.get(g.club) ?? 0,
+    komendAantal: komendPerClub.get(g.club) ?? 0,
+    liveAantal: livePerClub.get(g.club) ?? 0,
   }));
 }
 
@@ -386,7 +403,8 @@ export interface EchteClubDetail extends EchteClub {
   foto_url: string | null;
 }
 
-export interface Match13GebruikerMetToernooien extends Omit<Match13Gebruiker, "toernooiAantal"> {
+export interface Match13GebruikerMetToernooien
+  extends Omit<Match13Gebruiker, "toernooiAantal" | "gespeeldAantal" | "komendAantal" | "liveAantal"> {
   toernooien: { id: string; naam: string; bijgewerkt_op: string }[];
   echteClub: EchteClubDetail | null;
 }

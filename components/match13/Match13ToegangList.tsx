@@ -254,6 +254,21 @@ export function Match13ToegangList({
                 <Link href={`/beheer/match13/toegang/${groep.leden[0].id}`} className="team-num team-num-toggle">
                   {t.match13.aantalToernooien(groep.leden[0].toernooiAantal)}
                 </Link>
+                {groep.leden[0].gespeeldAantal > 0 && (
+                  <span className="team-num" style={{ color: "var(--done)", background: "var(--done-bg)" }}>
+                    {t.match13.aantalGespeeld(groep.leden[0].gespeeldAantal)}
+                  </span>
+                )}
+                {groep.leden[0].komendAantal > 0 && (
+                  <span className="team-num" style={{ color: "var(--accent-ink)", background: "var(--accent)" }}>
+                    {t.match13.aantalKomend(groep.leden[0].komendAantal)}
+                  </span>
+                )}
+                {groep.leden[0].liveAantal > 0 && (
+                  <span className="team-num" style={{ color: "var(--warn)", background: "var(--warn-bg)" }}>
+                    {t.match13.aantalLive(groep.leden[0].liveAantal)}
+                  </span>
+                )}
               </div>
               {groep.echteClub && (
                 <p className="hint" style={{ margin: "0 0 0.8rem" }}>
