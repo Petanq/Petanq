@@ -621,12 +621,24 @@ export function TournamentForm() {
           </Veld>
           {openToernooi ? (
             <Veld label={t.form.organisator} verplicht id="veld-organisator">
-              <input
-                required
-                value={clubnaam}
-                onChange={(e) => setClubnaam(e.target.value)}
-                className={`veld-input ${veldFout(clubnaam)}`}
+              <ClubKiezer
+                waarde={clubnaam}
+                onWaardeChange={(v) => {
+                  setClubnaam(v);
+                  setClubId(null);
+                }}
+                onClubGekozen={(club) => {
+                  setClubnaam(club.naam);
+                  setClubId(club.id);
+                  if (club.adres) setAdres(club.adres);
+                  setGemeente(club.gemeente);
+                  setProvincie(club.provincie);
+                  setAdresVanClub(true);
+                }}
+                clubs={clubs}
+                fout={veldFout(clubnaam)}
               />
+              {adresVanClub && <p className="mt-1 text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</p>}
             </Veld>
           ) : (
             <Veld label={t.form.clubnaam} verplicht id="veld-club">

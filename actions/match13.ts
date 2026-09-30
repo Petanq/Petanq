@@ -257,17 +257,38 @@ export interface EigenToernooiOptie {
   id: string;
   naam_nl: string;
   datum: string;
+  clubnaam?: string;
 }
 
-// Voor de "koppel aan een Petanque13.be-toernooi"-keuzelijst: enkel de eigen
-// club z'n toernooien, opgezocht via de club_id op match13_gebruikers (net
-// als match13ToegangGevenAanModerator elders dat al doet). Een admin zonder
-// eigen match13_gebruikers-rij (bv. Frederic zelf) krijgt gewoon een lege
-// lijst — dit is in de eerste plaats een clubfunctie.
+// Voor de "koppel aan een Petanque13.be-toernooi"-keuzelijst: normaal enkel de
+// eigen club z'n toernooien, opgezocht via de club_id op match13_gebruikers
+// (net als match13ToegangGevenAanModerator elders dat al doet). Een admin
+// heeft daarentegen zelf geen match13_gebruikers-rij/club_id, en moet net
+// namens eender welke club snel een koppeling kunnen leggen (bv. om een
+// toernooi voor een club klaar te zetten of om de live-functie te testen) —
+// die krijgt daarom alle recente/toekomstige toernooien van alle clubs te
+// zien, mét clubnaam erbij zodat duidelijk is van wie welk toernooi is.
 export async function haalEigenToernooienOmTeKoppelen(): Promise<EigenToernooiOptie[]> {
   if (!(await magMatch13Gebruiken())) return [];
 
   const supabase = await createClient();
+
+  if (await isAdmin()) {
+    const drieMaandenGeleden = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const { data, error } = await supabase
+      .from("toernooien")
+      .select("id, naam_nl, datum, clubnaam")
+      .gte("datum", drieMaandenGeleden)
+      .order("datum", { ascending: false })
+      .limit(150);
+
+    if (error) {
+      console.error("Kon toernooien voor admin-koppeling niet ophalen:", error.message);
+      return [];
+    }
+    return data;
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();

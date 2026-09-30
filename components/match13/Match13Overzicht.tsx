@@ -241,7 +241,7 @@ function Match13LijstRij({
             </option>
             {koppelOpties.map((opt) => (
               <option key={opt.id} value={opt.id}>
-                {opt.naam_nl} — {opt.datum}
+                {opt.clubnaam ? `${opt.clubnaam} — ${opt.naam_nl} — ${opt.datum}` : `${opt.naam_nl} — ${opt.datum}`}
               </option>
             ))}
           </select>
