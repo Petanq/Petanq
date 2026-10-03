@@ -5,6 +5,7 @@ import { useTranslation } from "@/lib/language-context";
 import { haalMatch13ToernooiVoorPubliek, type Match13LivePubliek } from "@/actions/match13";
 import { pouleColor } from "@/lib/match13/types";
 import type { Match, Team } from "@/lib/match13/types";
+import { computeMeleeStandings, computeStandings } from "@/lib/match13/standings";
 import "./match13.css";
 
 const VERVERS_INTERVAL_MS = 10_000;
@@ -61,7 +62,16 @@ export function Match13LiveView({ id, initieel }: { id: string; initieel: Match1
   }
 
   const { state } = live;
-  const huidigeRonde = state.rounds.length > 0 ? state.rounds[state.rounds.length - 1] : null;
+  // Nieuwste ronde eerst — dat is wat een meekijkende bezoeker het vaakst
+  // wil zien, terwijl de vorige rondes gewoon eronder blijven staan i.p.v.
+  // te verdwijnen zodra een nieuwe ronde start.
+  const rondesNieuwsteEerst = [...state.rounds].reverse();
+  // Zelfde berekening als het klassement-tabblad in de app zelf, zodat de
+  // eindstand hier nooit afwijkt van wat de tafel ziet.
+  const klassement =
+    state.format === "meli"
+      ? computeMeleeStandings(state.teams, state.rounds)
+      : computeStandings(state.teams, state.rounds);
   const bijgewerkt = new Date(live.bijgewerktOp).toLocaleTimeString(taal === "fr" ? "fr-BE" : "nl-BE", {
     hour: "2-digit",
     minute: "2-digit",
@@ -74,15 +84,26 @@ export function Match13LiveView({ id, initieel }: { id: string; initieel: Match1
           style={{
             background: "var(--header-bg)",
             color: "var(--header-ink)",
+            border: "1.5px solid var(--accent)",
+            boxShadow: "0 4px 18px rgba(0,0,0,0.35)",
             borderRadius: 18,
-            padding: "1.6rem 1.5rem",
+            padding: "1.8rem 1.5rem",
             textAlign: "center",
             marginBottom: "1.6rem",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.6rem", marginBottom: "0.9rem" }}>
-            <img className="mark" src="/images/logo-icon.png" alt="Match13" style={{ width: 36, height: 36 }} />
-            <span className="wordmark">
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.7rem", marginBottom: "1rem" }}>
+            <img
+              className="mark"
+              src="/images/logo-icon.png"
+              alt="Match13"
+              style={{
+                width: 44,
+                height: 44,
+                filter: "drop-shadow(0 0 6px rgba(244,196,48,0.55))",
+              }}
+            />
+            <span className="wordmark" style={{ fontSize: "1.7rem" }}>
               Match<span className="m13-gold">13</span>
             </span>
           </div>
@@ -102,18 +123,28 @@ export function Match13LiveView({ id, initieel }: { id: string; initieel: Match1
             }}
           >
             <span style={{ position: "relative", display: "inline-flex", width: "0.5rem", height: "0.5rem" }}>
+              {!live.afgewerkt && (
+                <span
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: 999,
+                    background: "var(--warn)",
+                    animation: "match13-live-ping 1.4s cubic-bezier(0,0,0.2,1) infinite",
+                  }}
+                />
+              )}
               <span
                 style={{
-                  position: "absolute",
-                  inset: 0,
+                  position: "relative",
+                  width: "0.5rem",
+                  height: "0.5rem",
                   borderRadius: 999,
-                  background: "var(--warn)",
-                  animation: "match13-live-ping 1.4s cubic-bezier(0,0,0.2,1) infinite",
+                  background: live.afgewerkt ? "var(--accent)" : "var(--warn)",
                 }}
               />
-              <span style={{ position: "relative", width: "0.5rem", height: "0.5rem", borderRadius: 999, background: "var(--warn)" }} />
             </span>
-            {t.match13.liveBadge}
+            {live.afgewerkt ? t.match13.liveEindstand : t.match13.liveBadge}
           </span>
           <h1 style={{ margin: "0.6rem 0 0.1rem", fontWeight: 800, fontSize: "1.7rem" }}>
             {live.club || live.naam}
@@ -127,48 +158,107 @@ export function Match13LiveView({ id, initieel }: { id: string; initieel: Match1
           <p className="hint" style={{ textAlign: "center", padding: "2rem" }}>
             {t.match13.liveNogGeenPoulesWeergave}
           </p>
-        ) : !huidigeRonde ? (
+        ) : rondesNieuwsteEerst.length === 0 ? (
           <p className="hint" style={{ textAlign: "center", padding: "2rem" }}>
             {t.match13.liveNogNietBegonnen}
           </p>
         ) : (
-          <>
-            <h2 style={{ fontWeight: 800, color: "var(--ink)", marginBottom: "0.8rem" }}>
-              {t.match13.liveRondeTitel(huidigeRonde.number)}
-            </h2>
-            <div
-              className="court-grid"
-              style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gridAutoFlow: "row" }}
-            >
-              {[...huidigeRonde.matches]
-                .sort((a, b) => a.court - b.court)
-                .map((m, i) => {
-                  const gespeeld = m.scoreA !== undefined && m.scoreB !== undefined;
-                  return (
-                    <div key={i} className="court-card" style={{ "--plein-accent": pouleColor(m.court - 1) } as CSSProperties}>
-                      <div className="court-label">{t.match13.liveePleinKort(m.court)}</div>
-                      <div className="match-row">
-                        <span>{zijdeNaam(state.teams, m, "A")}</span>
-                        <span
-                          style={{
-                            flex: "0 0 auto",
-                            fontVariantNumeric: "tabular-nums",
-                            color: gespeeld ? "var(--ink)" : "var(--ink-muted)",
-                            fontSize: gespeeld ? "1.55rem" : "0.85rem",
-                            fontWeight: gespeeld ? 800 : 600,
-                            textTransform: gespeeld ? "none" : "uppercase",
-                            letterSpacing: gespeeld ? "normal" : "0.03em",
-                          }}
-                        >
-                          {gespeeld ? `${m.scoreA} – ${m.scoreB}` : t.match13.liveNogTeSpelen}
-                        </span>
-                        <span style={{ textAlign: "right" }}>{zijdeNaam(state.teams, m, "B")}</span>
+          rondesNieuwsteEerst.map((ronde) => (
+            <div key={ronde.number} style={{ marginBottom: "2rem" }}>
+              <h2 style={{ fontWeight: 800, color: "var(--ink)", marginBottom: "0.8rem" }}>
+                {t.match13.liveRondeTitel(ronde.number)}
+              </h2>
+              <div
+                className="court-grid"
+                style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gridAutoFlow: "row" }}
+              >
+                {[...ronde.matches]
+                  .sort((a, b) => a.court - b.court)
+                  .map((m, i) => {
+                    const gespeeld = m.scoreA !== undefined && m.scoreB !== undefined;
+                    const naamStijl: CSSProperties = {
+                      flex: 1,
+                      minWidth: 0,
+                      fontSize: "1.3rem",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    };
+                    return (
+                      <div key={i} className="court-card" style={{ "--plein-accent": pouleColor(m.court - 1) } as CSSProperties}>
+                        <div className="court-label">{t.match13.liveePleinKort(m.court)}</div>
+                        <div className="match-row">
+                          <span style={naamStijl}>{zijdeNaam(state.teams, m, "A")}</span>
+                          <span
+                            style={
+                              gespeeld
+                                ? {
+                                    flex: "0 0 auto",
+                                    fontVariantNumeric: "tabular-nums",
+                                    color: "var(--accent-ink)",
+                                    fontSize: "1.4rem",
+                                    fontWeight: 800,
+                                    border: "1.5px solid var(--accent)",
+                                    background: "color-mix(in srgb, var(--accent) 15%, white)",
+                                    borderRadius: 10,
+                                    padding: "0.15rem 0.6rem",
+                                  }
+                                : {
+                                    flex: "0 0 auto",
+                                    fontVariantNumeric: "tabular-nums",
+                                    color: "var(--ink-muted)",
+                                    fontSize: "0.7rem",
+                                    fontWeight: 600,
+                                    whiteSpace: "nowrap",
+                                  }
+                            }
+                          >
+                            {gespeeld ? `${m.scoreA} – ${m.scoreB}` : t.match13.liveNogTeSpelen}
+                          </span>
+                          <span style={{ ...naamStijl, textAlign: "right" }}>{zijdeNaam(state.teams, m, "B")}</span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+              </div>
             </div>
-          </>
+          ))
+        )}
+
+        {state.format !== "poules" && rondesNieuwsteEerst.length > 0 && klassement.length > 0 && (
+          <div style={{ marginTop: "1rem" }}>
+            <h2 style={{ fontWeight: 800, color: "var(--ink)", marginBottom: "0.8rem" }}>
+              {t.match13.klassementTitel}
+            </h2>
+            <div className="tabel-scroll">
+              <table className="standings">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>{state.format === "meli" ? t.match13.spelerKolom : t.match13.teamKolom}</th>
+                    <th className="num">{t.match13.gespeeld}</th>
+                    <th className="num">{t.match13.overwinningen}</th>
+                    <th className="num">{t.match13.pntVoor}</th>
+                    <th className="num">{t.match13.pntTegen}</th>
+                    <th className="num">{t.match13.saldo}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {klassement.map((row, i) => (
+                    <tr key={row.teamId}>
+                      <td>{i + 1}</td>
+                      <td>{row.name}</td>
+                      <td className="num">{row.gespeeld}</td>
+                      <td className="num">{row.overwinningen}</td>
+                      <td className="num">{row.puntenVoor}</td>
+                      <td className="num">{row.puntenTegen}</td>
+                      <td className="num">{row.saldo > 0 ? `+${row.saldo}` : row.saldo}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         )}
 
         <footer className="app-footer" style={{ marginTop: "2.5rem" }}>

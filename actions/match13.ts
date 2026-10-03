@@ -208,6 +208,7 @@ export interface Match13LivePubliek {
   naam: string;
   club: string;
   bijgewerktOp: string;
+  afgewerkt: boolean;
   state: AppState;
 }
 
@@ -219,13 +220,19 @@ export async function haalMatch13ToernooiVoorPubliek(id: string): Promise<Match1
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("match13_toernooien")
-    .select("naam, club, data, bijgewerkt_op")
+    .select("naam, club, data, bijgewerkt_op, afgewerkt")
     .eq("id", id)
     .eq("live_delen", true)
     .maybeSingle();
 
   if (error || !data) return null;
-  return { naam: data.naam, club: data.club, bijgewerktOp: data.bijgewerkt_op, state: data.data as AppState };
+  return {
+    naam: data.naam,
+    club: data.club,
+    bijgewerktOp: data.bijgewerkt_op,
+    afgewerkt: data.afgewerkt as boolean,
+    state: data.data as AppState,
+  };
 }
 
 // Is er, voor dit specifieke Petanque13.be-toernooi, een Match13-toernooi
