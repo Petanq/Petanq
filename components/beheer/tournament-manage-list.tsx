@@ -57,6 +57,7 @@ export function TournamentManageList({
   const [filterCategorie, setFilterCategorie] = useState<Categorie | "">("");
   const [filterProvincie, setFilterProvincie] = useState<Provincie | "">("");
   const [filterType, setFilterType] = useState<"" | "open" | "officieel">("");
+  const [filterGoedkeurder, setFilterGoedkeurder] = useState("");
   const [zoek, setZoek] = useState("");
   const [actieveMaand, setActieveMaand] = useState<string | null>(null);
   const [verwijderAanvraagId, setVerwijderAanvraagId] = useState<string | null>(null);
@@ -98,11 +99,21 @@ export function TournamentManageList({
 
   const zoekTerm = zoek.trim().toLowerCase();
 
+  const goedkeurders = useMemo(() => {
+    const tellingen = new Map<string, number>();
+    for (const tn of toernooien) {
+      const naam = tn.goedgekeurd_door?.trim();
+      if (naam) tellingen.set(naam, (tellingen.get(naam) ?? 0) + 1);
+    }
+    return Array.from(tellingen.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [toernooien]);
+
   const zichtbareToernooien = toernooien
     .filter((tn) => (weergave === "aankomend" ? tn.datum >= vandaag : tn.datum < vandaag))
     .filter((tn) => !filterCategorie || tn.categorie === filterCategorie)
     .filter((tn) => !filterProvincie || tn.provincie === filterProvincie)
     .filter((tn) => !filterType || (filterType === "open" ? tn.open_toernooi : !tn.open_toernooi))
+    .filter((tn) => !filterGoedkeurder || (tn.goedgekeurd_door?.trim() ?? "") === filterGoedkeurder)
     .filter((tn) => !actieveMaand || maandJaarKey(tn.datum) === actieveMaand)
     .filter((tn) => {
       if (!zoekTerm) return true;
@@ -202,6 +213,18 @@ export function TournamentManageList({
             <option value="">{t.filters.alleTypes}</option>
             <option value="open">{t.form.openToernooi}</option>
             <option value="officieel">{t.form.officieelToernooi}</option>
+          </select>
+          <select
+            value={filterGoedkeurder}
+            onChange={(e) => setFilterGoedkeurder(e.target.value)}
+            className="veld-input w-auto"
+          >
+            <option value="">Goedgekeurd door: iedereen</option>
+            {goedkeurders.map(([naam, aantal]) => (
+              <option key={naam} value={naam}>
+                {naam} ({aantal})
+              </option>
+            ))}
           </select>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -326,6 +349,12 @@ export function TournamentManageList({
                           </span>
                           <span className="text-[0.74rem] text-grijs">🕐 {formatUur(tn.uur)}</span>
                           {tn.finale && <span className="text-[0.74rem] text-grijs">{t.lijst.metFinale}</span>}
+                        </div>
+                        <div className="mt-1 text-[0.68rem] text-grijs/80">
+                          Ingediend door <span className="font-semibold">{tn.ingediend_door?.trim() || "onbekend"}</span>
+                          {" · "}goedgekeurd door{" "}
+                          <span className="font-semibold">{tn.goedgekeurd_door?.trim() || "onbekend"}</span>
+                          {tn.goedgekeurd_op && <> op {new Date(tn.goedgekeurd_op).toLocaleDateString("nl-BE")}</>}
                         </div>
                       </div>
                     </div>
