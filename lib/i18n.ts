@@ -150,6 +150,8 @@ const nl = {
   footer: {
     tekst: "Alle gegevens worden gecontroleerd door vrijwilligers. Ontbreekt er een toernooi?",
     link: "Stuur een melding.",
+    teambuilding: "Pétanque-teambuilding voor bedrijven:",
+    teambuildingLink: "Teambuilding13",
     privacybeleid: "Privacybeleid",
     copyright: `© ${new Date().getFullYear()} Petanque13`,
   },
@@ -300,6 +302,9 @@ const nl = {
     alinea3:
       "Wil je zelf helpen als vrijwilliger? We kunnen altijd extra handen gebruiken om toernooien te controleren — je bent welkom.",
     vrijwilligerKnop: "Vrijwilliger worden",
+    teambuildingTekst:
+      "Naast Petanque13 organiseert Frederic Keulemans ook pétanque-teambuilding voor bedrijven en verenigingen, met les en toernooi via Match13:",
+    teambuildingLink: "Teambuilding13",
     contact: "Vragen of opmerkingen? Mail naar",
     ofBel: "of bel naar",
   },
@@ -945,6 +950,8 @@ const fr: typeof nl = {
   footer: {
     tekst: "Toutes les données sont vérifiées par des bénévoles. Un tournoi manque ?",
     link: "Envoyez un signalement.",
+    teambuilding: "Team building pétanque pour entreprises :",
+    teambuildingLink: "Teambuilding13",
     privacybeleid: "Politique de confidentialité",
     copyright: `© ${new Date().getFullYear()} Petanque13`,
   },
@@ -1096,6 +1103,9 @@ const fr: typeof nl = {
     alinea3:
       "Vous voulez nous aider en tant que bénévole ? Nous cherchons toujours des mains supplémentaires pour vérifier les tournois — vous êtes le/la bienvenu(e).",
     vrijwilligerKnop: "Devenir bénévole",
+    teambuildingTekst:
+      "En plus de Petanque13, Frederic Keulemans organise aussi des team buildings de pétanque pour entreprises et associations, avec initiation et tournoi via Match13 :",
+    teambuildingLink: "Teambuilding13",
     contact: "Des questions ou remarques ? Envoyez un e-mail à",
     ofBel: "ou appelez le",
   },

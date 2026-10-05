@@ -22,6 +22,17 @@ export function Footer() {
           {t.footer.link}
         </a>
       </span>
+      <div className="mt-3">
+        {t.footer.teambuilding}{" "}
+        <a
+          href="https://teambuilding13.be"
+          target="_blank"
+          rel="noopener"
+          className="text-rood no-underline hover:underline"
+        >
+          {t.footer.teambuildingLink}
+        </a>
+      </div>
       <div className="mt-3 flex items-center justify-center gap-3">
         <Link href="/privacybeleid" className="text-grijs underline hover:text-donker">
           {t.footer.privacybeleid}

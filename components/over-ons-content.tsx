@@ -25,6 +25,17 @@ export function OverOnsContent() {
           {t.overOnsPagina.vrijwilligerKnop}
         </Link>
       </p>
+      <p className="mb-6 text-sm leading-relaxed text-donker">
+        {t.overOnsPagina.teambuildingTekst}{" "}
+        <a
+          href="https://teambuilding13.be"
+          target="_blank"
+          rel="noopener"
+          className="text-rood hover:underline"
+        >
+          {t.overOnsPagina.teambuildingLink}
+        </a>
+      </p>
       <p className="text-sm text-grijs">
         {t.overOnsPagina.contact}{" "}
         <a href="mailto:info@petanque13.be" className="text-rood hover:underline">
