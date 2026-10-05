@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 export default async function BeheerLoginPagina({
   searchParams,
 }: {
-  searchParams: Promise<{ link?: string }>;
+  searchParams: Promise<{ link?: string; volgende?: string }>;
 }) {
-  const { link } = await searchParams;
-  return <LoginForm linkVerlopen={link === "verlopen"} />;
+  const { link, volgende } = await searchParams;
+  return <LoginForm linkVerlopen={link === "verlopen"} naInloggen={volgende === "match13" ? "/beheer/match13" : "/beheer"} />;
 }

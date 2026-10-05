@@ -6,7 +6,13 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
 
-export function LoginForm({ linkVerlopen = false }: { linkVerlopen?: boolean }) {
+export function LoginForm({
+  linkVerlopen = false,
+  naInloggen = "/beheer",
+}: {
+  linkVerlopen?: boolean;
+  naInloggen?: "/beheer" | "/beheer/match13";
+}) {
   const { t } = useTranslation();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -25,7 +31,7 @@ export function LoginForm({ linkVerlopen = false }: { linkVerlopen?: boolean }) 
       setFout(true);
       return;
     }
-    router.push("/beheer");
+    router.push(naInloggen);
     router.refresh();
   }
 

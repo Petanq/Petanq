@@ -507,6 +507,23 @@
   }
 
 
+  /* ---------- Teambuilding13-vermelding ---------- */
+  .tb13 {
+    margin-top: 18px; break-inside: avoid;
+    display: flex; align-items: center; gap: 16px;
+    background: var(--card); border: 2px solid var(--gold); border-radius: 16px;
+    padding: 16px 20px;
+  }
+  .tb13-tag {
+    flex-shrink: 0; background: var(--ink); color: var(--gold);
+    font-weight: 900; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 8px 14px; border-radius: 999px; white-space: nowrap;
+  }
+  .tb13 b { display: block; font-size: 1rem; margin-bottom: 3px; }
+  .tb13 p { margin: 0; font-size: 0.84rem; color: var(--ink2); font-weight: 500; line-height: 1.45; }
+  .tb13 a { color: var(--red); font-weight: 800; text-decoration: none; white-space: nowrap; }
+  @media (max-width: 640px) { .tb13 { flex-direction: column; align-items: flex-start; } }
+
   /* ---------- packages ---------- */
   .pakketten {
     display: grid;
@@ -916,6 +933,11 @@
         </ul>
         <p class="pk-note">Pour qui veut vraiment être reconnu par chaque joueur de pétanque.</p>
       </div>
+    </div>
+
+    <div class="tb13">
+      <span class="tb13-tag">Aussi pour entreprises</span>
+      <div><b>Nous organisons aussi des team buildings de pétanque</b><p>En plus de Petanque13 et Match13, nous organisons des journées pétanque pour entreprises : pour votre équipe, vos clients ou vos relations. Plus d'infos sur <a href="https://teambuilding13.be">teambuilding13.be</a></p></div>
     </div>
 
     <div class="flagship">

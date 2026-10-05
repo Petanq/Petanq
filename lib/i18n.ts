@@ -187,6 +187,7 @@ const nl = {
   },
   match13Aanvraag: {
     badge: "In beta",
+    loginKnop: "Inloggen",
     titel: "Match13 — toernooidag-tool voor je club",
     intro:
       "Match13 is de tool waarmee wij bij onze eigen club elke toernooidag beheren: loting, poules, een knock-outpiramide, een live scherm voor in de zaal en een automatisch klassement — geen papieren wedstrijdbriefjes meer.",
@@ -987,6 +988,7 @@ const fr: typeof nl = {
   },
   match13Aanvraag: {
     badge: "En bêta",
+    loginKnop: "Se connecter",
     titel: "Match13 — outil pour la journée de tournoi de votre club",
     intro:
       "Match13 est l'outil avec lequel nous gérons chaque journée de tournoi dans notre propre club : tirage au sort, poules, une pyramide finale, un écran de salle en direct et un classement automatique — plus de feuilles de match en papier.",

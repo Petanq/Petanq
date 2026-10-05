@@ -42,8 +42,10 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isLoginRoute && user) {
+    const naarMatch13 = request.nextUrl.searchParams.get("volgende") === "match13";
     const url = request.nextUrl.clone();
-    url.pathname = "/beheer";
+    url.search = "";
+    url.pathname = naarMatch13 ? "/beheer/match13" : "/beheer";
     return NextResponse.redirect(url);
   }
 

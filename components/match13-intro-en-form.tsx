@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { Match13AanvraagForm } from "@/components/match13-aanvraag-form";
 
@@ -16,9 +17,17 @@ export function Match13IntroEnForm() {
     >
       <div className="mx-auto max-w-2xl px-6 py-12 sm:py-16">
         <div className="mb-10 rounded-2xl bg-white/90 p-6 shadow-sm backdrop-blur-sm sm:p-8">
-          <span className="inline-block rounded-full bg-geel px-3 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-donker">
-            {t.match13Aanvraag.badge}
-          </span>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span className="inline-block rounded-full bg-geel px-3 py-1 text-[0.7rem] font-bold uppercase tracking-wider text-donker">
+              {t.match13Aanvraag.badge}
+            </span>
+            <Link
+              href="/beheer/login?volgende=match13"
+              className="rounded-md bg-geel px-4 py-1.5 text-[0.8rem] font-bold text-donker shadow-sm transition-all hover:brightness-95 hover:shadow-md active:scale-95"
+            >
+              {t.match13Aanvraag.loginKnop}
+            </Link>
+          </div>
           <h1 className="mb-4 mt-3 font-titel text-3xl tracking-wide text-blauw sm:text-4xl">{t.match13Aanvraag.titel}</h1>
           <p className="mb-4 text-[0.95rem] leading-relaxed text-grijs">{t.match13Aanvraag.intro}</p>
           <p className="text-[0.95rem] leading-relaxed text-grijs">{t.match13Aanvraag.introVervolg}</p>

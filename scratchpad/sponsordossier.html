@@ -510,6 +510,23 @@
     .zs-sponsor { flex-direction: column; align-items: flex-start; }
   }
 
+  /* ---------- Teambuilding13-vermelding ---------- */
+  .tb13 {
+    margin-top: 18px; break-inside: avoid;
+    display: flex; align-items: center; gap: 16px;
+    background: var(--card); border: 2px solid var(--gold); border-radius: 16px;
+    padding: 16px 20px;
+  }
+  .tb13-tag {
+    flex-shrink: 0; background: var(--ink); color: var(--gold);
+    font-weight: 900; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 8px 14px; border-radius: 999px; white-space: nowrap;
+  }
+  .tb13 b { display: block; font-size: 1rem; margin-bottom: 3px; }
+  .tb13 p { margin: 0; font-size: 0.84rem; color: var(--ink2); font-weight: 500; line-height: 1.45; }
+  .tb13 a { color: var(--red); font-weight: 800; text-decoration: none; white-space: nowrap; }
+  @media (max-width: 640px) { .tb13 { flex-direction: column; align-items: flex-start; } }
+
   /* ---------- packages ---------- */
   .pakketten {
     display: grid;
@@ -919,6 +936,11 @@
         </ul>
         <p class="pk-note">Voor wie écht herkend wil worden door elke petanquespeler.</p>
       </div>
+    </div>
+
+    <div class="tb13">
+      <span class="tb13-tag">Ook bedrijven</span>
+      <div><b>Wij organiseren ook petanque-teambuildings</b><p>Naast Petanque13 en Match13 verzorgen we petanquedagen voor bedrijven: voor je team, je klanten of je relaties. Meer info op <a href="https://teambuilding13.be">teambuilding13.be</a></p></div>
     </div>
 
     <div class="flagship">
