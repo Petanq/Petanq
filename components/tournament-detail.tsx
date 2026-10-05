@@ -137,7 +137,9 @@ export function TournamentDetail({
           </span>
         </div>
 
-        <h1 className="mb-2 font-titel text-4xl tracking-wide text-blauw">{naam}</h1>
+        <h1 className="mb-2 hyphens-auto break-words font-titel text-[1.4rem] leading-tight tracking-wide text-blauw min-[400px]:text-3xl sm:text-4xl">
+          {naam}
+        </h1>
         <p className="mb-6 text-sm font-bold uppercase tracking-wide text-blauw-2">
           {toernooi.clubnaam}
         </p>
