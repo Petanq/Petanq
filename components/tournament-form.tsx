@@ -439,7 +439,7 @@ export function TournamentForm() {
       <p className="mb-8 text-sm text-grijs">{t.form.beschrijving}</p>
 
       <form onSubmit={versturen} noValidate className="flex flex-col gap-6">
-        <fieldset className="flex flex-col gap-4 rounded-lg border-[1.5px] border-dashed border-blauw-3 bg-blauw-3/5 p-4">
+        <fieldset className="flex min-w-0 flex-col gap-4 rounded-lg border-[1.5px] border-dashed border-blauw-3 bg-blauw-3/5 p-4">
           <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
             {t.form.affiche}
           </legend>
@@ -449,7 +449,7 @@ export function TournamentForm() {
               accept="image/*"
               multiple
               onChange={(e) => afficheGekozen(e.target.files)}
-              className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
+              className="w-full min-w-0 max-w-full text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
             />
             <p className="mt-1 text-xs text-grijs">{t.form.afficheHint}</p>
             {afficheNaam && !afficheBezig && !afficheFout && (
