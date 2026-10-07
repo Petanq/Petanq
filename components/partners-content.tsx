@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useTranslation } from "@/lib/language-context";
+import { Knop } from "@/components/ui/knop";
 
 export function PartnersContent() {
-  const { t } = useTranslation();
+  const { t, taal } = useTranslation();
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-16 lg:px-10">
@@ -33,6 +34,15 @@ export function PartnersContent() {
       <h2 className="mb-3 font-titel text-lg tracking-wide text-blauw">{t.partnersPagina.onzePartnersTitel}</h2>
       <div className="mb-10 rounded-xl border border-rand bg-[#faf9f6] p-8 text-center text-sm text-grijs">
         {t.partnersPagina.nogGeenPartners}
+      </div>
+
+      <div className="mb-6">
+        <Knop
+          variant="geel"
+          href={taal === "fr" ? "/sponsoring/Petanque13-dossier-sponsoring-fr.pdf" : "/sponsoring/Petanque13-sponsordossier.pdf"}
+        >
+          {t.partnersPagina.dossierKnop}
+        </Knop>
       </div>
 
       <p className="text-sm text-grijs">

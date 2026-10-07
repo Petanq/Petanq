@@ -309,6 +309,11 @@ const nl = {
     contact: "Vragen of opmerkingen? Mail naar",
     ofBel: "of bel naar",
   },
+  partnerBalk: {
+    label: "Onze partners",
+    vraag: "Wil jouw bedrijf hier staan? Word partner van Petanque13.",
+    wordPartner: "Word partner",
+  },
   partnersPagina: {
     titel: "Partners",
     intro:
@@ -322,6 +327,7 @@ const nl = {
     onzePartnersTitel: "Onze partners",
     nogGeenPartners: "Binnenkort de eerste partners hier — misschien jouw logo?",
     ctaTekst: "Interesse om partner te worden? Vraag ons sponsordossier op via",
+    dossierKnop: "Download het sponsordossier (PDF)",
   },
   reizenPagina: {
     titel: "Op reis met Claudy Weibel",
@@ -1111,6 +1117,11 @@ const fr: typeof nl = {
     contact: "Des questions ou remarques ? Envoyez un e-mail à",
     ofBel: "ou appelez le",
   },
+  partnerBalk: {
+    label: "Nos partenaires",
+    vraag: "Votre entreprise ici ? Devenez partenaire de Petanque13.",
+    wordPartner: "Devenir partenaire",
+  },
   partnersPagina: {
     titel: "Partenaires",
     intro:
@@ -1124,6 +1135,7 @@ const fr: typeof nl = {
     onzePartnersTitel: "Nos partenaires",
     nogGeenPartners: "Bientôt les premiers partenaires ici — peut-être votre logo ?",
     ctaTekst: "Envie de devenir partenaire ? Demandez notre dossier de sponsoring à",
+    dossierKnop: "Télécharger le dossier de sponsoring (PDF)",
   },
   reizenPagina: {
     titel: "En voyage avec Claudy Weibel",

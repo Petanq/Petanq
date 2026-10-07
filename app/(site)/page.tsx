@@ -1,6 +1,7 @@
 import { getGoedgekeurdeToernooien, getActieveClubs, getAantalActieveModeratoren } from "@/lib/data";
 import { isToekomstig } from "@/lib/datum";
 import { Hero } from "@/components/hero";
+import { PartnerBalk } from "@/components/partner-balk";
 import { TournamentBrowser } from "@/components/tournament-browser";
 import { haalLiveGedeeldeToernooiIds } from "@/actions/match13";
 
@@ -17,6 +18,7 @@ export default async function HomePage() {
   return (
     <>
       <Hero aantalToernooien={toernooien.length} aantalClubs={clubs.length} aantalControleurs={aantalControleurs} />
+      <PartnerBalk />
       <TournamentBrowser toernooien={toekomstig} clubs={clubs} liveToernooiIds={liveToernooiIds} />
     </>
   );
