@@ -46,7 +46,9 @@ export function Footer() {
           {t.nav.login}
         </Link>
       </div>
-      <div className="mt-3 text-[0.7rem] text-grijs/70">{t.footer.copyright}</div>
+      <div className="mt-3 text-[0.7rem] text-grijs/70">
+        {t.footer.copyright} · Frederic Keulemans · {t.footer.ondernemingsnr} BE 1042.720.306
+      </div>
     </div>
   );
 }

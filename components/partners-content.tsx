@@ -5,7 +5,7 @@ import { useTranslation } from "@/lib/language-context";
 import { Knop } from "@/components/ui/knop";
 
 export function PartnersContent() {
-  const { t, taal } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-16 lg:px-10">
@@ -39,7 +39,7 @@ export function PartnersContent() {
       <div className="mb-6">
         <Knop
           variant="geel"
-          href={taal === "fr" ? "/sponsoring/Petanque13-dossier-sponsoring-fr.pdf" : "/sponsoring/Petanque13-sponsordossier.pdf"}
+          href={`mailto:info@petanque13.be?subject=${encodeURIComponent(t.partnersPagina.dossierMailOnderwerp)}&body=${encodeURIComponent(t.partnersPagina.dossierMailTekst)}`}
         >
           {t.partnersPagina.dossierKnop}
         </Knop>

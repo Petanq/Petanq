@@ -153,6 +153,7 @@ const nl = {
     teambuilding: "Pétanque-teambuilding voor bedrijven:",
     teambuildingLink: "Teambuilding13",
     privacybeleid: "Privacybeleid",
+    ondernemingsnr: "Ondernemingsnr.",
     copyright: `© ${new Date().getFullYear()} Petanque13`,
   },
   clubsPagina: {
@@ -327,7 +328,10 @@ const nl = {
     onzePartnersTitel: "Onze partners",
     nogGeenPartners: "Binnenkort de eerste partners hier — misschien jouw logo?",
     ctaTekst: "Interesse om partner te worden? Vraag ons sponsordossier op via",
-    dossierKnop: "Download het sponsordossier (PDF)",
+    dossierKnop: "Vraag het sponsordossier aan",
+    dossierMailOnderwerp: "Aanvraag sponsordossier Petanque13",
+    dossierMailTekst:
+      "Beste,\n\nGraag ontvang ik het sponsordossier van Petanque13.\n\nBedrijf:\nNaam:\nTelefoon:\n\nMet vriendelijke groeten",
   },
   reizenPagina: {
     titel: "Op reis met Claudy Weibel",
@@ -960,6 +964,7 @@ const fr: typeof nl = {
     teambuilding: "Team building pétanque pour entreprises :",
     teambuildingLink: "Teambuilding13",
     privacybeleid: "Politique de confidentialité",
+    ondernemingsnr: "N° d'entreprise",
     copyright: `© ${new Date().getFullYear()} Petanque13`,
   },
   clubsPagina: {
@@ -1135,7 +1140,10 @@ const fr: typeof nl = {
     onzePartnersTitel: "Nos partenaires",
     nogGeenPartners: "Bientôt les premiers partenaires ici — peut-être votre logo ?",
     ctaTekst: "Envie de devenir partenaire ? Demandez notre dossier de sponsoring à",
-    dossierKnop: "Télécharger le dossier de sponsoring (PDF)",
+    dossierKnop: "Demander le dossier de sponsoring",
+    dossierMailOnderwerp: "Demande du dossier de sponsoring Petanque13",
+    dossierMailTekst:
+      "Bonjour,\n\nJe souhaite recevoir le dossier de sponsoring de Petanque13.\n\nEntreprise :\nNom :\nTéléphone :\n\nCordialement",
   },
   reizenPagina: {
     titel: "En voyage avec Claudy Weibel",

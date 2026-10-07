@@ -44,7 +44,7 @@ export function Knop({
     </>
   );
 
-  if (href?.startsWith("#")) {
+  if (href?.startsWith("#") || href?.startsWith("mailto:")) {
     return (
       <a href={href} onClick={onClick} className={pil}>
         {inhoud}
