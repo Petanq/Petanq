@@ -21,7 +21,15 @@ const datumVeld = z
   .refine((datum) => {
     const jaar = Number(datum.slice(0, 4));
     return jaar >= huidigJaar - 1 && jaar <= huidigJaar + 5;
-  }, "Ongeldig jaartal");
+  }, "Ongeldig jaartal")
+  // De regex en het jaartal laten "2026-02-31" nog door — dit controleert dat
+  // de dag in die maand echt bestaat (31 februari, 31 april, 29 feb. in een
+  // niet-schrikkeljaar, ...).
+  .refine((datum) => {
+    const [jaar, maand, dag] = datum.split("-").map(Number);
+    const d = new Date(Date.UTC(jaar, maand - 1, dag));
+    return d.getUTCFullYear() === jaar && d.getUTCMonth() === maand - 1 && d.getUTCDate() === dag;
+  }, "Ongeldige datum");
 
 const kwalificatieDatumVeld = z.object({
   datum: datumVeld,

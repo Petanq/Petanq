@@ -13,6 +13,8 @@ export function StatistiekenPaneel({
   bezoekenPerProvincie,
   bezoekenPerDag,
   reizenPaginaBezoeken,
+  boulesPaginaBezoeken,
+  boulesDoorkliks,
   toernooien,
   isAdmin,
 }: {
@@ -20,6 +22,8 @@ export function StatistiekenPaneel({
   bezoekenPerProvincie: BezoekPerProvincie[];
   bezoekenPerDag: BezoekPerDag[];
   reizenPaginaBezoeken: number;
+  boulesPaginaBezoeken: number;
+  boulesDoorkliks: number;
   toernooien: ToernooiStatistieken;
   isAdmin: boolean;
 }) {
@@ -65,6 +69,8 @@ export function StatistiekenPaneel({
             {isAdmin && (
               <StatKaart label={t.beheer.reizenPaginaBezoekenLabel} waarde={reizenPaginaBezoeken} />
             )}
+            {isAdmin && <StatKaart label={t.beheer.boulesPaginaBezoekenLabel} waarde={boulesPaginaBezoeken} />}
+            {isAdmin && <StatKaart label={t.beheer.boulesDoorkliksLabel} waarde={boulesDoorkliks} />}
           </div>
 
           {isAdmin && toernooien.perModerator.length > 0 && (

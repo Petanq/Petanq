@@ -1888,6 +1888,10 @@
   padding: 0.2rem 0.6rem;
   white-space: nowrap;
 }
+.match13-scope .match13-badge-formaat {
+  color: #3d3730;
+  background: #ececec;
+}
 .match13-scope .match13-badge-test {
   color: #92640a;
   background: #fdecc8;

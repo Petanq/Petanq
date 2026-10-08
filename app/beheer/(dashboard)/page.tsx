@@ -9,6 +9,7 @@ import {
   getHuidigeModerator,
 } from "@/lib/data";
 import { isAdmin } from "@/lib/auth-helpers";
+import { BOULES_DOORKLIK_PAD } from "@/lib/boules";
 import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
 import { PendingList } from "@/components/beheer/pending-list";
 import { StatistiekenPaneel } from "@/components/beheer/statistieken-paneel";
@@ -21,6 +22,8 @@ export default async function BeheerDashboardPagina() {
     bezoekenPerProvincie,
     bezoekenPerDag,
     reizenPaginaBezoeken,
+    boulesPaginaBezoeken,
+    boulesDoorkliks,
     toernooiStatistieken,
     goedgekeurdeToernooien,
     magAdminZien,
@@ -31,6 +34,8 @@ export default async function BeheerDashboardPagina() {
     getBezoekenPerProvincie(),
     getBezoekenPerDag(14),
     getPaginaBezoekTotaal("/petanque-reizen"),
+    getPaginaBezoekTotaal("/boules"),
+    getPaginaBezoekTotaal(BOULES_DOORKLIK_PAD),
     getToernooiStatistieken(),
     getAlleGoedgekeurdeToernooienVoorBeheer(),
     isAdmin(),
@@ -69,6 +74,8 @@ export default async function BeheerDashboardPagina() {
         bezoekenPerProvincie={bezoekenPerProvincie}
         bezoekenPerDag={bezoekenPerDag}
         reizenPaginaBezoeken={reizenPaginaBezoeken}
+        boulesPaginaBezoeken={boulesPaginaBezoeken}
+        boulesDoorkliks={boulesDoorkliks}
         toernooien={toernooiStatistieken}
         isAdmin={magAdminZien}
       />

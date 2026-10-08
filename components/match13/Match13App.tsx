@@ -791,7 +791,7 @@ export function Match13App({
   // Zelfde principe: enkel verplicht zolang er nog niets echt speelt — een
   // toernooi dat al rondes heeft blijft bruikbaar, ook al stond het veld toen
   // nog op 0 (bv. van vóór deze verplichting bestond).
-  const inlegVerplicht = entryFee <= 0 && teams.length === 0;
+  const inlegVerplicht = entryFee <= 0 && !state.entryFeeBevestigd && teams.length === 0;
   const rondesVerplicht = !isPoules && totalRounds <= 0 && rounds.length === 0;
   const opzetOnvolledig = clubNaamVerplicht || inlegVerplicht || rondesVerplicht;
 
@@ -2230,10 +2230,20 @@ export function Match13App({
                   step={0.5}
                   value={entryFee}
                   onChange={(e) =>
-                    setState((s) => ({ ...s, entryFee: Number(e.target.value) || 0 }))
+                    setState((s) => ({ ...s, entryFee: Number(e.target.value) || 0, entryFeeBevestigd: e.target.value !== "" }))
                   }
                   style={{ maxWidth: 120, ...(inlegVerplicht ? { borderColor: "var(--warn)" } : {}) }}
                 />
+                <label className="checkbox-label" style={{ marginTop: "0.5rem" }}>
+                  <input
+                    type="checkbox"
+                    checked={entryFee === 0 && !!state.entryFeeBevestigd}
+                    onChange={(e) =>
+                      setState((s) => ({ ...s, entryFee: 0, entryFeeBevestigd: e.target.checked }))
+                    }
+                  />
+                  {t.match13.geenInleg}
+                </label>
                 {inlegVerplicht && <p className="hint" style={{ color: "var(--warn)" }}>{t.match13.inlegVerplicht}</p>}
               </div>
               {!isPoules && (
@@ -2486,7 +2496,7 @@ export function Match13App({
               ))}
             </div>
 
-            {teams.length > 0 && (
+            {teams.length > 0 && entryFee > 0 && (
               <p className="hint" style={{ marginTop: "1rem" }}>
                 {t.match13.betalingSamenvatting(paidCount * entryFee, teams.length * entryFee)}
               </p>

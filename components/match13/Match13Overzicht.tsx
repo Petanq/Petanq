@@ -12,6 +12,8 @@ import {
 } from "@/actions/match13";
 import { Match13VerwijderKnop } from "@/components/match13/Match13VerwijderKnop";
 import { siteUrl } from "@/lib/site-url";
+import { FORMAT_LABELS } from "@/lib/match13/types";
+import type { Format } from "@/lib/match13/types";
 
 type Wijziging = {
   is_test?: boolean;
@@ -164,6 +166,9 @@ function Match13LijstRij({
         <Link href={`/beheer/match13/${tour.id}`}>
           <div className="match13-lijst-naam-blok">
             <span className="match13-lijst-naam">{tour.naam || t.match13.naamloosToernooi}</span>
+            {tour.speltype && tour.speltype in FORMAT_LABELS && (
+              <span className="match13-badge match13-badge-formaat">{FORMAT_LABELS[tour.speltype as Format]}</span>
+            )}
             {tour.is_test && <span className="match13-badge match13-badge-test">{t.match13.lijstTest}</span>}
             {tour.afgewerkt && (
               <span className="match13-badge match13-badge-afgewerkt">{t.match13.lijstAfgewerkt}</span>

@@ -20,6 +20,8 @@ export interface Match13ToernooiRij {
   geplande_datum: string | null;
   live_delen: boolean;
   toernooi_id: string | null;
+  // Spelvorm uit de opgeslagen toernooidata (data->>format), enkel voor het overzicht.
+  speltype: string | null;
 }
 
 // Admin ziet alles; een pilootgebruiker mag enkel Match13 gebruiken (nooit de
@@ -36,7 +38,7 @@ export async function haalMatch13Toernooien(): Promise<Match13ToernooiRij[]> {
   const { data, error } = await supabase
     .from("match13_toernooien")
     .select(
-      "id, naam, club, aangemaakt_op, bijgewerkt_op, is_test, afgewerkt, organisator, geplande_datum, live_delen, toernooi_id"
+      "id, naam, club, aangemaakt_op, bijgewerkt_op, is_test, afgewerkt, organisator, geplande_datum, live_delen, toernooi_id, speltype:data->>format"
     )
     .order("bijgewerkt_op", { ascending: false });
 

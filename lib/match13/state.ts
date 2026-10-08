@@ -8,6 +8,10 @@ export interface AppState {
   clubName: string;
   format: Format;
   entryFee: number;
+  // 0 is een geldige inleg (gratis toernooi). Dit onthoudt dat de club de inleg
+  // bewust ingesteld heeft, zodat "nog niet ingevuld" en "bewust gratis" te
+  // onderscheiden zijn. Ontbreekt bij oudere toernooien (dan geldt entryFee > 0).
+  entryFeeBevestigd?: boolean;
   totalRounds: number;
   // Aantal fysiek beschikbare pleinen (bv. beperkt bij binnenspelen 's winters).
   // undefined/0 = onbeperkt, elke wedstrijd speelt meteen (huidig gedrag).
