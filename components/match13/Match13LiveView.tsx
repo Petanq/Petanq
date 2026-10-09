@@ -6,6 +6,7 @@ import { haalMatch13ToernooiVoorPubliek, type Match13LivePubliek } from "@/actio
 import { pouleColor } from "@/lib/match13/types";
 import type { Match, Team } from "@/lib/match13/types";
 import { computeMeleeStandings, computeStandings } from "@/lib/match13/standings";
+import { Match13LivePoules } from "./Match13LivePoules";
 import "./match13.css";
 
 const VERVERS_INTERVAL_MS = 10_000;
@@ -28,8 +29,7 @@ function zijdeNaam(teams: Team[], m: Match, kant: "A" | "B"): string {
 // huidige ronde toont. De kaartjes hergebruiken wel dezelfde
 // .court-card/.court-label/.match-row-klassen (en pleinkleuren) als het
 // echte Zaalscherm, zodat wie meekijkt hetzelfde beeld ziet als de tafel
-// zelf. Poules (met zijn piramide) is bewust nog niet gebouwd: dat is een
-// aparte, grotere klus voor een volgende stap.
+// zelf. Een Poules-toernooi krijgt zijn eigen weergave (Match13LivePoules).
 export function Match13LiveView({ id, initieel }: { id: string; initieel: Match13LivePubliek }) {
   const { t, taal } = useTranslation();
   const [live, setLive] = useState(initieel);
@@ -155,9 +155,13 @@ export function Match13LiveView({ id, initieel }: { id: string; initieel: Match1
         </div>
 
         {state.format === "poules" ? (
-          <p className="hint" style={{ textAlign: "center", padding: "2rem" }}>
-            {t.match13.liveNogGeenPoulesWeergave}
-          </p>
+          state.pouleBracket.length === 0 ? (
+            <p className="hint" style={{ textAlign: "center", padding: "2rem" }}>
+              {t.match13.liveNogNietBegonnen}
+            </p>
+          ) : (
+            <Match13LivePoules state={state} />
+          )
         ) : rondesNieuwsteEerst.length === 0 ? (
           <p className="hint" style={{ textAlign: "center", padding: "2rem" }}>
             {t.match13.liveNogNietBegonnen}

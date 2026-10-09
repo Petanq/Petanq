@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
+import { telDoorklik } from "@/components/pagina-bezoek-teller";
+import { TEAMBUILDING_DOORKLIK_PAD } from "@/lib/bezoek-paden";
 
 export function Footer() {
   const { t } = useTranslation();
@@ -28,6 +30,7 @@ export function Footer() {
           href="https://teambuilding13.be"
           target="_blank"
           rel="noopener"
+          onClick={() => telDoorklik(TEAMBUILDING_DOORKLIK_PAD)}
           className="text-rood no-underline hover:underline"
         >
           {t.footer.teambuildingLink}

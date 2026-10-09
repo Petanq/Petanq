@@ -10,6 +10,7 @@ import {
 } from "@/lib/data";
 import { isAdmin } from "@/lib/auth-helpers";
 import { BOULES_DOORKLIK_PAD } from "@/lib/boules";
+import { PARTNERS_PAD, DOSSIER_AANVRAAG_PAD, TEAMBUILDING_DOORKLIK_PAD } from "@/lib/bezoek-paden";
 import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
 import { PendingList } from "@/components/beheer/pending-list";
 import { StatistiekenPaneel } from "@/components/beheer/statistieken-paneel";
@@ -24,6 +25,9 @@ export default async function BeheerDashboardPagina() {
     reizenPaginaBezoeken,
     boulesPaginaBezoeken,
     boulesDoorkliks,
+    partnersBezoeken,
+    dossierAanvragen,
+    teambuildingDoorkliks,
     toernooiStatistieken,
     goedgekeurdeToernooien,
     magAdminZien,
@@ -36,6 +40,9 @@ export default async function BeheerDashboardPagina() {
     getPaginaBezoekTotaal("/petanque-reizen"),
     getPaginaBezoekTotaal("/boules"),
     getPaginaBezoekTotaal(BOULES_DOORKLIK_PAD),
+    getPaginaBezoekTotaal(PARTNERS_PAD),
+    getPaginaBezoekTotaal(DOSSIER_AANVRAAG_PAD),
+    getPaginaBezoekTotaal(TEAMBUILDING_DOORKLIK_PAD),
     getToernooiStatistieken(),
     getAlleGoedgekeurdeToernooienVoorBeheer(),
     isAdmin(),
@@ -76,6 +83,9 @@ export default async function BeheerDashboardPagina() {
         reizenPaginaBezoeken={reizenPaginaBezoeken}
         boulesPaginaBezoeken={boulesPaginaBezoeken}
         boulesDoorkliks={boulesDoorkliks}
+        partnersBezoeken={partnersBezoeken}
+        dossierAanvragen={dossierAanvragen}
+        teambuildingDoorkliks={teambuildingDoorkliks}
         toernooien={toernooiStatistieken}
         isAdmin={magAdminZien}
       />

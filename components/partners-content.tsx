@@ -3,12 +3,15 @@
 import Image from "next/image";
 import { useTranslation } from "@/lib/language-context";
 import { Knop } from "@/components/ui/knop";
+import { PaginaBezoekTeller, telDoorklik } from "@/components/pagina-bezoek-teller";
+import { PARTNERS_PAD, DOSSIER_AANVRAAG_PAD } from "@/lib/bezoek-paden";
 
 export function PartnersContent() {
   const { t } = useTranslation();
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-16 lg:px-10">
+      <PaginaBezoekTeller pad={PARTNERS_PAD} />
       <Image
         src="/images/boules-vrienden.jpg"
         alt=""
@@ -39,6 +42,7 @@ export function PartnersContent() {
       <div className="mb-6">
         <Knop
           variant="geel"
+          onClick={() => telDoorklik(DOSSIER_AANVRAAG_PAD)}
           href={`mailto:info@petanque13.be?subject=${encodeURIComponent(t.partnersPagina.dossierMailOnderwerp)}&body=${encodeURIComponent(t.partnersPagina.dossierMailTekst)}`}
         >
           {t.partnersPagina.dossierKnop}

@@ -5,6 +5,7 @@ import { useTranslation } from "@/lib/language-context";
 import { BezoekStatistieken, BezoekPerProvincie, BezoekPerDag, ToernooiStatistieken } from "@/lib/data";
 import { Provincie, vertaalProvincie } from "@/lib/provincies";
 import { dagVanWeekKort, dagNummer, maandKort } from "@/lib/datum";
+import { siteUrl } from "@/lib/site-url";
 
 const MEDAILLES = ["🥇", "🥈", "🥉"];
 
@@ -15,6 +16,9 @@ export function StatistiekenPaneel({
   reizenPaginaBezoeken,
   boulesPaginaBezoeken,
   boulesDoorkliks,
+  partnersBezoeken,
+  dossierAanvragen,
+  teambuildingDoorkliks,
   toernooien,
   isAdmin,
 }: {
@@ -24,6 +28,9 @@ export function StatistiekenPaneel({
   reizenPaginaBezoeken: number;
   boulesPaginaBezoeken: number;
   boulesDoorkliks: number;
+  partnersBezoeken: number;
+  dossierAanvragen: number;
+  teambuildingDoorkliks: number;
   toernooien: ToernooiStatistieken;
   isAdmin: boolean;
 }) {
@@ -71,7 +78,12 @@ export function StatistiekenPaneel({
             )}
             {isAdmin && <StatKaart label={t.beheer.boulesPaginaBezoekenLabel} waarde={boulesPaginaBezoeken} />}
             {isAdmin && <StatKaart label={t.beheer.boulesDoorkliksLabel} waarde={boulesDoorkliks} />}
+            {isAdmin && <StatKaart label={t.beheer.partnersBezoekenLabel} waarde={partnersBezoeken} />}
+            {isAdmin && <StatKaart label={t.beheer.dossierAanvragenLabel} waarde={dossierAanvragen} />}
+            {isAdmin && <StatKaart label={t.beheer.teambuildingDoorkliksLabel} waarde={teambuildingDoorkliks} />}
           </div>
+
+          {isAdmin && <DoorstuurLink label={t.beheer.boulesLinkLabel} url={`${siteUrl()}/boules`} />}
 
           {isAdmin && toernooien.perModerator.length > 0 && (
             <div className="border-t border-rand pt-4">
@@ -156,6 +168,49 @@ export function StatistiekenPaneel({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function DoorstuurLink({ label, url }: { label: string; url: string }) {
+  const { t } = useTranslation();
+  const [gekopieerd, setGekopieerd] = useState(false);
+
+  async function kopieer() {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const veld = document.createElement("textarea");
+      veld.value = url;
+      document.body.appendChild(veld);
+      veld.select();
+      document.execCommand("copy");
+      document.body.removeChild(veld);
+    }
+    setGekopieerd(true);
+    setTimeout(() => setGekopieerd(false), 2000);
+  }
+
+  return (
+    <div className="rounded-[10px] border-[1.5px] border-geel/60 bg-[#fffbeb] p-4">
+      <div className="mb-2 text-xs font-semibold text-grijs">{label}</div>
+      <div className="flex flex-wrap items-center gap-2">
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="min-w-0 flex-1 break-all text-sm font-bold text-blauw underline"
+        >
+          {url}
+        </a>
+        <button
+          type="button"
+          onClick={kopieer}
+          className="shrink-0 rounded-md bg-geel px-4 py-2 text-sm font-bold text-donker shadow-sm transition-all hover:brightness-95 active:scale-95"
+        >
+          {gekopieerd ? t.beheer.boulesLinkGekopieerd : t.beheer.boulesLinkKopieer}
+        </button>
+      </div>
     </div>
   );
 }

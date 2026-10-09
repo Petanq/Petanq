@@ -16,6 +16,12 @@ export interface AppState {
   // Aantal fysiek beschikbare pleinen (bv. beperkt bij binnenspelen 's winters).
   // undefined/0 = onbeperkt, elke wedstrijd speelt meteen (huidig gedrag).
   maxPleinen?: number;
+  // Enkel voor Doublet/Triplet: 1 gedeeld kaartje per plein of 2 (één per team,
+  // elk met het eigen nummer vooraan). undefined = 2, het oorspronkelijke gedrag.
+  kaartjesPerPlein?: 1 | 2;
+  // QR-code naar de publieke live-pagina op de afgedrukte kaartjes (in de zwarte
+  // strook). Een bewuste keuze per toernooi; verschijnt enkel als Live delen aanstaat.
+  qrOpKaartjes?: boolean;
   // Enkel relevant als format === "poules": Poules is in de praktijk geen
   // eigen spelvorm maar een keuze bovenop Tête-à-tête/Doublet/Triplet — dit
   // bepaalt de teamgrootte binnen de poules. undefined = Doublet (2), het
