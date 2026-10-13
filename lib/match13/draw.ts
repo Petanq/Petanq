@@ -105,10 +105,21 @@ function courtScore(pairs: [string, string][], courts: number[], history: Map<st
   }, 0);
 }
 
-/** Assigns court numbers 1..N to N already-decided pairings, preferring courts neither team has had before. */
-function assignCourts(pairs: [string, string][], history: Map<string, number>): number[] {
+/**
+ * Assigns court numbers 1..N to N already-decided pairings, preferring courts neither team has had before.
+ * Met een beperkt aantal pleinen (`maxCourts` < aantal wedstrijden) draait de rotatie enkel over de echte
+ * pleinen: de eerste `maxCourts` wedstrijden spelen meteen, de rest wacht en krijgt voorlopig een plein
+ * uit dezelfde reeks (het echte plein volgt zodra er een vrijkomt — zie `berekenPleinen`).
+ */
+function assignCourts(pairs: [string, string][], history: Map<string, number>, maxCourts?: number): number[] {
   const n = pairs.length;
   if (n === 0) return [];
+  const limiet = maxCourts && maxCourts > 0 ? Math.floor(maxCourts) : n;
+  if (limiet < n) {
+    const spelend = assignCourts(pairs.slice(0, limiet), history);
+    const wachtend = pairs.slice(limiet).map((_, k) => (k % limiet) + 1);
+    return [...spelend, ...wachtend];
+  }
   const baseCourts = Array.from({ length: n }, (_, i) => i + 1);
 
   let best = baseCourts;
@@ -141,11 +152,69 @@ function assignCourts(pairs: [string, string][], history: Map<string, number>): 
   return best;
 }
 
+/**
+ * Bij een beperkt aantal fysieke pleinen: welk plein hoort bij welke wedstrijd? De eerste `maxPleinen`
+ * echte wedstrijden (BYE telt niet) spelen meteen en houden hun plein (enkel een plein buiten 1..maxPleinen
+ * wordt rechtgezet). Elke volgende wedstrijd wacht en neemt het plein over van de wedstrijd die als eerste
+ * klaar is (volgens `finishedAt`), in dezelfde volgorde als de wachtrij op het scherm. Zo komt er nooit een
+ * plein boven het maximum voor en spelen wachtende teams op het plein dat net vrijkwam.
+ * Zonder limiet blijven de opgeslagen pleinen ongewijzigd.
+ */
+export function berekenPleinen(matches: Match[], maxPleinen?: number): number[] {
+  const opgeslagen = matches.map((m) => m.court);
+  const limiet = maxPleinen && maxPleinen > 0 ? Math.floor(maxPleinen) : 0;
+  const echt = matches.flatMap((m, i) => (m.teamB !== null ? [i] : []));
+  if (!limiet) return opgeslagen;
+
+  const resultaat = opgeslagen.slice();
+  const vroeg = echt.slice(0, limiet);
+  const laat = echt.slice(limiet);
+
+  const bezet = new Set<number>();
+  const rechtTeZetten: number[] = [];
+  for (const i of vroeg) {
+    const c = opgeslagen[i];
+    if (c >= 1 && c <= limiet) bezet.add(c);
+    else rechtTeZetten.push(i);
+  }
+  for (const i of rechtTeZetten) {
+    let vrij = 0;
+    for (let c = 1; c <= limiet && !vrij; c++) if (!bezet.has(c)) vrij = c;
+    resultaat[i] = vrij || (vroeg.indexOf(i) % limiet) + 1;
+    bezet.add(resultaat[i]);
+  }
+
+  const wachtrij = laat.slice();
+  const klaar = echt
+    .filter((i) => matches[i].scoreA !== undefined && matches[i].scoreB !== undefined)
+    .sort((a, b) => {
+      const fa = matches[a].finishedAt;
+      const fb = matches[b].finishedAt;
+      if (fa === undefined && fb === undefined) return a - b;
+      if (fa === undefined) return 1;
+      if (fb === undefined) return -1;
+      return fa - fb || a - b;
+    });
+  for (const i of klaar) {
+    const plaats = wachtrij.indexOf(i);
+    if (plaats >= 0) {
+      wachtrij.splice(plaats, 1);
+      continue;
+    }
+    const volgende = wachtrij.shift();
+    if (volgende !== undefined) resultaat[volgende] = resultaat[i];
+  }
+  for (const i of wachtrij) resultaat[i] = (laat.indexOf(i) % limiet) + 1;
+
+  return resultaat;
+}
+
 export function generateRound(
   roundNumber: number,
   presentTeams: Team[],
   history: Map<string, number>,
-  courtHistory: Map<string, number> = new Map()
+  courtHistory: Map<string, number> = new Map(),
+  maxPleinen?: number
 ): { matches: Match[]; byeTeamId: string | null } {
   let pairPool = presentTeams;
   let byeTeamId: string | null = null;
@@ -169,7 +238,7 @@ export function generateRound(
     }
   }
 
-  const courts = assignCourts(best, courtHistory);
+  const courts = assignCourts(best, courtHistory, maxPleinen);
   const matches: Match[] = best.map(([teamA, teamB], i) => ({
     court: courts[i],
     teamA,
@@ -403,7 +472,8 @@ export function generateMeleeRound(
   roundNumber: number,
   presentPlayers: Team[],
   history: MeleeHistory,
-  voorkeurDoubletten = false
+  voorkeurDoubletten = false,
+  maxPleinen?: number
 ): { matches: Match[]; restIds: string[] } {
   const plan = planMeleeMatchSizes(presentPlayers.length, voorkeurDoubletten);
   const specs = buildMeleeMatchSpecs(plan);
@@ -464,7 +534,7 @@ export function generateMeleeRound(
   }
 
   const matches: Match[] = (best ?? []).map((m, i) => ({
-    court: i + 1,
+    court: maxPleinen && maxPleinen > 0 && i >= maxPleinen ? (i % Math.floor(maxPleinen)) + 1 : i + 1,
     teamA: "",
     teamB: "",
     playersA: m.A,
@@ -587,7 +657,8 @@ export function generateRankedRound(
   presentTeams: Team[],
   history: Map<string, number>,
   rankOf: (teamId: string) => TeamRank,
-  courtHistory: Map<string, number> = new Map()
+  courtHistory: Map<string, number> = new Map(),
+  maxPleinen?: number
 ): { matches: Match[]; byeTeamId: string | null } {
   const sorted = presentTeams.slice().sort((a, b) => {
     const ra = rankOf(a.id);
@@ -644,7 +715,7 @@ export function generateRankedRound(
     }
   }
 
-  const courts = assignCourts(pairs, courtHistory);
+  const courts = assignCourts(pairs, courtHistory, maxPleinen);
   const matches: Match[] = pairs.map(([teamA, teamB], i) => ({
     court: courts[i],
     teamA,

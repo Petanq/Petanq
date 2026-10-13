@@ -54,20 +54,32 @@ export interface Match13ToernooiMetMeta {
   geplandeDatum: string | null;
   liveDelen: boolean;
   toernooiId: string | null;
+  // null zolang migratie 0062 (versienummer) nog niet uitgevoerd is.
+  versie: number | null;
 }
 
 export async function haalMatch13Toernooi(id: string): Promise<Match13ToernooiMetMeta | null> {
   if (!(await magMatch13Gebruiken())) return null;
 
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("match13_toernooien")
-    .select("data, geplande_datum, live_delen, toernooi_id")
+    .select("data, geplande_datum, live_delen, toernooi_id, versie")
     .eq("id", id)
     .single();
 
-  if (error) {
-    console.error("Kon Match13-toernooi niet laden:", id, error.message);
+  if (error && isOntbrekendeVersieKolom(error)) {
+    const oud = await supabase
+      .from("match13_toernooien")
+      .select("data, geplande_datum, live_delen, toernooi_id")
+      .eq("id", id)
+      .single();
+    data = oud.data ? { ...oud.data, versie: null } : null;
+    error = oud.error;
+  }
+
+  if (error || !data) {
+    console.error("Kon Match13-toernooi niet laden:", id, error?.message);
     return null;
   }
   return {
@@ -75,6 +87,7 @@ export async function haalMatch13Toernooi(id: string): Promise<Match13ToernooiMe
     geplandeDatum: data.geplande_datum as string | null,
     liveDelen: data.live_delen as boolean,
     toernooiId: data.toernooi_id as string | null,
+    versie: typeof data.versie === "number" ? data.versie : null,
   };
 }
 
@@ -150,20 +163,90 @@ export async function archiveerMatch13Resultaten(id: string, state: AppState): P
   return { succes: true };
 }
 
-export async function slaMatch13OpAsync(id: string, state: AppState): Promise<Match13ActieResultaat> {
+// Resultaat van een opslag. `versie` is het nieuwe versienummer (null zolang
+// migratie 0062 nog niet uitgevoerd is — dan werkt alles als voorheen). Bij een
+// "conflict" heeft een ander toestel intussen opgeslagen: de huidige stand van
+// de server komt mee terug zodat de app beide wijzigingen kan samenvoegen.
+export type Match13OpslaanResultaat =
+  | { succes: true; versie: number | null }
+  | { succes: false; fout: "conflict"; versie: number; state: AppState }
+  | { succes: false; fout: "niet_geautoriseerd" | "opslaan_mislukt" };
+
+// Ontbrekende kolom (migratie 0062 nog niet uitgevoerd): Postgres 42703, of
+// PostgREST's schema-cache-fout PGRST204/PGRST200 met "versie" in de tekst.
+function isOntbrekendeVersieKolom(error: { code?: string; message?: string }): boolean {
+  return error.code === "42703" || (/versie/i.test(error.message ?? "") && /column|schema cache/i.test(error.message ?? ""));
+}
+
+export async function slaMatch13OpAsync(
+  id: string,
+  state: AppState,
+  verwachteVersie: number | null = null
+): Promise<Match13OpslaanResultaat> {
   if (!(await magMatch13Gebruiken())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const basis = { data: state, naam: state.clubName || "Nieuw toernooi", bijgewerkt_op: new Date().toISOString() };
+
+  if (verwachteVersie === null) {
+    const { error } = await supabase.from("match13_toernooien").update(basis).eq("id", id);
+    if (error) {
+      console.error("Kon Match13-toernooi niet opslaan:", error.message);
+      return { succes: false, fout: "opslaan_mislukt" };
+    }
+    return { succes: true, versie: null };
+  }
+
+  // Enkel opslaan als niemand anders ondertussen opsloeg (atomair in de database).
+  const { data: bijgewerkt, error } = await supabase
     .from("match13_toernooien")
-    .update({ data: state, naam: state.clubName || "Nieuw toernooi", bijgewerkt_op: new Date().toISOString() })
-    .eq("id", id);
+    .update({ ...basis, versie: verwachteVersie + 1 })
+    .eq("id", id)
+    .eq("versie", verwachteVersie)
+    .select("versie");
 
   if (error) {
+    if (isOntbrekendeVersieKolom(error)) {
+      const { error: oudeFout } = await supabase.from("match13_toernooien").update(basis).eq("id", id);
+      if (!oudeFout) return { succes: true, versie: null };
+    }
     console.error("Kon Match13-toernooi niet opslaan:", error.message);
     return { succes: false, fout: "opslaan_mislukt" };
   }
-  return { succes: true };
+  if (bijgewerkt && bijgewerkt.length === 1) return { succes: true, versie: bijgewerkt[0].versie as number };
+
+  // Niets bijgewerkt: ofwel een ander toestel was ons voor (conflict), ofwel mag dit toestel de rij niet wijzigen.
+  const { data: huidig, error: leesFout } = await supabase
+    .from("match13_toernooien")
+    .select("data, versie")
+    .eq("id", id)
+    .maybeSingle();
+  if (leesFout || !huidig) return { succes: false, fout: "opslaan_mislukt" };
+  if ((huidig.versie as number) === verwachteVersie) return { succes: false, fout: "opslaan_mislukt" };
+  return { succes: false, fout: "conflict", versie: huidig.versie as number, state: huidig.data as AppState };
+}
+
+export type Match13StandResultaat =
+  | { gewijzigd: false }
+  | { gewijzigd: true; versie: number; state: AppState };
+
+// Voor het automatisch verversen: staat er op de server een nieuwere versie dan
+// die dit toestel kent? Zo ja, dan komt de hele stand mee terug. Goedkoop
+// (één klein queryetje) zolang er niets veranderd is.
+export async function haalMatch13StandAlsGewijzigd(id: string, bekendeVersie: number): Promise<Match13StandResultaat> {
+  if (!(await magMatch13Gebruiken())) return { gewijzigd: false };
+
+  const supabase = await createClient();
+  const { data: kop, error } = await supabase.from("match13_toernooien").select("versie").eq("id", id).maybeSingle();
+  if (error || !kop || (kop.versie as number) === bekendeVersie) return { gewijzigd: false };
+
+  const { data, error: leesFout } = await supabase
+    .from("match13_toernooien")
+    .select("data, versie")
+    .eq("id", id)
+    .maybeSingle();
+  if (leesFout || !data) return { gewijzigd: false };
+  return { gewijzigd: true, versie: data.versie as number, state: data.data as AppState };
 }
 
 // Wordt gebruikt vanuit de overzichtslijst zelf (checkboxes/organisator-veld

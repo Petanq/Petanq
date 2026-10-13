@@ -640,6 +640,7 @@ const nl = {
     speltypeVastgezet: "Kan niet meer gewijzigd worden zolang er teams zijn — verwijder eerst alle teams om dit aan te passen.",
     opslaanMislukt:
       "Opslaan mislukt — controleer je internetverbinding. Je laatste wijziging is nog niet bewaard; we proberen het automatisch opnieuw bij je volgende aanpassing.",
+    synchroonBijgewerkt: "Bijgewerkt met wijzigingen van een ander toestel.",
     inlegPerTeam: "Inleg per team (€)",
     geenInleg: "Geen inleg (gratis toernooi)",
     qrOpKaartjes: "QR-code naar de live-pagina op de kaartjes",
@@ -1534,6 +1535,7 @@ const fr: typeof nl = {
     speltypeVastgezet: "Ne peut plus être modifié tant qu'il y a des équipes — supprimez d'abord toutes les équipes pour changer ceci.",
     opslaanMislukt:
       "Échec de l'enregistrement — vérifiez votre connexion internet. Votre dernière modification n'est pas encore sauvegardée ; nous réessayons automatiquement à votre prochaine action.",
+    synchroonBijgewerkt: "Mis à jour avec les modifications d'un autre appareil.",
     inlegPerTeam: "Mise par équipe (€)",
     geenInleg: "Pas de mise (tournoi gratuit)",
     qrOpKaartjes: "Code QR vers la page en direct sur les cartes",

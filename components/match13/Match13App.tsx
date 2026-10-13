@@ -19,6 +19,7 @@ import { FORMAT_LABELS, FORMAT_TEAM_SIZE, SPEL_LETTERS, SEXTET_SPLIT, pouleColor
 import {
   assignKwartetRoles,
   assignSextetRoles,
+  berekenPleinen,
   buildCourtHistory,
   buildMeleeHistory,
   buildOpponentHistory,
@@ -49,7 +50,13 @@ import {
   type PouleQualifier,
 } from "@/lib/match13/poules";
 import { MatchTimer, BracketColumns, PiramideKop, BracketDonkerBlok, PouleQualifiersBadge, PouleStandingsTable, PouleTeamsRij, roundRobinStandings } from "@/components/match13/BracketWeergave";
-import { slaMatch13OpAsync, archiveerMatch13Resultaten, bewerkMatch13Metadata } from "@/actions/match13";
+import {
+  slaMatch13OpAsync,
+  archiveerMatch13Resultaten,
+  bewerkMatch13Metadata,
+  haalMatch13StandAlsGewijzigd,
+} from "@/actions/match13";
+import { maakSync } from "@/lib/match13/sync";
 import { siteUrl } from "@/lib/site-url";
 import { LiveQrKaart } from "@/components/match13/LiveQrKaart";
 import QRCode from "qrcode";
@@ -212,12 +219,14 @@ export function Match13App({
   initialGeplandeDatum,
   initialLiveDelen,
   toernooiId,
+  initialVersie,
 }: {
   tournamentId: string;
   initialState: AppState;
   initialGeplandeDatum: string | null;
   initialLiveDelen: boolean;
   toernooiId: string | null;
+  initialVersie: number | null;
 }) {
   const { t } = useTranslation();
   const [state, setState] = useState<AppState>(initialState);
@@ -440,6 +449,30 @@ export function Match13App({
   const laatsteState = useRef(state);
   laatsteState.current = state;
   const opslagInWacht = useRef(false);
+
+  // Synchronisatie tussen toestellen (gsm + pc op dezelfde toernooidag).
+  //  - sync (lib/match13/sync.ts) onthoudt de stand + het versienummer waarvan dit
+  //    toestel vertrok (laatst geladen of laatst opgeslagen). Opslaan lukt enkel
+  //    als niemand anders ondertussen opsloeg; zo niet, dan voegen we onze
+  //    wijzigingen samen met die van het andere toestel i.p.v. ze te wissen.
+  //  - Een toestel dat even niets doet ververst zichzelf elke paar seconden, dus
+  //    een score van het andere toestel verschijnt vanzelf.
+  // Zonder versienummer (migratie 0062 nog niet uitgevoerd) blijft alles zoals voorheen.
+  const [synchroonMelding, setSynchroonMelding] = useState(false);
+  const [sync] = useState(() =>
+    maakSync(initialState, initialVersie, {
+      slaOp: (stand, versie) => slaMatch13OpAsync(tournamentId, stand, versie),
+      haalStand: (versie) => haalMatch13StandAlsGewijzigd(tournamentId, versie),
+      lokaleStand: () => laatsteState.current,
+      zetLokaleStand: (stand) => {
+        laatsteState.current = stand;
+        setState(stand);
+      },
+      opslaanMislukt: setOpslaanMislukt,
+      samengevoegd: () => setSynchroonMelding(true),
+    })
+  );
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -448,12 +481,51 @@ export function Match13App({
     opslagInWacht.current = true;
     const timeout = setTimeout(() => {
       opslagInWacht.current = false;
-      slaMatch13OpAsync(tournamentId, laatsteState.current)
-        .then((result) => setOpslaanMislukt(!result.succes))
-        .catch(() => setOpslaanMislukt(true));
+      void sync.opslaan();
     }, 600);
     return () => clearTimeout(timeout);
-  }, [state, tournamentId]);
+  }, [state, sync]);
+
+  // Automatisch verversen met wijzigingen van een ander toestel.
+  useEffect(() => {
+    if (initialVersie === null) return;
+    const controleer = () => {
+      if (document.visibilityState === "visible") void sync.ververs();
+    };
+    const interval = setInterval(controleer, 5000);
+    document.addEventListener("visibilitychange", controleer);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", controleer);
+    };
+  }, [initialVersie, sync]);
+
+  useEffect(() => {
+    if (!synchroonMelding) return;
+    const timeout = setTimeout(() => setSynchroonMelding(false), 4000);
+    return () => clearTimeout(timeout);
+  }, [synchroonMelding]);
+
+  // Bij een beperkt aantal pleinen houdt de lopende ronde haar pleinnummers
+  // zelf kloppend: spelende wedstrijden blijven binnen 1..maxPleinen en een
+  // wedstrijd die uit de wachtrij komt neemt het plein over dat net vrijkwam
+  // (zie berekenPleinen). Zo tonen ook de kaartjes, het Zaalscherm en de
+  // live-pagina nooit een plein dat niet bestaat. Doet niets zonder limiet.
+  useEffect(() => {
+    if (isPoules || isKwsFormaat || !maxPleinen || maxPleinen <= 0) return;
+    const laatsteRonde = rounds[rounds.length - 1];
+    if (!laatsteRonde) return;
+    const pleinen = berekenPleinen(laatsteRonde.matches, maxPleinen);
+    if (pleinen.every((c, i) => c === laatsteRonde.matches[i].court)) return;
+    setState((s) => {
+      const ronden = s.rounds.slice();
+      const idx = ronden.length - 1;
+      if (idx < 0) return s;
+      const matches = ronden[idx].matches.map((m, i) => (m.court === pleinen[i] ? m : { ...m, court: pleinen[i] }));
+      ronden[idx] = { ...ronden[idx], matches };
+      return { ...s, rounds: ronden };
+    });
+  }, [rounds, maxPleinen, isPoules, isKwsFormaat]);
 
   // Verlaat iemand het scherm (terugknop, tab sluiten, naar een ander
   // toernooi springen) binnen die 600ms na de laatste wijziging, dan werd de
@@ -465,7 +537,7 @@ export function Match13App({
     function forceerOpslaan() {
       if (!opslagInWacht.current) return;
       opslagInWacht.current = false;
-      slaMatch13OpAsync(tournamentId, laatsteState.current).catch(() => {});
+      void sync.opslaan();
     }
     function onVisibilityChange() {
       if (document.visibilityState === "hidden") forceerOpslaan();
@@ -477,7 +549,7 @@ export function Match13App({
       document.removeEventListener("visibilitychange", onVisibilityChange);
       forceerOpslaan();
     };
-  }, [tournamentId]);
+  }, [sync]);
 
   const presentTeams = useMemo(() => teams.filter((t) => t.present), [teams]);
   const paidCount = useMemo(() => teams.filter((t) => t.paid).length, [teams]);
@@ -650,7 +722,13 @@ export function Match13App({
 
     if (isMeli) {
       const history = buildMeleeHistory(rounds);
-      const { matches, restIds } = generateMeleeRound(roundNumber, presentTeams, history, meleeVoorkeurDoubletten);
+      const { matches, restIds } = generateMeleeRound(
+        roundNumber,
+        presentTeams,
+        history,
+        meleeVoorkeurDoubletten,
+        maxPleinen
+      );
       setState((s) => ({
         ...s,
         rounds: [...s.rounds, { number: roundNumber, matches, rest: restIds, startedAt: Date.now() }],
@@ -666,7 +744,7 @@ export function Match13App({
     const result =
       rounds.length === 0
         ? // Round 1: nobody has a standing yet, so it's a fair random draw.
-          generateRound(roundNumber, presentTeams, history, courtHistory)
+          generateRound(roundNumber, presentTeams, history, courtHistory, isKwsFormaat ? undefined : maxPleinen)
         : // Round 2+: pair by current standing — winners face winners.
           generateRankedRound(
             roundNumber,
@@ -676,7 +754,8 @@ export function Match13App({
               const r = rankById.get(id);
               return { matchpunten: r?.matchpunten ?? 0, saldo: r?.saldo ?? 0 };
             },
-            courtHistory
+            courtHistory,
+            isKwsFormaat ? undefined : maxPleinen
           );
     const { matches, byeTeamId } = result;
 
@@ -1696,6 +1775,7 @@ export function Match13App({
       </div>
 
       {opslaanMislukt && <div className="save-fout-banner">{t.match13.opslaanMislukt}</div>}
+      {synchroonMelding && !opslaanMislukt && <div className="save-sync-banner">{t.match13.synchroonBijgewerkt}</div>}
 
       <div className="page">
         <nav className="tabs">

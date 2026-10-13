@@ -27,6 +27,7 @@ export default async function Match13ToernooiPagina({ params }: { params: Promis
       initialGeplandeDatum={toernooi.geplandeDatum}
       initialLiveDelen={toernooi.liveDelen}
       toernooiId={toernooi.toernooiId}
+      initialVersie={toernooi.versie}
     />
   );
 }

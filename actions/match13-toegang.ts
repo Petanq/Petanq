@@ -128,7 +128,9 @@ export async function match13ToegangGevenAanModerator(input: {
     user_id: input.userId,
     naam: input.naam,
     email: input.email,
-    club: input.club,
+    // Een lege club blokkeert het aanmaken van toernooien (RLS eist club <> ''),
+    // dus val terug op de naam van de persoon; de admin kan die later koppelen.
+    club: input.club.trim() || `${input.naam.trim()} (test)`,
   });
   if (error) {
     console.error("Match13-toegang geven aan moderator mislukt:", error.message);

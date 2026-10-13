@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   assignKwartetRoles,
   assignSextetRoles,
+  berekenPleinen,
   buildCourtHistory,
   buildMeleeHistory,
   buildOpponentHistory,
@@ -579,5 +580,109 @@ describe("assignSextetRoles", () => {
 
     expect(result[0].alleenNaamA).toBeUndefined();
     expect(alleenIndexUpdates.size).toBe(0);
+  });
+});
+
+describe("beperkt aantal pleinen", () => {
+  const teams = Array.from({ length: 16 }, (_, i) => makeTeam(`T${i + 1}`));
+  const MAX = 6;
+
+  it("gebruikt over meerdere rondes nooit een plein boven het maximum voor spelende wedstrijden", () => {
+    const rounds: Round[] = [];
+    for (let r = 1; r <= 5; r++) {
+      const history = buildOpponentHistory(rounds);
+      const courtHistory = buildCourtHistory(rounds);
+      const { matches } =
+        r === 1
+          ? generateRound(r, teams, history, courtHistory, MAX)
+          : generateRankedRound(r, teams, history, () => ({ matchpunten: 0, saldo: 0 }), courtHistory, MAX);
+      const pleinen = berekenPleinen(matches, MAX);
+      // de eerste MAX wedstrijden spelen meteen, elk op een eigen echt plein
+      expect(pleinen.slice(0, MAX).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6]);
+      expect(pleinen.every((c) => c >= 1 && c <= MAX)).toBe(true);
+      rounds.push({
+        number: r,
+        matches: matches.map((m, i) => ({ ...m, court: pleinen[i], scoreA: 13, scoreB: 5, finishedAt: 1000 + i })),
+      });
+    }
+  });
+
+  it("roteert over de echte pleinen: teams staan niet elke ronde op hetzelfde plein", () => {
+    const rounds: Round[] = [];
+    let zelfdePlein = 0;
+    let totaal = 0;
+    for (let r = 1; r <= 4; r++) {
+      const { matches } = generateRound(r, teams, buildOpponentHistory(rounds), buildCourtHistory(rounds), MAX);
+      if (r > 1) {
+        const vorige = rounds[r - 2].matches;
+        for (const m of matches.slice(0, MAX)) {
+          const eerder = vorige.find((v) => v.teamA === m.teamA || v.teamB === m.teamA);
+          totaal++;
+          if (eerder && eerder.court === m.court) zelfdePlein++;
+        }
+      }
+      rounds.push({ number: r, matches: matches.map((m) => ({ ...m, scoreA: 13, scoreB: 0 })) });
+    }
+    expect(zelfdePlein).toBeLessThan(totaal / 2);
+  });
+
+  it("geeft een wachtende wedstrijd het plein van de eerste die klaar is", () => {
+    const m = (court: number, a: string, b: string, extra: Partial<Match> = {}): Match => ({
+      court,
+      teamA: a,
+      teamB: b,
+      ...extra,
+    });
+    const start = [m(1, "A", "B"), m(2, "C", "D"), m(1, "E", "F"), m(2, "G", "H")];
+    // Niets klaar: alleen de eerste twee spelen, de rest wacht.
+    expect(berekenPleinen(start, 2).slice(0, 2)).toEqual([1, 2]);
+
+    // C-D (plein 2) is klaar: E-F is de eerstvolgende en speelt op plein 2.
+    const naEen = [start[0], { ...start[1], scoreA: 13, scoreB: 4, finishedAt: 200 }, start[2], start[3]];
+    expect(berekenPleinen(naEen, 2).slice(0, 3)).toEqual([1, 2, 2]);
+
+    // Daarna is A-B (plein 1) klaar: G-H speelt op plein 1.
+    const naTwee = [{ ...start[0], scoreA: 13, scoreB: 1, finishedAt: 300 }, naEen[1], naEen[2], start[3]];
+    expect(berekenPleinen(naTwee, 2)).toEqual([1, 2, 2, 1]);
+
+    // Is A-B vóór C-D klaar, dan neemt E-F plein 1 over (volgorde van klaar zijn telt).
+    const omgekeerd = [{ ...start[0], scoreA: 13, scoreB: 1, finishedAt: 100 }, naEen[1], start[2], start[3]];
+    expect(berekenPleinen(omgekeerd, 2)).toEqual([1, 2, 1, 2]);
+  });
+
+  it("is stabiel: nogmaals toepassen op het resultaat verandert niets (geen eindeloze updates)", () => {
+    const matches: Match[] = Array.from({ length: 8 }, (_, i) => ({
+      court: i + 1,
+      teamA: `A${i}`,
+      teamB: `B${i}`,
+      ...(i === 1 || i === 4 ? { scoreA: 13, scoreB: 2, finishedAt: 100 + i } : {}),
+    }));
+    const eerst = berekenPleinen(matches, 6);
+    const opnieuw = berekenPleinen(
+      matches.map((m, i) => ({ ...m, court: eerst[i] })),
+      6
+    );
+    expect(opnieuw).toEqual(eerst);
+    expect(eerst.every((c) => c >= 1 && c <= 6)).toBe(true);
+  });
+
+  it("laat pleinen ongemoeid zonder limiet of als alles tegelijk past", () => {
+    const matches: Match[] = [
+      { court: 1, teamA: "A", teamB: "B" },
+      { court: 2, teamA: "C", teamB: "D" },
+    ];
+    expect(berekenPleinen(matches, undefined)).toEqual([1, 2]);
+    expect(berekenPleinen(matches, 6)).toEqual([1, 2]);
+  });
+
+  it("zet een plein buiten het maximum recht, ook in een bestaande ronde", () => {
+    const matches: Match[] = [
+      { court: 7, teamA: "A", teamB: "B" },
+      { court: 8, teamA: "C", teamB: "D" },
+      { court: 3, teamA: "E", teamB: "F" },
+    ];
+    const pleinen = berekenPleinen(matches, 3);
+    expect(pleinen[2]).toBe(3);
+    expect(pleinen.slice(0, 2).sort((a, b) => a - b)).toEqual([1, 2]);
   });
 });
