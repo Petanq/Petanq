@@ -16,35 +16,26 @@ export function Hero({ aantalToernooien, aantalClubs, aantalControleurs }: HeroP
   return (
     <div className="relative overflow-hidden bg-blauw">
       <div
-        className="pointer-events-none absolute inset-0 opacity-60"
-        style={{
-          backgroundImage: "url('/images/hero-petanque.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center 35%",
-        }}
-      />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-blauw via-blauw/90 to-blauw/50" />
-      <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            "radial-gradient(ellipse 60% 80% at 80% 50%, rgba(37,99,174,0.35) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 20% 80%, rgba(192,57,43,0.15) 0%, transparent 60%)",
+          backgroundImage: "url('/images/boules-vrienden.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center 70%",
         }}
       />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-blauw via-blauw/80 to-blauw/10 max-sm:from-blauw/85 max-sm:via-blauw/80 max-sm:to-blauw/70" />
       <div className="relative z-[2] mx-auto max-w-[1140px] px-6 py-20 lg:px-10">
-        <div className="max-w-[600px]">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.08] px-3.5 py-1.5 text-[0.75rem] font-semibold uppercase tracking-wide text-white/75">
-            <span className="h-1.5 w-1.5 rounded-full bg-geel" />
-            {t.hero.label}
-          </div>
-          <h1 className="mb-5 font-titel text-[2.6rem] leading-[0.95] tracking-wide text-white min-[400px]:text-5xl min-[460px]:text-6xl sm:text-7xl">
+        <div className="max-w-[640px] lg:max-w-[920px]">
+          <h1 className="mb-4 font-titel text-[2.4rem] font-bold leading-[1.05] tracking-wide text-white min-[400px]:text-5xl sm:text-6xl [text-shadow:0_2px_14px_rgba(0,0,0,0.45)]">
             {t.hero.titelRegel1}
             <br />
-            {t.hero.titelRegel2}
-            <br />
-            <span className="text-geel">{t.hero.titelAccent}</span>
+            {t.hero.titelRegel2} <span className="text-geel">{t.hero.titelAccent}</span>
           </h1>
-          <p className="mb-8 max-w-[430px] text-base leading-relaxed text-white/60">
+          <p className="mb-6 text-[0.78rem] font-semibold uppercase tracking-[0.25em] text-white/70">
+            {t.hero.label}
+          </p>
+          <p className="mb-2 font-titel text-2xl font-bold text-geel sm:text-3xl">{t.hero.slogan}</p>
+          <p className="mb-8 max-w-[460px] text-base leading-relaxed text-white/80">
             {t.hero.beschrijving}
           </p>
           <div className="mb-10 flex flex-wrap gap-3">
