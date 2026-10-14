@@ -19,7 +19,7 @@ const nl = {
     titelRegel2: "spelers en",
     titelAccent: "vrijwilligers",
     beschrijving:
-      "Zonder onze vrijwilligers zou dit niet kunnen: zij controleren elk toernooi voor het online komt. Zo vind je in heel België altijd de juiste info, per provincie en met affiche.",
+      "Alle petanque toernooien van België op één plaats. Zonder onze vrijwilligers zou dat niet kunnen: zij controleren elk toernooi voor het online komt.",
     bekijkKalender: "📅 Bekijk de kalender",
     toernooiAanmelden: "Toernooi aanmelden",
     statToernooien: "Toernooien dit seizoen",
@@ -913,7 +913,7 @@ const fr: typeof nl = {
     titelRegel2: "joueurs et",
     titelAccent: "des bénévoles",
     beschrijving:
-      "Sans nos bénévoles, rien de tout cela ne serait possible : ils vérifient chaque tournoi avant sa mise en ligne. Vous trouvez ainsi partout en Belgique les bonnes infos, par province et avec l'affiche.",
+      "Tous les tournois de pétanque de Belgique en un seul endroit. Sans nos bénévoles, ce ne serait pas possible : ils vérifient chaque tournoi avant sa mise en ligne.",
     bekijkKalender: "📅 Voir le calendrier",
     toernooiAanmelden: "Ajouter un tournoi",
     statToernooien: "Tournois cette saison",

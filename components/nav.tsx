@@ -79,7 +79,7 @@ export function Nav() {
           <Link
             href="/beheer/login"
             title={t.nav.login}
-            className="hidden items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-2 text-[0.83rem] font-medium text-white/50 transition-colors hover:bg-white/[0.08] hover:text-geel sm:flex"
+            className="hidden items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-2 text-[0.83rem] font-medium text-white/50 transition-colors hover:bg-white/[0.08] hover:text-geel md:flex"
           >
             🔒 {t.nav.login}
           </Link>
@@ -106,7 +106,7 @@ export function Nav() {
       </div>
 
       {menuOpen && (
-        <div className="flex flex-col gap-1 border-t border-white/[0.07] bg-blauw px-6 py-3 md:hidden">
+        <div className="flex flex-col gap-1 border-t border-white/[0.07] bg-blauw px-6 py-3 xl:hidden">
           <Link
             href="/#toernooien"
             onClick={() => setMenuOpen(false)}
@@ -157,7 +157,7 @@ export function Nav() {
           <Link
             href="/beheer/login"
             onClick={() => setMenuOpen(false)}
-            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/50 transition-colors hover:bg-white/[0.08] hover:text-geel sm:hidden"
+            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/50 transition-colors hover:bg-white/[0.08] hover:text-geel md:hidden"
           >
             🔒 {t.nav.login}
           </Link>
