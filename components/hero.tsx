@@ -37,7 +37,7 @@ export function Hero({ aantalToernooien, aantalClubs, aantalControleurs }: HeroP
             <span className="h-1.5 w-1.5 rounded-full bg-geel" />
             {t.hero.label}
           </div>
-          <h1 className="mb-5 font-titel text-6xl leading-[0.95] tracking-wide text-white sm:text-7xl">
+          <h1 className="mb-5 font-titel text-[2.6rem] leading-[0.95] tracking-wide text-white min-[400px]:text-5xl min-[460px]:text-6xl sm:text-7xl">
             {t.hero.titelRegel1}
             <br />
             {t.hero.titelRegel2}
