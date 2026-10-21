@@ -1,0 +1,20 @@
+const fs = require("fs");
+const crypto = require("crypto");
+const { createClient } = require("@supabase/supabase-js");
+const env = {};
+fs.readFileSync(".env.local", "utf8").split(/\r?\n/).forEach((l) => { const m = l.match(/^([A-Z_]+)=(.*)$/); if (m) env[m[1]] = m[2]; });
+const s = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+(async () => {
+  const src = "C:/Users/Frederic/AppData/Local/Temp/claude/C--Users-Frederic-Desktop-web-petanque/d05bfb29-f616-4a18-a69c-5d3ed9b37168/images/12.jpg";
+  const buf = fs.readFileSync(src);
+  const naam = "f8d2dee4-5d07-4120-85bf-3a32a4eef522.jpg";
+  const up = await s.storage.from("affiches").upload(naam, buf, { contentType: "image/jpeg", upsert: true });
+  if (up.error) return console.log("upload fout", up.error.message);
+  const url = s.storage.from("affiches").getPublicUrl(naam).data.publicUrl;
+  console.log("affiche:", url);
+  const A = "9ecf7840-8ebf-476e-9ba5-11313dcdc212", B = "ed3a6599-19e9-4f29-ab96-1f119b233ac9";
+  const rA = await s.from("toernooien").update({ affiche_url: url, link_inschrijving: "https://www.pcchapoo.be", speelvorm: "rondes", aantal_ronden: 3, aantal_poules: null }).eq("id", A).select("id,datum,link_inschrijving,speelvorm,aantal_ronden");
+  console.log("A", rA.error?.message ?? JSON.stringify(rA.data));
+  const rB = await s.from("toernooien").update({ affiche_url: url, link_inschrijving: "https://www.pcchapoo.be", speelvorm: "rondes", aantal_ronden: 3, aantal_poules: null }).eq("id", B).select("id,datum,link_inschrijving,speelvorm,aantal_ronden");
+  console.log("B", rB.error?.message ?? JSON.stringify(rB.data));
+})();
