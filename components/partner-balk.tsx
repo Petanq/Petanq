@@ -23,11 +23,15 @@ export function PartnerBalk() {
             <ul className="flex flex-1 flex-wrap items-center gap-x-8 gap-y-3">
               {PARTNERS.map((p) => {
                 const logo = (
-                  <Image src={p.logo} alt={p.naam} width={160} height={48} className="h-10 w-auto object-contain" />
+                  <Image src={p.logo} alt={p.naam} width={160} height={48} className="h-12 w-auto rounded-md object-contain" />
                 );
                 return (
                   <li key={p.naam}>
-                    {p.url ? (
+                    {p.url?.startsWith("/") ? (
+                      <Link href={p.url} title={p.naam}>
+                        {logo}
+                      </Link>
+                    ) : p.url ? (
                       <a href={p.url} target="_blank" rel="noopener noreferrer" title={p.naam}>
                         {logo}
                       </a>

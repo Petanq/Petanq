@@ -9,4 +9,7 @@ export type Partner = {
   url?: string;
 };
 
-export const PARTNERS: Partner[] = [];
+export const PARTNERS: Partner[] = [
+  // url mag ook een pagina op deze site zijn (begint met /): opent dan in hetzelfde tabblad.
+  { naam: "Petank Events", logo: "/images/partners/petank-events.jpg", url: "/petanque-reizen" },
+];
