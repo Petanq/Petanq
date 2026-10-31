@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { BezoekTeller } from "@/components/bezoek-teller";
 import { TerugKnop } from "@/components/terug-knop";
+import { LogoOfBeheer } from "@/components/logo-of-beheer";
 import { AchtergrondProef } from "@/components/achtergrond-proef";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -10,16 +10,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
     <>
       <BezoekTeller />
       <Nav />
-      <div className="border-b border-rand bg-white px-6 py-4 text-center">
-        <Image
-          src="/images/logo-volledig.png"
-          alt="Petanque13"
-          width={213}
-          height={48}
-          priority
-          className="mx-auto"
-        />
-      </div>
+      <LogoOfBeheer />
       <TerugKnop />
       {process.env.NODE_ENV !== "production" ? (
         <AchtergrondProef>{children}</AchtergrondProef>
