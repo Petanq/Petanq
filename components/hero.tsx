@@ -35,18 +35,20 @@ function HeroGsm() {
 
   return (
     <div className="relative overflow-hidden bg-blauw md:hidden">
-      {/* Foto over de hele hero (titel bovenaan op de donkere bomen, boules in
-          het midden, kaders onderaan). hero-gsm.jpg staat bovenaan; ontbreekt
-          die, dan schijnt de oude foto er nog doorheen. */}
+      {/* Foto (titel bovenaan op de donkere bomen, boules en spelers in het
+          midden). De foto stopt een stuk boven de onderkant en vervaagt daar,
+          zodat de boules en de spelers boven de kaders staan i.p.v. erachter.
+          hero-gsm.jpg staat bovenaan; ontbreekt die, dan schijnt de oude foto
+          er nog doorheen. */}
       <div
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-x-0 top-0 bottom-[7.5rem] [-webkit-mask-image:linear-gradient(to_bottom,#000_70%,transparent)] [mask-image:linear-gradient(to_bottom,#000_70%,transparent)]"
         style={{
           backgroundImage: "url('/images/hero-gsm.jpg'), url('/images/boules-vrienden.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center bottom",
         }}
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-blauw/70 via-transparent via-45% to-blauw/90" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-blauw/70 via-transparent via-40% to-transparent" />
       <div className="relative z-[2]">
         <div className="px-6 pb-6 pt-9">
           <h1 className="mb-3 font-titel text-[2.5rem] font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.55)]">

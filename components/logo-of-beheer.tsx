@@ -95,58 +95,52 @@ export function LogoOfBeheer() {
     };
   }, []);
 
-  if (!status) {
-    return (
-      <div className="border-b border-rand bg-white px-6 py-4 text-center">
-        <Image
-          src="/images/logo-volledig.png"
-          alt="Petanque13"
-          width={213}
-          height={48}
-          priority
-          className="mx-auto"
-        />
-      </div>
-    );
-  }
-
-  return <BeheerKaders status={status} />;
-}
-
-function BeheerKaders({ status }: { status: BeheerStatus }) {
-  const { t } = useTranslation();
-
-  async function uitloggen() {
-    try {
-      localStorage.removeItem("p13-demo-beheer");
-    } catch {}
-    await createClient().auth.signOut();
-    window.location.reload();
-  }
-
   return (
-    <div className="border-b-4 border-geel bg-[#161616] px-4 pb-4 pt-3 sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-[1140px]">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <span className="rounded-full border border-geel/40 bg-geel/10 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-widest text-geel">
-            {t.beheer.dashboard}
-          </span>
-          <button
-            type="button"
-            onClick={uitloggen}
-            className="rounded-lg bg-rood px-3 py-1.5 text-[0.72rem] font-bold text-white transition-colors hover:bg-rood-2 active:scale-95"
-          >
-            {t.beheer.uitloggen}
-          </button>
-        </div>
-        <BeheerKaderRooster status={status} />
-      </div>
+    <div className="relative border-b border-rand bg-white px-6 py-4 text-center">
+      <Image
+        src="/images/logo-volledig.png"
+        alt="Petanque13"
+        width={213}
+        height={48}
+        priority
+        className="mx-auto"
+      />
+      {status && <BeheerKnop status={status} />}
     </div>
   );
 }
 
-// De kaders zelf: gedeeld door de band bovenaan de gewone pagina's en de
-// navigatie binnen het beheer (daar is `actiefHref` het geopende onderdeel).
+// Ingelogd als vrijwilliger, beheerder of pilootclub: een klein, discreet
+// knopje in de logo-balk naar het beheer (de volledige kaders staan daar zelf).
+function BeheerKnop({ status }: { status: BeheerStatus }) {
+  const { t } = useTranslation();
+  const wachtend = status.inBehandeling + status.wachtendeClubs + status.verwijderaanvragen;
+  const href = status.moderator ? "/beheer" : "/beheer/match13";
+  const label = status.moderator ? t.beheer.dashboard : "Match13";
+  return (
+    <Link
+      href={href}
+      title={label}
+      aria-label={label}
+      className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border-2 border-geel bg-donker text-geel transition-colors hover:bg-geel hover:text-donker sm:right-6"
+    >
+      <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
+        <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+        <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
+        <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+      </svg>
+      {wachtend > 0 && status.moderator && (
+        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rood px-1 text-[0.62rem] font-bold text-white">
+          {wachtend}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+// De kaders zelf: gebruikt door de navigatie binnen het beheer (`actiefHref`
+// is het geopende onderdeel).
 export function BeheerKaderRooster({ status, actiefHref }: { status: BeheerStatus; actiefHref?: string }) {
   const { t } = useTranslation();
 
