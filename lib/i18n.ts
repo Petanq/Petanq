@@ -22,6 +22,11 @@ const nl = {
     beschrijving:
       "Onze vrijwilligers controleren elk tornooi, zodat jij zorgeloos je volgende wedstrijd vindt.",
     bekijkKalender: "Ontdek de tornooien",
+    gsmTitelRegel1: "Jouw volgende",
+    gsmTitelRegel2: "tornooi",
+    gsmTitelAccent: "begint hier.",
+    gsmOndertitel: "Alle tornooien in België op één plaats.",
+    gsmTegelToevoegen: "Tornooi toevoegen",
     toernooiAanmelden: "Toernooi aanmelden",
     statToernooien: "Toernooien dit seizoen",
     statClubs: "Clubs actief",
@@ -917,6 +922,11 @@ const fr: typeof nl = {
     beschrijving:
       "Nos bénévoles vérifient chaque tournoi, pour que vous trouviez sans souci votre prochain match.",
     bekijkKalender: "Découvrir les tournois",
+    gsmTitelRegel1: "Votre prochain",
+    gsmTitelRegel2: "tournoi",
+    gsmTitelAccent: "commence ici.",
+    gsmOndertitel: "Tous les tournois de Belgique en un seul endroit.",
+    gsmTegelToevoegen: "Ajouter un tournoi",
     toernooiAanmelden: "Ajouter un tournoi",
     statToernooien: "Tournois cette saison",
     statClubs: "Clubs actifs",

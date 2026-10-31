@@ -2,6 +2,7 @@ import { getGoedgekeurdeToernooien, getActieveClubs, getAantalActieveModeratoren
 import { isToekomstig } from "@/lib/datum";
 import { Hero } from "@/components/hero";
 import { PartnerBalk } from "@/components/partner-balk";
+import { MobielKalenderPoort, MobielKalenderProvider } from "@/components/mobiel-kalender";
 import { TournamentBrowser } from "@/components/tournament-browser";
 import { haalLiveGedeeldeToernooiIds } from "@/actions/match13";
 
@@ -16,10 +17,16 @@ export default async function HomePage() {
   const toekomstig = toernooien.filter((tn) => isToekomstig(tn.datum));
 
   return (
-    <>
-      <Hero aantalToernooien={toernooien.length} aantalClubs={clubs.length} aantalControleurs={aantalControleurs} />
+    <MobielKalenderProvider>
+      <Hero
+        aantalToernooien={toernooien.length}
+        aantalClubs={clubs.length}
+        aantalControleurs={aantalControleurs}
+      />
       <PartnerBalk />
-      <TournamentBrowser toernooien={toekomstig} clubs={clubs} liveToernooiIds={liveToernooiIds} />
-    </>
+      <MobielKalenderPoort>
+        <TournamentBrowser toernooien={toekomstig} clubs={clubs} liveToernooiIds={liveToernooiIds} />
+      </MobielKalenderPoort>
+    </MobielKalenderProvider>
   );
 }
