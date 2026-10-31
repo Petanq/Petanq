@@ -13,6 +13,7 @@ import { MonthCalendar } from "./month-calendar";
 import { NewsletterBlock } from "./newsletter-block";
 import { CtaBlock } from "./cta-block";
 import { ZoekIcoon } from "./ui/zoek-icoon";
+import { TOON_KALENDER_EVENT } from "@/components/mobiel-kalender";
 
 const LEGE_FILTERS: FilterState = {
   zoek: "",
@@ -47,9 +48,18 @@ export function TournamentBrowser({
         document.getElementById("toernooien")?.scrollIntoView();
       }
     }
+    // "Tornooien" op de gsm-homepage (zie mobiel-kalender.tsx) opent de lijst
+    // meteen in de kalenderweergave.
+    function toonKalender() {
+      setWeergave("kalender");
+    }
     checkHash();
     window.addEventListener("hashchange", checkHash);
-    return () => window.removeEventListener("hashchange", checkHash);
+    window.addEventListener(TOON_KALENDER_EVENT, toonKalender);
+    return () => {
+      window.removeEventListener("hashchange", checkHash);
+      window.removeEventListener(TOON_KALENDER_EVENT, toonKalender);
+    };
   }, []);
 
   const zoekTerm = filters.zoek.trim().toLowerCase();
@@ -103,7 +113,7 @@ export function TournamentBrowser({
     <div id="toernooien" className="mx-auto grid max-w-[1140px] grid-cols-1 gap-6 px-6 pb-12 pt-8 lg:grid-cols-[220px_1fr] lg:px-10">
       <FilterSidebar alleToernooien={toernooien} filters={filters} setFilters={setFilters} />
 
-      <main className="min-w-0">
+      <main id="toernooien-weergave" className="min-w-0 scroll-mt-20">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-titel text-2xl tracking-wide text-blauw">{t.lijst.titel}</h2>
           <div className="flex min-w-0 flex-wrap items-center gap-2">
