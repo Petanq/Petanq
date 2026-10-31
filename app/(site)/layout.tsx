@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { BezoekTeller } from "@/components/bezoek-teller";
+import { TerugKnop } from "@/components/terug-knop";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,6 +19,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           className="mx-auto"
         />
       </div>
+      <TerugKnop />
       <main className="flex-1">{children}</main>
       <Footer />
     </>

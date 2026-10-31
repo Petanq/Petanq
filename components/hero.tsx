@@ -55,26 +55,18 @@ function HeroGsm() {
             {t.hero.gsmTitelRegel2}
             <span className="block text-geel">{t.hero.gsmTitelAccent}</span>
           </h1>
-          <p className="mb-6 text-[1.05rem] leading-snug text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
+          <p className="text-[1.05rem] leading-snug text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
             {t.hero.gsmOndertitel}
           </p>
-          <button
-            type="button"
-            onClick={toon}
-            className="inline-flex items-center gap-2 rounded-lg bg-geel px-5 py-3.5 text-base font-bold text-donker shadow-[0_4px_20px_rgba(244,196,48,0.35)] active:brightness-95"
-          >
-            {t.hero.bekijkKalender}
-            <span aria-hidden>›</span>
-          </button>
         </div>
 
         <div className="h-40" aria-hidden />
 
         <div className="grid grid-cols-2 gap-3 px-4 pb-6">
+          <Tegel onClick={toon} label={t.hero.gsmTegelToernooien} icoon={<IcoonTrofee />} accent />
           <Tegel href="/clubs" label={t.nav.clubs} icoon={<IcoonClubs />} />
-          <Tegel href="/match13" label={t.nav.match13} icoon={<IcoonMatch />} />
-          <Tegel href="/toernooi-toevoegen" label={t.hero.gsmTegelToevoegen} icoon={<IcoonToevoegen />} />
           <Tegel href="/mijn-tornooien" label={t.nav.mijnTornooien} icoon={<IcoonKalender />} />
+          <Tegel href="/toernooi-toevoegen" label={t.hero.gsmTegelToevoegen} icoon={<IcoonToevoegen />} />
         </div>
       </div>
     </div>
@@ -133,12 +125,26 @@ function HeroPc({
   );
 }
 
-function Tegel({ href, label, icoon }: { href: string; label: string; icoon: ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="flex min-h-[7.5rem] w-full flex-col justify-between rounded-xl bg-black/55 p-4 text-left backdrop-blur-sm transition-colors active:bg-black/70"
-    >
+function Tegel({
+  href,
+  onClick,
+  label,
+  icoon,
+  accent,
+}: {
+  href?: string;
+  onClick?: () => void;
+  label: string;
+  icoon: ReactNode;
+  accent?: boolean;
+}) {
+  const klassen = `flex min-h-[7.5rem] w-full flex-col justify-between rounded-xl bg-black/55 p-4 text-left backdrop-blur-sm transition-colors active:bg-black/70 ${
+    accent
+      ? "border-2 border-geel shadow-[0_0_18px_rgba(244,196,48,0.3)]"
+      : "border-2 border-geel/60 shadow-[0_0_14px_rgba(244,196,48,0.12)]"
+  }`;
+  const inhoud = (
+    <>
       <span className="text-geel">{icoon}</span>
       <span className="flex items-center justify-between gap-2 text-[1.05rem] font-semibold text-white">
         {label}
@@ -146,7 +152,19 @@ function Tegel({ href, label, icoon }: { href: string; label: string; icoon: Rea
           ›
         </span>
       </span>
-    </Link>
+    </>
+  );
+  if (href) {
+    return (
+      <Link href={href} className={klassen}>
+        {inhoud}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" onClick={onClick} className={klassen}>
+      {inhoud}
+    </button>
   );
 }
 
@@ -178,12 +196,10 @@ function IcoonClubs() {
   );
 }
 
-function IcoonMatch() {
+function IcoonTrofee() {
   return (
     <svg {...ICOON}>
-      <circle cx="12" cy="7.500" r="4.700" />
-      <circle cx="7" cy="16" r="4.700" />
-      <circle cx="17" cy="16" r="4.700" />
+      <path d="M7 3h10v2.500h3.200c.4 0 .8.4.7.9-.4 2.600-1.900 4.500-4.400 4.900a5.200 5.200 0 0 1-3.300 2.400V16h3v2.200H8.800V16h3v-2.300a5.200 5.200 0 0 1-3.300-2.400C5 10.900 3.500 9 3.100 6.400c-.1-.5.300-.9.700-.9H7V3Zm-1.600 4.500c.3 1.300 1 2.200 2.100 2.600-.3-.9-.5-1.800-.5-2.600H5.400Zm13.200 0h-1.600c0 .8-.2 1.700-.5 2.600 1.100-.4 1.800-1.300 2.100-2.600ZM7.500 19.500h9V22h-9v-2.500Z" />
     </svg>
   );
 }

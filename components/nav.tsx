@@ -108,6 +108,13 @@ export function Nav() {
       {menuOpen && (
         <div className="flex flex-col gap-1 border-t border-white/[0.07] bg-blauw px-6 py-3 xl:hidden">
           <Link
+            href="/match13"
+            onClick={() => setMenuOpen(false)}
+            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
+          >
+            Match<span className="text-geel">13</span>
+          </Link>
+          <Link
             href="/#toernooien"
             onClick={() => setMenuOpen(false)}
             className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
@@ -139,13 +146,6 @@ export function Nav() {
             className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >
             {t.nav.overOns}
-          </Link>
-          <Link
-            href="/match13"
-            onClick={() => setMenuOpen(false)}
-            className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
-          >
-            Match<span className="text-geel">13</span>
           </Link>
           <Link
             href="/toernooi-toevoegen"

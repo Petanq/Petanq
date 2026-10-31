@@ -12,6 +12,7 @@ const nl = {
     toernooiToevoegen: "+ Toernooi toevoegen",
     match13: "Match13",
     login: "Login",
+    terug: "Terug",
   },
   hero: {
     label: "Vlaanderen • Wallonië • Brussel",
@@ -26,6 +27,7 @@ const nl = {
     gsmTitelRegel2: "tornooi",
     gsmTitelAccent: "begint hier.",
     gsmOndertitel: "Alle tornooien in België op één plaats.",
+    gsmTegelToernooien: "Tornooien",
     gsmTegelToevoegen: "Tornooi toevoegen",
     toernooiAanmelden: "Toernooi aanmelden",
     statToernooien: "Toernooien dit seizoen",
@@ -912,6 +914,7 @@ const fr: typeof nl = {
     toernooiToevoegen: "+ Ajouter un tournoi",
     match13: "Match13",
     login: "Connexion",
+    terug: "Retour",
   },
   hero: {
     label: "Flandre • Wallonie • Bruxelles",
@@ -926,6 +929,7 @@ const fr: typeof nl = {
     gsmTitelRegel2: "tournoi",
     gsmTitelAccent: "commence ici.",
     gsmOndertitel: "Tous les tournois de Belgique en un seul endroit.",
+    gsmTegelToernooien: "Tournois",
     gsmTegelToevoegen: "Ajouter un tournoi",
     toernooiAanmelden: "Ajouter un tournoi",
     statToernooien: "Tournois cette saison",
