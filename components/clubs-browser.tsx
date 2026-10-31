@@ -8,6 +8,7 @@ import { ALLE_PROVINCIES, Provincie, Regio, vertaalProvincie, vertaalRegio } fro
 import { ClubCard } from "./club-card";
 import { AddClubCard } from "./add-club-card";
 import { BelgiumMap } from "./belgium-map";
+import { ClubsGsmKop } from "./clubs-gsm-kop";
 import { ZoekIcoon } from "./ui/zoek-icoon";
 
 const REGIOS: Regio[] = ["vlaanderen", "wallonie", "brussel"];
@@ -49,6 +50,14 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
     });
   }
 
+  function kiesRegio(regio: Regio) {
+    setRegioFilter(regio);
+    setZoek("");
+    requestAnimationFrame(() => {
+      document.getElementById("clubs-lijst")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   const aantalPerProvincie = useMemo(() => {
     const tellingen: Record<string, number> = {};
     for (const club of clubs) {
@@ -61,7 +70,7 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
     const term = zoek.trim().toLowerCase();
     return clubs.filter((club) => {
       if (regioFilter && club.regio !== regioFilter) return false;
-      if (term && !`${club.naam} ${club.gemeente}`.toLowerCase().includes(term)) return false;
+      if (term && !`${club.naam} ${club.gemeente} ${club.adres ?? ""}`.toLowerCase().includes(term)) return false;
       return true;
     });
   }, [clubs, zoek, regioFilter]);
@@ -70,7 +79,21 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
 
   return (
     <div id="provincies" className="mx-auto max-w-[1140px] px-6 py-8 lg:px-10">
-      <div className="relative mb-6 overflow-hidden rounded-2xl">
+      {/* Eigen donkere band (los van de achtergrond van de pagina), tot aan de randen van het scherm. */}
+      <div className="-mx-6 -mt-8 mb-8 border-b-4 border-geel bg-[#161616] px-6 pb-6 pt-8 md:hidden">
+        <ClubsGsmKop
+          clubs={clubs}
+          aantalPerProvincie={aantalPerProvincie}
+          zoek={zoek}
+          setZoek={setZoek}
+          regioFilter={regioFilter}
+          setRegioFilter={setRegioFilter}
+          onProvincieKiezen={kiesProvincieOpKaart}
+          onRegioKiezen={kiesRegio}
+        />
+      </div>
+
+      <div className="relative mb-6 overflow-hidden rounded-2xl max-md:hidden">
         <Image
           src="/images/petanque-speler.jpg"
           alt=""
@@ -92,7 +115,7 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
         </div>
       </div>
 
-      <div className="mb-8">
+      <div className="mb-8 max-md:hidden">
         <button
           onClick={() => setKaartTonen((v) => !v)}
           className="rounded-full border-[1.5px] border-rand bg-white px-4 py-2 text-sm font-semibold text-grijs transition-colors hover:border-blauw-3 hover:text-donker"
@@ -106,7 +129,7 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
         )}
       </div>
 
-      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-8 flex flex-col gap-3 max-md:hidden sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setRegioFilter(null)}
@@ -143,6 +166,8 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
           className="w-full rounded-md border-[1.5px] border-rand px-3.5 py-2.5 text-sm outline-none focus:border-blauw-3 sm:w-64"
         />
       </div>
+
+      <div id="clubs-lijst" className="scroll-mt-20" />
 
       {gefilterd.length === 0 && (
         <div className="flex flex-col items-center gap-2 rounded-lg border border-rand bg-white p-8 text-center text-sm text-grijs">

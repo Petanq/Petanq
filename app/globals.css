@@ -66,3 +66,59 @@ body {
 .animatie-toast {
   animation: toast-in-uit 2.8s ease-in-out forwards;
 }
+
+/* TIJDELIJK: achtergrond-proef (enkel lokaal, zie components/achtergrond-proef.tsx).
+   Op donker draaien we de donkere tekstkleuren om; binnen lichte vlakken (witte
+   kaartjes enz.) zetten we ze terug. */
+body[data-proef="donker"] {
+  background: #161616;
+}
+body[data-proef="foto"] {
+  background: linear-gradient(rgba(18, 18, 18, 0.86), rgba(18, 18, 18, 0.93)),
+    url("/images/hero-gsm.jpg") center / cover fixed;
+}
+body[data-proef="goud"] {
+  background: radial-gradient(ellipse at top, #2c2210 0%, #151515 55%, #0e0e0e 100%);
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) .text-donker {
+  color: #f2f2f2;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.text-blauw, .text-blauw-2) {
+  color: #f4c430;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) .text-grijs {
+  color: #c4c4c4;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]) .text-donker,
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]).text-donker {
+  color: #1f1f1f;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]) .text-blauw,
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]).text-blauw {
+  color: #1f1f1f;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]) .text-blauw-2,
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]).text-blauw-2 {
+  color: #2e2e2e;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]) .text-grijs,
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]).text-grijs {
+  color: #555555;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) button.bg-blauw {
+  background: #f4c430;
+  border-color: #f4c430;
+  color: #1f1f1f;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) button.bg-blauw * {
+  color: inherit;
+  opacity: 1;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) div.overflow-hidden.rounded-full.border {
+  background: #ffffff;
+}
+body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) .mt-3.border-t img {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
