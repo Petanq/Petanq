@@ -183,15 +183,13 @@ export function Match13LiveView({ id, initieel }: { id: string; initieel: Match1
                     const naamStijl: CSSProperties = {
                       flex: 1,
                       minWidth: 0,
-                      fontSize: "1.3rem",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
+                      fontSize: "clamp(1.05rem, 5vw, 1.3rem)",
+                      overflowWrap: "break-word",
                     };
                     return (
-                      <div key={i} className="court-card" style={{ "--plein-accent": pouleColor(m.court - 1) } as CSSProperties}>
+                      <div key={i} className="court-card live-kaart" style={{ "--plein-accent": pouleColor(m.court - 1) } as CSSProperties}>
                         <div className="court-label">{t.match13.liveePleinKort(m.court)}</div>
-                        <div className="match-row">
+                        <div className="match-row live-match-row">
                           <span style={naamStijl}>{zijdeNaam(state.teams, m, "A")}</span>
                           <span
                             style={
@@ -235,15 +233,15 @@ export function Match13LiveView({ id, initieel }: { id: string; initieel: Match1
               {t.match13.klassementTitel}
             </h2>
             <div className="tabel-scroll">
-              <table className="standings">
+              <table className="standings live-klassement">
                 <thead>
                   <tr>
                     <th></th>
                     <th>{state.format === "meli" ? t.match13.spelerKolom : t.match13.teamKolom}</th>
                     <th className="num">{t.match13.gespeeld}</th>
                     <th className="num">{t.match13.overwinningen}</th>
-                    <th className="num">{t.match13.pntVoor}</th>
-                    <th className="num">{t.match13.pntTegen}</th>
+                    <th className="num hide-mobiel">{t.match13.pntVoor}</th>
+                    <th className="num hide-mobiel">{t.match13.pntTegen}</th>
                     <th className="num">{t.match13.saldo}</th>
                   </tr>
                 </thead>
@@ -254,8 +252,8 @@ export function Match13LiveView({ id, initieel }: { id: string; initieel: Match1
                       <td>{row.name}</td>
                       <td className="num">{row.gespeeld}</td>
                       <td className="num">{row.overwinningen}</td>
-                      <td className="num">{row.puntenVoor}</td>
-                      <td className="num">{row.puntenTegen}</td>
+                      <td className="num hide-mobiel">{row.puntenVoor}</td>
+                      <td className="num hide-mobiel">{row.puntenTegen}</td>
                       <td className="num">{row.saldo > 0 ? `+${row.saldo}` : row.saldo}</td>
                     </tr>
                   ))}

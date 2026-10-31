@@ -823,11 +823,33 @@
    elkaar geperst worden. */
 @media (max-width: 700px) {
   .match13-scope .court-grid {
-    grid-template-columns: 1fr !important;
+    /* minmax(0, 1fr) i.p.v. 1fr: een kolom van "1fr" mag niet smaller dan zijn
+       inhoud, waardoor lange teamnamen de hele pagina breder dan de telefoon
+       maakten (kaartjes aan de rechterkant afgesneden). */
+    grid-template-columns: minmax(0, 1fr) !important;
     grid-auto-flow: row !important;
   }
 }
+/* Live-pagina: is het kaartje smal (telefoon, of een kolom van een rooster met
+   meerdere kaartjes naast elkaar), dan staan team A, score en team B onder
+   elkaar i.p.v. drie dingen naast elkaar waar de namen dan letter per letter
+   afbreken. */
+.match13-scope .live-kaart {
+  container-type: inline-size;
+}
+@container (max-width: 420px) {
+  .match13-scope .live-match-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+  }
+  .match13-scope .live-match-row > span {
+    flex: 0 0 auto !important;
+    text-align: center !important;
+  }
+}
 .match13-scope .court-card {
+  min-width: 0;
   border: 1px solid var(--border);
   border-left: 4px solid var(--plein-accent, var(--border));
   border-radius: 12px;
@@ -1171,6 +1193,24 @@
   color: var(--ink-muted);
   background: var(--surface-2);
   font-weight: 700;
+}
+/* Live-pagina op een smalle telefoon: strakkere cellen en de kolommen
+   "punten voor/tegen" weg (het saldo zegt hetzelfde), zodat het klassement
+   zonder zijwaarts schuiven past. */
+@media (max-width: 520px) {
+  .match13-scope .standings.live-klassement th,
+  .match13-scope .standings.live-klassement td {
+    padding: 0.55rem 0.4rem;
+    font-size: 0.85rem;
+  }
+  .match13-scope .standings.live-klassement th {
+    font-size: 0.6rem;
+    letter-spacing: 0.02em;
+    overflow-wrap: anywhere;
+  }
+  .match13-scope .standings.live-klassement .hide-mobiel {
+    display: none;
+  }
 }
 .match13-scope .standings tbody tr:nth-child(even) {
   background: rgba(31, 31, 31, 0.02);

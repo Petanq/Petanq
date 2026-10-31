@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { Knop } from "@/components/ui/knop";
 
@@ -31,22 +32,28 @@ export function Hero({ aantalToernooien, aantalClubs, aantalControleurs }: HeroP
             <br />
             {t.hero.titelRegel2} <span className="text-geel">{t.hero.titelAccent}</span>
           </h1>
-          <p className="mb-6 text-[0.78rem] font-semibold uppercase tracking-[0.25em] text-white/70">
+          <p className="mb-6 hidden text-[0.78rem] font-semibold uppercase tracking-[0.25em] text-white/70 md:block">
             {t.hero.label}
           </p>
           <p className="mb-2 font-titel text-2xl font-bold text-geel sm:text-3xl">{t.hero.slogan}</p>
-          <p className="mb-8 max-w-[460px] text-base leading-relaxed text-white/80">
+          <p className="mb-6 max-w-[460px] text-base leading-relaxed text-white/80 md:mb-8">
             {t.hero.beschrijving}
           </p>
-          <div className="mb-10 flex flex-wrap gap-3">
+          <div className="mb-8 flex flex-wrap gap-3 md:mb-10">
             <Knop href="#kalender" variant="geel">
               {t.hero.bekijkKalender}
             </Knop>
-            <Knop href="/toernooi-toevoegen" variant="outline">
+            <Knop href="/toernooi-toevoegen" variant="outline" className="max-md:hidden">
               {t.hero.toernooiAanmelden}
             </Knop>
           </div>
-          <div className="flex flex-wrap gap-8 border-t border-white/10 pt-6">
+          <div className="grid grid-cols-2 gap-3 md:hidden">
+            <Tegel href="#kalender" label={t.nav.toernooien} icoon={<IcoonKalender />} />
+            <Tegel href="/clubs" label={t.nav.clubs} icoon={<IcoonClubs />} />
+            <Tegel href="/match13" label={t.nav.match13} icoon={<IcoonMatch />} />
+            <Tegel href="/mijn-tornooien" label={t.nav.mijnTornooien} icoon={<IcoonAgenda />} />
+          </div>
+          <div className="hidden flex-wrap gap-8 border-t border-white/10 pt-6 md:flex">
             <Stat href="#toernooien" waarde={`${aantalToernooien}+`} label={t.hero.statToernooien} />
             <Stat href="/clubs" waarde={`${aantalClubs}+`} label={t.hero.statClubs} />
             <Stat href="/clubs" waarde="11" label={t.hero.statProvincies} />
@@ -55,6 +62,68 @@ export function Hero({ aantalToernooien, aantalClubs, aantalControleurs }: HeroP
         </div>
       </div>
     </div>
+  );
+}
+
+function Tegel({ href, label, icoon }: { href: string; label: string; icoon: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="flex flex-col items-center justify-center gap-2.5 rounded-xl border border-white/15 bg-black/45 px-3 py-5 text-center backdrop-blur-sm transition-colors active:bg-black/60"
+    >
+      <span className="text-geel">{icoon}</span>
+      <span className="text-[0.8rem] font-bold uppercase tracking-wide text-white">{label}</span>
+    </Link>
+  );
+}
+
+const ICOON = {
+  width: 34,
+  height: 34,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.7,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  "aria-hidden": true,
+} as const;
+
+function IcoonKalender() {
+  return (
+    <svg {...ICOON}>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+      <path d="M3.5 10h17M8 3v4M16 3v4" />
+      <path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01" strokeWidth={2.4} />
+    </svg>
+  );
+}
+
+function IcoonClubs() {
+  return (
+    <svg {...ICOON}>
+      <circle cx="9" cy="8" r="3.2" />
+      <path d="M3 19.5c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" />
+      <circle cx="17" cy="9" r="2.6" />
+      <path d="M17.5 14.2c2.4.2 4 1.9 4 4.3" />
+    </svg>
+  );
+}
+
+function IcoonMatch() {
+  return (
+    <svg {...ICOON}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 3.5c-2.6 2.4-4 5.2-4 8.5s1.4 6.1 4 8.5M12 3.5c2.6 2.4 4 5.2 4 8.5s-1.4 6.1-4 8.5M3.5 12h17" />
+    </svg>
+  );
+}
+
+function IcoonAgenda() {
+  return (
+    <svg {...ICOON}>
+      <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z" />
+    </svg>
   );
 }
 
