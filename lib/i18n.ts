@@ -110,6 +110,16 @@ const nl = {
     notitiePlaceholder: "Bv. Afgesproken met Jan en Piet om 13u",
     notitieBewaard: "Notitie opgeslagen",
     mijnTornooien: "Mijn agenda",
+    agendaTitel1: "Jouw",
+    agendaTitel2: "agenda.",
+    agendaAantal: (n: number) => (n === 1 ? "1 opgeslagen tornooi" : `${n} opgeslagen tornooien`),
+    agendaVolgende: "Eerstvolgend",
+    agendaBinnenkort: "Binnenkort",
+    agendaVoorbij: "Voorbij",
+    agendaRoute: "Route",
+    agendaInAgenda: "In mijn agenda",
+    agendaDelen: "Delen",
+    agendaOntdek: "Ontdek de tornooien",
     mijnTornooienUitleg:
       "Tornooien die je hier opslaat blijven bewaard op dit toestel, ook als je de site later opnieuw bezoekt.",
     geenOpgeslagenToernooien:
@@ -1042,6 +1052,16 @@ const fr: typeof nl = {
     notitiePlaceholder: "Ex. Rendez-vous avec Jean et Pierre à 13h",
     notitieBewaard: "Note enregistrée",
     mijnTornooien: "Mon agenda",
+    agendaTitel1: "Votre",
+    agendaTitel2: "agenda.",
+    agendaAantal: (n: number) => (n === 1 ? "1 tournoi enregistré" : `${n} tournois enregistrés`),
+    agendaVolgende: "Prochain",
+    agendaBinnenkort: "À venir",
+    agendaVoorbij: "Passés",
+    agendaRoute: "Itinéraire",
+    agendaInAgenda: "Dans mon agenda",
+    agendaDelen: "Partager",
+    agendaOntdek: "Découvrir les tournois",
     mijnTornooienUitleg:
       "Les tournois que vous enregistrez ici restent sauvegardés sur cet appareil, même si vous revisitez le site plus tard.",
     geenOpgeslagenToernooien:
