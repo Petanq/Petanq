@@ -10,7 +10,6 @@ import { uploadNaarStorage } from "@/lib/upload-bestand";
 import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
 import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
 import { bestandNaarBase64 } from "@/lib/bestand-naar-base64";
-import { Knop } from "@/components/ui/knop";
 import { createClient } from "@/lib/supabase/client";
 import { vindClubBijNaam } from "@/lib/club-opzoeken";
 import { ClubKiezer } from "@/components/ui/club-kiezer";
@@ -52,6 +51,7 @@ const FORMULES: Formule[] = [
 export function TournamentForm() {
   const { t, taal } = useTranslation();
   const [status, setStatus] = useState<"idle" | "bezig" | "ok" | "fout">("idle");
+  const [stap, setStap] = useState(1);
   const [foutReden, setFoutReden] = useState<string | null>(null);
   const [bestaandDubbel, setBestaandDubbel] = useState<BestaandDubbelTornooi | null>(null);
 
@@ -353,16 +353,58 @@ export function TournamentForm() {
     ];
   }
 
+  // Formulier in 4 stappen: alle velden blijven gewoon bestaan (enkel de
+  // niet-actieve stappen zijn verborgen), zodat de bestaande logica (affiche
+  // scannen, reeksen, dubbel-check, controle) ongewijzigd blijft werken.
+  const VELD_STAP: Record<string, number> = {
+    "veld-naamNl": 1,
+    "veld-organisator": 1,
+    "veld-club": 1,
+    "veld-formule": 1,
+    "veld-datum": 2,
+    "veld-herhaaldatums": 2,
+    "veld-uur": 2,
+    "veld-adres": 2,
+    "veld-gemeente": 2,
+    "veld-provincie": 2,
+    "veld-categorie": 3,
+    "veld-aantalRonden": 3,
+    "veld-aantalPoules": 3,
+    "veld-naamIndiener": 4,
+  };
+
+  function gaNaarStap(n: number, scrollNaarId?: string) {
+    setStap(n);
+    if (!scrollNaarId) setVerzendPoging(false);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (scrollNaarId) {
+          document.getElementById(scrollNaarId)?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+          document.getElementById("wizard-kop")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+  }
+
+  function volgende() {
+    const fout = verplichteVeldenLijst().find((v) => !v.waarde && VELD_STAP[v.id] === stap);
+    if (fout) {
+      setVerzendPoging(true);
+      document.getElementById(fout.id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    gaNaarStap(stap + 1);
+  }
+
   async function versturen(e: React.FormEvent) {
     e.preventDefault();
 
     const eersteFout = verplichteVeldenLijst().find((veld) => !veld.waarde);
     if (eersteFout) {
       setVerzendPoging(true);
-      // Bij een lang formulier (bv. na een affiche-scan) valt een blokkerend
-      // verplicht veld verderop makkelijk niet op — spring er expliciet naartoe
-      // i.p.v. enkel de algemene foutmelding onderaan te tonen.
-      document.getElementById(eersteFout.id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Spring naar de stap met het ontbrekende veld en scroll er naartoe.
+      gaNaarStap(VELD_STAP[eersteFout.id] ?? 1, eersteFout.id);
       return;
     }
 
@@ -399,6 +441,7 @@ export function TournamentForm() {
       setWachtrij(rest);
       setHuidigeIndex((i) => i + 1);
       setStatus("idle");
+      gaNaarStap(1);
       return;
     }
     setFoutReden(null);
@@ -433,306 +476,413 @@ export function TournamentForm() {
     );
   }
 
+  const STAPPEN = [t.form.wStapBasis, t.form.wStapLocatie, t.form.wStapExtra, t.form.wStapControle];
+  const INTRO = [t.form.wIntro1, t.form.wIntro2, t.form.wIntro3, t.form.wIntro4];
+  const VERDER = [t.form.wVerderLocatie, t.form.wVerderExtra, t.form.wVerderControle];
+
+  const datumLabel = (d: string) => new Date(d).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE");
+
+  const samenvatting: { label: string; waarde: string }[] = [
+    { label: t.form.naamToernooi, waarde: naamNl },
+    { label: t.form.organisator, waarde: clubnaam },
+    {
+      label: t.form.datum,
+      waarde: reeksModus
+        ? herhaalDatums
+            .filter((d) => d.datum)
+            .map((d) => datumLabel(d.datum))
+            .join(", ")
+        : datum
+        ? datumLabel(datum)
+        : "",
+    },
+    { label: t.form.uur, waarde: uur },
+    { label: t.form.adres, waarde: [adres, gemeente].filter(Boolean).join(", ") },
+    { label: t.form.provincie, waarde: provincie ? vertaalProvincie(provincie, taal) : "" },
+    { label: t.form.formule, waarde: formule ? t.formule[formule] : "" },
+    { label: t.form.categorie, waarde: categorie ? t.categorie[categorie] : "" },
+    {
+      label: t.form.speelvorm,
+      waarde: `${t.speelvorm[speelvorm]}: ${speelvorm === "rondes" ? aantalRonden : aantalPoules}`,
+    },
+    { label: t.form.inschrijvingsprijs, waarde: gratis ? t.form.gratis : inschrijvingsprijs },
+    { label: t.form.contactEmail, waarde: contactEmail },
+    { label: t.form.maxPloegen, waarde: maxPloegen },
+  ].filter((r) => r.waarde);
+
+  const knopTekst = afficheBezig
+    ? t.form.afficheUploaden
+    : aiBezig
+    ? t.form.afficheAnalyseren
+    : status === "bezig"
+    ? t.form.bezigMetVersturen
+    : reeksModus
+    ? t.form.verstuurReeks(herhaalDatums.filter((d) => d.datum).length)
+    : wachtrij.length > 0
+    ? t.form.verstuurEnVolgende(wachtrij.length)
+    : t.form.versturen;
+
+  const keuzeKnop = (actief: boolean) =>
+    `rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-colors ${
+      actief ? "border-geel bg-geel/10 text-white" : "border-white/15 text-white/70 hover:border-white/40"
+    }`;
+
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12 lg:px-10">
-      <h1 className="mb-2 font-titel text-4xl tracking-wide text-blauw">{t.form.titel}</h1>
-      <p className="mb-8 text-sm text-grijs">{t.form.beschrijving}</p>
+    <div className="wizard-donker bg-[#161616] text-white">
+      <div className="mx-auto min-h-[70vh] max-w-2xl px-6 pb-16 pt-8 lg:px-10">
+        <h1
+          id="wizard-kop"
+          className="scroll-mt-24 font-titel text-[2.3rem] font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl"
+        >
+          {t.form.wTitel1}
+          <span className="block text-geel">{t.form.wTitel2}</span>
+        </h1>
 
-      <form onSubmit={versturen} noValidate className="flex flex-col gap-6">
-        <fieldset className="flex min-w-0 flex-col gap-4 rounded-lg border-[1.5px] border-dashed border-blauw-3 bg-blauw-3/5 p-4">
-          <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
-            {t.form.affiche}
-          </legend>
-          <Veld label={t.form.affiche}>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(e) => afficheGekozen(e.target.files)}
-              className="w-full min-w-0 max-w-full text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
-            />
-            <p className="mt-1 text-xs text-grijs">{t.form.afficheHint}</p>
-            {afficheNaam && !afficheBezig && !afficheFout && (
-              <p className="mt-1 text-xs font-semibold text-donker">{afficheNaam}</p>
-            )}
-            {afficheBezig && <p className="mt-1 text-xs font-semibold text-blauw-2">{t.form.afficheUploaden}</p>}
-            {aiBezig && <p className="mt-1 text-xs font-semibold text-[#b8860b]">{t.form.afficheAnalyseren}</p>}
-            {afficheFout && <p className="mt-1 text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
-            {autoIngevuld && !aiBezig && (
-              <p className="mt-1 text-xs font-semibold text-groen">{t.form.afficheAutoIngevuld}</p>
-            )}
-            {alleAfficheVelden.length > 1 && (
-              <div className="mt-1 rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
-                <p className="font-bold">{t.form.afficheOverzicht(alleAfficheVelden.length)}</p>
-                <ul className="mt-1 flex flex-col gap-0.5">
-                  {alleAfficheVelden.map((item, i) => (
-                    <li key={i} className={i === huidigeIndex ? "font-bold" : i < huidigeIndex ? "text-groen" : ""}>
-                      {i < huidigeIndex ? "✓ " : i === huidigeIndex ? "→ " : "· "}
-                      {afficheItemLabel(item, taal)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {reeksModus && (
-              <p className="mt-1 text-xs font-semibold text-groen">
-                {t.form.reeksHerkend(herhaalDatums.length)}
-              </p>
-            )}
-            {bestaandDubbel && (
-              <div className="mt-2 rounded-md border border-[#fecaca] bg-[#fef2f2] p-3 text-sm text-rood-2">
-                <p className="font-semibold">{t.form.foutDubbel}</p>
-                <p className="mt-1 text-donker">
-                  {(taal === "fr" ? bestaandDubbel.naam_fr : bestaandDubbel.naam_nl) || bestaandDubbel.naam_nl}
-                  {" — "}
-                  {new Date(bestaandDubbel.datum).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE")}
-                  {" — "}
-                  {bestaandDubbel.clubnaam}
-                </p>
-                {bestaandDubbel.affiche_url && (
-                  <a
-                    href={bestaandDubbel.affiche_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 block"
+        <div className="mb-2 mt-6 text-sm">
+          <span className="font-bold text-white">{t.form.wStap(stap)}</span>
+          <span className="text-white/50"> · {STAPPEN[stap - 1]}</span>
+        </div>
+        <ol className="mb-7 grid grid-cols-4 gap-1">
+          {STAPPEN.map((naam, i) => {
+            const nr = i + 1;
+            const klaar = nr < stap;
+            const actief = nr === stap;
+            return (
+              <li key={naam} className="flex flex-col gap-2">
+                <div className="flex items-center">
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 text-[0.65rem] font-extrabold ${
+                      actief
+                        ? "border-geel bg-geel text-[#1f1f1f] shadow-[0_0_0_4px_rgba(244,196,48,0.25)]"
+                        : klaar
+                        ? "border-geel bg-geel text-[#1f1f1f]"
+                        : "border-white/30 text-white/40"
+                    }`}
                   >
-                    <img src={bestaandDubbel.affiche_url} alt="" className="max-h-48 rounded-md border border-rand" />
-                  </a>
-                )}
-                {!reeksModus && status === "fout" && (
-                  <button
-                    type="button"
-                    onClick={verstuurTochOndanksDubbel}
-                    className="mt-3 rounded-md border border-rood-2 px-3 py-1.5 text-sm font-semibold text-rood-2 transition-all hover:bg-[#fecaca] active:scale-95"
-                  >
-                    {t.form.knopTochVersturen}
-                  </button>
-                )}
-              </div>
-            )}
-          </Veld>
-        </fieldset>
+                    {klaar ? "✓" : nr}
+                  </span>
+                  {nr < STAPPEN.length && <span className={`h-0.5 flex-1 ${klaar ? "bg-geel" : "bg-white/20"}`} />}
+                </div>
+                <span className={`text-[0.65rem] leading-tight ${actief ? "font-bold text-white" : "text-white/50"}`}>
+                  {naam}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
 
-        <fieldset className="flex flex-col gap-4">
-          <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
-            {t.form.sectieBasis}
-          </legend>
-          <Veld label={t.form.jouwNaam} verplicht id="veld-naamIndiener">
-            <input
-              required
-              value={naamIndiener}
-              onChange={(e) => setNaamIndiener(e.target.value)}
-              className={`veld-input ${veldFout(naamIndiener)}`}
-            />
-            <p className="mt-1 text-xs text-grijs">{t.form.jouwNaamHint}</p>
-          </Veld>
-          {reeksModus && (
-            <div id="veld-herhaaldatums" className="flex scroll-mt-4 flex-col gap-1.5">
-              <span className="text-[0.8rem] font-bold text-donker">
-                {t.form.herhaalDatums} <span className="text-rood">*</span>
-              </span>
-              {reeksNamenVariëren && (
-                <p className="text-xs text-grijs">{t.form.reeksEigenNamen}</p>
-              )}
-              <div className="flex flex-col gap-2">
-                {herhaalDatums.map((item, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <input
-                      type="date"
-                      value={item.datum}
-                      onChange={(e) =>
-                        setHerhaalDatums((lijst) =>
-                          lijst.map((v, j) => (j === i ? { ...v, datum: e.target.value } : v))
-                        )
-                      }
-                      className="veld-input"
-                    />
-                    {reeksNamenVariëren && item.naamNl && (
-                      <span className="text-xs text-grijs">{item.naamNl}</span>
-                    )}
-                    {herhaalDatums.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setHerhaalDatums((lijst) => lijst.filter((_, j) => j !== i))}
-                        className="shrink-0 rounded-md border border-rand px-2.5 py-2 text-sm font-bold text-grijs transition-all hover:border-rood-2 hover:text-rood-2 active:scale-95"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => setHerhaalDatums((lijst) => [...lijst, { datum: "", naamNl: "", naamFr: "" }])}
-                className="mt-1 self-start rounded-md border border-rand px-3 py-1.5 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-95"
-              >
-                {t.beheer.datumToevoegen}
-              </button>
-            </div>
-          )}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {!reeksModus && (
-              <Veld label={t.form.datum} verplicht id="veld-datum">
+        <p className="mb-6 text-lg text-white/90">{INTRO[stap - 1]}</p>
+
+        <form
+          onSubmit={(e) => {
+            if (stap < 4) {
+              e.preventDefault();
+              volgende();
+            } else {
+              versturen(e);
+            }
+          }}
+          noValidate
+          className="flex flex-col gap-6"
+        >
+          {/* STAP 1 — Basisgegevens */}
+          <div className={stap === 1 ? "flex flex-col gap-5" : "hidden"}>
+            <div id="veld-affiche" className="flex flex-col gap-2">
+              <label className="flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-white/25 p-4 transition-colors hover:border-geel/60">
                 <input
-                  type="date"
-                  required
-                  value={datum}
-                  onChange={(e) => setDatum(e.target.value)}
-                  className={`veld-input ${veldFout(datum)}`}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => afficheGekozen(e.target.files)}
+                  className="sr-only"
                 />
+                <svg
+                  viewBox="0 0 24 24"
+                  width={30}
+                  height={30}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.6}
+                  className="shrink-0 text-white/80"
+                  aria-hidden
+                >
+                  <path d="M7 3h7l5 5v13H7z" strokeLinejoin="round" />
+                  <path d="M14 3v5h5M10 13h6M10 17h6" strokeLinecap="round" />
+                </svg>
+                <span className="min-w-0">
+                  <span className="block font-bold text-white">{t.form.wAfficheToevoegen}</span>
+                  <span className="block text-xs text-white/60">{t.form.wAfficheHint}</span>
+                </span>
+              </label>
+              <p className="text-xs text-grijs">{t.form.afficheHint}</p>
+              {afficheNaam && !afficheBezig && !afficheFout && (
+                <p className="text-xs font-semibold text-donker">{afficheNaam}</p>
+              )}
+              {afficheBezig && <p className="text-xs font-semibold text-geel">{t.form.afficheUploaden}</p>}
+              {aiBezig && <p className="text-xs font-semibold text-geel">{t.form.afficheAnalyseren}</p>}
+              {afficheFout && <p className="text-xs font-semibold text-rood-2">{t.form.afficheFout}</p>}
+              {autoIngevuld && !aiBezig && (
+                <p className="text-xs font-semibold text-[#6ee7a7]">{t.form.afficheAutoIngevuld}</p>
+              )}
+              {alleAfficheVelden.length > 1 && (
+                <div className="rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
+                  <p className="font-bold">{t.form.afficheOverzicht(alleAfficheVelden.length)}</p>
+                  <ul className="mt-1 flex flex-col gap-0.5">
+                    {alleAfficheVelden.map((item, i) => (
+                      <li key={i} className={i === huidigeIndex ? "font-bold" : i < huidigeIndex ? "text-groen" : ""}>
+                        {i < huidigeIndex ? "✓ " : i === huidigeIndex ? "→ " : "· "}
+                        {afficheItemLabel(item, taal)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {reeksModus && (
+                <p className="text-xs font-semibold text-[#6ee7a7]">{t.form.reeksHerkend(herhaalDatums.length)}</p>
+              )}
+              {bestaandDubbel && (
+                <div className="rounded-md border border-[#fecaca] bg-[#fef2f2] p-3 text-sm text-rood-2">
+                  <p className="font-semibold">{t.form.foutDubbel}</p>
+                  <p className="mt-1 text-donker">
+                    {(taal === "fr" ? bestaandDubbel.naam_fr : bestaandDubbel.naam_nl) || bestaandDubbel.naam_nl}
+                    {" — "}
+                    {datumLabel(bestaandDubbel.datum)}
+                    {" — "}
+                    {bestaandDubbel.clubnaam}
+                  </p>
+                  {bestaandDubbel.affiche_url && (
+                    <a href={bestaandDubbel.affiche_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">
+                      <img src={bestaandDubbel.affiche_url} alt="" className="max-h-48 rounded-md border border-rand" />
+                    </a>
+                  )}
+                  {!reeksModus && status === "fout" && (
+                    <button
+                      type="button"
+                      onClick={verstuurTochOndanksDubbel}
+                      className="mt-3 rounded-md border border-rood-2 px-3 py-1.5 text-sm font-semibold text-rood-2 transition-all hover:bg-[#fecaca] active:scale-95"
+                    >
+                      {t.form.knopTochVersturen}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <Veld label={t.form.naamToernooi} verplicht id="veld-naamNl">
+              <input
+                required
+                value={naamNl}
+                onChange={(e) => {
+                  setNaamNl(e.target.value);
+                  setNaamFr(e.target.value);
+                }}
+                className={`veld-input ${veldFout(naamNl)}`}
+              />
+            </Veld>
+
+            <Veld label={t.form.tornooiType} verplicht>
+              <div className="grid grid-cols-2 gap-2">
+                <button type="button" onClick={() => setOpenToernooi(true)} className={keuzeKnop(openToernooi)}>
+                  {t.form.openToernooi}
+                </button>
+                <button type="button" onClick={() => setOpenToernooi(false)} className={keuzeKnop(!openToernooi)}>
+                  {t.form.officieelToernooi}
+                </button>
+              </div>
+            </Veld>
+
+            {openToernooi ? (
+              <Veld label={t.form.organisator} verplicht id="veld-organisator">
+                <ClubKiezer
+                  waarde={clubnaam}
+                  onWaardeChange={(v) => {
+                    setClubnaam(v);
+                    setClubId(null);
+                  }}
+                  onClubGekozen={(club) => {
+                    setClubnaam(club.naam);
+                    setClubId(club.id);
+                    if (club.adres) setAdres(club.adres);
+                    setGemeente(club.gemeente);
+                    setProvincie(club.provincie);
+                    setAdresVanClub(true);
+                  }}
+                  clubs={clubs}
+                  fout={veldFout(clubnaam)}
+                />
+                {adresVanClub && (
+                  <p className="mt-1 text-xs font-semibold text-[#6ee7a7]">{t.form.adresVanClubIngevuld}</p>
+                )}
+              </Veld>
+            ) : (
+              <Veld label={t.form.clubnaam} verplicht id="veld-club">
+                <ClubKiezer
+                  waarde={clubnaam}
+                  onWaardeChange={(v) => {
+                    setClubnaam(v);
+                    setClubId(null);
+                  }}
+                  onClubGekozen={(club) => {
+                    setClubnaam(club.naam);
+                    setClubId(club.id);
+                    if (club.adres) setAdres(club.adres);
+                    setGemeente(club.gemeente);
+                    setProvincie(club.provincie);
+                    setAdresVanClub(true);
+                  }}
+                  clubs={clubs}
+                  fout={veldFout(clubId ?? "")}
+                />
+                {adresVanClub && (
+                  <p className="mt-1 text-xs font-semibold text-[#6ee7a7]">{t.form.adresVanClubIngevuld}</p>
+                )}
+                {clubnaam.trim() && !clubId && (
+                  <p className="mt-1 text-xs font-semibold text-rood-2">{t.form.clubNietGekoppeld}</p>
+                )}
+                <p className="mt-1 text-xs text-grijs">
+                  {t.form.clubStaatErNietBij}{" "}
+                  <Link href="/clubs/toevoegen" target="_blank" className="font-semibold text-geel underline">
+                    {t.form.clubHierAanmelden}
+                  </Link>
+                </p>
               </Veld>
             )}
-            <Veld label={t.form.uur} verplicht id="veld-uur">
-              <input
-                type="time"
-                required
-                value={uur}
-                onChange={(e) => setUur(e.target.value)}
-                className={`veld-input ${veldFout(uur)}`}
-              />
-            </Veld>
-          </div>
-          <Veld label={t.form.tornooiType} verplicht>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setOpenToernooi(true)}
-                className={`rounded-md border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
-                  openToernooi
-                    ? "border-blauw bg-blauw text-white"
-                    : "border-rand text-grijs hover:border-blauw-3"
-                }`}
-              >
-                {t.form.openToernooi}
-              </button>
-              <button
-                type="button"
-                onClick={() => setOpenToernooi(false)}
-                className={`rounded-md border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
-                  !openToernooi
-                    ? "border-blauw bg-blauw text-white"
-                    : "border-rand text-grijs hover:border-blauw-3"
-                }`}
-              >
-                {t.form.officieelToernooi}
-              </button>
-            </div>
-          </Veld>
-          {openToernooi ? (
-            <Veld label={t.form.organisator} verplicht id="veld-organisator">
-              <ClubKiezer
-                waarde={clubnaam}
-                onWaardeChange={(v) => {
-                  setClubnaam(v);
-                  setClubId(null);
-                }}
-                onClubGekozen={(club) => {
-                  setClubnaam(club.naam);
-                  setClubId(club.id);
-                  if (club.adres) setAdres(club.adres);
-                  setGemeente(club.gemeente);
-                  setProvincie(club.provincie);
-                  setAdresVanClub(true);
-                }}
-                clubs={clubs}
-                fout={veldFout(clubnaam)}
-              />
-              {adresVanClub && <p className="mt-1 text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</p>}
-            </Veld>
-          ) : (
-            <Veld label={t.form.clubnaam} verplicht id="veld-club">
-              <ClubKiezer
-                waarde={clubnaam}
-                onWaardeChange={(v) => {
-                  setClubnaam(v);
-                  setClubId(null);
-                }}
-                onClubGekozen={(club) => {
-                  setClubnaam(club.naam);
-                  setClubId(club.id);
-                  if (club.adres) setAdres(club.adres);
-                  setGemeente(club.gemeente);
-                  setProvincie(club.provincie);
-                  setAdresVanClub(true);
-                }}
-                clubs={clubs}
-                fout={veldFout(clubId ?? "")}
-              />
-              {adresVanClub && <p className="mt-1 text-xs font-semibold text-groen">{t.form.adresVanClubIngevuld}</p>}
-              {clubnaam.trim() && !clubId && (
-                <p className="mt-1 text-xs font-semibold text-rood-2">{t.form.clubNietGekoppeld}</p>
-              )}
-              <p className="mt-1 text-xs text-grijs">
-                {t.form.clubStaatErNietBij}{" "}
-                <Link href="/clubs/toevoegen" target="_blank" className="font-semibold text-blauw-2 underline">
-                  {t.form.clubHierAanmelden}
-                </Link>
-              </p>
-            </Veld>
-          )}
-          <Veld label={t.form.naamToernooi} verplicht id="veld-naamNl">
-            <input
-              required
-              value={naamNl}
-              onChange={(e) => {
-                setNaamNl(e.target.value);
-                setNaamFr(e.target.value);
-              }}
-              className={`veld-input ${veldFout(naamNl)}`}
-            />
-          </Veld>
-          <Veld
-            label={openToernooi ? t.form.adres : `${t.form.adres} (${t.form.optioneel})`}
-            verplicht={openToernooi}
-            id="veld-adres"
-          >
-            <input
-              required={openToernooi}
-              value={adres}
-              onChange={(e) => setAdres(e.target.value)}
-              className={`veld-input ${openToernooi ? veldFout(adres) : ""}`}
-            />
-          </Veld>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Veld label={t.form.gemeente} verplicht id="veld-gemeente">
-              <input
-                required
-                value={gemeente}
-                onChange={(e) => setGemeente(e.target.value)}
-                className={`veld-input ${veldFout(gemeente)}`}
-              />
-            </Veld>
-            <Veld label={t.form.provincie} verplicht id="veld-provincie">
-              <select
-                required
-                value={provincie}
-                onChange={(e) => setProvincie(e.target.value as Provincie)}
-                className={`veld-input ${veldFout(provincie)}`}
-              >
-                <option value="" disabled>
-                  {t.form.kiesProvincie}
-                </option>
-                {ALLE_PROVINCIES.map((p) => (
-                  <option key={p} value={p}>
-                    {vertaalProvincie(p, taal)}
-                  </option>
-                ))}
-              </select>
-            </Veld>
-          </div>
-        </fieldset>
 
-        <fieldset className="flex flex-col gap-4">
-          <legend className="mb-1 text-xs font-extrabold uppercase tracking-widest text-[#94a3b8]">
-            {t.form.sectieDetails}
-          </legend>
-          {schiftingHint && (
-            <p className="rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
-              {t.form.schiftingHint}
-            </p>
-          )}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div id="veld-formule" className="flex scroll-mt-4 flex-col gap-2">
+              <span className="text-[0.8rem] font-bold text-donker">
+                {t.form.formule} <span className="text-rood">*</span>
+              </span>
+              <FormuleKaarten
+                waarde={formule}
+                onChange={(f) => setFormule(f)}
+                namen={t.formule}
+                fout={verzendPoging && !formule}
+              />
+            </div>
+
+            <Veld label={`${t.form.opmerking} (${t.form.optioneel})`}>
+              <textarea
+                rows={3}
+                value={opmerking}
+                onChange={(e) => setOpmerking(e.target.value)}
+                className="veld-input resize-none"
+              />
+            </Veld>
+          </div>
+
+          {/* STAP 2 — Locatie & datum */}
+          <div className={stap === 2 ? "flex flex-col gap-5" : "hidden"}>
+            {reeksModus && (
+              <div id="veld-herhaaldatums" className="flex scroll-mt-4 flex-col gap-1.5">
+                <span className="text-[0.8rem] font-bold text-donker">
+                  {t.form.herhaalDatums} <span className="text-rood">*</span>
+                </span>
+                {reeksNamenVariëren && <p className="text-xs text-grijs">{t.form.reeksEigenNamen}</p>}
+                <div className="flex flex-col gap-2">
+                  {herhaalDatums.map((item, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <input
+                        type="date"
+                        value={item.datum}
+                        onChange={(e) =>
+                          setHerhaalDatums((lijst) =>
+                            lijst.map((v, j) => (j === i ? { ...v, datum: e.target.value } : v))
+                          )
+                        }
+                        className="veld-input"
+                      />
+                      {reeksNamenVariëren && item.naamNl && <span className="text-xs text-grijs">{item.naamNl}</span>}
+                      {herhaalDatums.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setHerhaalDatums((lijst) => lijst.filter((_, j) => j !== i))}
+                          className="shrink-0 rounded-md border border-white/20 px-2.5 py-2 text-sm font-bold text-white/70 transition-all hover:border-rood-2 hover:text-rood-2 active:scale-95"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setHerhaalDatums((lijst) => [...lijst, { datum: "", naamNl: "", naamFr: "" }])}
+                  className="mt-1 self-start rounded-md border border-white/20 px-3 py-1.5 text-sm font-semibold text-white transition-all hover:border-geel active:scale-95"
+                >
+                  {t.beheer.datumToevoegen}
+                </button>
+              </div>
+            )}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {!reeksModus && (
+                <Veld label={t.form.datum} verplicht id="veld-datum">
+                  <input
+                    type="date"
+                    required
+                    value={datum}
+                    onChange={(e) => setDatum(e.target.value)}
+                    className={`veld-input ${veldFout(datum)}`}
+                  />
+                </Veld>
+              )}
+              <Veld label={t.form.uur} verplicht id="veld-uur">
+                <input
+                  type="time"
+                  required
+                  value={uur}
+                  onChange={(e) => setUur(e.target.value)}
+                  className={`veld-input ${veldFout(uur)}`}
+                />
+              </Veld>
+            </div>
+            <Veld
+              label={openToernooi ? t.form.adres : `${t.form.adres} (${t.form.optioneel})`}
+              verplicht={openToernooi}
+              id="veld-adres"
+            >
+              <input
+                required={openToernooi}
+                value={adres}
+                onChange={(e) => setAdres(e.target.value)}
+                className={`veld-input ${openToernooi ? veldFout(adres) : ""}`}
+              />
+            </Veld>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Veld label={t.form.gemeente} verplicht id="veld-gemeente">
+                <input
+                  required
+                  value={gemeente}
+                  onChange={(e) => setGemeente(e.target.value)}
+                  className={`veld-input ${veldFout(gemeente)}`}
+                />
+              </Veld>
+              <Veld label={t.form.provincie} verplicht id="veld-provincie">
+                <select
+                  required
+                  value={provincie}
+                  onChange={(e) => setProvincie(e.target.value as Provincie)}
+                  className={`veld-input ${veldFout(provincie)}`}
+                >
+                  <option value="" disabled>
+                    {t.form.kiesProvincie}
+                  </option>
+                  {ALLE_PROVINCIES.map((p) => (
+                    <option key={p} value={p}>
+                      {vertaalProvincie(p, taal)}
+                    </option>
+                  ))}
+                </select>
+              </Veld>
+            </div>
+          </div>
+
+          {/* STAP 3 — Extra info */}
+          <div className={stap === 3 ? "flex flex-col gap-5" : "hidden"}>
+            {schiftingHint && (
+              <p className="rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs text-[#92400e]">
+                {t.form.schiftingHint}
+              </p>
+            )}
             <Veld label={t.form.categorie} verplicht id="veld-categorie">
               <select
                 required
@@ -750,44 +900,17 @@ export function TournamentForm() {
                 ))}
               </select>
             </Veld>
-            <Veld label={t.form.formule} verplicht id="veld-formule">
-              <select
-                required
-                value={formule}
-                onChange={(e) => setFormule(e.target.value as Formule)}
-                className={`veld-input ${veldFout(formule)}`}
-              >
-                <option value="" disabled>
-                  {t.form.kiesFormule}
-                </option>
-                {FORMULES.map((f) => (
-                  <option key={f} value={f}>
-                    {t.formule[f]}
-                  </option>
-                ))}
-              </select>
-            </Veld>
-          </div>
-          <Veld label={t.form.speelvorm} verplicht>
-            <div className="flex gap-2">
-              {(["rondes", "poules"] as Speelvorm[]).map((sv) => (
-                <button
-                  key={sv}
-                  type="button"
-                  onClick={() => setSpeelvorm(sv)}
-                  className={`rounded-md border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
-                    speelvorm === sv
-                      ? "border-blauw bg-blauw text-white"
-                      : "border-rand text-grijs hover:border-blauw-3"
-                  }`}
-                >
-                  {t.speelvorm[sv]}
-                </button>
-              ))}
-            </div>
-          </Veld>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Veld label={t.form.speelvorm} verplicht>
+              <div className="grid grid-cols-2 gap-2">
+                {(["rondes", "poules"] as Speelvorm[]).map((sv) => (
+                  <button key={sv} type="button" onClick={() => setSpeelvorm(sv)} className={keuzeKnop(speelvorm === sv)}>
+                    {t.speelvorm[sv]}
+                  </button>
+                ))}
+              </div>
+            </Veld>
+
             {speelvorm === "rondes" ? (
               <Veld label={t.form.aantalRonden} verplicht id="veld-aantalRonden">
                 <input
@@ -822,49 +945,50 @@ export function TournamentForm() {
                 />
               </Veld>
             )}
-            <Veld label={`${t.form.contactEmail} (${t.form.optioneel})`}>
-              <input
-                type="email"
-                value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                className="veld-input"
-              />
-            </Veld>
-          </div>
 
-          <label className="flex items-center gap-2 text-sm font-medium text-donker">
-            <input
-              type="checkbox"
-              checked={gratis}
-              onChange={(e) => setGratis(e.target.checked)}
-              className="h-4 w-4"
-            />
-            {t.form.gratis}
-          </label>
-
-          {!gratis && (
-            <Veld label={`${t.form.inschrijvingsprijs} (${t.form.optioneel})`}>
+            <label className="flex items-center gap-2 text-sm font-medium text-donker">
               <input
-                type="number"
-                min={0}
-                step="0.5"
-                value={inschrijvingsprijs}
-                onChange={(e) => setInschrijvingsprijs(e.target.value)}
-                className="veld-input"
+                type="checkbox"
+                checked={gratis}
+                onChange={(e) => setGratis(e.target.checked)}
+                className="h-4 w-4"
               />
-            </Veld>
-          )}
+              {t.form.gratis}
+            </label>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Veld label={`${t.form.maxPloegen} (${t.form.optioneel})`}>
-              <input
-                type="number"
-                min={1}
-                value={maxPloegen}
-                onChange={(e) => setMaxPloegen(e.target.value)}
-                className="veld-input"
-              />
-            </Veld>
+            {!gratis && (
+              <Veld label={`${t.form.inschrijvingsprijs} (${t.form.optioneel})`}>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.5"
+                  value={inschrijvingsprijs}
+                  onChange={(e) => setInschrijvingsprijs(e.target.value)}
+                  className="veld-input"
+                />
+              </Veld>
+            )}
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Veld label={`${t.form.maxPloegen} (${t.form.optioneel})`}>
+                <input
+                  type="number"
+                  min={1}
+                  value={maxPloegen}
+                  onChange={(e) => setMaxPloegen(e.target.value)}
+                  className="veld-input"
+                />
+              </Veld>
+              <Veld label={`${t.form.contactEmail} (${t.form.optioneel})`}>
+                <input
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  className="veld-input"
+                />
+              </Veld>
+            </div>
+
             <Veld label={`${t.form.linkInschrijving} (${t.form.optioneel})`}>
               <input
                 type="url"
@@ -875,60 +999,164 @@ export function TournamentForm() {
                 className="veld-input"
               />
             </Veld>
+
+            <KwalificatieDataVeld
+              waarden={kwalificatieData}
+              onChange={setKwalificatieData}
+              uur={kwalificatieUur}
+              onUurChange={setKwalificatieUur}
+              hoofdDatum={datum}
+              hoofdUur={uur}
+            />
           </div>
 
-          <Veld label={`${t.form.opmerking} (${t.form.optioneel})`}>
-            <textarea
-              rows={3}
-              value={opmerking}
-              onChange={(e) => setOpmerking(e.target.value)}
-              className="veld-input resize-none"
-            />
-          </Veld>
+          {/* STAP 4 — Controle */}
+          <div className={stap === 4 ? "flex flex-col gap-5" : "hidden"}>
+            <div className="rounded-xl border border-white/15 bg-white/[0.05] p-4">
+              <h2 className="mb-3 text-xs font-extrabold uppercase tracking-widest text-white/60">
+                {t.form.wControleTitel}
+              </h2>
+              <dl className="flex flex-col gap-2.5">
+                {samenvatting.map((r) => (
+                  <div key={r.label} className="flex justify-between gap-4 text-sm">
+                    <dt className="shrink-0 text-white/60">{r.label}</dt>
+                    <dd className="text-right font-semibold text-white">{r.waarde}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
 
-          <KwalificatieDataVeld
-            waarden={kwalificatieData}
-            onChange={setKwalificatieData}
-            uur={kwalificatieUur}
-            onUurChange={setKwalificatieUur}
-            hoofdDatum={datum}
-            hoofdUur={uur}
-          />
-        </fieldset>
+            <Veld label={t.form.jouwNaam} verplicht id="veld-naamIndiener">
+              <input
+                required
+                value={naamIndiener}
+                onChange={(e) => setNaamIndiener(e.target.value)}
+                className={`veld-input ${veldFout(naamIndiener)}`}
+              />
+              <p className="mt-1 text-xs text-grijs">{t.form.jouwNaamHint}</p>
+            </Veld>
+          </div>
 
-        {verzendPoging &&
-          verplichteVeldenLijst().some((v) => !v.waarde) && (
+          {verzendPoging && verplichteVeldenLijst().some((v) => !v.waarde) && (
             <p className="text-sm font-medium text-rood-2">{t.form.foutVerplichteVelden}</p>
           )}
 
-        {status === "fout" && !bestaandDubbel && (
-          <p className="text-sm font-medium text-rood-2">
-            {foutReden === "ongeldige_invoer" ? t.form.foutOngeldigeInvoer : t.form.fout}
-          </p>
-        )}
+          {status === "fout" && !bestaandDubbel && (
+            <p className="text-sm font-medium text-rood-2">
+              {foutReden === "ongeldige_invoer" ? t.form.foutOngeldigeInvoer : t.form.fout}
+            </p>
+          )}
 
-        <Knop
-          type="submit"
-          variant="rood"
-          disabled={status === "bezig" || afficheBezig || aiBezig}
-          className="self-start"
-        >
-          {afficheBezig
-            ? t.form.afficheUploaden
-            : aiBezig
-            ? t.form.afficheAnalyseren
-            : status === "bezig"
-            ? t.form.bezigMetVersturen
-            : reeksModus
-            ? t.form.verstuurReeks(herhaalDatums.filter((d) => d.datum).length)
-            : wachtrij.length > 0
-            ? t.form.verstuurEnVolgende(wachtrij.length)
-            : t.form.versturen}
-        </Knop>
-      </form>
+          {stap < 4 ? (
+            <button
+              type="button"
+              onClick={volgende}
+              disabled={afficheBezig || aiBezig}
+              className="flex w-full items-center justify-between rounded-xl bg-geel px-5 py-4 text-base font-bold text-[#1f1f1f] shadow-[0_4px_20px_rgba(244,196,48,0.3)] transition-all active:brightness-95 disabled:opacity-60"
+            >
+              {afficheBezig ? t.form.afficheUploaden : aiBezig ? t.form.afficheAnalyseren : VERDER[stap - 1]}
+              <span aria-hidden className="text-xl">
+                →
+              </span>
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={status === "bezig" || afficheBezig || aiBezig}
+              className="flex w-full items-center justify-between rounded-xl bg-geel px-5 py-4 text-base font-bold text-[#1f1f1f] shadow-[0_4px_20px_rgba(244,196,48,0.3)] transition-all active:brightness-95 disabled:opacity-60"
+            >
+              {knopTekst}
+              <span aria-hidden className="text-xl">
+                →
+              </span>
+            </button>
+          )}
+          {stap > 1 && (
+            <button
+              type="button"
+              onClick={() => gaNaarStap(stap - 1)}
+              className="self-center text-sm font-semibold text-white/70 underline"
+            >
+              ‹ {t.form.wVorige}
+            </button>
+          )}
+        </form>
+      </div>
     </div>
   );
 }
+
+const FORMULE_AANTAL: Partial<Record<Formule, number>> = {
+  "tete-a-tete": 1,
+  doublette: 2,
+  triplette: 3,
+  quartet: 4,
+  kwintet: 5,
+  sextet: 6,
+};
+
+function PersoonIcoon() {
+  return (
+    <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+      <circle cx="12" cy="8" r="3.4" />
+      <path d="M5 20c0-3.6 3-6 7-6s7 2.4 7 6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function FormuleKaarten({
+  waarde,
+  onChange,
+  namen,
+  fout,
+}: {
+  waarde: Formule | "";
+  onChange: (f: Formule) => void;
+  namen: Record<Formule, string>;
+  fout: boolean;
+}) {
+  return (
+    <div className={`grid grid-cols-3 gap-2 rounded-xl ${fout ? "ring-2 ring-rood-2" : ""}`}>
+      {FORMULES.map((f) => {
+        const gekozen = waarde === f;
+        const aantal = FORMULE_AANTAL[f];
+        return (
+          <button
+            key={f}
+            type="button"
+            onClick={() => onChange(f)}
+            aria-pressed={gekozen}
+            className={`relative flex min-h-[5.5rem] flex-col items-center justify-center gap-2 rounded-xl border-2 px-1.5 py-3 text-center transition-colors ${
+              gekozen ? "border-geel bg-geel/10" : "border-white/15 hover:border-white/40"
+            }`}
+          >
+            {gekozen && (
+              <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-geel text-[0.7rem] font-extrabold text-[#1f1f1f]">
+                ✓
+              </span>
+            )}
+            <span
+              className={`flex flex-wrap items-center justify-center gap-0.5 ${gekozen ? "text-geel" : "text-white/80"}`}
+            >
+              {aantal && aantal <= 3 ? (
+                Array.from({ length: aantal }).map((_, i) => <PersoonIcoon key={i} />)
+              ) : aantal ? (
+                <>
+                  <PersoonIcoon />
+                  <span className="text-sm font-extrabold">×{aantal}</span>
+                </>
+              ) : (
+                <span className="text-lg leading-none">{f === "kleurentornooi" ? "🎨" : "🔀"}</span>
+              )}
+            </span>
+            <span className="text-[0.74rem] font-bold leading-tight text-white">{namen[f]}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 
 function Veld({
   label,

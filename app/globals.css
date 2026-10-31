@@ -122,3 +122,40 @@ body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) .mt-3.b
   border-radius: 8px;
   padding: 6px 12px;
 }
+
+/* Tornooi-toevoegen-formulier (4 stappen): donker thema, enkel binnen .wizard-donker */
+.wizard-donker .veld-input {
+  width: 100%;
+  background: #1c1c1c;
+  border-color: #3a3a3a;
+  color: #ffffff;
+}
+.wizard-donker .veld-input::placeholder {
+  color: #8a8a8a;
+}
+.wizard-donker .veld-input:focus {
+  border-color: #f4c430;
+}
+.wizard-donker select.veld-input option {
+  background: #1c1c1c;
+  color: #ffffff;
+}
+.wizard-donker input[type="date"],
+.wizard-donker input[type="time"] {
+  color-scheme: dark;
+}
+.wizard-donker .text-donker {
+  color: #f2f2f2;
+}
+.wizard-donker .text-grijs {
+  color: #b8b8b8;
+}
+.wizard-donker :is(.text-blauw, .text-blauw-2) {
+  color: #f4c430;
+}
+.wizard-donker :is(.bg-white, [class*="bg-[#f"]) .text-donker {
+  color: #1f1f1f;
+}
+.wizard-donker :is(.bg-white, [class*="bg-[#f"]) .text-grijs {
+  color: #555555;
+}
