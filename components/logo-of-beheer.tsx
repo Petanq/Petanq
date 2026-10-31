@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
 
-type BeheerStatus = {
+export type BeheerStatus = {
   moderator: boolean;
   admin: boolean;
   match13: boolean;
@@ -124,38 +124,6 @@ function BeheerKaders({ status }: { status: BeheerStatus }) {
     window.location.reload();
   }
 
-  type Kader = { href: string; label: ReactNode; icoon: ReactNode; badge?: number };
-  const kaders: Kader[] = [];
-  if (status.moderator) {
-    kaders.push(
-      { href: "/beheer", label: t.beheer.inBehandeling, icoon: <IcoonKlok />, badge: status.inBehandeling },
-      { href: "/beheer/toernooien", label: t.beheer.alleToernooien, icoon: <IcoonLijst /> },
-      { href: "/beheer/schiftingen", label: t.beheer.schiftingen, icoon: <IcoonKalender /> },
-      { href: "/beheer/clubs", label: t.beheer.clubsBeheer, icoon: <IcoonClubs />, badge: status.wachtendeClubs },
-      { href: "/beheer/moderatoren", label: t.beheer.vrijwilligers, icoon: <IcoonHart /> },
-      { href: "/beheer/ideeen", label: t.beheer.ideeen, icoon: <IcoonLamp /> }
-    );
-    if (status.admin) {
-      kaders.push({
-        href: "/beheer/verwijderaanvragen",
-        label: t.beheer.verwijderaanvragen,
-        icoon: <IcoonPrullenbak />,
-        badge: status.verwijderaanvragen,
-      });
-    }
-  }
-  if (status.admin || status.match13) {
-    kaders.push({
-      href: "/beheer/match13",
-      label: (
-        <span>
-          Match<span className="text-geel">13</span>
-        </span>
-      ),
-      icoon: <IcoonBoules />,
-    });
-  }
-
   return (
     <div className="border-b-4 border-geel bg-[#161616] px-4 pb-4 pt-3 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[1140px]">
@@ -171,26 +139,80 @@ function BeheerKaders({ status }: { status: BeheerStatus }) {
             {t.beheer.uitloggen}
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 lg:grid-cols-8">
-          {kaders.map((k) => (
-            <Link
-              key={k.href}
-              href={k.href}
-              className="relative flex min-h-[4.4rem] flex-col justify-between gap-1 rounded-xl border-2 border-geel/60 bg-white/[0.05] p-2.5 sm:p-3 shadow-[0_0_14px_rgba(244,196,48,0.1)] transition-colors hover:border-geel active:bg-white/[0.1]"
-            >
-              <span className="text-geel">{k.icoon}</span>
-              <span style={{ hyphens: "auto" }} className="break-words text-[0.7rem] font-semibold leading-tight text-white sm:text-[0.8rem]">
-                {k.label}
-              </span>
-              {k.badge ? (
-                <span className="absolute right-2 top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-rood px-1.5 text-[0.65rem] font-bold text-white">
-                  {k.badge}
-                </span>
-              ) : null}
-            </Link>
-          ))}
-        </div>
+        <BeheerKaderRooster status={status} />
       </div>
+    </div>
+  );
+}
+
+// De kaders zelf: gedeeld door de band bovenaan de gewone pagina's en de
+// navigatie binnen het beheer (daar is `actiefHref` het geopende onderdeel).
+export function BeheerKaderRooster({ status, actiefHref }: { status: BeheerStatus; actiefHref?: string }) {
+  const { t } = useTranslation();
+
+  type Kader = { href: string; label: ReactNode; icoon: ReactNode; badge?: number };
+  const kaders: Kader[] = [];
+  if (status.moderator) {
+    kaders.push(
+      { href: "/beheer", label: t.beheer.inBehandeling, icoon: <IcoonKlok />, badge: status.inBehandeling },
+      { href: "/beheer/toernooien", label: t.beheer.alleToernooien, icoon: <IcoonLijst /> },
+      { href: "/beheer/schiftingen", label: t.beheer.schiftingen, icoon: <IcoonKalender /> },
+      { href: "/beheer/clubs", label: t.beheer.clubsBeheer, icoon: <IcoonClubs />, badge: status.wachtendeClubs },
+      { href: "/beheer/moderatoren", label: t.beheer.vrijwilligers, icoon: <IcoonHart /> },
+      { href: "/beheer/ideeen", label: t.beheer.ideeen, icoon: <IcoonLamp /> }
+    );
+    if (status.admin) {
+      kaders.push({
+        href: "/beheer/verwijderaanvragen",
+        label: t.beheer.verwijderaanvragen.replace("aanvragen", "\u00ADaanvragen"),
+        icoon: <IcoonPrullenbak />,
+        badge: status.verwijderaanvragen,
+      });
+    }
+  }
+  if (status.admin || status.match13) {
+    kaders.push({
+      href: "/beheer/match13",
+      label: (
+        <span>
+          Match<span className={actiefHref === "/beheer/match13" ? "" : "text-geel"}>13</span>
+        </span>
+      ),
+      icoon: <IcoonBoules />,
+    });
+  }
+
+  return (
+    <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 lg:grid-cols-8">
+      {kaders.map((k) => {
+        const actief = actiefHref === k.href;
+        return (
+          <Link
+            key={k.href}
+            href={k.href}
+            className={`relative flex min-h-[4.4rem] flex-col justify-between gap-1 rounded-xl border-2 p-2.5 transition-colors sm:p-3 ${
+              actief
+                ? "border-geel bg-geel shadow-[0_0_18px_rgba(244,196,48,0.35)]"
+                : "border-geel/60 bg-white/[0.05] shadow-[0_0_14px_rgba(244,196,48,0.1)] hover:border-geel active:bg-white/[0.1]"
+            }`}
+          >
+            <span className={actief ? "text-[#1f1f1f]" : "text-geel"}>{k.icoon}</span>
+            <span
+              style={{ hyphens: "auto" }}
+              className={`break-words text-[0.7rem] font-semibold leading-tight sm:text-[0.8rem] ${
+                actief ? "text-[#1f1f1f]" : "text-white"
+              }`}
+            >
+              {k.label}
+            </span>
+            {k.badge ? (
+              <span className="absolute right-2 top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-rood px-1.5 text-[0.65rem] font-bold text-white">
+                {k.badge}
+              </span>
+            ) : null}
+          </Link>
+        );
+      })}
     </div>
   );
 }
