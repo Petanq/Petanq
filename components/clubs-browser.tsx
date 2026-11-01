@@ -1,15 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { Club } from "@/lib/types";
 import { ALLE_PROVINCIES, Provincie, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
 import { ClubCard } from "./club-card";
 import { AddClubCard } from "./add-club-card";
-import { BelgiumMap } from "./belgium-map";
 import { ClubsGsmKop } from "./clubs-gsm-kop";
-import { NabijeClubs, PlaatsSuggesties } from "./clubs-nabij";
 import { ZoekIcoon } from "./ui/zoek-icoon";
 import { Plaats, PostcodeIndex, dichtstbijzijndeClubs, laadPostcodes, zoekPlaatsen } from "@/lib/postcodes";
 
@@ -30,7 +27,6 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
   }
   const [regioFilter, setRegioFilter] = useState<Regio | null>(null);
   const [opengeklapt, setOpengeklapt] = useState<Set<Provincie>>(new Set());
-  const [kaartTonen, setKaartTonen] = useState(false);
 
   useEffect(() => {
     function klapOpenVoorHash() {
@@ -118,109 +114,35 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
   const regiosMetData = REGIOS.filter((regio) => !regioFilter || regio === regioFilter);
 
   return (
-    <div id="provincies" className="mx-auto max-w-[1140px] px-6 py-8 lg:px-10">
-      {/* Eigen donkere band (los van de achtergrond van de pagina), tot aan de randen van het scherm. */}
-      <div className="-mx-6 -mt-8 mb-8 border-b-4 border-geel bg-[#161616] px-6 pb-6 pt-8 md:hidden">
-        <ClubsGsmKop
-          clubs={clubs}
-          aantalPerProvincie={aantalPerProvincie}
-          zoek={zoek}
-          setZoek={setZoek}
-          regioFilter={regioFilter}
-          setRegioFilter={setRegioFilter}
-          onProvincieKiezen={kiesProvincieOpKaart}
-          onRegioKiezen={kiesRegio}
-          onZoekKeyDown={enterKiest}
-          suggesties={plaats ? [] : suggesties}
-          onPlaatsKiezen={kiesPlaats}
-          nabij={plaats && nabij ? { plaats, resultaat: nabij } : null}
-          onNabijSluiten={sluitPlaats}
-        />
-      </div>
-
-      <div className="relative mb-6 overflow-hidden rounded-2xl max-md:hidden">
-        <Image
-          src="/images/petanque-speler.jpg"
-          alt=""
-          width={1140}
-          height={280}
-          className="h-[220px] w-full object-cover sm:h-[280px]"
-          style={{ objectPosition: "center 40%" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-blauw/90 via-blauw/20 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-          <h1 className="font-titel text-4xl tracking-wide text-white">{t.clubsPagina.titel}</h1>
-          <p className="max-w-lg text-sm text-white/70">{t.clubsPagina.beschrijving}</p>
-          <a
-            href={`mailto:info@petanque13.be?subject=${encodeURIComponent("Melding fout bij een club")}`}
-            className="mt-1 inline-block text-xs font-semibold text-white/60 underline hover:text-white"
-          >
-            {t.lijst.meldFout}
-          </a>
+    <>
+      {/* Eigen donkere kop (zelfde stijl op gsm en pc), tot aan de randen van het scherm. */}
+      <div className="border-b-4 border-geel bg-[#161616]">
+        <div className="mx-auto max-w-[1140px] px-6 pb-8 pt-8 lg:px-10">
+          <ClubsGsmKop
+            clubs={clubs}
+            aantalPerProvincie={aantalPerProvincie}
+            zoek={zoek}
+            setZoek={setZoek}
+            regioFilter={regioFilter}
+            setRegioFilter={setRegioFilter}
+            onProvincieKiezen={kiesProvincieOpKaart}
+            onRegioKiezen={kiesRegio}
+            onZoekKeyDown={enterKiest}
+            suggesties={plaats ? [] : suggesties}
+            onPlaatsKiezen={kiesPlaats}
+            nabij={plaats && nabij ? { plaats, resultaat: nabij } : null}
+            onNabijSluiten={sluitPlaats}
+          />
         </div>
       </div>
 
-      <div className="mb-8 max-md:hidden">
-        <button
-          onClick={() => setKaartTonen((v) => !v)}
-          className="rounded-full border-[1.5px] border-rand bg-white px-4 py-2 text-sm font-semibold text-grijs transition-colors hover:border-blauw-3 hover:text-donker"
+      <div id="provincies" className="mx-auto max-w-[1140px] px-6 py-8 lg:px-10">
+        <a
+          href={`mailto:info@petanque13.be?subject=${encodeURIComponent("Melding fout bij een club")}`}
+          className="mb-6 inline-block text-xs font-semibold text-grijs underline hover:text-donker"
         >
-          🗺️ {kaartTonen ? t.clubsPagina.verbergKaart : t.clubsPagina.toonKaart}
-        </button>
-        {kaartTonen && (
-          <div className="mt-4 rounded-2xl border-[1.5px] border-rand bg-white p-6">
-            <BelgiumMap aantalPerProvincie={aantalPerProvincie} onProvincieKiezen={kiesProvincieOpKaart} />
-          </div>
-        )}
-      </div>
-
-      <div className="mb-8 flex flex-col gap-3 max-md:hidden sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setRegioFilter(null)}
-            className={`rounded-full border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
-              regioFilter === null
-                ? "border-blauw bg-blauw text-white"
-                : "border-rand bg-white text-grijs hover:border-blauw-3"
-            }`}
-          >
-            {t.clubsPagina.alleRegios} <span className="ml-1 opacity-70">{clubs.length}</span>
-          </button>
-          {REGIOS.map((regio) => (
-            <button
-              key={regio}
-              onClick={() => setRegioFilter(regio)}
-              className={`rounded-full border-[1.5px] px-4 py-2 text-sm font-semibold transition-colors ${
-                regioFilter === regio
-                  ? "border-blauw bg-blauw text-white"
-                  : "border-rand bg-white text-grijs hover:border-blauw-3"
-              }`}
-            >
-              {vertaalRegio(regio, taal)}{" "}
-              <span className="ml-1 opacity-70">
-                {clubs.filter((c) => c.regio === regio).length}
-              </span>
-            </button>
-          ))}
-        </div>
-        <input
-          type="text"
-          value={zoek}
-          onChange={(e) => setZoek(e.target.value)}
-          onKeyDown={enterKiest}
-          placeholder={t.clubsPagina.zoekPlaceholder}
-          className="w-full rounded-md border-[1.5px] border-rand px-3.5 py-2.5 text-sm outline-none focus:border-blauw-3 sm:w-72"
-        />
-      </div>
-
-      <div className="mb-8 max-md:hidden empty:hidden">
-        {!plaats && <PlaatsSuggesties suggesties={suggesties} onKies={kiesPlaats} />}
-        {plaats && nabij && (
-          <div data-nabij className="scroll-mt-20">
-            <NabijeClubs plaats={plaats} resultaat={nabij} onSluit={sluitPlaats} />
-          </div>
-        )}
-      </div>
+          {t.lijst.meldFout}
+        </a>
 
       <div id="clubs-lijst" className="scroll-mt-20" />
 
@@ -293,6 +215,7 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
           </section>
         );
       })}
-    </div>
+      </div>
+    </>
   );
 }

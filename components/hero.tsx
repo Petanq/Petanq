@@ -3,7 +3,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useTranslation } from "@/lib/language-context";
-import { Knop } from "@/components/ui/knop";
 import { useMobielKalender } from "@/components/mobiel-kalender";
 
 type HeroProps = {
@@ -94,7 +93,7 @@ function HeroPc({
       />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-blauw via-blauw/80 to-blauw/10" />
       <div className="relative z-[2] mx-auto max-w-[1140px] px-6 py-20 lg:px-10">
-        <div className="max-w-[640px] lg:max-w-[920px]">
+        <div className="lg:max-w-[1060px]">
           <h1 className="mb-4 font-titel text-6xl font-bold leading-[1.05] tracking-wide text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.45)]">
             {t.hero.titelRegel1}
             <br />
@@ -107,13 +106,12 @@ function HeroPc({
           <p className="mb-8 max-w-[460px] text-base leading-relaxed text-white/80">
             {t.hero.beschrijving}
           </p>
-          <div className="mb-10 flex flex-wrap gap-3">
-            <Knop href="#kalender" variant="geel">
-              {t.hero.bekijkKalender}
-            </Knop>
-            <Knop href="/toernooi-toevoegen" variant="outline">
-              {t.hero.toernooiAanmelden}
-            </Knop>
+          {/* Dezelfde vier gouden kaders als op gsm. */}
+          <div className="mb-10 grid grid-cols-4 gap-4">
+            <Tegel href="#kalender" label={t.hero.gsmTegelToernooien} icoon={<IcoonTrofee />} accent />
+            <Tegel href="/clubs" label={t.nav.clubs} icoon={<IcoonClubs />} />
+            <Tegel href="/mijn-tornooien" label={t.nav.mijnTornooien} icoon={<IcoonKalender />} />
+            <Tegel href="/toernooi-toevoegen" label={t.hero.gsmTegelToevoegen} icoon={<IcoonToevoegen />} />
           </div>
           <div className="flex flex-wrap gap-8 border-t border-white/10 pt-6">
             <Stat href="#toernooien" waarde={`${aantalToernooien}+`} label={t.hero.statToernooien} />

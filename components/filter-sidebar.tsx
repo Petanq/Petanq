@@ -73,8 +73,8 @@ function FilterItem({
 
 // Anders dan de overige filters (die telkens tussen meerdere opties kiezen en
 // dus een uitklap-lijst nodig hebben) is dit een directe aan/uit-schakelaar:
-// 1 klik past het filter meteen toe. Een eigen blauw accent (i.p.v. het
-// gele accordion-uiterlijk) maakt dat verschil in gedrag ook visueel duidelijk.
+// 1 klik past het filter meteen toe. Een donkere kaart met gouden rand (i.p.v. het
+// accordion-uiterlijk) maakt dat verschil in gedrag ook visueel duidelijk.
 function KwalificatieToggle({
   actief,
   onClick,
@@ -91,28 +91,32 @@ function KwalificatieToggle({
   return (
     <button
       onClick={onClick}
-      className={`mb-3.5 flex w-full items-center gap-2.5 rounded-[10px] border-[1.5px] p-[1.1rem] text-left transition-all ${
+      className={`mb-3.5 flex w-full items-center gap-3 rounded-xl border-2 p-3.5 text-left transition-all ${
         actief
-          ? "border-[#1a4480] bg-[#1a4480] shadow-[0_2px_10px_rgba(26,68,128,0.25)]"
-          : "border-[#1a4480]/30 bg-white hover:border-[#1a4480]"
+          ? "border-geel bg-geel shadow-[0_0_18px_rgba(244,196,48,0.35)]"
+          : "border-geel/70 bg-[#1b1b1b] shadow-[0_0_14px_rgba(244,196,48,0.12)] hover:border-geel hover:shadow-[0_0_18px_rgba(244,196,48,0.3)]"
       }`}
     >
       <span
-        className={`h-7 w-7 shrink-0 rounded-full border-2 bg-contain bg-center bg-no-repeat ${
-          actief ? "border-white bg-white" : "border-[#1a4480]/30 bg-white"
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+          actief ? "bg-[#1f1f1f] text-geel" : "bg-geel text-[#1f1f1f]"
         }`}
-        style={{ backgroundImage: "url('/images/logo-icon.png')" }}
         aria-hidden
-      />
+      >
+        <svg viewBox="0 0 24 24" width={19} height={19} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+          <path d="M3.5 10h17M8 3v4M16 3v4M8 14h.01M12 14h.01M16 14h.01M8 17.2h.01M12 17.2h.01" />
+        </svg>
+      </span>
       <span
         aria-label={titel}
-        className={`min-w-0 flex-1 text-[0.83rem] font-bold leading-snug ${actief ? "text-white" : "text-donker"}`}
+        className={`min-w-0 flex-1 text-[0.9rem] font-bold leading-snug ${actief ? "text-[#1f1f1f]" : "text-white"}`}
       >
         {label}
       </span>
       <span
-        className={`min-w-[20px] shrink-0 self-start rounded-full px-1.5 py-[0.1rem] text-center text-[0.67rem] font-bold ${
-          actief ? "bg-white text-[#1a4480]" : "bg-[#eff6ff] text-[#1a4480]"
+        className={`min-w-[24px] shrink-0 rounded-full px-2 py-[0.15rem] text-center text-[0.72rem] font-bold ${
+          actief ? "bg-[#1f1f1f] text-geel" : "bg-geel text-[#1f1f1f]"
         }`}
       >
         {aantal}

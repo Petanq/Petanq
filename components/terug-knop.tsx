@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 
-// Terug-knop onder het logo op elke pagina behalve de homepage. De layout
+// Terug-knop onder het logo op elke pagina behalve de homepage (alleen op gsm). De layout
 // blijft staan tussen pagina's door, dus de teller hieronder weet of de
 // bezoeker al binnen de site genavigeerd heeft: dan gaat "terug" naar de
 // vorige pagina, anders (rechtstreeks binnengekomen via een link of
@@ -27,7 +27,8 @@ export function TerugKnop() {
   }
 
   return (
-    <div className="border-b border-rand bg-white">
+    // Enkel op gsm: op pc heeft de browser zelf een terug-knop.
+    <div className="border-b border-rand bg-white md:hidden">
       <div className="mx-auto max-w-[1140px] px-4 lg:px-10">
         <button
           type="button"

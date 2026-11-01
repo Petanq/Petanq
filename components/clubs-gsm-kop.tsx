@@ -69,11 +69,14 @@ export function ClubsGsmKop({
 
   return (
     <div>
-      <h1 className="font-titel text-[2.4rem] font-extrabold leading-[1.05] tracking-tight text-white">
+      {/* Gsm: alles onder elkaar. Pc: titel + zoeken links, kaart rechts. */}
+      <div className="md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] md:items-start md:gap-10">
+      <div>
+      <h1 className="font-titel text-[2.4rem] font-extrabold leading-[1.05] tracking-tight text-white md:text-5xl">
         {t.clubsPagina.gsmTitelRegel1}
         <span className="block text-geel">{t.clubsPagina.gsmTitelRegel2}</span>
       </h1>
-      <p className="mb-5 mt-2 text-[0.95rem] text-white/80">{t.clubsPagina.gsmOndertitel}</p>
+      <p className="mb-5 mt-2 text-[0.95rem] text-white/80 md:text-base">{t.clubsPagina.gsmOndertitel}</p>
 
       <div className="flex gap-2">
         <label className="flex min-w-0 flex-1 items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.08] px-2.5">
@@ -126,7 +129,7 @@ export function ClubsGsmKop({
           </div>
           <div className="flex flex-col gap-2">
             {buurt.map(({ club, km }) => (
-              <div key={club.id} className="relative">
+              <div key={club.id} className="relative [&>div]:pr-[4.2rem]">
                 <ClubCard club={club} />
                 <span className="absolute right-3 top-3 rounded-full bg-donker px-2 py-0.5 text-[0.65rem] font-bold text-geel">
                   {km < 10 ? km.toFixed(1) : Math.round(km)} km
@@ -137,7 +140,9 @@ export function ClubsGsmKop({
         </div>
       )}
 
-      <div className="mb-3 mt-5 flex justify-end">
+      </div>
+      <div>
+      <div className="mb-3 mt-5 flex justify-end md:mt-0">
         <div className="flex overflow-hidden rounded-full border border-white/15 !bg-white/[0.06] text-xs font-bold">
           {(["kaart", "lijst"] as const).map((w) => (
             <button
@@ -197,8 +202,11 @@ export function ClubsGsmKop({
         </div>
       )}
 
+      </div>
+      </div>
+
       <h2 className="mb-3 mt-7 font-titel text-xl font-bold text-white">{t.clubsPagina.verkenPerRegio}</h2>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 md:max-w-3xl md:gap-4">
         {REGIOS.map((regio) => (
           <button
             key={regio}

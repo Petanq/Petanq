@@ -70,9 +70,9 @@ export function NabijeClubs({
       {resultaat.length === 0 ? (
         <p className={`text-sm ${donker ? "text-white/70" : "text-grijs"}`}>{t.clubsPagina.geenClubsPlaats}</p>
       ) : (
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
           {resultaat.map(({ club, km }) => (
-            <div key={club.id} className="relative">
+            <div key={club.id} className="relative [&>div]:pr-[4.2rem]">
               <ClubCard club={club} />
               <span className="absolute right-3 top-3 rounded-full bg-donker px-2 py-0.5 text-[0.65rem] font-bold text-geel">
                 {km < 10 ? km.toFixed(1) : Math.round(km)} km

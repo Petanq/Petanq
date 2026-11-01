@@ -131,7 +131,7 @@ const nl = {
     mix: "Mix",
     jeugd: "Jeugd",
     kampioenschap: "Kampioenschap",
-    circuit: "50+ Circuit",
+    circuit: "50+",
     recreanten: "Recreanten",
   },
   formule: {
@@ -1076,7 +1076,7 @@ const fr: typeof nl = {
     mix: "Mixte",
     jeugd: "Jeunes",
     kampioenschap: "Championnat",
-    circuit: "Circuit 50+",
+    circuit: "50+",
     recreanten: "Loisirs",
   },
   formule: {
