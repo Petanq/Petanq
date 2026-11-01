@@ -27,11 +27,11 @@ export function Nav() {
 
   return (
     <nav className="sticky top-0 z-[300] border-b border-white/[0.07] bg-blauw">
-      <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-10">
+      <div className="flex h-16 items-center justify-between gap-2 px-4 max-[359px]:px-3 sm:px-6 lg:px-10">
         <Link href="/" className="flex items-center gap-1.5 sm:gap-2.5">
-          <Logo className="h-10 w-10 sm:h-14 sm:w-14" />
+          <Logo className="h-10 w-10 max-[359px]:h-8 max-[359px]:w-8 sm:h-14 sm:w-14" />
           <div className="flex flex-col leading-none">
-            <span className="flex items-center font-titel text-lg font-extrabold tracking-tight text-white sm:text-2xl">
+            <span className="flex items-center font-titel text-lg font-extrabold tracking-tight text-white max-[359px]:text-[0.95rem] sm:text-2xl">
               Petanque13
             </span>
             <span className="hidden text-[0.6rem] font-semibold uppercase tracking-widest text-white/40 min-[420px]:block">
@@ -63,7 +63,7 @@ export function Nav() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-3">
+        <div className="flex items-center gap-1.5 max-[359px]:gap-1 sm:gap-3">
           <a
             href="https://www.facebook.com/profile.php?id=61592011318511"
             target="_blank"

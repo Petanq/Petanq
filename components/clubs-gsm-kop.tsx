@@ -78,8 +78,8 @@ export function ClubsGsmKop({
       </h1>
       <p className="mb-5 mt-2 text-[0.95rem] text-white/80 md:text-base">{t.clubsPagina.gsmOndertitel}</p>
 
-      <div className="flex gap-2">
-        <label className="flex min-w-0 flex-1 items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.08] px-2.5">
+      <div className="flex flex-wrap gap-2">
+        <label className="flex min-w-full flex-[1_1_100%] items-center gap-1.5 min-[420px]:min-w-0 min-[420px]:flex-1 rounded-xl border border-white/15 bg-white/[0.08] px-2.5">
           <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={2} className="shrink-0 text-white/60" aria-hidden>
             <circle cx="11" cy="11" r="7" />
             <path d="m20 20-3.5-3.5" strokeLinecap="round" />
@@ -98,7 +98,7 @@ export function ClubsGsmKop({
         <button
           type="button"
           onClick={inMijnBuurt}
-          className="flex shrink-0 items-center gap-1 rounded-xl bg-geel px-3 text-[0.82rem] font-bold text-donker active:brightness-95"
+          className="flex shrink-0 items-center gap-1 rounded-xl bg-geel px-3 text-[0.82rem] font-bold text-donker active:brightness-95 max-[419px]:w-full max-[419px]:justify-center max-[419px]:py-3"
         >
           <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
             <circle cx="12" cy="12" r="3.5" />

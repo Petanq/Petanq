@@ -14,6 +14,17 @@ body {
   @apply rounded-md border-[1.5px] border-rand bg-white px-3 py-2.5 font-body text-sm text-donker outline-none transition-colors focus:border-blauw-3;
 }
 
+/* iPhone (Safari) zoomt de pagina in zodra je op een invoerveld tikt met een
+   lettergrootte onder 16px, en zoomt daarna niet meer terug. Op gsm daarom
+   altijd minstens 16px. Match13 heeft zijn eigen compacte indeling. */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not([type="submit"]):not([type="button"]):not(.match13-scope *),
+  select:not(.match13-scope *),
+  textarea:not(.match13-scope *) {
+    font-size: 16px !important;
+  }
+}
+
 @keyframes langzaam-inzoomen {
   from {
     transform: scale(1);
