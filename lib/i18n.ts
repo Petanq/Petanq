@@ -178,7 +178,7 @@ const nl = {
   clubsPagina: {
     titel: "Clubs",
     beschrijving: "Alle petanqueclubs in België, per provincie.",
-    zoekPlaceholder: "Zoek club of gemeente...",
+    zoekPlaceholder: "Zoek club, gemeente of postcode...",
     alleRegios: "Alle regio's",
     clubToevoegen: "+ Club toevoegen",
     geenResultaten: "Geen clubs gevonden.",
@@ -195,6 +195,9 @@ const nl = {
     clubsTelwoord: "clubs",
     dichtstBij: "Dichtst bij jou",
     locatieGeweigerd: "We konden je locatie niet ophalen. Zoek op gemeente of postcode.",
+    bedoelJe: "Bedoel je:",
+    dichtstBijPlaats: "Dichtst bij",
+    geenClubsPlaats: "Geen clubs gevonden in de buurt.",
   },
   clubForm: {
     titel: "Club voorstellen",
@@ -1120,7 +1123,7 @@ const fr: typeof nl = {
   clubsPagina: {
     titel: "Clubs",
     beschrijving: "Tous les clubs de pétanque de Belgique, par province.",
-    zoekPlaceholder: "Rechercher club ou commune...",
+    zoekPlaceholder: "Rechercher club, commune ou code postal...",
     alleRegios: "Toutes les régions",
     clubToevoegen: "+ Ajouter un club",
     geenResultaten: "Aucun club trouvé.",
@@ -1137,6 +1140,9 @@ const fr: typeof nl = {
     clubsTelwoord: "clubs",
     dichtstBij: "Les plus proches",
     locatieGeweigerd: "Impossible d'obtenir votre position. Cherchez par commune ou code postal.",
+    bedoelJe: "Vous voulez dire :",
+    dichtstBijPlaats: "Les plus proches de",
+    geenClubsPlaats: "Aucun club trouvé à proximité.",
   },
   clubForm: {
     titel: "Proposer un club",

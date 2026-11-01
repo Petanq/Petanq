@@ -6,6 +6,8 @@ import { Club } from "@/lib/types";
 import { PROVINCIE_REGIO, Provincie, Regio, vertaalProvincie, vertaalRegio } from "@/lib/provincies";
 import { PROVINCIE_VLAKKEN } from "@/lib/belgium-map-data";
 import { ClubCard } from "./club-card";
+import { NabijeClubs, PlaatsSuggesties } from "./clubs-nabij";
+import { Plaats, dichtstbijzijndeClubs, laadPostcodes } from "@/lib/postcodes";
 
 const REGIOS: Regio[] = ["vlaanderen", "wallonie", "brussel"];
 
@@ -21,6 +23,11 @@ export function ClubsGsmKop({
   setRegioFilter,
   onProvincieKiezen,
   onRegioKiezen,
+  onZoekKeyDown,
+  suggesties,
+  onPlaatsKiezen,
+  nabij,
+  onNabijSluiten,
 }: {
   clubs: Club[];
   aantalPerProvincie: Record<string, number>;
@@ -30,6 +37,11 @@ export function ClubsGsmKop({
   setRegioFilter: (r: Regio | null) => void;
   onProvincieKiezen: (p: Provincie) => void;
   onRegioKiezen: (r: Regio) => void;
+  onZoekKeyDown: (e: React.KeyboardEvent) => void;
+  suggesties: Plaats[];
+  onPlaatsKiezen: (p: Plaats) => void;
+  nabij: { plaats: Plaats; resultaat: { club: Club; km: number }[] } | null;
+  onNabijSluiten: () => void;
 }) {
   const { t, taal } = useTranslation();
   const [weergave, setWeergave] = useState<"kaart" | "lijst">("kaart");
@@ -43,14 +55,11 @@ export function ClubsGsmKop({
     }
     setBuurtStatus("bezig");
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const { latitude, longitude } = pos.coords;
-        const metAfstand = clubs
-          .filter((c) => c.lat != null && c.lng != null)
-          .map((club) => ({ club, km: afstandKm(latitude, longitude, club.lat as number, club.lng as number) }))
-          .sort((a, b) => a.km - b.km)
-          .slice(0, 5);
-        setBuurt(metAfstand);
+        // Ook clubs zonder eigen coördinaten tellen mee (afgeleid van hun postcode).
+        const index = await laadPostcodes();
+        setBuurt(dichtstbijzijndeClubs(index, clubs, latitude, longitude, 5));
         setBuurtStatus("idle");
       },
       () => setBuurtStatus("geweigerd"),
@@ -76,6 +85,9 @@ export function ClubsGsmKop({
             type="text"
             value={zoek}
             onChange={(e) => setZoek(e.target.value)}
+            onKeyDown={onZoekKeyDown}
+            enterKeyHint="search"
+            autoComplete="off"
             placeholder={t.clubsPagina.gsmZoek}
             className="w-full min-w-0 bg-transparent py-3 text-[0.82rem] text-white outline-none placeholder:text-white/50"
           />
@@ -95,6 +107,13 @@ export function ClubsGsmKop({
       </div>
       {buurtStatus === "geweigerd" && (
         <p className="mt-2 text-xs text-white/70">{t.clubsPagina.locatieGeweigerd}</p>
+      )}
+
+      <PlaatsSuggesties suggesties={suggesties} onKies={onPlaatsKiezen} donker />
+      {nabij && (
+        <div data-nabij className="scroll-mt-20">
+          <NabijeClubs plaats={nabij.plaats} resultaat={nabij.resultaat} onSluit={onNabijSluiten} donker />
+        </div>
       )}
 
       {buurt && (
@@ -227,13 +246,4 @@ export function ClubsGsmKop({
       )}
     </div>
   );
-}
-
-function afstandKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const rad = Math.PI / 180;
-  const dLat = (lat2 - lat1) * rad;
-  const dLng = (lng2 - lng1) * rad;
-  const a =
-    Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
-  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }

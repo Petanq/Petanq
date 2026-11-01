@@ -9,13 +9,25 @@ import { ClubCard } from "./club-card";
 import { AddClubCard } from "./add-club-card";
 import { BelgiumMap } from "./belgium-map";
 import { ClubsGsmKop } from "./clubs-gsm-kop";
+import { NabijeClubs, PlaatsSuggesties } from "./clubs-nabij";
 import { ZoekIcoon } from "./ui/zoek-icoon";
+import { Plaats, PostcodeIndex, dichtstbijzijndeClubs, laadPostcodes, zoekPlaatsen } from "@/lib/postcodes";
 
 const REGIOS: Regio[] = ["vlaanderen", "wallonie", "brussel"];
 
 export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
   const { t, taal } = useTranslation();
-  const [zoek, setZoek] = useState("");
+  const [zoek, setZoekTekst] = useState("");
+  const [postcodes, setPostcodes] = useState<PostcodeIndex | null>(null);
+  const [gekozenPlaats, setGekozenPlaats] = useState<Plaats | null>(null);
+
+  // Elke wijziging van de zoektekst wist de gekozen plaats; de lijst met
+  // postcodes wordt pas ingeladen als iemand echt begint te typen.
+  function setZoek(tekst: string) {
+    setZoekTekst(tekst);
+    setGekozenPlaats(null);
+    if (tekst.trim().length >= 2 && !postcodes) laadPostcodes().then(setPostcodes);
+  }
   const [regioFilter, setRegioFilter] = useState<Regio | null>(null);
   const [opengeklapt, setOpengeklapt] = useState<Set<Provincie>>(new Set());
   const [kaartTonen, setKaartTonen] = useState(false);
@@ -66,14 +78,42 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
     return tellingen;
   }, [clubs]);
 
+  const suggesties = useMemo(
+    () => (postcodes && !gekozenPlaats ? zoekPlaatsen(postcodes, zoek) : []),
+    [postcodes, zoek, gekozenPlaats]
+  );
+  // Een volledige postcode (4 cijfers) hoeft niet aangeklikt te worden.
+  const plaats = gekozenPlaats ?? (/^\d{4}$/.test(zoek.trim()) ? suggesties[0] ?? null : null);
+  const nabij = useMemo(
+    () => (postcodes && plaats ? dichtstbijzijndeClubs(postcodes, clubs, plaats.lat, plaats.lng, 9) : null),
+    [postcodes, plaats, clubs]
+  );
+
+  function kiesPlaats(p: Plaats) {
+    setGekozenPlaats(p);
+    requestAnimationFrame(() => {
+      // Er bestaat een gsm- en een pc-blok; scroll naar het blok dat zichtbaar is.
+      const zichtbaar = Array.from(document.querySelectorAll<HTMLElement>("[data-nabij]")).find((e) => e.offsetParent !== null);
+      zichtbaar?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+  function sluitPlaats() {
+    setGekozenPlaats(null);
+    setZoekTekst("");
+  }
+  function enterKiest(e: React.KeyboardEvent) {
+    if (e.key === "Enter" && suggesties[0] && !plaats) kiesPlaats(suggesties[0]);
+  }
+
   const gefilterd = useMemo(() => {
-    const term = zoek.trim().toLowerCase();
+    // Met een gekozen plaats toont de lijst alle clubs; de dichtstbijzijnde staan erboven.
+    const term = plaats ? "" : zoek.trim().toLowerCase();
     return clubs.filter((club) => {
       if (regioFilter && club.regio !== regioFilter) return false;
       if (term && !`${club.naam} ${club.gemeente} ${club.adres ?? ""}`.toLowerCase().includes(term)) return false;
       return true;
     });
-  }, [clubs, zoek, regioFilter]);
+  }, [clubs, zoek, regioFilter, plaats]);
 
   const regiosMetData = REGIOS.filter((regio) => !regioFilter || regio === regioFilter);
 
@@ -90,6 +130,11 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
           setRegioFilter={setRegioFilter}
           onProvincieKiezen={kiesProvincieOpKaart}
           onRegioKiezen={kiesRegio}
+          onZoekKeyDown={enterKiest}
+          suggesties={plaats ? [] : suggesties}
+          onPlaatsKiezen={kiesPlaats}
+          nabij={plaats && nabij ? { plaats, resultaat: nabij } : null}
+          onNabijSluiten={sluitPlaats}
         />
       </div>
 
@@ -162,9 +207,19 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
           type="text"
           value={zoek}
           onChange={(e) => setZoek(e.target.value)}
+          onKeyDown={enterKiest}
           placeholder={t.clubsPagina.zoekPlaceholder}
-          className="w-full rounded-md border-[1.5px] border-rand px-3.5 py-2.5 text-sm outline-none focus:border-blauw-3 sm:w-64"
+          className="w-full rounded-md border-[1.5px] border-rand px-3.5 py-2.5 text-sm outline-none focus:border-blauw-3 sm:w-72"
         />
+      </div>
+
+      <div className="mb-8 max-md:hidden empty:hidden">
+        {!plaats && <PlaatsSuggesties suggesties={suggesties} onKies={kiesPlaats} />}
+        {plaats && nabij && (
+          <div data-nabij className="scroll-mt-20">
+            <NabijeClubs plaats={plaats} resultaat={nabij} onSluit={sluitPlaats} />
+          </div>
+        )}
       </div>
 
       <div id="clubs-lijst" className="scroll-mt-20" />
@@ -192,7 +247,7 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
             </h2>
             {zichtbareProvincies.map((provincie) => {
               const clubsInProvincie = gefilterd.filter((c) => c.provincie === provincie);
-              const uitgeklapt = zoek.trim().length > 0 || opengeklapt.has(provincie);
+              const uitgeklapt = (zoek.trim().length > 0 && !plaats) || opengeklapt.has(provincie);
               return (
                 <div
                   key={provincie}
