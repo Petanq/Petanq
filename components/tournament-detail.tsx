@@ -221,7 +221,7 @@ export function TournamentDetail({
       </header>
 
       {/* Inhoud links, acties rechts. Op gsm komt de opslaan-knop meteen onder de kop. */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+      <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
         <div className="contents lg:grid lg:gap-5">
           <Kaart titel={t.lijst.praktischTitel} className="order-2 lg:order-none">
             <dl className="grid grid-cols-1 gap-x-6 gap-y-5 min-[480px]:grid-cols-2">
@@ -481,7 +481,7 @@ function Groep({ titel, rij, children }: { titel: string; rij?: boolean; childre
   return (
     <div className="border-t border-rand pt-5 first:border-t-0 first:pt-0 [&:not(:first-child)]:mt-5">
       <h3 className="mb-3 text-[0.7rem] font-extrabold uppercase tracking-[0.12em] text-[#6b6a63]">{titel}</h3>
-      <div className={rij ? "grid grid-cols-3 gap-2" : "flex flex-col gap-2"}>{children}</div>
+      <div className={rij ? "grid grid-cols-[repeat(auto-fit,minmax(88px,1fr))] gap-2" : "flex flex-col gap-2"}>{children}</div>
     </div>
   );
 }
