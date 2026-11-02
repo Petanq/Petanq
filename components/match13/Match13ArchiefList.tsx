@@ -11,6 +11,10 @@ import { Match13TerugKnop } from "@/components/match13/Match13TerugKnop";
 
 type ArchiefFilter = "alle" | "eindstand" | "zonder" | "gewist" | "verwijderd";
 
+function hoofdletter(tekst: string): string {
+  return tekst.charAt(0).toUpperCase() + tekst.slice(1);
+}
+
 function maandSleutel(iso: string): string {
   const d = new Date(iso);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -35,21 +39,30 @@ export function Match13ArchiefList({ items }: { items: Match13ArchiefLijstRij[] 
 
   const huidigeMaand = maandSleutel(new Date().toISOString());
   const metEindstand = items.filter(heeftEindstand).length;
-  const dezeMaand = items.filter((r) => maandSleutel(r.gearchiveerd_op) === huidigeMaand).length;
+  const dezeMaand = items.filter((r) => r.gespeeldOp && maandSleutel(r.gespeeldOp) === huidigeMaand).length;
 
-  // Per maand groeperen (de lijst komt al nieuwste eerst binnen).
+  // Per speelmaand groeperen, nieuwste eerst; wat nooit gespeeld werd komt onderaan in een eigen groep.
+  const NIET_GESPEELD = "niet-gespeeld";
+  const sorteerTijd = (r: Match13ArchiefLijstRij) => new Date(r.gespeeldOp ?? r.gearchiveerd_op).getTime();
+  const gesorteerd = [...zichtbaar].sort((a, b) => sorteerTijd(b) - sorteerTijd(a));
   const groepen: { sleutel: string; label: string; rijen: Match13ArchiefLijstRij[] }[] = [];
-  for (const rij of zichtbaar) {
-    const sleutel = maandSleutel(rij.gearchiveerd_op);
+  for (const rij of gesorteerd) {
+    const sleutel = rij.gespeeldOp ? maandSleutel(rij.gespeeldOp) : NIET_GESPEELD;
     let groep = groepen.find((g) => g.sleutel === sleutel);
     if (!groep) {
-      const maand = new Date(rij.gearchiveerd_op).toLocaleDateString(locale, { month: "long", year: "numeric" });
-      groep = { sleutel, label: maand.charAt(0).toUpperCase() + maand.slice(1), rijen: [] };
+      const label = rij.gespeeldOp
+        ? hoofdletter(new Date(rij.gespeeldOp).toLocaleDateString(locale, { month: "long", year: "numeric" }))
+        : t.match13.archiefNietGespeeld;
+      groep = { sleutel, label, rijen: [] };
       groepen.push(groep);
     }
     groep.rijen.push(rij);
   }
+  groepen.sort((a, b) =>
+    a.sleutel === NIET_GESPEELD ? 1 : b.sleutel === NIET_GESPEELD ? -1 : b.sleutel.localeCompare(a.sleutel)
+  );
   const forceerOpen = zoekSchoon !== "" || filter !== "alle";
+  const kortDatum = (d: Date) => d.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
 
   const filters: [ArchiefFilter, string][] = [
     ["alle", t.match13.filterAlle],
@@ -170,10 +183,14 @@ export function Match13ArchiefList({ items }: { items: Match13ArchiefLijstRij[] 
                           </span>
                           <span className="archief-rechts">
                             <span className="archief-datum" suppressHydrationWarning>
-                              {datum.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" })}
+                              {item.gespeeldOp
+                                ? t.match13.archiefGespeeldOp(kortDatum(new Date(item.gespeeldOp)))
+                                : hoofdletter(t.match13.archiefGearchiveerd(kortDatum(datum)))}
                             </span>
                             <span className="archief-uur" suppressHydrationWarning>
-                              {datum.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}
+                              {item.gespeeldOp
+                                ? t.match13.archiefGearchiveerd(kortDatum(datum))
+                                : datum.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}
                             </span>
                             <span
                               className={

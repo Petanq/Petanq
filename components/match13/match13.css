@@ -4468,3 +4468,19 @@
     min-height: 44px;
   }
 }
+@media (max-width: 640px) {
+  .match13-scope .archief-rechts {
+    flex-wrap: wrap;
+    row-gap: 0.35rem;
+  }
+  .match13-scope .archief-datum {
+    flex-basis: 100%;
+    white-space: normal;
+  }
+  .match13-scope .archief-uur {
+    margin: 0;
+  }
+  .match13-scope .archief-rechts .match13-badge {
+    margin-left: auto;
+  }
+}
