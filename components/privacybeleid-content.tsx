@@ -182,7 +182,7 @@ export function PrivacybeleidContent() {
   const c = inhoud[taal];
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-16 lg:px-10">
+    <div className="mx-auto max-w-2xl break-words px-6 py-16 lg:px-10">
       <h1 className="mb-2 font-titel text-4xl tracking-wide text-blauw">{c.titel}</h1>
       <p className="mb-8 text-xs text-grijs">{c.bijgewerkt}</p>
 

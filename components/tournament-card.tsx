@@ -6,6 +6,8 @@ import { Toernooi } from "@/lib/types";
 import { dagVanWeekKort, dagNummer, maandKort, formatUur, countdownTekst } from "@/lib/datum";
 import { vertaalProvincie } from "@/lib/provincies";
 import { CATEGORIE_STREEP, CATEGORIE_BADGE, FORMULE_BADGE } from "@/lib/stijlen";
+import { useAfstandTot } from "@/lib/mijn-plaats";
+import { formatKm } from "@/lib/postcodes";
 
 export function TournamentCard({
   toernooi,
@@ -29,6 +31,7 @@ export function TournamentCard({
   const naam = taal === "fr" ? toernooi.naam_fr : toernooi.naam_nl;
   const datum = weergaveDatum ?? toernooi.datum;
   const uur = weergaveUur ?? toernooi.uur;
+  const km = useAfstandTot(toernooi);
 
   return (
     <Link
@@ -80,6 +83,14 @@ export function TournamentCard({
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 sm:flex-col sm:items-end sm:gap-1">
+        {km !== null && (
+          <span
+            title={t.lijst.afstandTitel2}
+            className="whitespace-nowrap rounded-full bg-[#1f1f1f] px-2.5 py-0.5 text-[0.7rem] font-bold text-geel"
+          >
+            📍 {formatKm(km)}
+          </span>
+        )}
         {live && (
           <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-rood px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
             <span className="relative flex h-1.5 w-1.5">

@@ -162,6 +162,11 @@ export function plaatsLabel(p: Plaats): string {
   return `${p.postcode} ${p.naam}`;
 }
 
+// "1,4 km" onder de 10 km, daarboven afgerond ("23 km").
+export function formatKm(km: number): string {
+  return `${km < 10 ? km.toFixed(1).replace(".", ",") : Math.round(km)} km`;
+}
+
 export function afstandKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const rad = Math.PI / 180;
   const dLat = (lat2 - lat1) * rad;
@@ -173,7 +178,10 @@ export function afstandKm(lat1: number, lng1: number, lat2: number, lng2: number
 // Plaats van een club: eigen coördinaten als ze er zijn, anders afgeleid van
 // de postcode in het adres, en als laatste van de gemeentenaam. Zo tellen ook
 // clubs zonder coördinaten mee voor "dichtstbij" (op postcode-niveau nauwkeurig).
-export function clubPositie(index: PostcodeIndex, club: Club): { lat: number; lng: number } | null {
+export function clubPositie(
+  index: PostcodeIndex,
+  club: Pick<Club, "lat" | "lng" | "adres" | "gemeente">
+): { lat: number; lng: number } | null {
   if (club.lat != null && club.lng != null) return { lat: club.lat, lng: club.lng };
 
   const pc = club.adres?.match(/\b([1-9]\d{3})\b/)?.[1];

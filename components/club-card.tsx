@@ -2,6 +2,7 @@ import { Club } from "@/lib/types";
 import { avatarTintVoor } from "@/lib/initialen";
 import { googleMapsUrl } from "@/lib/locatie";
 import { WazeLink } from "@/components/waze-link";
+import { formatKm } from "@/lib/postcodes";
 
 // `km` (zoeken op postcode): afstandsbadge naast de naam en alle tekst mag
 // op meerdere regels, zodat naam, adres en e-mail volledig leesbaar blijven.
@@ -34,7 +35,7 @@ export function ClubCard({ club, km }: { club: Club; km?: number }) {
           <div className={`${tekst} text-[0.88rem] font-bold leading-snug text-donker`}>{club.naam}</div>
           {ruim && (
             <span className="shrink-0 whitespace-nowrap rounded-full bg-[#1f1f1f] px-2.5 py-0.5 text-[0.7rem] font-bold text-geel">
-              {km < 10 ? km.toFixed(1) : Math.round(km)} km
+              {formatKm(km)}
             </span>
           )}
         </div>

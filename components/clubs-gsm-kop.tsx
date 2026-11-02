@@ -129,12 +129,7 @@ export function ClubsGsmKop({
           </div>
           <div className="flex flex-col gap-2">
             {buurt.map(({ club, km }) => (
-              <div key={club.id} className="relative [&>div]:pr-[4.2rem]">
-                <ClubCard club={club} />
-                <span className="absolute right-3 top-3 rounded-full bg-donker px-2 py-0.5 text-[0.65rem] font-bold text-geel">
-                  {km < 10 ? km.toFixed(1) : Math.round(km)} km
-                </span>
-              </div>
+              <ClubCard key={club.id} club={club} km={km} />
             ))}
           </div>
         </div>

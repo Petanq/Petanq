@@ -78,57 +78,61 @@ body {
   animation: toast-in-uit 2.8s ease-in-out forwards;
 }
 
-/* TIJDELIJK: achtergrond-proef (enkel lokaal, zie components/achtergrond-proef.tsx).
-   Op donker draaien we de donkere tekstkleuren om; binnen lichte vlakken (witte
-   kaartjes enz.) zetten we ze terug. */
-body[data-proef="donker"] {
-  background: #161616;
+/* Donkere fotoachtergrond van de hele site (zie components/site-achtergrond.tsx).
+   De foto staat op een vaste laag (::before) i.p.v. background-attachment: fixed,
+   want dat werkt niet op iPhone/iPad. Donkere tekstkleuren draaien we hier om;
+   binnen lichte vlakken (witte kaartjes enz.) zetten we ze terug. */
+.site-foto {
+  position: relative;
+  isolation: isolate;
+  background: #121212;
 }
-body[data-proef="foto"] {
+.site-foto::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background: linear-gradient(rgba(18, 18, 18, 0.86), rgba(18, 18, 18, 0.93)),
-    url("/images/hero-gsm.jpg") center / cover fixed;
+    url("/images/hero-gsm.jpg") center / cover no-repeat;
 }
-body[data-proef="goud"] {
-  background: radial-gradient(ellipse at top, #2c2210 0%, #151515 55%, #0e0e0e 100%);
-}
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) .text-donker {
+.site-foto .text-donker {
   color: #f2f2f2;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.text-blauw, .text-blauw-2) {
+.site-foto :is(.text-blauw, .text-blauw-2) {
   color: #f4c430;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) .text-grijs {
+.site-foto .text-grijs {
   color: #c4c4c4;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]) .text-donker,
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]).text-donker {
+.site-foto :is(.bg-white, .bg-licht, .bg-geel, [class*="bg-[#fdf3d9]"]) .text-donker,
+.site-foto :is(.bg-white, .bg-licht, .bg-geel, [class*="bg-[#fdf3d9]"]).text-donker {
   color: #1f1f1f;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]) .text-blauw,
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]).text-blauw {
+.site-foto :is(.bg-white, .bg-licht, .bg-geel, [class*="bg-[#fdf3d9]"]) .text-blauw,
+.site-foto :is(.bg-white, .bg-licht, .bg-geel, [class*="bg-[#fdf3d9]"]).text-blauw {
   color: #1f1f1f;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]) .text-blauw-2,
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]).text-blauw-2 {
+.site-foto :is(.bg-white, .bg-licht, .bg-geel, [class*="bg-[#fdf3d9]"]) .text-blauw-2,
+.site-foto :is(.bg-white, .bg-licht, .bg-geel, [class*="bg-[#fdf3d9]"]).text-blauw-2 {
   color: #2e2e2e;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]) .text-grijs,
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) :is(.bg-white, .bg-licht, [class*="bg-[#fdf3d9]"]).text-grijs {
+.site-foto :is(.bg-white, .bg-licht, .bg-geel, [class*="bg-[#fdf3d9]"]) .text-grijs,
+.site-foto :is(.bg-white, .bg-licht, .bg-geel, [class*="bg-[#fdf3d9]"]).text-grijs {
   color: #555555;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) button.bg-blauw {
+.site-foto button.bg-blauw {
   background: #f4c430;
   border-color: #f4c430;
   color: #1f1f1f;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) button.bg-blauw * {
+.site-foto button.bg-blauw * {
   color: inherit;
   opacity: 1;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) div.overflow-hidden.rounded-full.border {
+.site-foto div.overflow-hidden.rounded-full.border {
   background: #ffffff;
 }
-body:is([data-proef="donker"], [data-proef="foto"], [data-proef="goud"]) .mt-3.border-t img {
+.site-foto .mt-3.border-t img {
   background: #ffffff;
   border-radius: 8px;
   padding: 6px 12px;

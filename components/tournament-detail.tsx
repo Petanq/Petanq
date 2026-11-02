@@ -14,6 +14,8 @@ import { ToernooiOpslaanKnop } from "@/components/toernooi-opslaan-knop";
 import { googleMapsUrl } from "@/lib/locatie";
 import { WazeLink } from "@/components/waze-link";
 import { siteUrl } from "@/lib/site-url";
+import { useAfstandTot } from "@/lib/mijn-plaats";
+import { formatKm } from "@/lib/postcodes";
 
 export function TournamentDetail({
   toernooi,
@@ -25,6 +27,7 @@ export function TournamentDetail({
   const { t, taal } = useTranslation();
   const router = useRouter();
   const [gekopieerd, setGekopieerd] = useState(false);
+  const km = useAfstandTot(toernooi);
 
   // Terug naar de vorige pagina (bv. de lijst, op de scrollpositie/filters
   // van daarvoor) i.p.v. altijd een verse homepage — enkel als er browser-
@@ -181,6 +184,14 @@ export function TournamentDetail({
             )}
             , {vertaalProvincie(toernooi.provincie, taal)}{" "}
             <WazeLink adres={toernooi.adres} gemeente={toernooi.gemeente} />
+            {km !== null && (
+              <span
+                title={t.lijst.afstandTitel2}
+                className="ml-1 inline-block whitespace-nowrap rounded-full bg-[#1f1f1f] px-2.5 py-0.5 text-[0.7rem] font-bold text-geel"
+              >
+                📍 {formatKm(km)}
+              </span>
+            )}
           </Detail>
           {toernooi.speelvorm === "rondes" && toernooi.aantal_ronden && (
             <Detail label={t.form.aantalRonden}>

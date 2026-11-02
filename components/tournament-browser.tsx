@@ -14,6 +14,8 @@ import { NewsletterBlock } from "./newsletter-block";
 import { CtaBlock } from "./cta-block";
 import { ZoekIcoon } from "./ui/zoek-icoon";
 import { TOON_KALENDER_EVENT } from "@/components/mobiel-kalender";
+import { MijnPlaatsBalk, Sortering } from "./mijn-plaats-balk";
+import { afstandTot, useMijnPlaatsStaat } from "@/lib/mijn-plaats";
 
 const LEGE_FILTERS: FilterState = {
   zoek: "",
@@ -40,6 +42,9 @@ export function TournamentBrowser({
   const [filters, setFilters] = useState<FilterState>(LEGE_FILTERS);
   const [actieveMaand, setActieveMaand] = useState<string | null>(null);
   const [weergave, setWeergave] = useState<"lijst" | "kalender">("lijst");
+  const [sorteringKeuze, setSortering] = useState<Sortering>("datum");
+  const mijnPlaats = useMijnPlaatsStaat();
+  const opAfstand = sorteringKeuze === "afstand" && mijnPlaats.plaats !== null;
 
   useEffect(() => {
     function checkHash() {
@@ -109,6 +114,19 @@ export function TournamentBrowser({
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
   }, [gefilterd]);
 
+  // "Dichtstbij": één lijst van dichtbij naar ver (zelfde afstand: eerst de vroegste datum);
+  // tornooien die niet te situeren zijn komen achteraan.
+  const opAfstandLijst = useMemo(() => {
+    if (!opAfstand) return [];
+    return gefilterd
+      .map((tn) => ({ tn, km: afstandTot(mijnPlaats, tn) }))
+      .sort((a, b) => {
+        if (a.km === null || b.km === null) return a.km === b.km ? 0 : a.km === null ? 1 : -1;
+        return Math.round(a.km) - Math.round(b.km) || a.tn.datum.localeCompare(b.tn.datum);
+      })
+      .map((x) => x.tn);
+  }, [opAfstand, gefilterd, mijnPlaats]);
+
   return (
     <div id="toernooien" className="mx-auto grid max-w-[1140px] grid-cols-1 gap-6 px-6 pb-12 pt-8 lg:grid-cols-[220px_1fr] lg:px-10">
       <FilterSidebar alleToernooien={toernooien} filters={filters} setFilters={setFilters} />
@@ -145,6 +163,8 @@ export function TournamentBrowser({
           </div>
         </div>
 
+        <MijnPlaatsBalk sortering={opAfstand ? "afstand" : "datum"} setSortering={setSortering} />
+
         {gevondenClubs.length > 0 && (
           <div className="mb-4">
             <h3 className="mb-2 text-xs font-extrabold uppercase tracking-widest text-grijs">
@@ -162,13 +182,15 @@ export function TournamentBrowser({
           <MonthCalendar toernooien={gefilterd} liveIds={liveIds} />
         ) : (
           <div className="flex flex-col gap-2">
-            {groepen.length === 0 && (
+            {gefilterd.length === 0 && (
               <div className="flex flex-col items-center gap-2 rounded-lg border border-rand bg-white p-8 text-center text-sm text-grijs">
                 <ZoekIcoon />
                 {t.lijst.geenResultaten}
               </div>
             )}
-            {groepen.map(([sleutel, lijst]) => {
+            {opAfstand &&
+              opAfstandLijst.map((tn) => <TournamentCard key={tn.id} toernooi={tn} live={liveIds.has(tn.id)} />)}
+            {!opAfstand && groepen.map(([sleutel, lijst]) => {
               const [jaar] = sleutel.split("-");
               const maandIndex = parseDatum(`${sleutel}-01`).getMonth();
               return (
