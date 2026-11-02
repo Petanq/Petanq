@@ -10,9 +10,11 @@ import {
   type Match13ToernooiRij,
   type EigenToernooiOptie,
 } from "@/actions/match13";
+import { Match13Inklap, type InklapIcoon } from "@/components/match13/Match13Inklap";
 import { Match13VerwijderKnop } from "@/components/match13/Match13VerwijderKnop";
 import { siteUrl } from "@/lib/site-url";
 import { FORMAT_LABELS } from "@/lib/match13/types";
+import { isGeldigeOrganisator, schoonOrganisator } from "@/lib/match13/organisator";
 import type { Format } from "@/lib/match13/types";
 
 type Wijziging = {
@@ -64,39 +66,63 @@ export function Match13Overzicht({
       {fout === "aanmaken_mislukt" && (
         <p className="match13-fout-banner">{t.match13.nieuwToernooiMislukt}</p>
       )}
-      <div className="match13-lijst-head">
-        <div>
-          {admin && (
-            <nav className="match13-broodkruimel">
-              <Link href="/beheer">← {t.match13.beheerWoord}</Link>
-              <span>/</span>
-              <span className="huidig">
-                Match<span className="m13-gold">13</span>
-              </span>
-            </nav>
-          )}
-          <h1>
-            Match<span className="m13-gold">13</span>
-          </h1>
-          <p style={{ margin: 0 }}>{t.match13.kiesOfStartNieuw}</p>
-        </div>
-        <div className="match13-lijst-head-knoppen">
-          {admin && (
-            <Link href="/beheer/match13/toegang" className="match13-toegang-knop">
-              {t.match13.toegangBeherenLink}
-            </Link>
-          )}
-          {admin && (
-            <Link href="/beheer/match13/archief" className="match13-toegang-knop">
-              {t.match13.archiefLink}
-            </Link>
-          )}
-          <form action={nieuwMatch13Toernooi}>
-            <button type="submit" className="match13-nieuw-knop">
-              {t.match13.nieuwToernooi}
-            </button>
-          </form>
-        </div>
+      <header className="match13-hero">
+        {admin && (
+          <nav className="match13-broodkruimel">
+            <Link href="/beheer">← {t.match13.beheerWoord}</Link>
+            <span>/</span>
+            <span className="huidig">
+              Match<span className="m13-gold">13</span>
+            </span>
+          </nav>
+        )}
+        <h1>
+          {t.match13.heroTitelEen}
+          <em>{t.match13.heroTitelTwee}</em>
+        </h1>
+        <p>{t.match13.kiesOfStartNieuw}</p>
+      </header>
+
+      <div className="match13-tegels">
+        <Link href={admin ? "/beheer" : "/"} className="match13-tegel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M19 12H5M11 6l-6 6 6 6" />
+          </svg>
+          <span className="match13-tegel-titel">{t.match13.terugKnop}</span>
+          <span className="match13-tegel-pijl" aria-hidden="true">›</span>
+        </Link>
+        {admin && (
+          <Link href="/beheer/match13/toegang" className="match13-tegel">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.2" />
+              <path d="M5.5 19c0-3.4 2.9-5.6 6.5-5.6s6.5 2.2 6.5 5.6z" />
+              <circle cx="5" cy="9.5" r="2.2" />
+              <circle cx="19" cy="9.5" r="2.2" />
+            </svg>
+            <span className="match13-tegel-titel">{t.match13.toegangBeherenLink.replace(" →", "")}</span>
+            <span className="match13-tegel-pijl" aria-hidden="true">›</span>
+          </Link>
+        )}
+        {admin && (
+          <Link href="/beheer/match13/archief" className="match13-tegel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="5" rx="1" />
+              <path d="M5 9v10h14V9M10 13h4" />
+            </svg>
+            <span className="match13-tegel-titel">{t.match13.archiefLink.replace(" →", "")}</span>
+            <span className="match13-tegel-pijl" aria-hidden="true">›</span>
+          </Link>
+        )}
+        <form action={nieuwMatch13Toernooi} className="match13-tegel-form">
+          <button type="submit" className="match13-tegel match13-tegel-hoofd">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 7v10M7 12h10" stroke="#1a1a1a" strokeWidth="2.4" strokeLinecap="round" />
+            </svg>
+            <span className="match13-tegel-titel">{t.match13.nieuwToernooi.replace("+ ", "")}</span>
+            <span className="match13-tegel-pijl" aria-hidden="true">›</span>
+          </button>
+        </form>
       </div>
 
       {rows.length === 0 ? (
@@ -104,14 +130,14 @@ export function Match13Overzicht({
       ) : (
         <>
           {gepland.length > 0 && (
-            <Match13Sectie titel={t.match13.sectieGepland(gepland.length)}>
+            <Match13Sectie titel={t.match13.sectieGepland(gepland.length)} icoon="kalender">
               {gepland.map((tour) => (
                 <Match13LijstRij key={tour.id} tour={tour} taal={taal} onWijzig={wijzigRij} koppelOpties={koppelOpties} />
               ))}
             </Match13Sectie>
           )}
 
-          <Match13Sectie titel={t.match13.sectieLopend(lopend.length)}>
+          <Match13Sectie titel={t.match13.sectieLopend(lopend.length)} icoon="lopend">
             {lopend.length === 0 ? (
               <p className="match13-lijst-leeg">{t.match13.geenLopendeToernooien}</p>
             ) : (
@@ -120,14 +146,11 @@ export function Match13Overzicht({
           </Match13Sectie>
 
           {afgewerkt.length > 0 && (
-            <details className="match13-lijst-sectie-inklapbaar">
-              <summary>{t.match13.sectieAfgewerkt(afgewerkt.length)}</summary>
-              <ul className="match13-lijst">
-                {afgewerkt.map((tour) => (
-                  <Match13LijstRij key={tour.id} tour={tour} taal={taal} onWijzig={wijzigRij} koppelOpties={koppelOpties} />
-                ))}
-              </ul>
-            </details>
+            <Match13Sectie titel={t.match13.sectieAfgewerkt(afgewerkt.length)} icoon="klaar">
+              {afgewerkt.map((tour) => (
+                <Match13LijstRij key={tour.id} tour={tour} taal={taal} onWijzig={wijzigRij} koppelOpties={koppelOpties} />
+              ))}
+            </Match13Sectie>
           )}
         </>
       )}
@@ -135,12 +158,11 @@ export function Match13Overzicht({
   );
 }
 
-function Match13Sectie({ titel, children }: { titel: string; children: ReactNode }) {
+function Match13Sectie({ titel, icoon, children }: { titel: string; icoon: InklapIcoon; children: ReactNode }) {
   return (
-    <details className="match13-lijst-sectie-inklapbaar">
-      <summary>{titel}</summary>
+    <Match13Inklap titel={titel} icoon={icoon}>
       <ul className="match13-lijst">{children}</ul>
-    </details>
+    </Match13Inklap>
   );
 }
 
@@ -157,6 +179,7 @@ function Match13LijstRij({
 }) {
   const { t } = useTranslation();
   const [organisator, setOrganisator] = useState(tour.organisator ?? "");
+  const [organisatorFout, setOrganisatorFout] = useState(false);
   const [geplandeDatum, setGeplandeDatum] = useState(tour.geplande_datum ?? "");
   const publiekeLink = `${siteUrl()}/live/match13/${tour.id}`;
 
@@ -174,7 +197,7 @@ function Match13LijstRij({
               <span className="match13-badge match13-badge-afgewerkt">{t.match13.lijstAfgewerkt}</span>
             )}
             {!tour.club && <span className="match13-badge match13-badge-geenclub">{t.match13.lijstGeenClub}</span>}
-            {!organisator && (
+            {!isGeldigeOrganisator(tour.organisator) && (
               <span className="match13-badge match13-badge-geenclub">{t.match13.lijstGeenOrganisator}</span>
             )}
           </div>
@@ -220,11 +243,24 @@ function Match13LijstRij({
           className="match13-lijst-organisator"
           value={organisator}
           placeholder={t.match13.lijstOrganisatorPlaceholder}
-          onChange={(e) => setOrganisator(e.target.value)}
+          style={organisatorFout ? { borderColor: "var(--warn)" } : undefined}
+          onChange={(e) => {
+            setOrganisator(e.target.value);
+            setOrganisatorFout(false);
+          }}
           onBlur={() => {
-            if (organisator !== (tour.organisator ?? "")) onWijzig(tour.id, { organisator });
+            // Verplicht: voornaam én naam. Een ongeldige invoer wordt niet bewaard.
+            if (!isGeldigeOrganisator(organisator)) {
+              setOrganisatorFout(true);
+              setOrganisator(tour.organisator ?? "");
+              return;
+            }
+            const schoon = schoonOrganisator(organisator);
+            setOrganisator(schoon);
+            if (schoon !== (tour.organisator ?? "")) onWijzig(tour.id, { organisator: schoon });
           }}
         />
+        {organisatorFout && <span className="match13-lijst-hint">{t.match13.organisatorOngeldig}</span>}
       </div>
       <div className="match13-lijst-meta">
         <label className="match13-lijst-checkbox">

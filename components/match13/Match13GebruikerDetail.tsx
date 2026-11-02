@@ -10,6 +10,7 @@ import {
   type EchteClub,
 } from "@/actions/match13-toegang";
 import { Match13ClubKiezer } from "@/components/match13/Match13ClubKiezer";
+import { Match13TerugKnop } from "@/components/match13/Match13TerugKnop";
 
 export function Match13GebruikerDetail({
   gebruiker,
@@ -37,6 +38,7 @@ export function Match13GebruikerDetail({
 
   return (
     <div className="match13-lijst-pagina">
+      <Match13TerugKnop href="/beheer/match13/toegang" />
       <div className="match13-lijst-head" style={{ display: "block" }}>
         <nav className="match13-broodkruimel">
           <Link href="/beheer">{t.match13.beheerWoord}</Link>

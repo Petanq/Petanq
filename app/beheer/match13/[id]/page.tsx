@@ -26,6 +26,7 @@ export default async function Match13ToernooiPagina({ params }: { params: Promis
       initialState={toernooi.state}
       initialGeplandeDatum={toernooi.geplandeDatum}
       initialLiveDelen={toernooi.liveDelen}
+      initialOrganisator={toernooi.organisator ?? ""}
       toernooiId={toernooi.toernooiId}
       initialVersie={toernooi.versie}
     />

@@ -57,6 +57,10 @@ import {
   haalMatch13StandAlsGewijzigd,
 } from "@/actions/match13";
 import { maakSync } from "@/lib/match13/sync";
+import { maakKlassementAfbeelding, type AfbeeldingPlek } from "@/lib/match13/deel-afbeelding";
+import { MATCH13_THEMA } from "@/lib/match13/thema";
+import { Match13TerugKnop } from "@/components/match13/Match13TerugKnop";
+import { isGeldigeOrganisator, schoonOrganisator } from "@/lib/match13/organisator";
 import { siteUrl } from "@/lib/site-url";
 import { LiveQrKaart } from "@/components/match13/LiveQrKaart";
 import QRCode from "qrcode";
@@ -213,11 +217,97 @@ function Confetti({ trigger }: { trigger: boolean }) {
 // het vinkje in Opzet weer te tonen en de QR op de kaartjes te laten verschijnen.
 const KAART_QR_BESCHIKBAAR = false;
 
+// Merkregel onderaan de klassement-kaders: wordt het klassement of het podium als
+// screenshot of foto gedeeld, dan staat Petanque13 er altijd op.
+function MerkRegel() {
+  const { t } = useTranslation();
+  return (
+    <div className="m13-merk">
+      <img src="/images/logo-icon.png" alt="" />
+      <span>
+        Match<span className="m13-gold">13</span> · {t.match13.merkRegel} <strong>petanque13.be</strong>
+      </span>
+    </div>
+  );
+}
+
+// Volgorde en iconen van de spelvormen in Opzet (zelfde stijl als de Formule-keuze
+// in het tornooiformulier): één mannetje per speler van het team.
+const FORMULE_VOLGORDE: Format[] = ["tete", "doublet", "triplet", "poules", "kwartet", "sextet", "meli"];
+
+function FormaatIcoon({ formaat }: { formaat: Format }) {
+  const lijn = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+  const mannetje = (sleutel: number) => (
+    <svg key={sleutel} viewBox="0 0 24 24" aria-hidden="true" {...lijn}>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20c0-3.6 3-6 7-6s7 2.4 7 6" />
+    </svg>
+  );
+  const aantal = formaat === "tete" ? 1 : formaat === "doublet" ? 2 : formaat === "triplet" ? 3 : 0;
+  if (aantal > 0) return <>{Array.from({ length: aantal }, (_, i) => mannetje(i))}</>;
+  if (formaat === "kwartet" || formaat === "sextet") {
+    return (
+      <>
+        {mannetje(0)}
+        <b className="formule-maal">×{formaat === "kwartet" ? 4 : 6}</b>
+      </>
+    );
+  }
+  if (formaat === "poules") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" {...lijn}>
+        <path d="M3 5h6v5H3zM3 14h6v5H3zM15 9.5h6v5h-6zM9 7.5h3v9H9M12 12h3" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...lijn}>
+      <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" />
+    </svg>
+  );
+}
+
+// Icoontjes voor de tab-tegels bovenaan (Opzet / Onthaal / Zaalscherm / Klassement).
+function TabIcoon({ tab }: { tab: Tab }) {
+  const lijn = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...lijn}>
+      {tab === "opzet" && (
+        <>
+          <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+          <circle cx="16" cy="7" r="2" />
+          <circle cx="8" cy="17" r="2" />
+        </>
+      )}
+      {tab === "onthaal" && (
+        <>
+          <circle cx="9" cy="8" r="3" />
+          <path d="M3.5 19c0-3.2 2.4-5 5.5-5s5.5 1.8 5.5 5" />
+          <path d="M17 8v6M14 11h6" />
+        </>
+      )}
+      {tab === "zaal" && (
+        <>
+          <rect x="3" y="4" width="18" height="12" rx="2" />
+          <path d="M8 20h8M12 16v4" />
+        </>
+      )}
+      {tab === "klassement" && (
+        <>
+          <path d="M8 4h8v5a4 4 0 0 1-8 0V4z" />
+          <path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export function Match13App({
   tournamentId,
   initialState,
   initialGeplandeDatum,
   initialLiveDelen,
+  initialOrganisator,
   toernooiId,
   initialVersie,
 }: {
@@ -225,16 +315,19 @@ export function Match13App({
   initialState: AppState;
   initialGeplandeDatum: string | null;
   initialLiveDelen: boolean;
+  initialOrganisator: string;
   toernooiId: string | null;
   initialVersie: number | null;
 }) {
-  const { t } = useTranslation();
+  const { t, taal } = useTranslation();
   const [state, setState] = useState<AppState>(initialState);
   // Los van de AppState-blob: "geplande_datum" is een eigen kolom (net als
   // is_test/afgewerkt/organisator), niet iets in de JSON die hierboven wordt
   // opgeslagen — vandaar de aparte state + eigen opslag hieronder.
   const [geplandeDatum, setGeplandeDatum] = useState(initialGeplandeDatum ?? "");
   const [liveDelen, setLiveDelen] = useState(initialLiveDelen);
+  const [organisator, setOrganisator] = useState(initialOrganisator);
+  const [organisatorGeraakt, setOrganisatorGeraakt] = useState(false);
   // QR-code (als SVG-tekst, met eigen witte achtergrond zodat hij ook zonder
   // "achtergronden afdrukken" leesbaar blijft) voor op de kaartjes — enkel als de
   // club dat koos én Live delen aanstaat, anders zou de link nergens naartoe leiden.
@@ -290,6 +383,7 @@ export function Match13App({
   // Window Management API — valt overal anders gewoon terug op de
   // bestaande "volledig scherm hier"-knop.
   const [schermKeuze, setSchermKeuze] = useState<ExternScherm[] | null>(null);
+  const [actiesOpen, setActiesOpen] = useState(false);
   async function toonOpExternScherm() {
     const w = window as unknown as { getScreenDetails?: () => Promise<{ screens: ExternScherm[] }> };
     if (!w.getScreenDetails) {
@@ -427,7 +521,10 @@ export function Match13App({
   // nog op 0 (bv. van vóór deze verplichting bestond).
   const inlegVerplicht = entryFee <= 0 && !state.entryFeeBevestigd && teams.length === 0;
   const rondesVerplicht = !isPoules && totalRounds <= 0 && rounds.length === 0;
-  const opzetOnvolledig = clubNaamVerplicht || inlegVerplicht || rondesVerplicht;
+  // Organisator (voornaam + naam): zelfde principe — enkel verplicht zolang er nog
+  // geen teams zijn, zodat bestaande toernooien bruikbaar blijven.
+  const organisatorVerplicht = !isGeldigeOrganisator(organisator) && teams.length === 0;
+  const opzetOnvolledig = clubNaamVerplicht || organisatorVerplicht || inlegVerplicht || rondesVerplicht;
 
   const [playerInputs, setPlayerInputs] = useState<string[]>(() => Array(teamSize).fill(""));
   const [newPlayerName, setNewPlayerName] = useState("");
@@ -1721,11 +1818,70 @@ export function Match13App({
     </div>
   );
 
+  // "Deel als afbeelding": maakt een nette PNG van het klassement/de eindstand met een
+  // grote Petanque13-vermelding. Op een gsm opent het deelmenu (Facebook, WhatsApp, …),
+  // op een pc wordt de afbeelding gedownload.
+  const [delenBezig, setDelenBezig] = useState(false);
+  const [delenMislukt, setDelenMislukt] = useState(false);
+  async function deelKlassement() {
+    setDelenBezig(true);
+    setDelenMislukt(false);
+    try {
+      const naamVan = (id: string) => teams.find((x) => x.id === id)?.name ?? "?";
+      const plekken: AfbeeldingPlek[] = isPoules
+        ? eindklassement.flatMap((g) =>
+            g.teamIds.map((id) => ({ plaats: g.vanaf === g.tot ? String(g.vanaf) : `${g.vanaf}-${g.tot}`, naam: naamVan(id) }))
+          )
+        : standings.map((r, i) => ({
+            plaats: String(i + 1),
+            naam: r.name,
+            sub: t.match13.podiumStat(r.overwinningen, r.saldo),
+          }));
+      const club = clubName || t.match13.naamloosToernooi;
+      const datum = geplandeDatum
+        ? new Date(geplandeDatum + "T12:00:00").toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        : undefined;
+      const blob = await maakKlassementAfbeelding({
+        club,
+        titel: tournamentComplete ? t.match13.deelTitelEindstand : t.match13.deelTitelKlassement,
+        datum,
+        plekken,
+        tagline: t.match13.deelTagline,
+        logoUrl: "/images/logo-icon.png",
+        fontFamily: getComputedStyle(appShellRef.current ?? document.body).fontFamily,
+      });
+      const bestand = new File([blob], "match13-klassement.png", { type: "image/png" });
+      if (typeof navigator.canShare === "function" && navigator.canShare({ files: [bestand] })) {
+        try {
+          await navigator.share({ files: [bestand], title: `${club} — Match13`, text: `${club} · Match13 · petanque13.be` });
+          return;
+        } catch (e) {
+          if ((e as DOMException).name === "AbortError") return; // deelmenu gesloten
+        }
+      }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "match13-klassement.png";
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch {
+      setDelenMislukt(true);
+    } finally {
+      setDelenBezig(false);
+    }
+  }
+
   return (
-    <div className="app-shell" ref={appShellRef}>
+    <div className={"app-shell" + (tab === "opzet" && MATCH13_THEMA === "donker" ? " opzet-donker" : "")} ref={appShellRef}>
       <Confetti trigger={tournamentComplete} />
       <div className="hero-band">
         <div className="hero-inner">
+          <Match13TerugKnop href="/beheer/match13" />
           <div className="brand">
             <div className="brand-id">
               <img className="mark" src="/images/logo-icon.png" alt="Petanque13" />
@@ -1736,23 +1892,60 @@ export function Match13App({
                 <div className="tagline">{t.match13.tagline}</div>
               </div>
             </div>
-            <div style={{ display: "flex", gap: "0.8rem", alignItems: "center", flexWrap: "wrap" }}>
-              <span className="hero-club">{clubName || t.match13.naamloosToernooi}</span>
-              <span className="hero-club hero-formaat">{FORMAT_LABELS[format]}</span>
-              <Link href="/beheer/match13" className="link-btn" style={{ color: "var(--header-ink)" }}>
+            <div className="hero-acties">
+              <div className="hero-naam">
+                <span className="hero-club">{clubName || t.match13.naamloosToernooi}</span>
+                <span className="hero-club hero-formaat">{FORMAT_LABELS[format]}</span>
+              </div>
+              <Link href="/beheer/match13" className="link-btn hero-alle-toernooien" style={{ color: "var(--header-ink)" }}>
                 {t.match13.alleToernooien}
               </Link>
-              <button className="ghost-btn" onClick={toggleFullscreen}>
-                {isFullscreen ? t.match13.volledigSchermSluiten : t.match13.volledigScherm}
-              </button>
               <div style={{ position: "relative", display: "inline-block" }}>
-                <button className="ghost-btn" onClick={toonOpExternScherm}>
-                  {t.match13.toonOpExternScherm}
+                <button
+                  className="ghost-btn hero-acties-knop"
+                  aria-expanded={actiesOpen}
+                  onClick={() => setActiesOpen((open) => !open)}
+                >
+                  {t.match13.actiesMenu} ▾
                 </button>
+                {actiesOpen && (
+                  <>
+                    <div className="scherm-kiezer-overlay" onClick={() => setActiesOpen(false)} />
+                    <div className="scherm-kiezer hero-acties-menu">
+                      <button
+                        className="scherm-kiezer-optie"
+                        onClick={() => {
+                          setActiesOpen(false);
+                          toggleFullscreen();
+                        }}
+                      >
+                        {isFullscreen ? t.match13.volledigSchermSluiten : t.match13.volledigScherm}
+                      </button>
+                      <button
+                        className="scherm-kiezer-optie"
+                        onClick={() => {
+                          setActiesOpen(false);
+                          toonOpExternScherm();
+                        }}
+                      >
+                        {t.match13.toonOpExternScherm}
+                      </button>
+                      <button
+                        className="scherm-kiezer-optie scherm-kiezer-gevaar"
+                        onClick={() => {
+                          setActiesOpen(false);
+                          resetAll();
+                        }}
+                      >
+                        {t.match13.ditToernooiWissen}
+                      </button>
+                    </div>
+                  </>
+                )}
                 {schermKeuze && (
                   <>
                     <div className="scherm-kiezer-overlay" onClick={() => setSchermKeuze(null)} />
-                    <div className="scherm-kiezer">
+                    <div className="scherm-kiezer hero-acties-menu">
                       <div className="scherm-kiezer-titel">{t.match13.kiesScherm}</div>
                       {schermKeuze.map((scherm, i) => (
                         <button key={i} className="scherm-kiezer-optie" onClick={() => kiesExternScherm(scherm)}>
@@ -1766,9 +1959,6 @@ export function Match13App({
                   </>
                 )}
               </div>
-              <button className="ghost-btn" onClick={resetAll}>
-                {t.match13.ditToernooiWissen}
-              </button>
             </div>
           </div>
         </div>
@@ -1787,17 +1977,22 @@ export function Match13App({
               title={opzetOnvolledig && tabKey !== "opzet" ? t.match13.vulEerstClubIn : undefined}
               onClick={() => setTab(tabKey)}
             >
-              {tabKey === "opzet" && t.match13.tabOpzet}
-              {tabKey === "onthaal" && t.match13.tabOnthaal}
-              {tabKey === "zaal" && t.match13.tabZaal}
-              {tabKey === "klassement" && t.match13.tabKlassement}
+              <TabIcoon tab={tabKey} />
+              <span>
+                {tabKey === "opzet" && t.match13.tabOpzet}
+                {tabKey === "onthaal" && t.match13.tabOnthaal}
+                {tabKey === "zaal" && t.match13.tabZaal}
+                {tabKey === "klassement" && t.match13.tabKlassement}
+              </span>
             </button>
           ))}
         </nav>
 
         {tab === "opzet" && (
           <section className="grid-2 fade-in">
-            <div className="card">
+            <div className="opzet-stapel">
+              <section className="kotje">
+              <h3>{t.match13.opzetToernooi}</h3>
               <div className="field">
                 <label>{t.match13.club}</label>
                 <input
@@ -1805,6 +2000,28 @@ export function Match13App({
                   onChange={(e) => setState((s) => ({ ...s, clubName: e.target.value }))}
                 />
                 {clubNaamVerplicht && <p className="hint" style={{ color: "var(--warn)" }}>{t.match13.clubVerplicht}</p>}
+              </div>
+              <div className="field">
+                <label>{t.match13.organisatorLabel}</label>
+                <input
+                  value={organisator}
+                  placeholder={t.match13.lijstOrganisatorPlaceholder}
+                  style={organisatorVerplicht && organisatorGeraakt ? { borderColor: "var(--warn)" } : undefined}
+                  onChange={(e) => setOrganisator(e.target.value)}
+                  onBlur={() => {
+                    setOrganisatorGeraakt(true);
+                    if (isGeldigeOrganisator(organisator)) {
+                      const schoon = schoonOrganisator(organisator);
+                      setOrganisator(schoon);
+                      void bewerkMatch13Metadata(tournamentId, { organisator: schoon });
+                    }
+                  }}
+                />
+                {organisatorVerplicht && (
+                  <p className="hint" style={{ color: "var(--warn)" }}>
+                    {organisator.trim() && organisatorGeraakt ? t.match13.organisatorOngeldig : t.match13.organisatorVerplicht}
+                  </p>
+                )}
               </div>
               <div className="field">
                 <label>{t.match13.geplandeDatumLabel}</label>
@@ -1819,6 +2036,9 @@ export function Match13App({
                   style={{ maxWidth: 200 }}
                 />
               </div>
+              </section>
+              <section className="kotje">
+              <h3>{t.match13.opzetLiveDelen}</h3>
               <div className="field">
                 <button
                   type="button"
@@ -1866,17 +2086,26 @@ export function Match13App({
                   </p>
                 )}
               </div>
+              </section>
+              <section className="kotje">
+              <h3>{t.match13.opzetSpelvorm}</h3>
               <div className="field">
                 <label>{t.match13.speltype}</label>
-                <div className={"pill-row" + (teams.length > 0 ? " locked" : "")}>
-                  {(Object.keys(FORMAT_LABELS) as Format[]).map((f) => (
-                    <span
+                <div className={"formule-rooster" + (teams.length > 0 ? " locked" : "")}>
+                  {FORMULE_VOLGORDE.map((f) => (
+                    <button
+                      type="button"
                       key={f}
-                      className={"pill" + (format === f ? " sel" : "")}
+                      className={"formule-tegel" + (format === f ? " sel" : "")}
+                      aria-pressed={format === f}
+                      aria-disabled={teams.length > 0}
                       onClick={() => teams.length === 0 && setState((s) => ({ ...s, format: f }))}
                     >
-                      {FORMAT_LABELS[f]}
-                    </span>
+                      <span className="formule-iconen">
+                        <FormaatIcoon formaat={f} />
+                      </span>
+                      <span className="formule-naam">{FORMAT_LABELS[f]}</span>
+                    </button>
                   ))}
                 </div>
                 <div className="hint">
@@ -1944,6 +2173,9 @@ export function Match13App({
                   </div>
                 </div>
               )}
+              </section>
+              <section className="kotje">
+              <h3>{t.match13.opzetInlegRondes}</h3>
               <div className="field">
                 <label>{t.match13.inlegPerTeam}</label>
                 <input
@@ -1984,8 +2216,11 @@ export function Match13App({
                   <div className="hint">{t.match13.hintAantalRondes}</div>
                 </div>
               )}
+              </section>
               {!isPoules && (
-                <div className="field">
+              <section className="kotje">
+              <h3>{t.match13.opzetPleinenKaartjes}</h3>
+              <div className="field">
                   <label>{t.match13.aantalPleinen}</label>
                   <input
                     type="number"
@@ -2002,8 +2237,7 @@ export function Match13App({
                     style={{ maxWidth: 120 }}
                   />
                   <div className="hint">{t.match13.hintAantalPleinen}</div>
-                </div>
-              )}
+              </div>
               {!isPoules && !isMeli && !isKwartet && !isSextet && format !== "tete" && (
                 <div className="field">
                   <label>{t.match13.kaartjesPerPlein}</label>
@@ -2021,6 +2255,10 @@ export function Match13App({
                   <div className="hint">{t.match13.hintKaartjesPerPlein}</div>
                 </div>
               )}
+              </section>
+              )}
+              <section className="kotje">
+              <h3>{t.match13.opzetTeams}</h3>
               <div className="field">
                 <label>{t.match13.teamsLabel}</label>
                 <div className="value">
@@ -2038,13 +2276,14 @@ export function Match13App({
               )}
               <button
                 className="cta"
-                disabled={clubNaamVerplicht || inlegVerplicht || rondesVerplicht}
+                disabled={clubNaamVerplicht || organisatorVerplicht || inlegVerplicht || rondesVerplicht}
                 onClick={() => setTab("onthaal")}
               >
                 {t.match13.gaNaarOnthaal}
               </button>
+              </section>
             </div>
-            <div className="card muted-card">
+            <div className="card muted-card kotje">
               <img className="muted-card-logo" src="/images/logo-volledig.png" alt="Petanque13" />
               <h3>{t.match13.hoeDitWerkt}</h3>
               <ul>
@@ -2059,22 +2298,10 @@ export function Match13App({
         )}
 
         {tab === "onthaal" && (
-          <section className="card fade-in">
-            <div className="zaal-head">
-              <h2>{isMeli ? t.match13.spelersHeader : t.match13.teamsHeader}</h2>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-                {teams.length > 0 && (
-                  <button className="match13-actie-knop" onClick={() => window.print()}>
-                    {t.match13.printLijst}
-                  </button>
-                )}
-                {!isPoules && (
-                  <RoundStepper current={rounds.length} total={totalRounds} currentDone={currentRoundComplete} />
-                )}
-              </div>
-            </div>
+          <div className="opzet-stapel fade-in">
             {printLijstBlad}
-
+            <section className="kotje">
+              <h3>{isMeli ? t.match13.onthaalToevoegenSpeler : t.match13.onthaalToevoegenTeam}</h3>
             {groupStageStarted ? (
               <p className="hint">{t.match13.teamsGeslotenPoules}</p>
             ) : isMeli ? (
@@ -2147,6 +2374,37 @@ export function Match13App({
               </>
             )}
 
+            </section>
+            <section className="kotje">
+            <div className="zaal-head">
+              <h2>{isMeli ? t.match13.spelersHeader : t.match13.teamsHeader}</h2>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+                {teams.length > 0 && (
+                  <button className="match13-actie-knop" onClick={() => window.print()}>
+                    {t.match13.printLijst}
+                  </button>
+                )}
+                {!isPoules && (
+                  <RoundStepper current={rounds.length} total={totalRounds} currentDone={currentRoundComplete} />
+                )}
+              </div>
+            </div>
+              {teams.length > 0 && (
+                <div className="match13-stats">
+                  <div className="match13-stat">
+                    <b>{teams.length}</b>
+                    <span>{t.match13.onthaalIngeschreven}</span>
+                  </div>
+                  <div className="match13-stat">
+                    <b>{presentTeams.length}</b>
+                    <span>{t.match13.onthaalAanwezig}</span>
+                  </div>
+                  <div className="match13-stat">
+                    <b>{paidCount}</b>
+                    <span>{t.match13.onthaalBetaald}</span>
+                  </div>
+                </div>
+              )}
             {teams.length === 0 && (
               <p className="hint">
                 {t.match13.geenSpelersOfTeams(isMeli ? t.match13.spelersWoord : t.match13.teamsWoord)}
@@ -2241,6 +2499,8 @@ export function Match13App({
               </p>
             )}
 
+            </section>
+            <section className="kotje">
             {!(isPoules ? groupStageStarted : rounds.length > 0) ? (
               <button
                 className="cta"
@@ -2263,7 +2523,8 @@ export function Match13App({
                 {t.match13.minimumOmTeStarten(minToPlay, isMeli ? t.match13.spelersWoord : t.match13.teamsWoord)}
               </p>
             )}
-          </section>
+            </section>
+          </div>
         )}
 
         {tab === "zaal" && (
@@ -2271,7 +2532,7 @@ export function Match13App({
           <div ref={zaalFitBinnenRef} style={zaalFitBinnenStyle}>
           {liveDelen && <LiveQrKaart url={`${siteUrl()}/live/match13/${tournamentId}`} />}
           {isPoules && (
-          <section className="card fade-in">
+          <section className="kotje zaal-kotje fade-in">
             <div className="zaal-head">
               <h2 className={knockoutStarted ? "zaal-titel-knockout" : undefined}>
                 {champion
@@ -2282,7 +2543,7 @@ export function Match13App({
                   ? t.match13.groepsfaseKlaar
                   : t.match13.groepsfase}
               </h2>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+              <div className="zaal-acties">
                 {knockoutStarted && (
                   <button className="link-btn" onClick={() => setTab("klassement")}>
                     {t.match13.terugNaarPoules}
@@ -2433,10 +2694,11 @@ export function Match13App({
         )}
 
         {!isPoules && (
-          <section className="card fade-in">
+          <div className="zaal-stapel fade-in">
+          <section className="kotje zaal-kotje">
             <div className="zaal-head">
               <h2>{t.match13.rondeVan(currentRound ? currentRound.number : "—", totalRounds)}</h2>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+              <div className="zaal-acties">
                 {currentRound && currentRound.matches.some((m) => m.teamB !== null) && (
                   <button
                     className="match13-actie-knop"
@@ -2521,6 +2783,7 @@ export function Match13App({
               </div>
             )}
 
+          </section>
             {currentRound && (
               <div
                 className="court-grid"
@@ -2779,6 +3042,7 @@ export function Match13App({
               : null}
 
             {rounds.length > 1 && (
+              <section className="kotje">
               <details className="prev-rounds" open>
                 <summary>{t.match13.vorigeRondes(rounds.length - 1)}</summary>
                 <p className="hint" style={{ margin: "0 0 0.6rem" }}>
@@ -2914,29 +3178,47 @@ export function Match13App({
                     </div>
                   ))}
               </details>
+              </section>
             )}
-          </section>
+          </div>
           )}
           </div>
           </div>
         )}
 
         {tab === "klassement" && (
-          <section className="card fade-in" style={{ overflowX: "auto" }}>
+          <div className="zaal-stapel fade-in">
+          <section className="kotje zaal-kotje">
             <div className="zaal-head">
               <h2>{t.match13.klassementTitel}</h2>
-              {!isPoules && standings.length > 0 && (
-                <button className="match13-actie-knop" onClick={() => window.print()}>
-                  {t.match13.printKlassement}
-                </button>
-              )}
+              <div className="zaal-acties">
+                {(isPoules ? eindklassement.length > 0 : standings.some((r) => r.gespeeld > 0)) && (
+                  <button className="cta" disabled={delenBezig} onClick={() => void deelKlassement()}>
+                    {delenBezig ? t.match13.deelBezig : t.match13.deelAlsAfbeelding}
+                  </button>
+                )}
+                {!isPoules && standings.length > 0 && (
+                  <button className="match13-actie-knop" onClick={() => window.print()}>
+                    {t.match13.printKlassement}
+                  </button>
+                )}
+              </div>
             </div>
+            {delenMislukt && (
+              <p className="hint" style={{ color: "var(--warn)", marginTop: "0.6rem" }}>
+                {t.match13.deelMislukt}
+              </p>
+            )}
+          </section>
             {!isPoules && printKlassementBlad}
             {isPoules ? (
               teams.length === 0 ? (
-                <p className="hint">{t.match13.nogGeenTeams}</p>
+                <section className="kotje">
+                  <p className="hint">{t.match13.nogGeenTeams}</p>
+                </section>
               ) : (
                 <>
+                  <section className="kotje">
                   {champion && (
                     <div className="finish-banner">
                       {t.match13.kampioenLabel} {numNameOf(champion)}!
@@ -2980,6 +3262,7 @@ export function Match13App({
                       </BracketDonkerBlok>
                     );
                   })}
+                  </section>
 
                   {knockoutStarted && (
                     <BracketDonkerBlok>
@@ -3001,8 +3284,8 @@ export function Match13App({
                   )}
 
                   {eindklassement.length > 0 && (
-                    <>
-                      <h3 style={{ marginTop: "1.8rem" }}>{t.match13.eindklassementHeader}</h3>
+                    <section className="kotje">
+                      <h3>{t.match13.eindklassementHeader}</h3>
                       <div className="tabel-scroll">
                         <table className="standings">
                           <thead>
@@ -3030,23 +3313,58 @@ export function Match13App({
                           </tbody>
                         </table>
                       </div>
-                    </>
+                      <MerkRegel />
+                    </section>
                   )}
                 </>
               )
             ) : standings.length === 0 ? (
-              <p className="hint">{t.match13.nogGeenTeams}</p>
+              <section className="kotje">
+                <p className="hint">{t.match13.nogGeenTeams}</p>
+              </section>
             ) : (
+              <>
+              {standings.some((r) => r.gespeeld > 0) && (
+                <section className="kotje">
+                  <h3>{t.match13.podiumTitel}</h3>
+                  <div className="podium">
+                    {[1, 0, 2]
+                      .filter((idx) => standings[idx])
+                      .map((idx) => {
+                        const r = standings[idx];
+                        return (
+                          <div key={r.teamId} className={"podium-plek plek-" + (idx + 1)}>
+                            {idx === 0 && (
+                              <svg className="podium-kroon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 8l4.5 4.2L12 5l4.5 7.2L21 8l-2 11H5z" />
+                              </svg>
+                            )}
+                            <span className="podium-naam">
+                              <span className="team-num">{r.number}</span> {r.name}
+                            </span>
+                            <span className="podium-stat">{t.match13.podiumStat(r.overwinningen, r.saldo)}</span>
+                            <div className="podium-trap">
+                              <span>{idx + 1}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                  <MerkRegel />
+                </section>
+              )}
+              <section className="kotje">
+              <h3>{t.match13.volledigKlassement}</h3>
               <div className="tabel-scroll">
-              <table className="standings">
+              <table className="standings live-klassement">
                 <thead>
                   <tr>
                     <th></th>
                     <th>{isMeli ? t.match13.spelerKolom : t.match13.teamKolom}</th>
                     <th className="num">{t.match13.gespeeld}</th>
                     <th className="num">{t.match13.overwinningen}</th>
-                    <th className="num">{t.match13.pntVoor}</th>
-                    <th className="num">{t.match13.pntTegen}</th>
+                    <th className="num hide-mobiel">{t.match13.pntVoor}</th>
+                    <th className="num hide-mobiel">{t.match13.pntTegen}</th>
                     <th className="num">{t.match13.saldo}</th>
                   </tr>
                 </thead>
@@ -3070,16 +3388,19 @@ export function Match13App({
                       </td>
                       <td className="num">{row.gespeeld}</td>
                       <td className="num">{row.overwinningen}</td>
-                      <td className="num">{row.puntenVoor}</td>
-                      <td className="num">{row.puntenTegen}</td>
+                      <td className="num hide-mobiel">{row.puntenVoor}</td>
+                      <td className="num hide-mobiel">{row.puntenTegen}</td>
                       <td className="num">{row.saldo > 0 ? `+${row.saldo}` : row.saldo}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               </div>
+              <MerkRegel />
+              </section>
+              </>
             )}
-          </section>
+          </div>
         )}
       </div>
 

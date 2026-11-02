@@ -2134,8 +2134,15 @@
   background: var(--surface);
   color: var(--ink);
 }
+/* Elke sectie (Gepland / Lopend / Afgewerkt) is een eigen wit kader, net als de
+   kop bovenaan, met daarin de gele balk en de toernooien als aparte kaartjes. */
 .match13-scope .match13-lijst-sectie-inklapbaar {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 0.8rem;
 }
 .match13-scope .match13-lijst-sectie-inklapbaar summary {
   display: flex;
@@ -2149,7 +2156,7 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   cursor: pointer;
-  padding: 0.4rem 1.2rem;
+  padding: 0.55rem 1.2rem;
   list-style: none;
   transition: filter 0.15s ease;
 }
@@ -2166,9 +2173,6 @@
 }
 .match13-scope .match13-lijst-sectie-inklapbaar[open] summary::before {
   transform: rotate(90deg);
-}
-.match13-scope .match13-lijst-sectie-inklapbaar[open] summary {
-  border-radius: 8px 8px 0 0;
 }
 .match13-scope .match13-lijst-sectie-inklapbaar .match13-lijst {
   margin-top: 0.7rem;
@@ -2198,6 +2202,20 @@
   align-items: center;
   gap: 0.7rem;
   flex-wrap: wrap;
+}
+.match13-scope .match13-terug-knop {
+  display: inline-block;
+  background: var(--header-bg);
+  color: var(--header-ink);
+  border-radius: 8px;
+  padding: 0.7rem 1.1rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.match13-scope .match13-terug-knop:hover {
+  filter: brightness(1.25);
 }
 .match13-scope .match13-toegang-knop {
   display: inline-block;
@@ -2923,4 +2941,1195 @@
   width: 10mm;
   flex-shrink: 0;
   border-bottom: 0.3mm solid #b3ab98;
+}
+
+/* ================================================================
+   Donkere stijl voor de Match13-lijstpagina (zelfde look als de
+   Petanque13-site: donkere fotoachtergrond, donkere kaders met gouden accenten).
+   Enkel de overzichtspagina — de toernooitool zelf blijft zoals hij was.
+   De foto zit op een ::before met position:fixed (background-attachment:fixed
+   werkt niet op iPhone), net als .site-foto in globals.css.
+   ================================================================ */
+.match13-scope.m13-donker:has(.match13-lijst-pagina) {
+  position: relative;
+  isolation: isolate;
+  background: #121212;
+}
+.match13-scope.m13-donker:has(.match13-lijst-pagina)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(rgba(14, 14, 14, 0.52), rgba(14, 14, 14, 0.38)),
+    url("/images/match13-achtergrond.png") center / cover no-repeat;
+}
+.match13-scope.m13-donker .match13-lijst-pagina {
+  --surface: #191919;
+  --surface-2: #232323;
+  --border: #363636;
+  --ink: #f2f2f2;
+  --ink-muted: #b9b9b9;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  color: var(--ink);
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-lijst-head {
+  border-color: #6f5a1c;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-terug-knop,
+.match13-scope.m13-donker .match13-lijst-pagina .match13-toegang-knop {
+  background: #141414;
+  color: var(--ink);
+  border: 1.5px solid #b8932a;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-terug-knop:hover,
+.match13-scope.m13-donker .match13-lijst-pagina .match13-toegang-knop:hover {
+  background: #262015;
+  filter: none;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-lijst-sectie-inklapbaar {
+  border-color: #3d3d3d;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-lijst-rij {
+  background: #202020;
+  border-color: #6f5a1c;
+  box-shadow: none;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-lijst-datum {
+  color: var(--accent);
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-badge-formaat {
+  color: #e2e2e2;
+  background: #333333;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-badge-test {
+  color: var(--accent);
+  background: rgba(244, 196, 48, 0.16);
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-badge-afgewerkt {
+  color: #6fdca0;
+  background: rgba(22, 163, 74, 0.22);
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-badge-geenclub {
+  color: #ff9a9a;
+  background: rgba(220, 38, 38, 0.22);
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-lijst-organisator,
+.match13-scope.m13-donker .match13-lijst-pagina .match13-lijst-datum-veld input {
+  background: #141414;
+  color: var(--ink);
+  border-color: #6f5a1c;
+  color-scheme: dark;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-lijst-organisator::placeholder {
+  color: #8d8d8d;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-fout-banner {
+  background: rgba(220, 38, 38, 0.2);
+  color: #ffb4b4;
+}
+
+/* Overige elementen op de donkere lijstpagina's (Club beheer, Archief, details):
+   kleuren die op de lichte stijl vast stonden, hier leesbaar gemaakt. */
+.match13-scope.m13-donker .match13-lijst-pagina {
+  --done: #8db4ff;
+  --done-bg: rgba(37, 99, 235, 0.22);
+  --live: #4ade80;
+  --live-bg: rgba(22, 163, 74, 0.2);
+  --warn: #ff9a9a;
+  --warn-bg: rgba(220, 38, 38, 0.22);
+}
+.match13-scope.m13-donker .match13-lijst-pagina :is(input, select, textarea) {
+  color: var(--ink);
+  color-scheme: dark;
+}
+.match13-scope.m13-donker .match13-lijst-pagina :is(input, textarea)::placeholder {
+  color: #8d8d8d;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-club-suggesties {
+  background: #1c1c1c;
+  border-color: #6f5a1c;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-uitnodig-balk {
+  border: 1px solid #6f5a1c;
+}
+.match13-scope.m13-donker .match13-lijst-pagina .match13-toegang-zoekveld {
+  background: #141414;
+  border-color: #6f5a1c;
+}
+
+/* Grote hoofding + knoppen als tegels bovenaan het Match13-overzicht
+   (zelfde look als "Jouw tornooi in de kijker." op de Petanque13-site). */
+.match13-scope .match13-hero {
+  margin: 0 0 1.6rem;
+}
+.match13-scope .match13-hero .match13-broodkruimel {
+  margin-bottom: 1rem;
+}
+.match13-scope .match13-hero h1 {
+  margin: 0;
+  font-weight: 900;
+  font-size: clamp(2.3rem, 7.2vw, 4.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.match13-scope .match13-hero h1 em {
+  font-style: normal;
+  color: var(--accent);
+  display: block;
+}
+.match13-scope .match13-hero p {
+  margin: 1rem 0 0;
+  color: #eeeeee;
+  font-size: 1.05rem;
+}
+.match13-scope .match13-hero :is(h1, p, .match13-broodkruimel, .match13-broodkruimel a, .match13-broodkruimel .huidig) {
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.55);
+}
+.match13-scope .match13-hero .match13-broodkruimel,
+.match13-scope .match13-hero .match13-broodkruimel a {
+  color: #e6e6e6;
+}
+.match13-scope .match13-tegels {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 0 0 1.2rem;
+}
+.match13-scope .match13-tegel-form {
+  display: contents;
+}
+.match13-scope .match13-tegel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.6rem;
+  min-height: 104px;
+  padding: 1rem 1.1rem;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1.5px solid #8a6f1f;
+  border-radius: 12px;
+  color: #fff;
+  font-family: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.match13-scope .match13-tegel svg {
+  width: 26px;
+  height: 26px;
+  color: var(--accent);
+}
+.match13-scope .match13-tegel-titel {
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+.match13-scope .match13-tegel-pijl {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  color: #b9b9b9;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.match13-scope .match13-tegel:hover,
+.match13-scope .match13-tegel:focus-visible {
+  border-color: var(--accent);
+}
+.match13-scope .match13-tegel-hoofd {
+  border-color: var(--accent);
+  box-shadow: 0 0 18px rgba(244, 196, 48, 0.35);
+}
+@media (max-width: 640px) {
+  .match13-scope .match13-tegels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .match13-scope .match13-tegel {
+    min-height: 88px;
+    gap: 1rem;
+  }
+}
+
+/* Club beheer: samenvattingskotjes, uitnodigformulier en lijsten als eigen kaders. */
+.match13-scope .match13-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 0 0 1.2rem;
+}
+.match13-scope .match13-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+.match13-scope .match13-stat b {
+  font-size: 1.9rem;
+  line-height: 1;
+  font-weight: 800;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.match13-scope .match13-stat span {
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+.match13-scope .match13-kotje-inhoud {
+  margin-top: 0.7rem;
+}
+.match13-scope .match13-kotje-inhoud .roster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.match13-scope .match13-kotje-inhoud .match13-club-kaart {
+  border: 1px solid #6f5a1c;
+  box-shadow: none;
+  padding: 1.1rem 1.3rem;
+  margin: 0;
+}
+.match13-scope .match13-uitnodig-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+  align-items: start;
+}
+.match13-scope .match13-uitnodig-form .match13-uitnodig-veld {
+  flex: none;
+  min-width: 0;
+}
+.match13-scope .match13-uitnodig-hint,
+.match13-scope .match13-uitnodig-actie {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.match13-scope .match13-zoek-kotje {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 0 0 1.2rem;
+  padding: 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+.match13-scope .match13-zoek-kotje .match13-lijst-filters {
+  flex-wrap: wrap;
+  margin: 0;
+}
+.match13-scope .match13-uitnodig-form .match13-link-box {
+  margin-top: 0;
+}
+@media (max-width: 640px) {
+  .match13-scope .match13-uitnodig-form {
+    grid-template-columns: 1fr;
+  }
+  .match13-scope .match13-stat b {
+    font-size: 1.5rem;
+  }
+  .match13-scope .match13-stat {
+    padding: 0.7rem 0.8rem;
+  }
+}
+.match13-scope .match13-stat span {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  .match13-scope .match13-stats {
+    gap: 0.5rem;
+  }
+  .match13-scope .match13-stat span {
+    font-size: 0.64rem;
+    letter-spacing: 0.02em;
+  }
+}
+
+/* Terugknop enkel op de gsm (op groter scherm: broodkruimel/tegel/link bovenaan). */
+.match13-scope .match13-gsm-terug {
+  display: none;
+}
+@media (max-width: 640px) {
+  .match13-scope .match13-gsm-terug {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    margin: 0 0 0.9rem;
+    padding: 0.65rem 1.1rem;
+    min-height: 44px;
+    border: 1.5px solid #b8932a;
+    border-radius: 10px;
+    background: #141414;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+  .match13-scope .hero-inner .match13-gsm-terug {
+    margin-bottom: 0.8rem;
+  }
+}
+.match13-scope .match13-lijst-pagina .match13-club-rij {
+  flex-wrap: wrap;
+}
+
+/* ================================================================
+   Opzet-tab in de donkere stijl: één donker kotje per onderwerp.
+   Enkel actief op de Opzet-tab (klasse .opzet-donker op .app-shell); de
+   andere tabs en alle afdrukbladen blijven zoals ze waren.
+   ================================================================ */
+.match13-scope:has(.app-shell.opzet-donker) {
+  position: relative;
+  isolation: isolate;
+  background: #121212;
+}
+.match13-scope:has(.app-shell.opzet-donker)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(rgba(14, 14, 14, 0.52), rgba(14, 14, 14, 0.38)),
+    url("/images/match13-achtergrond.png") center / cover no-repeat;
+}
+@media print {
+  .match13-scope:has(.app-shell.opzet-donker)::before {
+    display: none;
+  }
+}
+.match13-scope .app-shell.opzet-donker {
+  --surface: #191919;
+  --surface-2: #232323;
+  --border: #363636;
+  --ink: #f2f2f2;
+  --ink-muted: #b9b9b9;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  --done: #8db4ff;
+  --warn: #ff9a9a;
+  --warn-bg: rgba(220, 38, 38, 0.22);
+  color: var(--ink);
+}
+.match13-scope .opzet-donker :is(input, select, textarea) {
+  color-scheme: dark;
+}
+.match13-scope .opzet-donker .field input {
+  background: #141414;
+  border-color: #6f5a1c;
+}
+.match13-scope .opzet-donker .field input::placeholder {
+  color: #8d8d8d;
+}
+.match13-scope .opzet-donker .pill {
+  background: #262626;
+  color: #dcdcdc;
+  border-color: #3a3a3a;
+}
+.match13-scope .opzet-donker .pill.sel {
+  background: var(--accent);
+  color: #1a1a1a;
+  border-color: var(--accent);
+}
+.match13-scope .opzet-donker .card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+.match13-scope .opzet-stapel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+.match13-scope .kotje {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 1.1rem 1.3rem;
+}
+.match13-scope .kotje > h3 {
+  margin: 0 0 0.9rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  font-weight: 800;
+}
+.match13-scope .kotje .field:last-of-type {
+  margin-bottom: 0;
+}
+.match13-scope .opzet-donker .muted-card {
+  background: var(--surface);
+}
+.match13-scope .opzet-donker .muted-card-logo {
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px 10px;
+  box-sizing: content-box;
+}
+
+/* Tabs als tegels met icoon (zelfde look als de knoppen van het Petanque13-dashboard):
+   donkere tegel met gouden rand, de actieve tab licht goud op. */
+.match13-scope .tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  background: none;
+  backdrop-filter: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  margin-bottom: 1.4rem;
+}
+.match13-scope .tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 84px;
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+  background: rgba(24, 24, 24, 0.94);
+  border: 1.5px solid #8a6f1f;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.98rem;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.match13-scope .tab svg {
+  width: 24px;
+  height: 24px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.match13-scope .tab:hover:not(:disabled) {
+  color: #fff;
+  border-color: var(--accent);
+}
+.match13-scope .tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a1a1a;
+  box-shadow: 0 0 18px rgba(244, 196, 48, 0.35);
+}
+.match13-scope .tab.active svg {
+  color: #1a1a1a;
+}
+.match13-scope .tab:disabled:hover {
+  color: #fff;
+}
+@media (max-width: 640px) {
+  .match13-scope .tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .match13-scope .tab {
+    min-height: 68px;
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+  }
+}
+
+/* Spelvorm als tegels met mannetjes (zoals de Formule-keuze in het tornooiformulier). */
+.match13-scope .formule-rooster {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+.match13-scope .formule-tegel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 84px;
+  padding: 0.8rem 0.5rem;
+  background: #141414;
+  border: 1.5px solid #3a3a3a;
+  border-radius: 12px;
+  color: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.match13-scope .formule-iconen {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  height: 24px;
+  color: #cfcfcf;
+}
+.match13-scope .formule-iconen svg {
+  width: 22px;
+  height: 22px;
+}
+.match13-scope .formule-maal {
+  margin-left: 0.2rem;
+  font-size: 1rem;
+  font-weight: 800;
+}
+.match13-scope .formule-naam {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+}
+.match13-scope .formule-tegel:hover {
+  border-color: var(--accent);
+}
+.match13-scope .formule-tegel.sel {
+  border-color: var(--accent);
+  background: rgba(244, 196, 48, 0.12);
+  box-shadow: 0 0 16px rgba(244, 196, 48, 0.3);
+}
+.match13-scope .formule-tegel.sel .formule-iconen {
+  color: var(--accent);
+}
+.match13-scope .formule-rooster.locked .formule-tegel {
+  cursor: default;
+}
+.match13-scope .formule-rooster.locked .formule-tegel:not(.sel) {
+  opacity: 0.45;
+}
+.match13-scope .formule-rooster.locked .formule-tegel:hover:not(.sel) {
+  border-color: #3a3a3a;
+}
+@media (max-width: 480px) {
+  .match13-scope .formule-rooster {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Hoofdbalk bovenaan de tool: rustiger — naam + vorm, één link terug en één
+   "Acties"-menu i.p.v. zes losse knoppen naast elkaar. */
+.match13-scope .hero-acties {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 1.2rem;
+}
+.match13-scope .hero-naam {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.match13-scope .hero-acties-knop {
+  font-size: 0.9rem;
+  padding: 0.55rem 1.1rem;
+  color: #fff;
+  border-color: #8a6f1f;
+}
+.match13-scope .hero-acties-knop:hover,
+.match13-scope .hero-acties-knop[aria-expanded="true"] {
+  border-color: var(--accent);
+}
+.match13-scope .hero-acties-menu {
+  left: auto;
+  right: 0;
+  min-width: 240px;
+  background: #1c1c1c;
+  color: #f2f2f2;
+  border-color: #6f5a1c;
+}
+.match13-scope .hero-acties-menu .scherm-kiezer-optie {
+  color: #f2f2f2;
+  padding: 0.65rem 0.8rem;
+}
+.match13-scope .hero-acties-menu .scherm-kiezer-optie:hover {
+  background: #2a2a2a;
+}
+.match13-scope .hero-acties-menu .scherm-kiezer-gevaar {
+  color: #ff9a9a;
+  border-top: 1px solid #363636;
+  margin-top: 0.2rem;
+  padding-top: 0.75rem;
+  border-radius: 0 0 6px 6px;
+}
+@media (max-width: 640px) {
+  .match13-scope .hero-acties {
+    justify-content: flex-start;
+    gap: 0.8rem;
+  }
+  .match13-scope .hero-alle-toernooien {
+    display: none;
+  }
+}
+/* Uitgeschakelde tabs (zolang de verplichte velden bij Opzet niet ingevuld zijn):
+   niet meer doorzichtig maar duidelijk zichtbaar — volle tegel met stippelrand
+   en iets gedempte tekst, zodat ze ook op de foto goed leesbaar blijven. */
+.match13-scope .tab:disabled {
+  opacity: 1;
+  background: #1c1c1c;
+  border-style: dashed;
+  border-color: #7d6a2a;
+  color: #d0d0d0;
+  cursor: not-allowed;
+}
+.match13-scope .tab:disabled svg {
+  color: #d4b24a;
+}
+.match13-scope .tab:disabled:hover {
+  color: #d0d0d0;
+  border-color: #7d6a2a;
+}
+
+/* "Hoe dit werkt" op Opzet: zo hoog als de inhoud, niet uitgerekt tot onderaan de pagina. */
+.match13-scope .grid-2:has(> .opzet-stapel) {
+  align-items: start;
+}
+.match13-scope .muted-card.kotje {
+  padding: 1.1rem 1.3rem;
+}
+.match13-scope .muted-card.kotje .muted-card-logo {
+  margin-bottom: 0.9rem;
+}
+.match13-scope .muted-card.kotje .muted-card-seal {
+  width: 84px;
+  height: 84px;
+  margin: 1rem auto 0;
+}
+.match13-scope .opzet-donker .muted-card ul {
+  color: #d6d6d6;
+}
+/* iPhone zoomt de pagina in zodra je in een invoerveld tikt dat kleiner is dan
+   16px — op de gsm dus minimaal 16px voor de velden in Opzet, overzicht en beheer. */
+@media (max-width: 640px) {
+  .match13-scope .field input,
+  .match13-scope .match13-lijst-pagina :is(input, select, textarea),
+  .match13-scope .match13-uitnodig-veld input {
+    font-size: 16px;
+  }
+}
+
+/* ================================================================
+   Lichte stand (standaard, zie lib/match13/thema.ts): dezelfde indeling als de
+   donkere — kotjes, tegels, hoofding, Acties-menu — maar witte kaders op de
+   lichte Match13-foto. Alles hieronder geldt enkel met .m13-licht.
+   ================================================================ */
+.match13-scope.m13-licht .match13-hero {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 1.4rem 1.6rem;
+}
+.match13-scope.m13-licht .match13-hero h1 {
+  color: var(--ink);
+}
+.match13-scope.m13-licht .match13-hero h1 em {
+  color: #d9a900;
+}
+.match13-scope.m13-licht .match13-hero p,
+.match13-scope.m13-licht .match13-hero .match13-broodkruimel,
+.match13-scope.m13-licht .match13-hero .match13-broodkruimel a {
+  color: var(--ink-muted);
+}
+.match13-scope.m13-licht .match13-hero .match13-broodkruimel .huidig {
+  color: var(--ink);
+}
+.match13-scope.m13-licht .match13-hero :is(h1, p, .match13-broodkruimel, .match13-broodkruimel a, .match13-broodkruimel .huidig) {
+  text-shadow: none;
+}
+.match13-scope.m13-licht .match13-tegel,
+.match13-scope.m13-licht .tab,
+.match13-scope.m13-licht .formule-tegel {
+  background: var(--surface);
+  border-color: #e3cb87;
+  color: var(--ink);
+}
+.match13-scope.m13-licht .match13-tegel svg,
+.match13-scope.m13-licht .tab svg {
+  color: #c99a00;
+}
+.match13-scope.m13-licht .match13-tegel-pijl {
+  color: var(--ink-muted);
+}
+.match13-scope.m13-licht .match13-tegel:hover,
+.match13-scope.m13-licht .match13-tegel:focus-visible,
+.match13-scope.m13-licht .tab:hover:not(:disabled),
+.match13-scope.m13-licht .formule-tegel:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+.match13-scope.m13-licht .match13-tegel-hoofd {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a1a1a;
+}
+.match13-scope.m13-licht .match13-tegel-hoofd svg,
+.match13-scope.m13-licht .match13-tegel-hoofd .match13-tegel-pijl {
+  color: #1a1a1a;
+}
+.match13-scope.m13-licht .tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a1a1a;
+}
+.match13-scope.m13-licht .tab.active svg {
+  color: #1a1a1a;
+}
+.match13-scope.m13-licht .tab:disabled,
+.match13-scope.m13-licht .tab:disabled:hover {
+  background: #f1efe9;
+  border-color: #d7c27a;
+  color: #7c7c7c;
+}
+.match13-scope.m13-licht .tab:disabled svg {
+  color: #b79a3b;
+}
+.match13-scope.m13-licht .formule-iconen {
+  color: #6b6b6b;
+}
+.match13-scope.m13-licht .formule-tegel.sel {
+  background: rgba(244, 196, 48, 0.2);
+  border-color: var(--accent);
+}
+.match13-scope.m13-licht .formule-tegel.sel .formule-iconen {
+  color: #a87d00;
+}
+.match13-scope.m13-licht .formule-rooster.locked .formule-tegel:hover:not(.sel) {
+  border-color: #e3cb87;
+}
+.match13-scope.m13-licht .kotje > h3 {
+  color: #a87d00;
+}
+.match13-scope.m13-licht .match13-stat b {
+  color: #b88700;
+}
+@media (max-width: 640px) {
+  .match13-scope.m13-licht .match13-gsm-terug {
+    background: var(--surface);
+    border-color: #e3cb87;
+    color: var(--ink);
+  }
+}
+
+/* Onthaal: toevoegen, aanwezigheidslijst en start elk in een eigen kotje. */
+.match13-scope .kotje .zaal-head h2 {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  color: var(--accent);
+}
+.match13-scope.m13-licht .kotje .zaal-head h2 {
+  color: #a87d00;
+}
+.match13-scope .kotje .add-row {
+  margin-bottom: 0.5rem;
+}
+.match13-scope .kotje .roster {
+  box-shadow: none;
+  border-radius: 10px;
+}
+.match13-scope .kotje .roster-actions .check {
+  min-height: 34px;
+}
+.match13-scope .kotje > .hint:last-child,
+.match13-scope .kotje > p.hint:last-child {
+  margin-bottom: 0;
+}
+@media (max-width: 640px) {
+  .match13-scope .kotje .roster-row {
+    padding: 0.8rem 0.9rem;
+    gap: 0.6rem;
+  }
+  .match13-scope .kotje .roster-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .match13-scope .kotje .add-row input {
+    flex: 1 1 100%;
+  }
+  .match13-scope .kotje .add-row .cta {
+    flex: 1 1 100%;
+  }
+}
+@media (max-width: 640px) {
+  .match13-scope .match13-stat {
+    padding: 0.7rem 0.6rem;
+  }
+  .match13-scope .match13-stat span {
+    font-size: 0.6rem;
+    letter-spacing: 0;
+    overflow-wrap: normal;
+  }
+}
+
+/* Zaalscherm: kop-kotje met ronde-titel en acties; de speelkaarten (pleinen) staan
+   daaronder los op de achtergrond, vorige rondes in een eigen kotje. */
+.match13-scope .zaal-stapel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.match13-scope .kotje.zaal-kotje .zaal-head h2:not(.zaal-titel-knockout),
+.match13-scope.m13-licht .kotje.zaal-kotje .zaal-head h2:not(.zaal-titel-knockout) {
+  font-size: 1.5rem;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+.match13-scope .kotje.zaal-kotje .zaal-head h2.zaal-titel-knockout {
+  font-size: 1.5rem;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 800;
+}
+.match13-scope .zaal-acties {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+.match13-scope .zaal-acties .cta {
+  order: -1;
+}
+.match13-scope .zaal-stapel .court-grid {
+  margin-top: 0;
+}
+@media (max-width: 640px) {
+  .match13-scope .zaal-acties {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .match13-scope .zaal-acties .cta {
+    flex: 1 1 100%;
+  }
+}
+.match13-scope .kotje > .prev-rounds {
+  margin-top: 0;
+  border-top: none;
+  padding-top: 0;
+}
+
+/* Klassement: kop-kotje, tabel/poules en eindklassement als aparte kotjes. */
+.match13-scope .kotje .standings {
+  width: 100%;
+}
+.match13-scope .kotje .tabel-scroll {
+  margin: 0;
+}
+.match13-scope .zaal-kotje .zaal-head:last-child {
+  margin-bottom: 0;
+}
+/* Op de gsm moet het hele klassement in beeld passen zonder zijwaarts te scrollen. */
+@media (max-width: 640px) {
+  .match13-scope .kotje .standings th,
+  .match13-scope .kotje .standings td {
+    padding: 0.55rem 0.3rem;
+    font-size: 0.78rem;
+  }
+  .match13-scope .kotje .standings .team-cell {
+    gap: 0.3rem;
+  }
+  .match13-scope .kotje .standings .team-num {
+    min-width: 1.4rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.68rem;
+  }
+  .match13-scope .kotje .standings th {
+    font-size: 0.6rem;
+    letter-spacing: 0;
+  }
+}
+
+/* ================================================================
+   Grafische opfrisbeurt overzicht + Club beheer:
+   - inklapbare kaarten (icoon, titel, aantal, pijltje) i.p.v. gele balken
+   - compactere kop, eenregelige titel
+   - actieknoppen als nette horizontale tegels
+   ================================================================ */
+.match13-scope .m13-inklap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  margin: 0 0 0.9rem;
+  overflow: hidden;
+}
+.match13-scope .m13-inklap > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.match13-scope .m13-inklap > summary::-webkit-details-marker {
+  display: none;
+}
+.match13-scope .m13-inklap > summary:hover {
+  background: rgba(244, 196, 48, 0.1);
+}
+.match13-scope .m13-inklap > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.match13-scope .m13-inklap-icoon {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(244, 196, 48, 0.24);
+  color: #a87d00;
+}
+.match13-scope .m13-inklap-icoon svg {
+  width: 21px;
+  height: 21px;
+}
+.match13-scope .m13-inklap-titel {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+.match13-scope .m13-inklap-aantal {
+  flex: none;
+  min-width: 2.1rem;
+  padding: 0.18rem 0.7rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #1a1a1a;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.match13-scope .m13-inklap-aantal.leeg {
+  background: var(--surface-2);
+  color: var(--ink-muted);
+}
+.match13-scope .m13-inklap-pijl {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  color: var(--ink-muted);
+  transition: transform 0.2s ease;
+}
+.match13-scope .m13-inklap[open] > summary .m13-inklap-pijl {
+  transform: rotate(180deg);
+}
+.match13-scope .m13-inklap[open] > summary {
+  border-bottom: 1px solid var(--border);
+}
+.match13-scope .m13-inklap-inhoud {
+  padding: 1rem 1.2rem 1.2rem;
+}
+.match13-scope .m13-inklap-inhoud > .match13-lijst {
+  margin: 0;
+}
+
+/* Kop: kleiner, titel op één regel */
+.match13-scope .match13-hero h1 {
+  font-size: clamp(1.7rem, 4.2vw, 2.5rem);
+  line-height: 1.1;
+}
+.match13-scope .match13-hero h1 em {
+  display: inline;
+}
+.match13-scope .match13-hero p {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+.match13-scope.m13-licht .match13-hero {
+  padding: 1.2rem 1.5rem 1.3rem;
+}
+
+/* Tegels: horizontaal, rustiger, niet hoger dan nodig */
+.match13-scope .match13-tegels {
+  gap: 0.7rem;
+  margin-bottom: 1.1rem;
+}
+.match13-scope .match13-tegel {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  min-height: 58px;
+  padding: 0.7rem 1rem;
+}
+.match13-scope .match13-tegel svg {
+  width: 24px;
+  height: 24px;
+}
+.match13-scope .match13-tegel-pijl {
+  display: none;
+}
+.match13-scope .match13-tegel-titel {
+  font-size: 0.95rem;
+}
+.match13-scope.m13-licht .match13-tegel {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-color: #eadfb8;
+}
+.match13-scope.m13-licht .match13-tegel-hoofd {
+  box-shadow: 0 4px 16px rgba(244, 196, 48, 0.45);
+}
+/* het plusje in de gouden tegel (was onzichtbaar: zwart op zwart) */
+.match13-scope.m13-licht .match13-tegel-hoofd svg path {
+  stroke: var(--accent);
+}
+@media (max-width: 640px) {
+  .match13-scope .match13-tegel {
+    min-height: 54px;
+    padding: 0.6rem 0.8rem;
+  }
+  .match13-scope .m13-inklap > summary {
+    padding: 0.8rem 1rem;
+  }
+  .match13-scope .m13-inklap-inhoud {
+    padding: 0.8rem 0.8rem 1rem;
+  }
+}
+
+/* Klassement: echt podium (trappen in goud, zilver en brons) + rustigere tabel. */
+.match13-scope .podium {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 0.6rem;
+  align-items: end;
+  padding: 0.4rem 0.4rem 0;
+  border-bottom: 4px solid #e3cb87;
+}
+.match13-scope .podium-plek {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+  text-align: center;
+}
+.match13-scope .podium-kroon {
+  width: 38px;
+  height: 38px;
+  fill: #e2a900;
+  stroke: #b88700;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 3px 6px rgba(226, 169, 0, 0.45));
+}
+.match13-scope .podium-naam {
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  padding: 0 0.2rem;
+}
+.match13-scope .podium-plek.plek-1 .podium-naam {
+  font-size: 1.2rem;
+}
+.match13-scope .podium-stat {
+  margin-bottom: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+.match13-scope .podium-trap {
+  width: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 14px 14px 0 0;
+  color: rgba(30, 30, 30, 0.78);
+  font-size: 2.8rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55);
+}
+.match13-scope .podium-plek.plek-1 .podium-trap {
+  height: 150px;
+  font-size: 3.6rem;
+  background: linear-gradient(180deg, #fbdc66 0%, #e5ac00 100%);
+}
+.match13-scope .podium-plek.plek-2 .podium-trap {
+  height: 112px;
+  background: linear-gradient(180deg, #e7eaee 0%, #aab1bb 100%);
+}
+.match13-scope .podium-plek.plek-3 .podium-trap {
+  height: 84px;
+  background: linear-gradient(180deg, #eab280 0%, #b8742f 100%);
+}
+.match13-scope .kotje .standings tbody tr:first-child td {
+  background: rgba(244, 196, 48, 0.12);
+  font-weight: 700;
+}
+@media (max-width: 640px) {
+  .match13-scope .podium {
+    gap: 0.4rem;
+    padding: 0.4rem 0 0;
+  }
+  .match13-scope .podium-naam {
+    font-size: 0.82rem;
+  }
+  .match13-scope .podium-plek.plek-1 .podium-naam {
+    font-size: 0.95rem;
+  }
+  .match13-scope .podium-stat {
+    font-size: 0.68rem;
+  }
+  .match13-scope .podium-kroon {
+    width: 30px;
+    height: 30px;
+  }
+  .match13-scope .podium-trap {
+    font-size: 2.1rem;
+    border-radius: 10px 10px 0 0;
+  }
+  .match13-scope .podium-plek.plek-1 .podium-trap {
+    height: 118px;
+    font-size: 2.8rem;
+  }
+  .match13-scope .podium-plek.plek-2 .podium-trap {
+    height: 88px;
+  }
+  .match13-scope .podium-plek.plek-3 .podium-trap {
+    height: 66px;
+  }
+}
+
+/* Petanque13-merkregel onderaan de klassement-kaders (blijft zichtbaar op screenshots). */
+.match13-scope .m13-merk {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-align: center;
+}
+.match13-scope .m13-merk img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex: none;
+}
+.match13-scope .m13-merk strong {
+  color: var(--ink);
+  font-weight: 800;
+}
+.match13-scope .m13-merk .m13-gold {
+  font-weight: 800;
 }

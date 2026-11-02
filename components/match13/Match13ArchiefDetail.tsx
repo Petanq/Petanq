@@ -5,6 +5,7 @@ import { useTranslation } from "@/lib/language-context";
 import { FORMAT_LABELS } from "@/lib/match13/types";
 import { computeStandings, computeMeleeStandings } from "@/lib/match13/standings";
 import type { Match13ArchiefItem } from "@/actions/match13-archief";
+import { Match13TerugKnop } from "@/components/match13/Match13TerugKnop";
 
 export function Match13ArchiefDetail({ item }: { item: Match13ArchiefItem }) {
   const { t, taal } = useTranslation();
@@ -28,6 +29,7 @@ export function Match13ArchiefDetail({ item }: { item: Match13ArchiefItem }) {
 
   return (
     <div className="match13-lijst-pagina">
+      <Match13TerugKnop href="/beheer/match13/archief" />
       <div className="match13-lijst-head">
         <div>
           <nav className="match13-broodkruimel">

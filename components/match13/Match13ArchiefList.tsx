@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import type { Match13ArchiefRij } from "@/actions/match13-archief";
+import { Match13TerugKnop } from "@/components/match13/Match13TerugKnop";
 
 export function Match13ArchiefList({ items }: { items: Match13ArchiefRij[] }) {
   const { t, taal } = useTranslation();
 
   return (
     <div className="match13-lijst-pagina">
+      <Match13TerugKnop href="/beheer/match13" />
       <div className="match13-lijst-head">
         <div>
           <nav className="match13-broodkruimel">

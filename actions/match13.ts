@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { isAdmin, heeftMatch13Toegang } from "@/lib/auth-helpers";
 import { defaultAppState, type AppState } from "@/lib/match13/state";
+import { isGeldigeOrganisator, schoonOrganisator } from "@/lib/match13/organisator";
 
 export type Match13ActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -54,6 +55,7 @@ export interface Match13ToernooiMetMeta {
   geplandeDatum: string | null;
   liveDelen: boolean;
   toernooiId: string | null;
+  organisator: string | null;
   // null zolang migratie 0062 (versienummer) nog niet uitgevoerd is.
   versie: number | null;
 }
@@ -64,14 +66,14 @@ export async function haalMatch13Toernooi(id: string): Promise<Match13ToernooiMe
   const supabase = await createClient();
   let { data, error } = await supabase
     .from("match13_toernooien")
-    .select("data, geplande_datum, live_delen, toernooi_id, versie")
+    .select("data, geplande_datum, live_delen, toernooi_id, organisator, versie")
     .eq("id", id)
     .single();
 
   if (error && isOntbrekendeVersieKolom(error)) {
     const oud = await supabase
       .from("match13_toernooien")
-      .select("data, geplande_datum, live_delen, toernooi_id")
+      .select("data, geplande_datum, live_delen, toernooi_id, organisator")
       .eq("id", id)
       .single();
     data = oud.data ? { ...oud.data, versie: null } : null;
@@ -87,6 +89,7 @@ export async function haalMatch13Toernooi(id: string): Promise<Match13ToernooiMe
     geplandeDatum: data.geplande_datum as string | null,
     liveDelen: data.live_delen as boolean,
     toernooiId: data.toernooi_id as string | null,
+    organisator: (data.organisator as string | null) ?? null,
     versie: typeof data.versie === "number" ? data.versie : null,
   };
 }
@@ -263,6 +266,12 @@ export async function bewerkMatch13Metadata(
   }
 ): Promise<Match13ActieResultaat> {
   if (!(await magMatch13Gebruiken())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  // De organisator is verplicht en moet voornaam + naam zijn.
+  if (wijziging.organisator !== undefined) {
+    if (!isGeldigeOrganisator(wijziging.organisator)) return { succes: false, fout: "organisator_ongeldig" };
+    wijziging = { ...wijziging, organisator: schoonOrganisator(wijziging.organisator) };
+  }
 
   const supabase = await createClient();
   const { error } = await supabase.from("match13_toernooien").update(wijziging).eq("id", id);
