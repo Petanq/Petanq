@@ -80,13 +80,11 @@ function KwalificatieToggle({
   onClick,
   titel,
   label,
-  aantal,
 }: {
   actief: boolean;
   onClick: () => void;
   titel: string;
   label: string;
-  aantal: number;
 }) {
   return (
     <button
@@ -113,13 +111,6 @@ function KwalificatieToggle({
         className={`min-w-0 flex-1 text-[0.9rem] font-bold leading-snug ${actief ? "text-[#1f1f1f]" : "text-white"}`}
       >
         {label}
-      </span>
-      <span
-        className={`min-w-[24px] shrink-0 rounded-full px-2 py-[0.15rem] text-center text-[0.72rem] font-bold ${
-          actief ? "bg-[#1f1f1f] text-geel" : "bg-geel text-[#1f1f1f]"
-        }`}
-      >
-        {aantal}
       </span>
     </button>
   );
@@ -161,13 +152,16 @@ export function FilterSidebar({
 
   return (
     <aside className="lg:sticky lg:top-20">
-      <div className="mb-3.5 rounded-[10px] border-[1.5px] border-rand bg-white p-[1.1rem]">
+      <div className="relative mb-3.5 rounded-2xl border-[1.5px] border-rand bg-white p-3 shadow-sm">
+        <span className="pointer-events-none absolute left-[1.45rem] top-1/2 -translate-y-1/2 text-[#b8860b]" aria-hidden>
+          <FilterIcoon pad={ICOON.zoek} />
+        </span>
         <input
           type="text"
           value={filters.zoek}
           onChange={(e) => setFilters({ ...filters, zoek: e.target.value })}
           placeholder={t.filters.zoekPlaceholder}
-          className="w-full rounded-md border-[1.5px] border-rand bg-licht px-3 py-2 font-body text-[0.85rem] outline-none transition-colors focus:border-geel focus:bg-white"
+          className="w-full rounded-xl border-[1.5px] border-rand bg-licht py-2.5 pl-9 pr-3 font-body text-[0.85rem] outline-none transition-colors focus:border-geel focus:bg-white"
         />
       </div>
 
@@ -176,12 +170,11 @@ export function FilterSidebar({
         onClick={() => setFilters({ ...filters, kwalificatie: filters.kwalificatie === true ? null : true })}
         titel={t.filters.kwalificatie}
         label={t.filters.metKwalificatiedata}
-        aantal={tel("kwalificatie", heeftKwalificatiedata)}
       />
 
       <button
         onClick={() => setMobielOpen((v) => !v)}
-        className="mb-3.5 flex w-full items-center justify-between gap-2 rounded-[10px] border-[1.5px] border-rand bg-white p-[1.1rem] text-left lg:hidden"
+        className="mb-3.5 flex w-full items-center justify-between gap-2 rounded-2xl border-[1.5px] border-rand bg-white p-[1.1rem] text-left shadow-sm lg:hidden"
       >
         <span className="flex items-center gap-2">
           <span className="text-[0.83rem] font-bold text-donker">{t.filters.meerFilters}</span>
@@ -201,8 +194,8 @@ export function FilterSidebar({
         </span>
       </button>
 
-      <div className={`${mobielOpen ? "block" : "hidden"} lg:block`}>
-        <FilterCard titel={t.filters.regio} actiefLabel={filters.regio ? vertaalRegio(filters.regio, taal) : null}>
+      <div className={`${mobielOpen ? "block" : "hidden"} overflow-hidden rounded-2xl border-[1.5px] border-rand bg-white shadow-sm lg:block`}>
+        <FilterCard icoon={ICOON.regio} titel={t.filters.regio} actiefLabel={filters.regio ? vertaalRegio(filters.regio, taal) : null}>
           <FilterItem
             actief={filters.regio === null}
             onClick={() => setFilters({ ...filters, regio: null, provincie: null })}
@@ -221,6 +214,7 @@ export function FilterSidebar({
         </FilterCard>
 
         <FilterCard
+          icoon={ICOON.provincie}
           titel={t.filters.provincie}
           actiefLabel={filters.provincie ? vertaalProvincie(filters.provincie, taal) : null}
         >
@@ -242,6 +236,7 @@ export function FilterSidebar({
         </FilterCard>
 
         <FilterCard
+          icoon={ICOON.categorie}
           titel={t.filters.categorie}
           actiefLabel={filters.categorie ? t.categorie[filters.categorie] : null}
         >
@@ -263,7 +258,7 @@ export function FilterSidebar({
           ))}
         </FilterCard>
 
-        <FilterCard titel={t.filters.formule} actiefLabel={filters.formule ? t.formule[filters.formule] : null}>
+        <FilterCard icoon={ICOON.formule} titel={t.filters.formule} actiefLabel={filters.formule ? t.formule[filters.formule] : null}>
           <FilterItem
             actief={filters.formule === null}
             onClick={() => setFilters({ ...filters, formule: null })}
@@ -282,6 +277,7 @@ export function FilterSidebar({
         </FilterCard>
 
         <FilterCard
+          icoon={ICOON.type}
           titel={t.form.tornooiType}
           actiefLabel={
             filters.type === "officieel"
@@ -315,11 +311,32 @@ export function FilterSidebar({
   );
 }
 
+const ICOON = {
+  zoek: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zm9 16-3.5-3.5",
+  regio: "M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21zM12 7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z",
+  provincie: "m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5",
+  categorie: "M9 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM3 20a6 6 0 0 1 12 0M17 6.5a2.5 2.5 0 1 1 0 5M16 14.5a5 5 0 0 1 6 5",
+  formule: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
+  type: "M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8zM14 6v12",
+};
+
+function FilterIcoon({ pad }: { pad: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width={17} height={17} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d={pad} />
+    </svg>
+  );
+}
+
+// Eén rij in het filterpaneel: dunne lijn erboven (behalve de eerste), icoontje,
+// titel en een pijltje. Heeft de rij een actief filter, dan kleurt ze zacht goud.
 function FilterCard({
+  icoon,
   titel,
   actiefLabel,
   children,
 }: {
+  icoon: string;
   titel: string;
   actiefLabel?: string | null;
   children: React.ReactNode;
@@ -328,19 +345,17 @@ function FilterCard({
   const heeftActieveFilter = Boolean(actiefLabel);
 
   return (
-    <div
-      className={`mb-3.5 rounded-[10px] border-[1.5px] bg-white p-[1.1rem] transition-shadow ${
-        heeftActieveFilter ? "border-geel/60 shadow-[0_2px_10px_rgba(244,196,48,0.15)]" : "border-rand"
-      }`}
-    >
+    <div className={`border-t border-rand first:border-t-0 ${heeftActieveFilter ? "bg-[#fdf3d9]/50" : ""}`}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="group flex w-full items-center justify-between gap-2 text-left"
+        aria-expanded={open}
+        className="group flex w-full items-center justify-between gap-2 px-4 py-3.5 text-left transition-colors hover:bg-[#faf8f2]"
       >
-        <span className="flex min-w-0 items-center gap-2">
-          <span className="text-[0.66rem] font-extrabold uppercase tracking-widest text-[#b8860b] transition-colors group-hover:text-donker">
-            {titel}
+        <span className="flex min-w-0 items-center gap-2.5">
+          <span className="text-[#b8860b]" aria-hidden>
+            <FilterIcoon pad={icoon} />
           </span>
+          <span className="text-[0.7rem] font-extrabold uppercase tracking-widest text-donker">{titel}</span>
           {!open && actiefLabel && (
             <span className="truncate rounded-full bg-geel px-2 py-0.5 text-[0.68rem] font-bold text-donker shadow-sm">
               {actiefLabel}
@@ -348,15 +363,17 @@ function FilterCard({
           )}
         </span>
         <span
-          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs text-[#b8860b] transition-all ${
-            open ? "rotate-180 bg-geel text-donker" : "bg-[#fdf3d9] group-hover:bg-geel group-hover:text-donker"
+          className={`flex h-6 w-6 shrink-0 items-center justify-center text-[#b8860b] transition-transform ${
+            open ? "rotate-180" : ""
           }`}
           aria-hidden
         >
-          ▾
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
         </span>
       </button>
-      {open && <ul className="mt-3 flex flex-col gap-0.5">{children}</ul>}
+      {open && <ul className="flex flex-col gap-0.5 px-2.5 pb-3">{children}</ul>}
     </div>
   );
 }

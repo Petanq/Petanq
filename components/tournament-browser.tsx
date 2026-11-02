@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { Club, Toernooi } from "@/lib/types";
-import { maandJaarKey, maandVolledig, parseDatum } from "@/lib/datum";
+import { maandJaarKey, weekBereik, weekKey, weekStart, wekenVanNu } from "@/lib/datum";
 import { vertaalProvincie } from "@/lib/provincies";
 import { FilterSidebar, FilterState } from "./filter-sidebar";
 import { MonthPills } from "./month-pills";
@@ -28,6 +28,12 @@ const LEGE_FILTERS: FilterState = {
   kwalificatie: null,
 };
 
+// Zoveel tornooien staan er meteen; met de knop rollen er telkens zoveel bij uit.
+const STAP = 8;
+
+const MEER_KNOP =
+  "rounded-xl bg-geel px-7 py-3 text-sm font-extrabold text-donker shadow-sm transition-all hover:brightness-105 active:scale-95";
+
 export function TournamentBrowser({
   toernooien,
   clubs,
@@ -43,6 +49,9 @@ export function TournamentBrowser({
   const [actieveMaand, setActieveMaand] = useState<string | null>(null);
   const [weergave, setWeergave] = useState<"lijst" | "kalender">("lijst");
   const [sorteringKeuze, setSortering] = useState<Sortering>("datum");
+  const [zichtbaar, setZichtbaar] = useState(STAP);
+  // Vanaf welke plaats in de lijst de net getoonde tornooien beginnen (voor het uitrollen).
+  const [nieuwVanaf, setNieuwVanaf] = useState<number | null>(null);
   const mijnPlaats = useMijnPlaatsStaat();
   const opAfstand = sorteringKeuze === "afstand" && mijnPlaats.plaats !== null;
 
@@ -104,15 +113,16 @@ export function TournamentBrowser({
     return Array.from(sleutels).sort();
   }, [toernooien]);
 
-  const groepen = useMemo(() => {
-    const map = new Map<string, Toernooi[]>();
-    for (const tn of gefilterd) {
-      const sleutel = maandJaarKey(tn.datum);
-      if (!map.has(sleutel)) map.set(sleutel, []);
-      map.get(sleutel)!.push(tn);
+  // Op datum; de weekbalken worden getoond waar een nieuwe week begint (maandag tot zondag).
+  const datumLijst = useMemo(() => [...gefilterd].sort((a, b) => a.datum.localeCompare(b.datum)), [gefilterd]);
+  const weekAantal = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const tn of datumLijst) {
+      const sleutel = weekKey(tn.datum);
+      map.set(sleutel, (map.get(sleutel) ?? 0) + 1);
     }
-    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [gefilterd]);
+    return map;
+  }, [datumLijst]);
 
   // "Dichtstbij": één lijst van dichtbij naar ver (zelfde afstand: eerst de vroegste datum);
   // tornooien die niet te situeren zijn komen achteraan.
@@ -126,6 +136,21 @@ export function TournamentBrowser({
       })
       .map((x) => x.tn);
   }, [opAfstand, gefilterd, mijnPlaats]);
+
+  // Nieuwe zoekopdracht, filter of sortering: begin weer bij de eerste tornooien.
+  useEffect(() => {
+    setZichtbaar(STAP);
+    setNieuwVanaf(null);
+  }, [gefilterd, opAfstand]);
+
+  const volgorde = opAfstand ? opAfstandLijst : datumLijst;
+  const zichtbareLijst = volgorde.slice(0, zichtbaar);
+  const nogOver = volgorde.length - zichtbareLijst.length;
+
+  function toonMeer() {
+    setNieuwVanaf(zichtbareLijst.length);
+    setZichtbaar((n) => n + STAP);
+  }
 
   return (
     <div id="toernooien" className="mx-auto grid max-w-[1140px] grid-cols-1 gap-6 px-6 pb-12 pt-8 lg:grid-cols-[220px_1fr] lg:px-10">
@@ -188,24 +213,45 @@ export function TournamentBrowser({
                 {t.lijst.geenResultaten}
               </div>
             )}
-            {opAfstand &&
-              opAfstandLijst.map((tn) => <TournamentCard key={tn.id} toernooi={tn} live={liveIds.has(tn.id)} />)}
-            {!opAfstand && groepen.map(([sleutel, lijst]) => {
-              const [jaar] = sleutel.split("-");
-              const maandIndex = parseDatum(`${sleutel}-01`).getMonth();
+            {zichtbareLijst.map((tn, i) => {
+              const sleutel = weekKey(tn.datum);
+              const nieuweWeek = !opAfstand && (i === 0 || sleutel !== weekKey(zichtbareLijst[i - 1].datum));
+              const uitrollen = nieuwVanaf !== null && i >= nieuwVanaf;
+              const vertraging = uitrollen ? { animationDelay: `${(i - nieuwVanaf) * 70}ms` } : undefined;
+              const start = weekStart(tn.datum);
+              const wekenAfstand = wekenVanNu(start);
+              const label =
+                wekenAfstand === 0 ? t.lijst.dezeWeek : wekenAfstand === 1 ? t.lijst.volgendeWeek : null;
+              const bereik = weekBereik(start, taal);
               return (
-                <div key={sleutel}>
-                  <div className="my-2 flex items-center gap-3 rounded-md bg-blauw px-4 py-2 font-titel text-lg tracking-widest text-white first:mt-0">
-                    📅 <span className="text-geel">{maandVolledig(maandIndex, taal).toUpperCase()}</span> {jaar}
+                <Fragment key={tn.id}>
+                  {nieuweWeek && (
+                    <div
+                      className={`my-2 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md bg-blauw px-4 py-2 font-titel text-lg tracking-widest text-white first:mt-0${uitrollen ? " uitrollen" : ""}`}
+                      style={vertraging}
+                    >
+                      <span aria-hidden="true">📅</span>
+                      <span className="text-geel">{(label ?? bereik).toUpperCase()}</span>
+                      {label && <span className="text-base text-white/80">{bereik}</span>}
+                      <span className="ml-auto font-body text-xs font-semibold tracking-normal text-white/70">
+                        {t.lijst.aantalToernooien(weekAantal.get(sleutel) ?? 0)}
+                      </span>
+                    </div>
+                  )}
+                  <div className={uitrollen ? "uitrollen" : undefined} style={vertraging}>
+                    <TournamentCard toernooi={tn} live={liveIds.has(tn.id)} />
                   </div>
-                  <div className="flex flex-col gap-2">
-                    {lijst.map((tn) => (
-                      <TournamentCard key={tn.id} toernooi={tn} live={liveIds.has(tn.id)} />
-                    ))}
-                  </div>
-                </div>
+                </Fragment>
               );
             })}
+            {nogOver > 0 && (
+              <div className="mt-3 flex flex-col items-center gap-1.5">
+                <button type="button" onClick={toonMeer} className={MEER_KNOP}>
+                  {t.lijst.meerToernooien}
+                </button>
+                <span className="text-xs text-grijs">{t.lijst.nogToernooien(nogOver)}</span>
+              </div>
+            )}
           </div>
         )}
 

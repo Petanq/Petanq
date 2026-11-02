@@ -174,3 +174,11 @@ body {
 .wizard-donker :is(.bg-white, [class*="bg-[#f"]) .text-grijs {
   color: #555555;
 }
+
+/* "Toon meer tornooien": de nieuwe kaartjes rollen zacht naar beneden uit. */
+@keyframes uitrollen {
+  from { opacity: 0; transform: translateY(-14px) scaleY(0.96); }
+  to { opacity: 1; transform: none; }
+}
+.uitrollen { animation: uitrollen 0.4s ease-out both; transform-origin: top; }
+@media (prefers-reduced-motion: reduce) { .uitrollen { animation: none; } }
