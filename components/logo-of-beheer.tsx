@@ -13,6 +13,8 @@ export type BeheerStatus = {
   inBehandeling: number;
   wachtendeClubs: number;
   verwijderaanvragen: number;
+  // Nieuwe clubs die in Match13 zijn ingetikt en nagekeken moeten worden (enkel admin).
+  nieuweMatch13Clubs?: number;
 };
 
 // Onder het menu van elke pagina: normaal het logo, maar wie ingelogd is als
@@ -58,6 +60,14 @@ export function LogoOfBeheer() {
       let inBehandeling = 0;
       let wachtendeClubs = 0;
       let verwijderaanvragen = 0;
+      let nieuweMatch13Clubs = 0;
+      if (admin) {
+        const r = await supabase
+          .from("match13_nieuwe_clubs")
+          .select("id", { count: "exact", head: true })
+          .eq("afgehandeld", false);
+        nieuweMatch13Clubs = r.error ? 0 : r.count ?? 0;
+      }
       if (moderator) {
         const tel = (q: PromiseLike<{ count: number | null }>) => q.then((r) => r.count ?? 0);
         const [a, b, c, d] = await Promise.all([
@@ -86,7 +96,7 @@ export function LogoOfBeheer() {
         wachtendeClubs = b;
         verwijderaanvragen = c + d;
       }
-      if (actief) setStatus({ moderator, admin, match13, inBehandeling, wachtendeClubs, verwijderaanvragen });
+      if (actief) setStatus({ moderator, admin, match13, inBehandeling, wachtendeClubs, verwijderaanvragen, nieuweMatch13Clubs });
     }
 
     controleer();
@@ -114,7 +124,7 @@ export function LogoOfBeheer() {
 // knopje in de logo-balk naar het beheer (de volledige kaders staan daar zelf).
 function BeheerKnop({ status }: { status: BeheerStatus }) {
   const { t } = useTranslation();
-  const wachtend = status.inBehandeling + status.wachtendeClubs + status.verwijderaanvragen;
+  const wachtend = status.inBehandeling + status.wachtendeClubs + status.verwijderaanvragen + (status.admin ? status.nieuweMatch13Clubs ?? 0 : 0);
   const href = status.moderator ? "/beheer" : "/beheer/match13";
   const label = status.moderator ? t.beheer.dashboard : "Match13";
   return (
@@ -173,6 +183,7 @@ export function BeheerKaderRooster({ status, actiefHref }: { status: BeheerStatu
         </span>
       ),
       icoon: <IcoonBoules />,
+      badge: status.admin ? status.nieuweMatch13Clubs : undefined,
     });
   }
 

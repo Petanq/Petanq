@@ -6,6 +6,14 @@ import type { BracketMatch } from "./poules";
 // to the `data` jsonb column of `match13_toernooien` instead.
 export interface AppState {
   clubName: string;
+  // Gekozen uit de Petanque13-clublijst (dan staat het adres er meteen bij) of een
+  // nieuwe club die de admin moet nakijken, of een organisatie die geen petanqueclub
+  // is (bv. een voetbalclub). Alles optioneel: oudere toernooien hebben enkel clubName.
+  clubId?: string;
+  clubAdres?: string;
+  clubGemeente?: string;
+  clubNieuw?: boolean;
+  geenPetanqueclub?: boolean;
   format: Format;
   entryFee: number;
   // 0 is een geldige inleg (gratis toernooi). Dit onthoudt dat de club de inleg

@@ -11,10 +11,11 @@ import {
   type EigenToernooiOptie,
 } from "@/actions/match13";
 import { Match13Inklap, type InklapIcoon } from "@/components/match13/Match13Inklap";
+import { markeerNieuweClubAfgehandeld, type NieuweClubMelding } from "@/actions/match13-clubs";
 import { Match13VerwijderKnop } from "@/components/match13/Match13VerwijderKnop";
 import { siteUrl } from "@/lib/site-url";
 import { FORMAT_LABELS } from "@/lib/match13/types";
-import { isGeldigeOrganisator, schoonOrganisator } from "@/lib/match13/organisator";
+import { isGeldigeOrganisator, splitsOrganisator, voegOrganisatorSamen } from "@/lib/match13/organisator";
 import type { Format } from "@/lib/match13/types";
 
 type Wijziging = {
@@ -38,16 +39,24 @@ export function Match13Overzicht({
   toernooien,
   admin,
   koppelOpties,
+  nieuweClubs = [],
 }: {
   toernooien: Match13ToernooiRij[];
   admin: boolean;
   koppelOpties: EigenToernooiOptie[];
+  nieuweClubs?: NieuweClubMelding[];
 }) {
   const { t, taal } = useTranslation();
   const fout = useSearchParams().get("fout");
   // Lokale kopie zodat een wijziging (bv. "afgewerkt" aanvinken) de indeling
   // meteen doet verschuiven, zonder te wachten op een volledige pagina-herlaad.
   const [rows, setRows] = useState(toernooien);
+  const [meldingen, setMeldingen] = useState(nieuweClubs);
+
+  function clubAfhandelen(id: string) {
+    setMeldingen((prev) => prev.filter((m) => m.id !== id));
+    void markeerNieuweClubAfgehandeld(id);
+  }
 
   function wijzigRij(id: string, wijziging: Wijziging) {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...wijziging } : r)));
@@ -125,6 +134,32 @@ export function Match13Overzicht({
         </form>
       </div>
 
+      {admin && meldingen.length > 0 && (
+        <Match13Inklap titel={t.match13.nieuweClubsTitel(meldingen.length)} icoon="wacht" defaultOpen>
+          <ul className="match13-lijst">
+            {meldingen.map((m) => (
+              <li key={m.id} className="match13-lijst-rij nieuwe-club-rij">
+                <div className="nieuwe-club-info">
+                  <span className="match13-lijst-naam">{m.naam}</span>
+                  <span className="match13-lijst-club">{m.gemeente}</span>
+                  <span className="match13-lijst-datum">{new Date(m.aangemaakt_op).toLocaleDateString(taal === "fr" ? "fr-BE" : "nl-BE")}</span>
+                </div>
+                <div className="nieuwe-club-acties">
+                  {m.toernooi_id && (
+                    <Link href={`/beheer/match13/${m.toernooi_id}`} className="match13-actie-knop">
+                      {t.match13.nieuweClubBekijk}
+                    </Link>
+                  )}
+                  <button type="button" className="match13-actie-knop" onClick={() => clubAfhandelen(m.id)}>
+                    {t.match13.nieuweClubAfgehandeld}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Match13Inklap>
+      )}
+
       {rows.length === 0 ? (
         <p className="match13-lijst-leeg">{t.match13.nogGeenToernooien}</p>
       ) : (
@@ -178,7 +213,8 @@ function Match13LijstRij({
   koppelOpties: EigenToernooiOptie[];
 }) {
   const { t } = useTranslation();
-  const [organisator, setOrganisator] = useState(tour.organisator ?? "");
+  const [orgVoornaam, setOrgVoornaam] = useState(() => splitsOrganisator(tour.organisator).voornaam);
+  const [orgNaam, setOrgNaam] = useState(() => splitsOrganisator(tour.organisator).naam);
   const [organisatorFout, setOrganisatorFout] = useState(false);
   const [geplandeDatum, setGeplandeDatum] = useState(tour.geplande_datum ?? "");
   const publiekeLink = `${siteUrl()}/live/match13/${tour.id}`;
@@ -238,28 +274,51 @@ function Match13LijstRij({
             }}
           />
         </label>
-        <input
-          type="text"
-          className="match13-lijst-organisator"
-          value={organisator}
-          placeholder={t.match13.lijstOrganisatorPlaceholder}
-          style={organisatorFout ? { borderColor: "var(--warn)" } : undefined}
-          onChange={(e) => {
-            setOrganisator(e.target.value);
-            setOrganisatorFout(false);
-          }}
-          onBlur={() => {
+        <div
+          className="organisator-velden organisator-velden-rij"
+          onBlur={(e) => {
+            // pas controleren/bewaren als de focus uit beide velden is
+            if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+            const samen = voegOrganisatorSamen(orgVoornaam, orgNaam);
             // Verplicht: voornaam én naam. Een ongeldige invoer wordt niet bewaard.
-            if (!isGeldigeOrganisator(organisator)) {
+            if (!isGeldigeOrganisator(samen)) {
               setOrganisatorFout(true);
-              setOrganisator(tour.organisator ?? "");
+              const oud = splitsOrganisator(tour.organisator);
+              setOrgVoornaam(oud.voornaam);
+              setOrgNaam(oud.naam);
               return;
             }
-            const schoon = schoonOrganisator(organisator);
-            setOrganisator(schoon);
-            if (schoon !== (tour.organisator ?? "")) onWijzig(tour.id, { organisator: schoon });
+            const oudeWaarde = voegOrganisatorSamen(...(Object.values(splitsOrganisator(tour.organisator)) as [string, string]));
+            if (samen !== oudeWaarde) onWijzig(tour.id, { organisator: samen });
           }}
-        />
+        >
+          <input
+            type="text"
+            className="match13-lijst-organisator"
+            value={orgVoornaam}
+            placeholder={t.match13.organisatorVoornaam}
+            aria-label={t.match13.organisatorVoornaam}
+            autoComplete="given-name"
+            style={organisatorFout ? { borderColor: "var(--warn)" } : undefined}
+            onChange={(e) => {
+              setOrgVoornaam(e.target.value);
+              setOrganisatorFout(false);
+            }}
+          />
+          <input
+            type="text"
+            className="match13-lijst-organisator"
+            value={orgNaam}
+            placeholder={t.match13.organisatorNaam}
+            aria-label={t.match13.organisatorNaam}
+            autoComplete="family-name"
+            style={organisatorFout ? { borderColor: "var(--warn)" } : undefined}
+            onChange={(e) => {
+              setOrgNaam(e.target.value);
+              setOrganisatorFout(false);
+            }}
+          />
+        </div>
         {organisatorFout && <span className="match13-lijst-hint">{t.match13.organisatorOngeldig}</span>}
       </div>
       <div className="match13-lijst-meta">

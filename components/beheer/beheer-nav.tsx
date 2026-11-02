@@ -9,12 +9,14 @@ export function BeheerNav({
   wachtendeToernooien = 0,
   wachtendeClubs = 0,
   wachtendeVerwijderaanvragen = 0,
+  nieuweMatch13Clubs = 0,
   isAdmin = false,
   heeftMatch13Toegang = false,
 }: {
   wachtendeToernooien?: number;
   wachtendeClubs?: number;
   wachtendeVerwijderaanvragen?: number;
+  nieuweMatch13Clubs?: number;
   isAdmin?: boolean;
   heeftMatch13Toegang?: boolean;
 }) {
@@ -32,6 +34,7 @@ export function BeheerNav({
             inBehandeling: wachtendeToernooien,
             wachtendeClubs,
             verwijderaanvragen: wachtendeVerwijderaanvragen,
+            nieuweMatch13Clubs,
           }}
         />
       </div>

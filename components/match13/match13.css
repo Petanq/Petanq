@@ -4133,3 +4133,165 @@
 .match13-scope .m13-merk .m13-gold {
   font-weight: 800;
 }
+
+/* Organisator: voornaam en naam als twee aparte velden. */
+.match13-scope .organisator-velden {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.match13-scope .organisator-sublabel {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.match13-scope .organisator-velden-rij {
+  display: flex;
+  flex: 1 1 280px;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.match13-scope .organisator-velden-rij .match13-lijst-organisator {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+}
+@media (max-width: 560px) {
+  .match13-scope .organisator-velden {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+}
+
+/* Clubveld in Opzet: zoeken in de clublijst, gekozen club met adres, nieuwe club. */
+.match13-scope .club-veld {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.match13-scope .club-veld-geen {
+  margin-bottom: 0.2rem;
+}
+.match13-scope .club-veld-label {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+.match13-scope .club-veld-invoer {
+  position: relative;
+}
+.match13-scope .club-veld-lijst {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  padding: 0.3rem;
+}
+.match13-scope .club-veld-hit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+}
+.match13-scope .club-veld-hit:hover,
+.match13-scope .club-veld-hit:focus-visible {
+  background: rgba(244, 196, 48, 0.18);
+}
+.match13-scope .club-veld-hit span {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+.match13-scope .club-veld-nieuw {
+  border-top: 1px dashed var(--border);
+  border-radius: 0 0 8px 8px;
+  margin-top: 0.2rem;
+}
+.match13-scope .club-veld-nieuw strong {
+  color: #a87d00;
+}
+.match13-scope .club-veld-bezig {
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+.match13-scope .club-veld-kaart {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid #e3cb87;
+  border-radius: 10px;
+  background: rgba(244, 196, 48, 0.12);
+}
+.match13-scope .club-veld-kaart > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.match13-scope .club-veld-kaart span {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+.match13-scope .club-veld-nieuw-blok {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.match13-scope .club-veld input {
+  width: 100%;
+}
+.match13-scope .club-veld .club-veld-geen input {
+  width: auto;
+}
+@media (max-width: 640px) {
+  .match13-scope .club-veld input {
+    font-size: 16px;
+  }
+}
+
+/* Admin: nieuwe clubs om na te kijken */
+.match13-scope .nieuwe-club-rij {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.8rem 1rem;
+}
+.match13-scope .nieuwe-club-info {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+  min-width: 0;
+}
+.match13-scope .nieuwe-club-acties {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}

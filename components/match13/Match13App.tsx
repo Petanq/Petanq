@@ -59,8 +59,9 @@ import {
 import { maakSync } from "@/lib/match13/sync";
 import { maakKlassementAfbeelding, type AfbeeldingPlek } from "@/lib/match13/deel-afbeelding";
 import { MATCH13_THEMA } from "@/lib/match13/thema";
+import { Match13ClubVeld } from "@/components/match13/Match13ClubVeld";
 import { Match13TerugKnop } from "@/components/match13/Match13TerugKnop";
-import { isGeldigeOrganisator, schoonOrganisator } from "@/lib/match13/organisator";
+import { isGeldigeOrganisator, splitsOrganisator, voegOrganisatorSamen } from "@/lib/match13/organisator";
 import { siteUrl } from "@/lib/site-url";
 import { LiveQrKaart } from "@/components/match13/LiveQrKaart";
 import QRCode from "qrcode";
@@ -326,7 +327,10 @@ export function Match13App({
   // opgeslagen — vandaar de aparte state + eigen opslag hieronder.
   const [geplandeDatum, setGeplandeDatum] = useState(initialGeplandeDatum ?? "");
   const [liveDelen, setLiveDelen] = useState(initialLiveDelen);
-  const [organisator, setOrganisator] = useState(initialOrganisator);
+  // De organisator staat als één tekst in de database, maar als twee velden in het scherm.
+  const [orgVoornaam, setOrgVoornaam] = useState(() => splitsOrganisator(initialOrganisator).voornaam);
+  const [orgNaam, setOrgNaam] = useState(() => splitsOrganisator(initialOrganisator).naam);
+  const organisator = voegOrganisatorSamen(orgVoornaam, orgNaam);
   const [organisatorGeraakt, setOrganisatorGeraakt] = useState(false);
   // QR-code (als SVG-tekst, met eigen witte achtergrond zodat hij ook zonder
   // "achtergronden afdrukken" leesbaar blijft) voor op de kaartjes — enkel als de
@@ -524,7 +528,11 @@ export function Match13App({
   // Organisator (voornaam + naam): zelfde principe — enkel verplicht zolang er nog
   // geen teams zijn, zodat bestaande toernooien bruikbaar blijven.
   const organisatorVerplicht = !isGeldigeOrganisator(organisator) && teams.length === 0;
-  const opzetOnvolledig = clubNaamVerplicht || organisatorVerplicht || inlegVerplicht || rondesVerplicht;
+  // Een nieuwe club (niet in de lijst) heeft een gemeente nodig, zodat de admin weet over welke club het gaat.
+  const clubGemeenteOntbreekt =
+    !!state.clubNieuw && !state.clubId && !state.geenPetanqueclub && !(state.clubGemeente ?? "").trim() && teams.length === 0;
+  const opzetOnvolledig =
+    clubNaamVerplicht || clubGemeenteOntbreekt || organisatorVerplicht || inlegVerplicht || rondesVerplicht;
 
   const [playerInputs, setPlayerInputs] = useState<string[]>(() => Array(teamSize).fill(""));
   const [newPlayerName, setNewPlayerName] = useState("");
@@ -1994,29 +2002,66 @@ export function Match13App({
               <section className="kotje">
               <h3>{t.match13.opzetToernooi}</h3>
               <div className="field">
-                <label>{t.match13.club}</label>
-                <input
-                  value={clubName}
-                  onChange={(e) => setState((s) => ({ ...s, clubName: e.target.value }))}
+                <Match13ClubVeld
+                  tournamentId={tournamentId}
+                  fout={clubNaamVerplicht}
+                  waarde={{
+                    naam: clubName,
+                    clubId: state.clubId,
+                    adres: state.clubAdres,
+                    gemeente: state.clubGemeente,
+                    nieuw: state.clubNieuw,
+                    geenPetanqueclub: state.geenPetanqueclub,
+                  }}
+                  onChange={(patch) =>
+                    setState((s) => ({
+                      ...s,
+                      ...(patch.naam !== undefined ? { clubName: patch.naam } : {}),
+                      ...("clubId" in patch ? { clubId: patch.clubId } : {}),
+                      ...("adres" in patch ? { clubAdres: patch.adres } : {}),
+                      ...("gemeente" in patch ? { clubGemeente: patch.gemeente } : {}),
+                      ...(patch.nieuw !== undefined ? { clubNieuw: patch.nieuw } : {}),
+                      ...(patch.geenPetanqueclub !== undefined ? { geenPetanqueclub: patch.geenPetanqueclub } : {}),
+                    }))
+                  }
                 />
                 {clubNaamVerplicht && <p className="hint" style={{ color: "var(--warn)" }}>{t.match13.clubVerplicht}</p>}
+                {clubGemeenteOntbreekt && <p className="hint" style={{ color: "var(--warn)" }}>{t.match13.gemeenteVerplicht}</p>}
               </div>
               <div className="field">
                 <label>{t.match13.organisatorLabel}</label>
-                <input
-                  value={organisator}
-                  placeholder={t.match13.lijstOrganisatorPlaceholder}
-                  style={organisatorVerplicht && organisatorGeraakt ? { borderColor: "var(--warn)" } : undefined}
-                  onChange={(e) => setOrganisator(e.target.value)}
-                  onBlur={() => {
+                <div
+                  className="organisator-velden"
+                  onBlur={(e) => {
+                    // pas controleren/bewaren als de focus uit beide velden is
+                    if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
                     setOrganisatorGeraakt(true);
                     if (isGeldigeOrganisator(organisator)) {
-                      const schoon = schoonOrganisator(organisator);
-                      setOrganisator(schoon);
-                      void bewerkMatch13Metadata(tournamentId, { organisator: schoon });
+                      void bewerkMatch13Metadata(tournamentId, { organisator });
                     }
                   }}
-                />
+                >
+                  <div>
+                    <span className="organisator-sublabel">{t.match13.organisatorVoornaam}</span>
+                    <input
+                      value={orgVoornaam}
+                      autoComplete="given-name"
+                      placeholder={t.match13.organisatorVoornaam}
+                      style={organisatorVerplicht && organisatorGeraakt && !orgVoornaam.trim() ? { borderColor: "var(--warn)" } : undefined}
+                      onChange={(e) => setOrgVoornaam(capitaliseerEersteLetter(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <span className="organisator-sublabel">{t.match13.organisatorNaam}</span>
+                    <input
+                      value={orgNaam}
+                      autoComplete="family-name"
+                      placeholder={t.match13.organisatorNaam}
+                      style={organisatorVerplicht && organisatorGeraakt && !orgNaam.trim() ? { borderColor: "var(--warn)" } : undefined}
+                      onChange={(e) => setOrgNaam(capitaliseerEersteLetter(e.target.value))}
+                    />
+                  </div>
+                </div>
                 {organisatorVerplicht && (
                   <p className="hint" style={{ color: "var(--warn)" }}>
                     {organisator.trim() && organisatorGeraakt ? t.match13.organisatorOngeldig : t.match13.organisatorVerplicht}
@@ -2276,7 +2321,7 @@ export function Match13App({
               )}
               <button
                 className="cta"
-                disabled={clubNaamVerplicht || organisatorVerplicht || inlegVerplicht || rondesVerplicht}
+                disabled={clubNaamVerplicht || clubGemeenteOntbreekt || organisatorVerplicht || inlegVerplicht || rondesVerplicht}
                 onClick={() => setTab("onthaal")}
               >
                 {t.match13.gaNaarOnthaal}
