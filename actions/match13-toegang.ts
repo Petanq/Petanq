@@ -448,7 +448,28 @@ export async function match13GebruikerVerwijderen(id: string): Promise<Match13To
   if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = await createClient();
+  const {
+    data: { user: beheerder },
+  } = await supabase.auth.getUser();
   const { data: gebruiker } = await supabase.from("match13_gebruikers").select("user_id").eq("id", id).single();
+
+  // De toernooien horen bij de CLUB, niet bij de persoon die ze aanmaakte. Zonder deze
+  // stap verdwijnen ze mee met het auth-account (aangemaakt_door verwijdert in cascade),
+  // ook die van collega's uit dezelfde club. Ze gaan daarom eerst over op de beheerder;
+  // de clubnaam blijft op het toernooi staan, dus de club ziet ze gewoon nog.
+  if (gebruiker?.user_id) {
+    if (!beheerder) return { succes: false, fout: "server_fout" };
+    const serviceClient = createServiceRoleClient();
+    const { error: overzetFout } = await serviceClient
+      .from("match13_toernooien")
+      .update({ aangemaakt_door: beheerder.id })
+      .eq("aangemaakt_door", gebruiker.user_id);
+    if (overzetFout) {
+      console.error("Toernooien overzetten voor het verwijderen van een gebruiker mislukt:", overzetFout.message);
+      return { succes: false, fout: "server_fout" };
+    }
+  }
+
   const { error } = await supabase.from("match13_gebruikers").delete().eq("id", id);
   if (error) return { succes: false, fout: "server_fout" };
 
