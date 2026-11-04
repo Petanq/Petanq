@@ -12,5 +12,5 @@ export default async function BeheerLoginPagina({
   searchParams: Promise<{ link?: string; volgende?: string }>;
 }) {
   const { link, volgende } = await searchParams;
-  return <LoginForm linkVerlopen={link === "verlopen"} naInloggen={volgende === "match13" ? "/beheer/match13" : "/beheer"} />;
+  return <LoginForm linkVerlopen={link === "verlopen"} naInloggen={volgende === "match13" ? "/beheer/match13" : volgende === "mijnclub" ? "/beheer/mijn-club" : "/beheer"} />;
 }

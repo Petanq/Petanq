@@ -42,10 +42,12 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isLoginRoute && user) {
-    const naarMatch13 = request.nextUrl.searchParams.get("volgende") === "match13";
+    const volgende = request.nextUrl.searchParams.get("volgende");
+    const naarMatch13 = volgende === "match13";
+    const naarMijnClub = volgende === "mijnclub";
     const url = request.nextUrl.clone();
     url.search = "";
-    url.pathname = naarMatch13 ? "/beheer/match13" : "/beheer";
+    url.pathname = naarMatch13 ? "/beheer/match13" : naarMijnClub ? "/beheer/mijn-club" : "/beheer";
     return NextResponse.redirect(url);
   }
 

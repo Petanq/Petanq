@@ -5,6 +5,9 @@ import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { isAdmin } from "@/lib/auth-helpers";
 import { geocodeAdres } from "@/lib/geocode";
 import { CLUBS_MOGEN_ZELF_BEHEREN } from "@/lib/club-beheer/instellingen";
+import { getResendClient, AFZENDER } from "@/lib/resend";
+import { siteUrl } from "@/lib/site-url";
+import { MeldingClubWijzigingEmail, meldingClubWijzigingOnderwerp } from "@/lib/emails/melding-club-wijziging";
 import {
   brusselsVandaag,
   gelijkeUren,
@@ -157,6 +160,26 @@ async function pasVoorstelToe(clubId: string, voorstel: Voorstel): Promise<{ fou
   return {};
 }
 
+// Laat de admin(s) per mail weten dat een voorstel wacht, zodat ze enkel nog moeten goedkeuren.
+// Best-effort: een mislukte mail mag het indienen nooit laten mislukken.
+async function meldAanAdmins(clubNaam: string, voorstel: Voorstel): Promise<void> {
+  try {
+    const service = createServiceRoleClient();
+    const { data: admins } = await service.from("moderatoren").select("email").eq("rol", "admin");
+    const naar = (admins ?? []).map((a) => a.email as string).filter(Boolean);
+    if (naar.length === 0) return;
+    const onderdelen = [voorstel.gegevens ? "gegevens" : null, voorstel.uren ? "openingsuren" : null].filter(Boolean) as string[];
+    await getResendClient().emails.send({
+      from: AFZENDER,
+      to: naar,
+      subject: meldingClubWijzigingOnderwerp(clubNaam),
+      react: MeldingClubWijzigingEmail({ clubNaam, onderdelen, beheerLink: `${siteUrl()}/beheer/club-wijzigingen` }),
+    });
+  } catch (fout) {
+    console.error("Melding aan admin over clubwijziging mislukt:", fout);
+  }
+}
+
 // Een club stelt wijzigingen voor. Vertrouwde clubs (en de admin) staan meteen online,
 // de rest wacht op goedkeuring (de oude gegevens blijven intussen zichtbaar).
 export async function dienVoorstelIn(clubId: string, invoer: unknown): Promise<ClubBeheerResultaat> {
@@ -206,6 +229,7 @@ export async function dienVoorstelIn(clubId: string, invoer: unknown): Promise<C
 
   revalidatePath("/beheer/mijn-club");
   revalidatePath("/beheer/club-wijzigingen");
+  await meldAanAdmins(huidig.naam, voorstel);
   return { succes: true, status: "wachtend" };
 }
 

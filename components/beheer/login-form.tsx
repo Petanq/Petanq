@@ -11,7 +11,7 @@ export function LoginForm({
   naInloggen = "/beheer",
 }: {
   linkVerlopen?: boolean;
-  naInloggen?: "/beheer" | "/beheer/match13";
+  naInloggen?: "/beheer" | "/beheer/match13" | "/beheer/mijn-club";
 }) {
   const { t } = useTranslation();
   const router = useRouter();
