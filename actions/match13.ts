@@ -139,20 +139,39 @@ export async function nieuwMatch13Toernooi(): Promise<void> {
 // aangemaakte toernooitest het archief niet vervuilt. Gebruikt de
 // service-role client zodat dit ook lukt voor een club-gebruiker, die zelf
 // geen rechten heeft op match13_archief (enkel de admin mag dat lezen).
-async function archiveerIndienGespeeld(id: string, state: AppState, reden: "gewist" | "verwijderd") {
+// Naast gespeelde toernooien bewaren we ook toernooien met ingeschreven teams of een
+// geplande datum: een per ongeluk verwijderd toernooi met 20 inschrijvingen moet
+// terug te halen zijn. `meta` (eigenaar-club, naam, datum, organisator) maakt het
+// herstellen mogelijk en komt enkel mee bij verwijderen, niet bij wissen.
+export interface Match13ArchiefMeta {
+  club: string;
+  naam: string;
+  geplande_datum: string | null;
+  organisator: string | null;
+  afgewerkt: boolean;
+  is_test: boolean;
+}
+
+async function archiveerIndienGespeeld(
+  id: string,
+  state: AppState,
+  reden: "gewist" | "verwijderd",
+  meta?: Match13ArchiefMeta
+) {
   const heeftGespeeld =
     state.rounds.length > 0 ||
     state.pouleBracket.some((m) => m.scoreA !== undefined) ||
     state.knockoutBracket.some((m) => m.scoreA !== undefined);
-  if (!heeftGespeeld) return;
+  const heeftInhoud = heeftGespeeld || state.teams.length > 0 || !!meta?.geplande_datum;
+  if (!heeftInhoud) return;
 
   const serviceClient = createServiceRoleClient();
-  const { error } = await serviceClient.from("match13_archief").insert({
-    oorspronkelijk_toernooi_id: id,
-    club: state.clubName || "",
-    data: state,
-    reden,
-  });
+  const rij: Record<string, unknown> = { oorspronkelijk_toernooi_id: id, club: state.clubName || "", data: state, reden };
+  let { error } = await serviceClient.from("match13_archief").insert(meta ? { ...rij, meta } : rij);
+  // Kolom "meta" bestaat pas na migratie 0065: tot dan archiveren we zonder.
+  if (error && meta && /meta/i.test(error.message)) {
+    ({ error } = await serviceClient.from("match13_archief").insert(rij));
+  }
   if (error) console.error("Archiveren van Match13-resultaten mislukt:", error.message);
 }
 
@@ -288,8 +307,21 @@ export async function verwijderMatch13Toernooi(id: string): Promise<Match13Actie
   if (!(await magMatch13Gebruiken())) return { succes: false, fout: "niet_geautoriseerd" };
 
   const supabase = await createClient();
-  const { data: rij } = await supabase.from("match13_toernooien").select("data").eq("id", id).single();
-  if (rij) await archiveerIndienGespeeld(id, rij.data as AppState, "verwijderd");
+  const { data: rij } = await supabase
+    .from("match13_toernooien")
+    .select("data, club, naam, geplande_datum, organisator, afgewerkt, is_test")
+    .eq("id", id)
+    .single();
+  if (rij) {
+    await archiveerIndienGespeeld(id, rij.data as AppState, "verwijderd", {
+      club: rij.club as string,
+      naam: rij.naam as string,
+      geplande_datum: (rij.geplande_datum as string | null) ?? null,
+      organisator: (rij.organisator as string | null) ?? null,
+      afgewerkt: !!rij.afgewerkt,
+      is_test: !!rij.is_test,
+    });
+  }
 
   const { error } = await supabase.from("match13_toernooien").delete().eq("id", id);
 

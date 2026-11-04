@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
+import { herstelMatch13Archief } from "@/actions/match13-archief";
 import { FORMAT_LABELS } from "@/lib/match13/types";
 import { computeStandings, computeMeleeStandings } from "@/lib/match13/standings";
 import type { Match13ArchiefItem } from "@/actions/match13-archief";
@@ -9,7 +12,23 @@ import { Match13TerugKnop } from "@/components/match13/Match13TerugKnop";
 
 export function Match13ArchiefDetail({ item }: { item: Match13ArchiefItem }) {
   const { t, taal } = useTranslation();
+  const router = useRouter();
+  const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState(false);
   const { data } = item;
+
+  async function herstel() {
+    if (!window.confirm(t.match13.archiefHerstelBevestiging)) return;
+    setBezig(true);
+    setFout(false);
+    const resultaat = await herstelMatch13Archief(item.id);
+    setBezig(false);
+    if (!resultaat.succes) {
+      setFout(true);
+      return;
+    }
+    router.push(`/beheer/match13/${resultaat.toernooiId}`);
+  }
   const isMeli = data.format === "meli";
   const isPoules = data.format === "poules";
 
@@ -44,6 +63,12 @@ export function Match13ArchiefDetail({ item }: { item: Match13ArchiefItem }) {
                 new Date(item.gearchiveerd_op).toLocaleString(taal === "fr" ? "fr-BE" : "nl-BE")
               )}
           </p>
+          <div className="archief-herstel-blok">
+            <button type="button" className="archief-herstel" onClick={herstel} disabled={bezig}>
+              {bezig ? t.match13.bezig : t.match13.archiefHerstel}
+            </button>
+            {fout && <span className="archief-herstel-fout">{t.match13.archiefHerstelMislukt}</span>}
+          </div>
         </div>
       </div>
 

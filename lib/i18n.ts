@@ -893,6 +893,10 @@ const nl = {
     archiefTerug: "← Terug naar archief",
     archiefGeenKlassementPoules: "Poules-toernooien hebben geen eindklassement — hieronder de teams per poule.",
     archiefBekijk: "Bekijk tornooi",
+    archiefHerstel: "Zet terug als toernooi",
+    archiefHerstelBevestiging:
+      "Dit toernooi terugzetten in de gewone lijst, met alle teams en uitslagen? Het blijft ook in het archief staan.",
+    archiefHerstelMislukt: "Terugzetten is niet gelukt. Probeer het opnieuw.",
     archiefStatTotaal: "Bewaard",
     archiefStatEindstand: "Met eindstand",
     archiefStatMaand: "Deze maand gespeeld",
@@ -1929,6 +1933,10 @@ const fr: typeof nl = {
     archiefTerug: "← Retour aux archives",
     archiefGeenKlassementPoules: "Les tournois Poules n'ont pas de classement final — voici les équipes par poule.",
     archiefBekijk: "Voir le tournoi",
+    archiefHerstel: "Remettre comme tournoi",
+    archiefHerstelBevestiging:
+      "Remettre ce tournoi dans la liste normale, avec toutes les équipes et résultats ? Il reste aussi dans les archives.",
+    archiefHerstelMislukt: "La restauration a échoué. Réessayez.",
     archiefStatTotaal: "Conservés",
     archiefStatEindstand: "Avec classement",
     archiefStatMaand: "Joués ce mois-ci",

@@ -1,8 +1,10 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/lib/auth-helpers";
 import { createClient } from "@/lib/supabase/server";
 import type { AppState } from "@/lib/match13/state";
+import type { Match13ArchiefMeta } from "@/actions/match13";
 import { computeStandings, computeMeleeStandings } from "@/lib/match13/standings";
 
 export interface Match13ArchiefRij {
@@ -72,6 +74,58 @@ export async function haalMatch13Archief(): Promise<Match13ArchiefLijstRij[]> {
     ...rij,
     ...maakSamenvatting(blob),
   }));
+}
+
+// Zet een gearchiveerd toernooi terug in de gewone lijst (als nieuwe rij; het archief
+// zelf blijft ongemoeid). De club, datum en organisator komen uit `meta` (sinds migratie
+// 0065); oudere archiefrijen hebben dat niet — dan staat het toernooi zonder club terug
+// en ziet enkel de admin het tot de club erbij gezet wordt.
+export async function herstelMatch13Archief(
+  id: string
+): Promise<{ succes: true; toernooiId: string; zonderClub: boolean } | { succes: false; fout: string }> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { succes: false, fout: "niet_geautoriseerd" };
+
+  let { data: rij, error } = await supabase
+    .from("match13_archief")
+    .select("club, data, meta")
+    .eq("id", id)
+    .single();
+  if (error && /meta/i.test(error.message)) {
+    const oud = await supabase.from("match13_archief").select("club, data").eq("id", id).single();
+    rij = oud.data ? { ...oud.data, meta: null } : null;
+    error = oud.error;
+  }
+  if (error || !rij) return { succes: false, fout: "niet_gevonden" };
+
+  const state = rij.data as AppState;
+  const meta = (rij.meta ?? null) as Partial<Match13ArchiefMeta> | null;
+  const { data: nieuw, error: insertFout } = await supabase
+    .from("match13_toernooien")
+    .insert({
+      aangemaakt_door: user.id,
+      naam: meta?.naam || state.clubName || rij.club || "Hersteld toernooi",
+      club: meta?.club ?? "",
+      geplande_datum: meta?.geplande_datum ?? null,
+      organisator: meta?.organisator ?? null,
+      afgewerkt: meta?.afgewerkt ?? false,
+      is_test: meta?.is_test ?? false,
+      data: state,
+    })
+    .select("id")
+    .single();
+  if (insertFout || !nieuw) {
+    console.error("Herstellen uit Match13-archief mislukt:", id, insertFout?.message);
+    return { succes: false, fout: "herstellen_mislukt" };
+  }
+
+  revalidatePath("/beheer/match13");
+  return { succes: true, toernooiId: nieuw.id as string, zonderClub: !meta?.club };
 }
 
 export async function haalMatch13ArchiefItem(id: string): Promise<Match13ArchiefItem | null> {
