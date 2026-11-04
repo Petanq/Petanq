@@ -67,7 +67,10 @@ export async function haalMijnClubId(gekozen?: string): Promise<string | null> {
   if (await isAdmin()) return gekozen ?? null;
   if (!CLUBS_MOGEN_ZELF_BEHEREN) return null;
 
-  const supabase = await createClient();
+  // De lijst match13_gebruikers mag volgens de database-regels enkel de admin lezen. Met de gewone
+  // sessie van de club zelf kwam er dus nooit een rij terug ("account niet aan een club gekoppeld").
+  // Daarom zoeken we met de service-rol op, strikt beperkt tot het user_id van wie nu is ingelogd.
+  const supabase = createServiceRoleClient();
   const { data } = await supabase
     .from("match13_gebruikers")
     .select("club_id")
