@@ -13,7 +13,7 @@ export function ClubCard({ club, km }: { club: Club; km?: number }) {
   return (
     <div
       title={club.openingsuren ?? undefined}
-      className="rounded-[10px] border-[1.5px] border-rand bg-white p-3.5 transition-shadow hover:shadow-[0_4px_16px_rgba(11,31,58,0.08)]"
+      className="club-kaart rounded-[10px] border-[1.5px] border-rand bg-white p-3.5 transition-shadow hover:shadow-[0_4px_16px_rgba(11,31,58,0.08)]"
     >
       <div className="flex items-center gap-3">
         {club.foto_url ? (

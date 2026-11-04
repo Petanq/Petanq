@@ -15,7 +15,7 @@ import {
 } from "@/actions/beheer-clubs";
 import { normaliseerUrl } from "@/lib/normaliseer-url";
 import { dienVoorstelIn, haalMijnClub } from "@/actions/club-beheer";
-import { UrenBewerker } from "@/components/club-beheer/UrenBewerker";
+import { Ico, UrenBewerker } from "@/components/club-beheer/UrenBewerker";
 import { gelijkeUren, leegUren, type ClubUren } from "@/lib/club-beheer/uren";
 
 export function ClubManageList({ clubs, isAdmin = false }: { clubs: Club[]; isAdmin?: boolean }) {
@@ -405,113 +405,131 @@ function ClubFormulier({
   }
 
   return (
-    <div className="rounded-[10px] border-[1.5px] border-blauw-3 bg-white p-4">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.clubForm.naam}
-          <input value={naam} onChange={(e) => setNaam(e.target.value)} className="veld-input" />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.clubForm.gemeente}
-          <input value={gemeente} onChange={(e) => setGemeente(e.target.value)} className="veld-input" />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.clubForm.provincie}
-          <select
-            value={provincie}
-            onChange={(e) => setProvincie(e.target.value as Provincie)}
-            className="veld-input"
-          >
-            <option value="" disabled>
-              {t.form.kiesProvincie}
-            </option>
-            {ALLE_PROVINCIES.map((p) => (
-              <option key={p} value={p}>
-                {vertaalProvincie(p, taal)}
+    <div className="cb-scope">
+      <section className="cb-paneel">
+        <h2>
+          <Ico>
+            <path d="M4 20V10l8-6 8 6v10M9 20v-6h6v6" />
+          </Ico>
+          {t.clubBeheer.bewerkClub}
+        </h2>
+        <div className="cb-rij2">
+          <div className="cb-veld">
+            <label htmlFor="cf-naam">{t.clubForm.naam}</label>
+            <input id="cf-naam" type="text" value={naam} onChange={(e) => setNaam(e.target.value)} />
+          </div>
+          <div className="cb-veld">
+            <label htmlFor="cf-gemeente">{t.clubForm.gemeente}</label>
+            <input id="cf-gemeente" type="text" value={gemeente} onChange={(e) => setGemeente(e.target.value)} />
+          </div>
+          <div className="cb-veld">
+            <label htmlFor="cf-provincie">{t.clubForm.provincie}</label>
+            <select id="cf-provincie" value={provincie} onChange={(e) => setProvincie(e.target.value as Provincie)}>
+              <option value="" disabled>
+                {t.form.kiesProvincie}
               </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.clubForm.adres}
-          <input value={adres} onChange={(e) => setAdres(e.target.value)} className="veld-input" />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.clubForm.website}
+              {ALLE_PROVINCIES.map((p) => (
+                <option key={p} value={p}>
+                  {vertaalProvincie(p, taal)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="cb-veld">
+            <label htmlFor="cf-adres">{t.clubForm.adres}</label>
+            <input id="cf-adres" type="text" value={adres} onChange={(e) => setAdres(e.target.value)} />
+          </div>
+        </div>
+      </section>
+
+      <section className="cb-paneel">
+        <h2>
+          <Ico>
+            <path d="M4 6h16v12H4zM4 7l8 6 8-6" />
+          </Ico>
+          {t.clubBeheer.gegevensTitel}
+        </h2>
+        <div className="cb-rij2">
+          <div className="cb-veld">
+            <label htmlFor="cf-mail">{t.clubForm.contactEmail}</label>
+            <input id="cf-mail" type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
+          </div>
+          <div className="cb-veld">
+            <label htmlFor="cf-tel">{t.clubForm.telefoon}</label>
+            <input id="cf-tel" type="tel" value={telefoon} onChange={(e) => setTelefoon(e.target.value)} />
+          </div>
+        </div>
+        <div className="cb-veld">
+          <label htmlFor="cf-web">{t.clubForm.website}</label>
           <input
+            id="cf-web"
+            type="text"
+            inputMode="url"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
             onBlur={(e) => setWebsite(normaliseerUrl(e.target.value))}
-            className="veld-input"
           />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.clubForm.contactEmail}
-          <input
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-            className="veld-input"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker">
-          {t.clubForm.telefoon}
-          <input value={telefoon} onChange={(e) => setTelefoon(e.target.value)} className="veld-input" />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-bold text-donker sm:col-span-2">
-          {t.clubForm.openingsuren}
-          <input
-            value={openingsuren}
-            onChange={(e) => setOpeningsuren(e.target.value)}
-            className="veld-input"
-          />
-        </label>
-      </div>
+        </div>
+      </section>
+
+      <section className="cb-paneel">
+        <h2>
+          <Ico>
+            <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+            <circle cx="12" cy="13" r="3.5" />
+          </Ico>
+          {t.clubForm.foto}
+        </h2>
+        <div className="cb-foto-rij">
+          {fotoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={fotoUrl} alt="" className="cb-foto" />
+          ) : (
+            <div className="cb-logo cb-foto" />
+          )}
+          <div>
+            <label className="cb-knop rand cb-bestand">
+              {t.clubBeheer.fotoKiezen}
+              <input type="file" accept="image/*" onChange={(e) => fotoGekozen(e.target.files?.[0] ?? null)} />
+            </label>
+            <p className="cb-uitleg" style={{ margin: "0.5rem 0 0" }}>
+              {t.clubForm.fotoHint}
+            </p>
+            {fotoBezig && <p className="cb-uitleg">{t.form.afficheUploaden}</p>}
+            {fotoFout && <p className="cb-melding fout">{t.clubForm.fotoFout}</p>}
+          </div>
+        </div>
+      </section>
 
       {toonUren && (
-        <div className="mt-4 rounded-[10px] border border-rand bg-licht/60 p-3">
-          {urenFout && <p className="text-xs font-semibold text-rood-2">{t.clubBeheer.nogNietBeschikbaar}</p>}
-          {!uren && !urenFout && <p className="text-xs text-grijs">{t.clubBeheer.bezig}</p>}
-          {uren && <UrenBewerker uren={uren} onChange={setUren} compact />}
-        </div>
+        <>
+          {urenFout && <p className="cb-melding fout">{t.clubBeheer.nogNietBeschikbaar}</p>}
+          {!uren && !urenFout && <p className="cb-uitleg">{t.clubBeheer.bezig}</p>}
+          {uren && <UrenBewerker uren={uren} onChange={setUren} />}
+        </>
       )}
 
-      <div className="mt-3 flex flex-col gap-1.5">
-        <span className="text-xs font-bold text-donker">{t.clubForm.foto}</span>
-        {fotoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={fotoUrl} alt="" className="mb-1 h-24 w-24 rounded-full border border-rand object-cover" />
-        )}
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => fotoGekozen(e.target.files?.[0] ?? null)}
-          className="text-sm text-grijs file:mr-3 file:rounded-md file:border-0 file:bg-blauw file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-blauw-2"
-        />
-        <p className="text-xs text-grijs">{t.clubForm.fotoHint}</p>
-        {fotoBezig && <p className="text-xs text-grijs">{t.form.afficheUploaden}</p>}
-        {fotoFout && <p className="text-xs font-semibold text-rood-2">{t.clubForm.fotoFout}</p>}
-      </div>
+      <section className="cb-paneel">
+        <div className="cb-veld" style={{ marginBottom: 0 }}>
+          <label htmlFor="cf-uren-tekst">{t.clubBeheer.oudeTekst}</label>
+          <input id="cf-uren-tekst" type="text" value={openingsuren} onChange={(e) => setOpeningsuren(e.target.value)} />
+          {toonUren && <p className="cb-uitleg" style={{ margin: "0.3rem 0 0" }}>{t.clubBeheer.oudeTekstUitleg}</p>}
+        </div>
+      </section>
 
       {fout && (
-        <p className="mt-3 text-sm font-semibold text-rood-2">
+        <p className="cb-melding fout">
           {t.beheer.opslaanFout}
           <br />
-          <span className="font-mono text-xs font-normal">{fout}</span>
+          <span style={{ fontFamily: "monospace", fontSize: "0.75rem", fontWeight: 400 }}>{fout}</span>
         </p>
       )}
 
-      <div className="mt-3 flex gap-2">
-        <button
-          onClick={opslaan}
-          disabled={bezig || !naam || !gemeente || !provincie}
-          className="rounded-md bg-blauw px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-blauw-2 hover:shadow-md active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
-        >
+      <div className="cb-actierij">
+        <button type="button" className="cb-knop" onClick={opslaan} disabled={bezig || !naam || !gemeente || !provincie}>
           {bezig ? t.beheer.bezigMetOpslaan : t.beheer.opslaan}
         </button>
-        <button
-          onClick={onAnnuleren}
-          className="rounded-md border border-rand px-4 py-2 text-sm font-semibold text-donker transition-all hover:border-blauw-3 hover:bg-licht active:scale-[0.97]"
-        >
+        <button type="button" className="cb-knop rand" onClick={onAnnuleren}>
           {t.beheer.annuleren}
         </button>
       </div>

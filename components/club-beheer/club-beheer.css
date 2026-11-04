@@ -625,3 +625,93 @@
   height: 1.1rem;
   accent-color: #d9a900;
 }
+
+/* Formulier "Club bewerken" */
+.cb-foto-rij {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.cb-foto {
+  width: 76px;
+  height: 76px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid #e5e5e5;
+  object-fit: cover;
+}
+.cb-bestand {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.cb-bestand input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.cb-actierij {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+}
+
+/* Clubkaartje met uren: gouden accenten in de stijl van Petanque13 (het logo blijft staan) */
+.club-kaart:has(.cb-uren-wrap) {
+  border-color: #e3cb87;
+}
+.club-kaart:has(.cb-uren-wrap):hover {
+  border-color: #d4a82d;
+  box-shadow: 0 4px 18px rgba(244, 196, 48, 0.28);
+}
+.cb-uren-wrap {
+  margin-top: 0.7rem;
+}
+.cb-uren-knop {
+  background: #fff8dc;
+  border: 1.5px solid #e3cb87;
+  border-radius: 999px;
+  padding: 0.38rem 0.8rem;
+}
+.cb-uren-knop:hover {
+  background: #fdf0c3;
+  border-color: #d4a82d;
+}
+.cb-klok {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: #a87d00;
+  transform: none !important;
+}
+.cb-uren-lijst {
+  margin-top: 0.7rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #efe3b8;
+  border-radius: 12px;
+  background: #fffdf3;
+}
+.cb-seizoen {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: #f4c430;
+  color: #1a1a1a;
+  letter-spacing: 0.05em;
+}
+.cb-uren-lijst dt.vandaag,
+.cb-uren-lijst dt.vandaag + dd {
+  background: #fdf0c3;
+}
+.cb-uren-lijst dt.vandaag {
+  border-radius: 6px 0 0 6px;
+  padding-left: 0.35rem;
+}
+.cb-uren-lijst dt.vandaag + dd {
+  border-radius: 0 6px 6px 0;
+}

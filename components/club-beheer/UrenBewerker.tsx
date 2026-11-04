@@ -21,7 +21,7 @@ import "./club-beheer.css";
 const LIJN = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
 const SOORTEN: DagSoort[] = ["open", "competitie", "leden", "tornooi"];
 
-function Ico({ children }: { children: ReactNode }) {
+export function Ico({ children }: { children: ReactNode }) {
   return (
     <span className="cb-ico">
       <svg viewBox="0 0 24 24" aria-hidden="true" {...LIJN}>

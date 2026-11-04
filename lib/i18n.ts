@@ -298,6 +298,10 @@ const nl = {
     keurGeenUren: "Nog niets ingevuld",
     keurIngediend: (datum: string) => `Ingediend op ${datum}`,
     keurTegel: "Wijzigingen van clubs",
+    bewerkClub: "De club",
+    fotoKiezen: "Foto kiezen",
+    oudeTekst: "Oude tekst (mag blijven staan)",
+    oudeTekstUitleg: "Zet de uren hierboven per dag in. Deze oude tekst staat enkel nog in een tooltip.",
   },
   clubForm: {
     titel: "Club voorstellen",
@@ -1415,6 +1419,10 @@ const fr: typeof nl = {
     keurGeenUren: "Rien de rempli",
     keurIngediend: (datum: string) => `Soumis le ${datum}`,
     keurTegel: "Modifications des clubs",
+    bewerkClub: "Le club",
+    fotoKiezen: "Choisir une photo",
+    oudeTekst: "Ancien texte (peut rester)",
+    oudeTekstUitleg: "Saisissez les heures ci-dessus par jour. Cet ancien texte n'apparaît plus que dans une info-bulle.",
   },
   clubForm: {
     titel: "Proposer un club",
