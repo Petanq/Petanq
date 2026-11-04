@@ -127,7 +127,7 @@
 }
 @media (max-width: 860px) {
   .cb-twee {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 .cb-paneel {
@@ -190,6 +190,7 @@
 .cb-scope input[type="time"],
 .cb-scope input[type="date"],
 .cb-scope select {
+  min-width: 0;
   font: inherit;
   font-size: 16px; /* geen inzoomen op iPhone */
   width: 100%;
@@ -207,12 +208,12 @@
 }
 .cb-rij2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.8rem;
 }
 @media (max-width: 560px) {
   .cb-rij2 {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 .cb-tabs {
@@ -377,14 +378,14 @@
 }
 .cb-afw-rij {
   display: grid;
-  grid-template-columns: 1fr 1fr 1.6fr auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.6fr) auto;
   gap: 0.5rem;
   margin-bottom: 0.6rem;
   align-items: end;
 }
 @media (max-width: 700px) {
   .cb-afw-rij {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
   .cb-afw-rij .cb-afw-tekst {
     grid-column: 1 / -1;
@@ -662,12 +663,15 @@
 }
 
 /* Clubkaartje met uren: gouden accenten in de stijl van Petanque13 (het logo blijft staan) */
-.club-kaart:has(.cb-uren-wrap) {
-  border-color: #e3cb87;
+.club-kaart {
+  border-color: #ecdca0 !important;
 }
-.club-kaart:has(.cb-uren-wrap):hover {
-  border-color: #d4a82d;
-  box-shadow: 0 4px 18px rgba(244, 196, 48, 0.28);
+.club-kaart:hover {
+  border-color: #d4a82d !important;
+  box-shadow: 0 4px 18px rgba(244, 196, 48, 0.28) !important;
+}
+.club-kaart a:hover {
+  color: #a87d00;
 }
 .cb-uren-wrap {
   margin-top: 0.7rem;
@@ -714,4 +718,101 @@
 }
 .cb-uren-lijst dt.vandaag + dd {
   border-radius: 0 6px 6px 0;
+}
+
+/* Clubkaartje (wit en rustig): regels met gouden pictogram en één gele routeknop */
+.club-kaart {
+  background: #fffdf3 !important;
+}
+.cb-info-regel {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin-top: 0.3rem;
+  font-size: 0.76rem;
+  color: #444;
+  min-width: 0;
+}
+.cb-ic {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  background: #fdf0c3;
+  color: #a87d00;
+}
+.cb-ic svg {
+  width: 12px;
+  height: 12px;
+}
+.cb-route-wrap {
+  margin-top: 0.6rem;
+}
+.cb-route {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 38px;
+  padding: 0.4rem 0.95rem;
+  border: none;
+  border-radius: 999px;
+  background: #f4c430;
+  color: #1a1a1a;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cb-route svg {
+  width: 13px;
+  height: 13px;
+}
+.cb-route:hover,
+.cb-route[aria-expanded="true"] {
+  filter: brightness(0.95);
+}
+.cb-route:focus-visible {
+  outline: 2px solid #1f1f1f;
+  outline-offset: 2px;
+}
+.cb-route-paneel {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.6rem;
+  padding: 0.7rem;
+  border: 1px solid #efe3b8;
+  border-radius: 12px;
+  background: #fffdf3;
+}
+.cb-route-titel {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #7a7a7a;
+}
+.cb-route-keuze {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 46px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  background: #f4c430;
+  color: #1a1a1a;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.cb-route-keuze:hover {
+  filter: brightness(0.95);
+}
+.cb-route-icoon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
 }

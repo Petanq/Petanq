@@ -13,3 +13,7 @@ export function googleMapsUrl(adres: string | null, gemeente: string): string {
 export function wazeUrl(adres: string | null, gemeente: string): string {
   return `https://waze.com/ul?q=${encodeURIComponent(locatieZoekterm(adres, gemeente))}&navigate=yes`;
 }
+
+export function appleMapsUrl(adres: string | null, gemeente: string): string {
+  return `https://maps.apple.com/?q=${encodeURIComponent(locatieZoekterm(adres, gemeente))}`;
+}

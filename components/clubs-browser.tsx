@@ -174,16 +174,35 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
                 <div
                   key={provincie}
                   id={provincie}
-                  className={`mb-3 scroll-mt-20 rounded-[10px] border-[1.5px] bg-white transition-shadow ${
+                  className={`mb-2 scroll-mt-20 rounded-[10px] border-[1.5px] bg-white transition-shadow ${
                     uitgeklapt ? "border-geel/60 shadow-[0_2px_10px_rgba(244,196,48,0.15)]" : "border-rand"
                   }`}
                 >
                   <button
                     onClick={() => toggleProvincie(provincie)}
-                    className="group flex w-full items-center justify-between gap-2 p-4 text-left"
+                    className="group flex w-full items-center justify-between gap-2 px-3.5 py-2 text-left"
                   >
-                    <span className="text-[0.8rem] font-extrabold uppercase tracking-widest text-[#b8860b] transition-colors group-hover:text-donker">
-                      {vertaalProvincie(provincie, taal)}
+                    <span className="flex min-w-0 items-center gap-3">
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fdf0c3] text-[#a87d00]"
+                        aria-hidden="true"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="h-[18px] w-[18px]"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
+                          <circle cx="12" cy="10" r="2.5" />
+                        </svg>
+                      </span>
+                      <span className="text-[0.8rem] font-extrabold uppercase tracking-widest text-[#b8860b] transition-colors group-hover:text-donker">
+                        {vertaalProvincie(provincie, taal)}
+                      </span>
                     </span>
                     <span className="flex items-center gap-2">
                       <span className="rounded-full bg-[#fdf3d9] px-2.5 py-0.5 text-xs font-bold text-[#b8860b]">
