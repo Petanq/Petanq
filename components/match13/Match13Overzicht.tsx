@@ -17,6 +17,7 @@ import { siteUrl } from "@/lib/site-url";
 import { FORMAT_LABELS } from "@/lib/match13/types";
 import { isGeldigeOrganisator, splitsOrganisator, voegOrganisatorSamen } from "@/lib/match13/organisator";
 import type { Format } from "@/lib/match13/types";
+import { CLUBS_MOGEN_ZELF_BEHEREN } from "@/lib/club-beheer/instellingen";
 
 type Wijziging = {
   is_test?: boolean;
@@ -124,6 +125,7 @@ export function Match13Overzicht({
             <span className="match13-tegel-pijl" aria-hidden="true">›</span>
           </Link>
         )}
+        {(admin || CLUBS_MOGEN_ZELF_BEHEREN) && (
         <Link href="/beheer/mijn-club" className="match13-tegel">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M4 20V10l8-6 8 6v10M9 20v-6h6v6" />
@@ -131,6 +133,7 @@ export function Match13Overzicht({
           <span className="match13-tegel-titel">{t.clubBeheer.titel}</span>
           <span className="match13-tegel-pijl" aria-hidden="true">›</span>
         </Link>
+        )}
         {admin && (
           <Link href="/beheer/club-wijzigingen" className="match13-tegel">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

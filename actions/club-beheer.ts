@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { isAdmin } from "@/lib/auth-helpers";
 import { geocodeAdres } from "@/lib/geocode";
+import { CLUBS_MOGEN_ZELF_BEHEREN } from "@/lib/club-beheer/instellingen";
 import {
   brusselsVandaag,
   gelijkeUren,
@@ -50,6 +51,7 @@ async function huidigeGebruikerId(): Promise<string | null> {
 
 async function magClubBeheren(clubId: string): Promise<boolean> {
   if (await isAdmin()) return true;
+  if (!CLUBS_MOGEN_ZELF_BEHEREN) return false; // clubs zelf zijn nog niet vrijgegeven
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("mag_club_beheren", { p_club: clubId });
   return !error && data === true;
@@ -60,6 +62,7 @@ export async function haalMijnClubId(gekozen?: string): Promise<string | null> {
   const userId = await huidigeGebruikerId();
   if (!userId) return null;
   if (await isAdmin()) return gekozen ?? null;
+  if (!CLUBS_MOGEN_ZELF_BEHEREN) return null;
 
   const supabase = await createClient();
   const { data } = await supabase
