@@ -40,11 +40,13 @@ export function Match13Overzicht({
   admin,
   koppelOpties,
   nieuweClubs = [],
+  teKeuren = 0,
 }: {
   toernooien: Match13ToernooiRij[];
   admin: boolean;
   koppelOpties: EigenToernooiOptie[];
   nieuweClubs?: NieuweClubMelding[];
+  teKeuren?: number;
 }) {
   const { t, taal } = useTranslation();
   const fout = useSearchParams().get("fout");
@@ -119,6 +121,23 @@ export function Match13Overzicht({
               <path d="M5 9v10h14V9M10 13h4" />
             </svg>
             <span className="match13-tegel-titel">{t.match13.archiefLink.replace(" →", "")}</span>
+            <span className="match13-tegel-pijl" aria-hidden="true">›</span>
+          </Link>
+        )}
+        <Link href="/beheer/mijn-club" className="match13-tegel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 20V10l8-6 8 6v10M9 20v-6h6v6" />
+          </svg>
+          <span className="match13-tegel-titel">{t.clubBeheer.titel}</span>
+          <span className="match13-tegel-pijl" aria-hidden="true">›</span>
+        </Link>
+        {admin && (
+          <Link href="/beheer/club-wijzigingen" className="match13-tegel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+            </svg>
+            <span className="match13-tegel-titel">{t.clubBeheer.keurTegel}</span>
+            {teKeuren > 0 && <span className="match13-tegel-teller">{teKeuren}</span>}
             <span className="match13-tegel-pijl" aria-hidden="true">›</span>
           </Link>
         )}
