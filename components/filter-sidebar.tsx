@@ -152,7 +152,7 @@ export function FilterSidebar({
 
   return (
     <aside className="lg:sticky lg:top-20">
-      <div className="relative mb-3.5 rounded-2xl border-[1.5px] border-rand bg-white p-3 shadow-sm">
+      <div className="relative mb-3.5 rounded-2xl border-2 border-geel bg-white p-3 shadow-[0_0_14px_rgba(244,196,48,0.25)]">
         <span className="pointer-events-none absolute left-[1.45rem] top-1/2 -translate-y-1/2 text-[#b8860b]" aria-hidden>
           <FilterIcoon pad={ICOON.zoek} />
         </span>
@@ -161,7 +161,7 @@ export function FilterSidebar({
           value={filters.zoek}
           onChange={(e) => setFilters({ ...filters, zoek: e.target.value })}
           placeholder={t.filters.zoekPlaceholder}
-          className="w-full rounded-xl border-[1.5px] border-rand bg-licht py-2.5 pl-9 pr-3 font-body text-[0.85rem] outline-none transition-colors focus:border-geel focus:bg-white"
+          className="w-full rounded-xl border-[1.5px] border-[#ecdca0] bg-licht py-2.5 pl-9 pr-3 font-body text-[0.85rem] outline-none transition-colors focus:border-geel focus:bg-white"
         />
       </div>
 
@@ -174,7 +174,7 @@ export function FilterSidebar({
 
       <button
         onClick={() => setMobielOpen((v) => !v)}
-        className="mb-3.5 flex w-full items-center justify-between gap-2 rounded-2xl border-[1.5px] border-rand bg-white p-[1.1rem] text-left shadow-sm lg:hidden"
+        className="mb-3.5 flex w-full items-center justify-between gap-2 rounded-2xl border-2 border-geel bg-white p-[1.05rem] text-left shadow-sm lg:hidden"
       >
         <span className="flex items-center gap-2">
           <span className="text-[0.83rem] font-bold text-donker">{t.filters.meerFilters}</span>
@@ -194,7 +194,7 @@ export function FilterSidebar({
         </span>
       </button>
 
-      <div className={`${mobielOpen ? "block" : "hidden"} overflow-hidden rounded-2xl border-[1.5px] border-rand bg-white shadow-sm lg:block`}>
+      <div className={`${mobielOpen ? "block" : "hidden"} overflow-hidden rounded-2xl border-2 border-geel bg-white shadow-[0_0_14px_rgba(244,196,48,0.25)] lg:block`}>
         <FilterCard icoon={ICOON.regio} titel={t.filters.regio} actiefLabel={filters.regio ? vertaalRegio(filters.regio, taal) : null}>
           <FilterItem
             actief={filters.regio === null}
@@ -345,7 +345,7 @@ function FilterCard({
   const heeftActieveFilter = Boolean(actiefLabel);
 
   return (
-    <div className={`border-t border-rand first:border-t-0 ${heeftActieveFilter ? "bg-[#fdf3d9]/50" : ""}`}>
+    <div className={`border-t border-[#ecdca0] first:border-t-0 ${heeftActieveFilter ? "bg-[#fdf3d9]/50" : ""}`}>
       <button
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}

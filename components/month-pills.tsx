@@ -65,7 +65,7 @@ export function MonthPills({
     `whitespace-nowrap rounded-lg border-[1.5px] px-3 py-2 text-left text-[0.8rem] font-semibold transition-colors active:scale-[0.98] ${
       actief
         ? "border-geel bg-geel text-[#1f1f1f]"
-        : "border-rand bg-white text-grijs hover:border-geel/60 hover:bg-[#fdf3d9] hover:text-[#b8860b]"
+        : "border-[#e3cb87] bg-white text-grijs hover:border-geel hover:bg-[#fdf3d9] hover:text-[#b8860b]"
     }`;
 
   return (
@@ -78,7 +78,7 @@ export function MonthPills({
         className={`inline-flex items-center gap-2 rounded-full border-[1.5px] px-3.5 py-1.5 text-[0.8rem] font-semibold transition-all active:scale-95 ${
           actieveMaand
             ? "border-geel bg-geel text-[#1f1f1f] shadow-sm"
-            : "border-rand bg-white text-grijs hover:border-geel/60 hover:bg-[#fdf3d9] hover:text-[#b8860b]"
+            : "border-[#e3cb87] bg-white text-grijs hover:border-geel hover:bg-[#fdf3d9] hover:text-[#b8860b]"
         }`}
       >
         <svg viewBox="0 0 24 24" width={15} height={15} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -106,7 +106,7 @@ export function MonthPills({
         <div
           role="listbox"
           style={{ left: verschuiving }}
-          className="absolute top-full z-30 mt-2 grid max-h-[22rem] w-[min(21rem,calc(100vw-3rem))] grid-cols-2 gap-1.5 overflow-y-auto rounded-xl border-[1.5px] border-rand bg-white p-2 shadow-[0_12px_32px_rgba(0,0,0,0.18)]"
+          className="absolute top-full z-30 mt-2 grid max-h-[22rem] w-[min(21rem,calc(100vw-3rem))] grid-cols-2 gap-1.5 overflow-y-auto rounded-xl border-[1.5px] border-[#e3cb87] bg-white p-2 shadow-[0_12px_32px_rgba(0,0,0,0.18)]"
         >
           <button
             type="button"
