@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import { Club } from "@/lib/types";
@@ -14,6 +14,9 @@ import {
   clubVerwijderingAanvragen,
 } from "@/actions/beheer-clubs";
 import { normaliseerUrl } from "@/lib/normaliseer-url";
+import { dienVoorstelIn, haalMijnClub } from "@/actions/club-beheer";
+import { UrenBewerker } from "@/components/club-beheer/UrenBewerker";
+import { gelijkeUren, leegUren, type ClubUren } from "@/lib/club-beheer/uren";
 
 export function ClubManageList({ clubs, isAdmin = false }: { clubs: Club[]; isAdmin?: boolean }) {
   const { t, taal } = useTranslation();
@@ -79,6 +82,7 @@ export function ClubManageList({ clubs, isAdmin = false }: { clubs: Club[]; isAd
       <ClubFormulier
         key={club.id}
         club={club}
+        isAdmin={isAdmin}
         onKlaar={() => {
           setBewerkId(null);
           toonMelding(t.beheer.clubBijgewerkt);
@@ -297,10 +301,12 @@ export function ClubManageList({ clubs, isAdmin = false }: { clubs: Club[]; isAd
 
 function ClubFormulier({
   club,
+  isAdmin = false,
   onKlaar,
   onAnnuleren,
 }: {
   club?: Club;
+  isAdmin?: boolean;
   onKlaar: () => void;
   onAnnuleren: () => void;
 }) {
@@ -318,6 +324,30 @@ function ClubFormulier({
   const [fotoFout, setFotoFout] = useState(false);
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<string | null>(null);
+
+  // Openingsuren per dag (zomer/winter): enkel voor de admin bij een bestaande club. De admin staat meteen online.
+  const toonUren = !!club && isAdmin;
+  const [uren, setUren] = useState<ClubUren | null>(null);
+  const [startUren, setStartUren] = useState<ClubUren | null>(null);
+  const [urenFout, setUrenFout] = useState(false);
+
+  useEffect(() => {
+    if (!toonUren || !club) return;
+    let geannuleerd = false;
+    haalMijnClub(club.id).then((gegevens) => {
+      if (geannuleerd) return;
+      if (!gegevens) {
+        setUrenFout(true);
+        return;
+      }
+      const begin = gegevens.uren ?? leegUren();
+      setStartUren(begin);
+      setUren(JSON.parse(JSON.stringify(begin)) as ClubUren);
+    });
+    return () => {
+      geannuleerd = true;
+    };
+  }, [toonUren, club]);
 
   async function fotoGekozen(bestand: File | null) {
     if (!bestand) return;
@@ -358,6 +388,14 @@ function ClubFormulier({
           openingsuren,
           foto_url: fotoUrl,
         });
+    if (resultaat.succes && club && uren && !gelijkeUren(uren, startUren)) {
+      const urenResultaat = await dienVoorstelIn(club.id, { uren });
+      if (!urenResultaat.succes) {
+        setBezig(false);
+        setFout(urenResultaat.fout);
+        return;
+      }
+    }
     setBezig(false);
     if (!resultaat.succes) {
       setFout(resultaat.fout);
@@ -428,6 +466,14 @@ function ClubFormulier({
           />
         </label>
       </div>
+
+      {toonUren && (
+        <div className="mt-4 rounded-[10px] border border-rand bg-licht/60 p-3">
+          {urenFout && <p className="text-xs font-semibold text-rood-2">{t.clubBeheer.nogNietBeschikbaar}</p>}
+          {!uren && !urenFout && <p className="text-xs text-grijs">{t.clubBeheer.bezig}</p>}
+          {uren && <UrenBewerker uren={uren} onChange={setUren} compact />}
+        </div>
+      )}
 
       <div className="mt-3 flex flex-col gap-1.5">
         <span className="text-xs font-bold text-donker">{t.clubForm.foto}</span>

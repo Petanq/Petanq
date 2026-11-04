@@ -3,24 +3,9 @@
 import { useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { dienVoorstelIn, wisVandaag, zetVandaag, type MijnClub } from "@/actions/club-beheer";
-import {
-  DAG_NAMEN_FR,
-  DAG_NAMEN_NL,
-  MAX_AFWIJKINGEN,
-  MAX_AFWIJKING_TEKST,
-  MAX_NOTITIE,
-  brusselsVandaag,
-  heeftIngevuldeUren,
-  leegUren,
-  seizoenVoor,
-  type Afwijking,
-  type ClubGegevens,
-  type ClubUren,
-  type DagSoort,
-  type DagUren,
-  type Seizoen,
-} from "@/lib/club-beheer/uren";
+import { heeftIngevuldeUren, leegUren, type ClubGegevens, type ClubUren } from "@/lib/club-beheer/uren";
 import { ClubUrenKnop } from "@/components/club-beheer/ClubUrenKnop";
+import { UrenBewerker } from "@/components/club-beheer/UrenBewerker";
 import "./club-beheer.css";
 
 const LIJN = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
@@ -35,8 +20,6 @@ function Ico({ children }: { children: React.ReactNode }) {
   );
 }
 
-const SOORTEN: DagSoort[] = ["open", "competitie", "leden", "tornooi"];
-
 function kopieerUren(uren: ClubUren): ClubUren {
   return JSON.parse(JSON.stringify(uren)) as ClubUren;
 }
@@ -44,14 +27,10 @@ function kopieerUren(uren: ClubUren): ClubUren {
 export function MijnClubFormulier({ club }: { club: MijnClub }) {
   const { t, taal } = useTranslation();
   const c = t.clubBeheer;
-  const dagNamen = taal === "fr" ? DAG_NAMEN_FR : DAG_NAMEN_NL;
 
   // Wacht er al een voorstel, dan tonen we dat (zodat de club ziet wat ze indiende).
   const [gegevens, setGegevens] = useState<ClubGegevens>({ ...club.gegevens, ...(club.wachtend?.gegevens ?? {}) });
   const [uren, setUren] = useState<ClubUren>(() => kopieerUren(club.wachtend?.uren ?? club.uren ?? leegUren()));
-  const [seizoen, setSeizoen] = useState<Seizoen>(() => seizoenVoor(brusselsVandaag()));
-  const nuSeizoen = seizoenVoor(brusselsVandaag());
-  const [uitgeklapt, setUitgeklapt] = useState<Set<string>>(new Set());
   const [bezig, setBezig] = useState(false);
   const [melding, setMelding] = useState<{ soort: "ok" | "fout"; tekst: string } | null>(null);
   const [wachtend, setWachtend] = useState(!!club.wachtend);
@@ -59,28 +38,6 @@ export function MijnClubFormulier({ club }: { club: MijnClub }) {
   const [vandaag, setVandaag] = useState(club.vandaag);
   const [vandaagReden, setVandaagReden] = useState(club.vandaag?.reden ?? "");
   const [vandaagBezig, setVandaagBezig] = useState(false);
-
-  function zetDag(i: number, wijziging: Partial<DagUren>) {
-    setUren((u) => ({ ...u, [seizoen]: u[seizoen].map((d, j) => (j === i ? { ...d, ...wijziging } : d)) }));
-  }
-
-  function gelijkAanVorige(i: number) {
-    setUren((u) => ({ ...u, [seizoen]: u[seizoen].map((d, j) => (j === i ? { ...u[seizoen][i - 1] } : d)) }));
-  }
-
-  function weekdagenGelijk() {
-    setUren((u) => ({ ...u, [seizoen]: u[seizoen].map((d, j) => (j < 5 ? { ...u[seizoen][1] } : d)) }));
-  }
-
-  function kopieerNaarAnder() {
-    const ander: Seizoen = seizoen === "zomer" ? "winter" : "zomer";
-    setUren((u) => ({ ...u, [ander]: u[seizoen].map((d) => ({ ...d })) }));
-    setMelding({ soort: "ok", tekst: c.kopieerGedaan(ander === "zomer" ? c.zomer : c.winter) });
-  }
-
-  function zetAfwijking(i: number, wijziging: Partial<Afwijking>) {
-    setUren((u) => ({ ...u, afwijkingen: u.afwijkingen.map((a, j) => (j === i ? { ...a, ...wijziging } : a)) }));
-  }
 
   async function bewaar() {
     setBezig(true);
@@ -120,13 +77,6 @@ export function MijnClubFormulier({ club }: { club: MijnClub }) {
     setVandaag(null);
     setVandaagReden("");
   }
-
-  const soortLabel: Record<DagSoort, string> = {
-    open: c.soortOpen,
-    competitie: c.soortCompetitie,
-    leden: c.soortLeden,
-    tornooi: c.soortTornooi,
-  };
 
   return (
     <div className="cb-scope">
@@ -214,118 +164,7 @@ export function MijnClubFormulier({ club }: { club: MijnClub }) {
             </div>
           </section>
 
-          <section className="cb-paneel">
-            <h2>
-              <Ico>
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </Ico>
-              {c.urenTitel}
-            </h2>
-            <div className="cb-tabs" role="tablist">
-              {(["zomer", "winter"] as Seizoen[]).map((s) => (
-                <button key={s} type="button" role="tab" className="cb-tab" aria-selected={seizoen === s} onClick={() => setSeizoen(s)}>
-                  {s === "zomer" ? c.zomer : c.winter}
-                  {nuSeizoen === s && <span className="cb-nuactief">{c.nuActief}</span>}
-                </button>
-              ))}
-            </div>
-            <p className="cb-uitleg">{seizoen === "zomer" ? c.zomerUitleg : c.winterUitleg}</p>
-            <div className="cb-hulp">
-              <button type="button" className="cb-mini" onClick={kopieerNaarAnder}>
-                {c.kopieerNaarAnder}
-              </button>
-              <button type="button" className="cb-mini" onClick={weekdagenGelijk}>
-                {c.weekdagenZelfde}
-              </button>
-            </div>
-            <div>
-              {uren[seizoen].map((d, i) => {
-                const sleutel = `${seizoen}-${i}`;
-                const extra = uitgeklapt.has(sleutel) || d.soort !== "open" || d.notitie !== "";
-                return (
-                  <div className="cb-dag" key={sleutel}>
-                    <b>{dagNamen[i]}</b>
-                    <label className="cb-schakel">
-                      <input type="checkbox" checked={d.open} aria-label={`${dagNamen[i]}: ${c.openLabel}`} onChange={(e) => zetDag(i, { open: e.target.checked })} />
-                      <span />
-                    </label>
-                    <div className={"cb-derde" + (d.open ? "" : " uit")}>
-                      <div className="cb-tijden">
-                        <input type="time" value={d.van} aria-label={`${dagNamen[i]}: ${c.openLabel}`} onChange={(e) => zetDag(i, { van: e.target.value })} />
-                        <span>{c.totWoord}</span>
-                        <input type="time" value={d.tot} aria-label={`${dagNamen[i]}: ${c.totWoord}`} onChange={(e) => zetDag(i, { tot: e.target.value })} />
-                      </div>
-                      {d.open && extra && (
-                        <div className="cb-notitie">
-                          <select value={d.soort} aria-label={c.meerOpties} onChange={(e) => zetDag(i, { soort: e.target.value as DagSoort })}>
-                            {SOORTEN.map((s) => (
-                              <option key={s} value={s}>
-                                {soortLabel[s]}
-                              </option>
-                            ))}
-                          </select>
-                          <input type="text" maxLength={MAX_NOTITIE} placeholder={c.notitiePlaceholder} aria-label={c.notitiePlaceholder} value={d.notitie} onChange={(e) => zetDag(i, { notitie: e.target.value })} />
-                        </div>
-                      )}
-                      {d.open && !extra && (
-                        <button type="button" className="cb-mini" style={{ alignSelf: "flex-start" }} onClick={() => setUitgeklapt(new Set(uitgeklapt).add(sleutel))}>
-                          {c.meerOpties}
-                        </button>
-                      )}
-                      {i > 0 && (
-                        <button type="button" className="cb-mini" style={{ alignSelf: "flex-start" }} onClick={() => gelijkAanVorige(i)}>
-                          {c.zelfdeAls(dagNamen[i - 1].toLowerCase())}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          <section className="cb-paneel">
-            <h2>
-              <Ico>
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path d="M3 10h18M8 3v4M16 3v4" />
-              </Ico>
-              {c.afwijkingTitel}
-            </h2>
-            <p className="cb-uitleg">{c.afwijkingUitleg}</p>
-            {uren.afwijkingen.map((a, i) => (
-              <div className="cb-afw-rij" key={i}>
-                <div className="cb-veld" style={{ marginBottom: 0 }}>
-                  <label htmlFor={`cb-av-${i}`}>{c.afwijkingVan}</label>
-                  <input id={`cb-av-${i}`} type="date" value={a.van} onChange={(e) => zetAfwijking(i, { van: e.target.value })} />
-                </div>
-                <div className="cb-veld" style={{ marginBottom: 0 }}>
-                  <label htmlFor={`cb-at-${i}`}>{c.afwijkingTot}</label>
-                  <input id={`cb-at-${i}`} type="date" value={a.tot} onChange={(e) => zetAfwijking(i, { tot: e.target.value })} />
-                </div>
-                <div className="cb-veld cb-afw-tekst" style={{ marginBottom: 0 }}>
-                  <label htmlFor={`cb-ax-${i}`}>{c.afwijkingTekst}</label>
-                  <input id={`cb-ax-${i}`} type="text" maxLength={MAX_AFWIJKING_TEKST} placeholder={c.afwijkingTekstPlaceholder} value={a.tekst} onChange={(e) => zetAfwijking(i, { tekst: e.target.value })} />
-                </div>
-                <button type="button" className="cb-mini" onClick={() => setUren((u) => ({ ...u, afwijkingen: u.afwijkingen.filter((_, j) => j !== i) }))}>
-                  {c.afwijkingVerwijder}
-                </button>
-              </div>
-            ))}
-            {uren.afwijkingen.length < MAX_AFWIJKINGEN && (
-              <button
-                type="button"
-                className="cb-knop rand"
-                onClick={() => {
-                  const dag = brusselsVandaag();
-                  setUren((u) => ({ ...u, afwijkingen: [...u.afwijkingen, { van: dag, tot: dag, tekst: "" }] }));
-                }}
-              >
-                {c.afwijkingToevoegen}
-              </button>
-            )}
-          </section>
+          <UrenBewerker uren={uren} onChange={setUren} />
 
           <div>
             <button type="button" className="cb-knop" disabled={bezig} onClick={bewaar}>
