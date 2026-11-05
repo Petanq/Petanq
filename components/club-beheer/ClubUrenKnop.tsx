@@ -79,7 +79,6 @@ export function ClubUrenKnop({ uren, vandaag }: { uren: ClubUren | null; vandaag
       </button>
       {open && (
         <div className="cb-uren-lijst">
-          <p className="cb-seizoen">{seizoen === "zomer" ? c.zomer : c.winter}</p>
           <dl>
             {uren[seizoen].map((d, i) => (
               <div key={i} style={{ display: "contents" }}>

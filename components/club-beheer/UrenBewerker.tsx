@@ -55,7 +55,8 @@ function Blok({ titel, icoon, compact, children }: { titel: string; icoon: React
   );
 }
 
-// De openingsuren (zomer/winter, per dag, met soort en opmerking) en de tijdelijke afwijkingen.
+// De openingsuren (één weekschema voor het hele jaar, per dag met soort en opmerking) en de tijdelijke afwijkingen.
+// Achter de schermen blijven zomer en winter bestaan, maar ze krijgen altijd dezelfde uren.
 // Gebruikt op "Mijn club" en in het formulier "Club bewerken" van de admin.
 export function UrenBewerker({
   uren,
@@ -70,12 +71,12 @@ export function UrenBewerker({
   const c = t.clubBeheer;
   const dagNamen = taal === "fr" ? DAG_NAMEN_FR : DAG_NAMEN_NL;
   const nuSeizoen = seizoenVoor(brusselsVandaag());
-  const [seizoen, setSeizoen] = useState<Seizoen>(nuSeizoen);
+  // We tonen het schema dat nu geldt; opslaan zet dezelfde week in zomer én winter.
+  const seizoen: Seizoen = nuSeizoen;
   const [uitgeklapt, setUitgeklapt] = useState<Set<string>>(new Set());
-  const [info, setInfo] = useState<string | null>(null);
 
-  function zetWeek(s: Seizoen, week: DagUren[]) {
-    onChange({ ...uren, [s]: week });
+  function zetWeek(_s: Seizoen, week: DagUren[]) {
+    onChange({ ...uren, zomer: week.map((d) => ({ ...d })), winter: week.map((d) => ({ ...d })) });
   }
 
   function zetDag(i: number, wijziging: Partial<DagUren>) {
@@ -88,12 +89,6 @@ export function UrenBewerker({
 
   function weekdagenGelijk() {
     zetWeek(seizoen, uren[seizoen].map((d, j) => (j < 5 ? { ...uren[seizoen][1] } : d)));
-  }
-
-  function kopieerNaarAnder() {
-    const ander: Seizoen = seizoen === "zomer" ? "winter" : "zomer";
-    zetWeek(ander, uren[seizoen].map((d) => ({ ...d })));
-    setInfo(c.kopieerGedaan(ander === "zomer" ? c.zomer : c.winter));
   }
 
   function zetAfwijking(i: number, wijziging: Partial<Afwijking>) {
@@ -119,24 +114,11 @@ export function UrenBewerker({
           </Ico>
         }
       >
-        <div className="cb-tabs" role="tablist">
-          {(["zomer", "winter"] as Seizoen[]).map((s) => (
-            <button key={s} type="button" role="tab" className="cb-tab" aria-selected={seizoen === s} onClick={() => setSeizoen(s)}>
-              {s === "zomer" ? c.zomer : c.winter}
-              {nuSeizoen === s && <span className="cb-nuactief">{c.nuActief}</span>}
-            </button>
-          ))}
-        </div>
-        <p className="cb-uitleg">{seizoen === "zomer" ? c.zomerUitleg : c.winterUitleg}</p>
         <div className="cb-hulp">
-          <button type="button" className="cb-mini" onClick={kopieerNaarAnder}>
-            {c.kopieerNaarAnder}
-          </button>
           <button type="button" className="cb-mini" onClick={weekdagenGelijk}>
             {c.weekdagenZelfde}
           </button>
         </div>
-        {info && <p className="cb-melding ok">{info}</p>}
         <div>
           {uren[seizoen].map((d, i) => {
             const sleutel = `${seizoen}-${i}`;

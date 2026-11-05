@@ -12,7 +12,9 @@ import {
 import {
   DAG_NAMEN_FR,
   DAG_NAMEN_NL,
+  brusselsVandaag,
   formatDagUren,
+  seizoenVoor,
   veranderdeDagen,
   type ClubUren,
   type DagUren,
@@ -50,7 +52,8 @@ function Kaart({ w }: { w: TeKeurenWijziging }) {
   }
 
   const gegevensSleutels = Object.keys(w.voorstel.gegevens ?? {}) as (keyof typeof GEGEVENS_LABELS)[];
-  const seizoenen: Seizoen[] = ["zomer", "winter"];
+  // Zomer en winter zijn altijd gelijk: we vergelijken enkel het schema dat nu geldt.
+  const seizoenen: Seizoen[] = [seizoenVoor(brusselsVandaag())];
 
   return (
     <div className="cb-keur-kaart">
@@ -92,7 +95,7 @@ function Kaart({ w }: { w: TeKeurenWijziging }) {
             <div className="cb-voor-na" key={s} style={{ marginBottom: "0.8rem" }}>
               <div>
                 <h3>
-                  {c.keurNuOnline} · {s === "zomer" ? c.zomer : c.winter}
+                  {c.keurNuOnline}
                 </h3>
                 {huidigeUren ? (
                   nieuw.map((_, i) => (
@@ -107,7 +110,7 @@ function Kaart({ w }: { w: TeKeurenWijziging }) {
               </div>
               <div className="na">
                 <h3>
-                  {c.keurVoorstel} · {s === "zomer" ? c.zomer : c.winter}
+                  {c.keurVoorstel}
                 </h3>
                 {nieuw.map((d, i) => (
                   <div className={"rij" + (verschil[i] ? " anders" : "")} key={i}>
