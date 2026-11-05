@@ -41,6 +41,7 @@ import {
   poulesOf,
   poulesRestRanking,
   pouleQualifiersReady,
+  poulesVanDrieKlopt,
   qualifiersFromPoule,
   resolvedTeams,
   usesBarrageBracket,
@@ -498,6 +499,7 @@ export function Match13App({
     totalRounds,
     maxPleinen,
     pouleTeamSize,
+    pouleGrootte,
     speelPiramideB,
     meleeVoorkeurDoubletten,
     teams,
@@ -670,6 +672,9 @@ export function Match13App({
   const pouleTeamsByLabel = isPoules ? poulesOf(teams) : new Map<string, Team[]>();
   const pouleLabelsSorted = Array.from(pouleTeamsByLabel.keys()).sort((a, b) => a.localeCompare(b));
   const groupStageStarted = isPoules && pouleBracket.length > 0;
+  // Poules van 3: alle poules precies 3 teams — het aantal aanwezige teams moet dan deelbaar zijn door 3.
+  const poulesVanDrie = isPoules && pouleGrootte === 3;
+  const poulesVanDrieOk = !poulesVanDrie || poulesVanDrieKlopt(presentTeams.length);
   const groupStageDone =
     isPoules &&
     groupStageStarted &&
@@ -886,10 +891,10 @@ export function Match13App({
   // the only "generate" step the group stage ever needs; every match in it
   // unlocks on its own as soon as its two teams are known.
   function startPoulesTournament() {
-    if (presentTeams.length < minToPlay) return;
+    if (presentTeams.length < minToPlay || !poulesVanDrieOk) return;
     setState((s) => {
       const present = s.teams.filter((t) => t.present);
-      const assignment = assignPoules(present);
+      const assignment = assignPoules(present, s.pouleGrootte === 3 ? 3 : 4);
       const teamsNow = s.teams.map((t) => ({ ...t, poule: assignment.get(t.id) ?? t.poule }));
       const groups = poulesOf(teamsNow.filter((t) => t.present));
       // Each poule keeps its own dedicated pleinen for its whole run, so a
@@ -2204,6 +2209,36 @@ export function Match13App({
               )}
               {isPoules && (
                 <div className="field">
+                  <label>{t.match13.pouleGrootte}</label>
+                  <div className={"pill-row" + (groupStageStarted ? " locked" : "")}>
+                    {([4, 3] as const).map((g) => (
+                      <span
+                        key={g}
+                        className={"pill" + ((pouleGrootte ?? 4) === g ? " sel" : "")}
+                        onClick={() => !groupStageStarted && setState((s) => ({ ...s, pouleGrootte: g }))}
+                      >
+                        {g === 4 ? t.match13.pouleGrootte4 : t.match13.pouleGrootte3}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="hint">
+                    {groupStageStarted
+                      ? t.match13.speltypeVastgezet
+                      : poulesVanDrie
+                        ? t.match13.hintPouleGrootte3
+                        : t.match13.hintPouleGrootte4}
+                  </div>
+                  {poulesVanDrie && !groupStageStarted && presentTeams.length >= minToPlay && (
+                    <div className="hint" style={{ fontWeight: 700 }}>
+                      {poulesVanDrieOk
+                        ? t.match13.pouleDrieKlopt(presentTeams.length)
+                        : t.match13.pouleDrieKlopNiet(presentTeams.length)}
+                    </div>
+                  )}
+                </div>
+              )}
+              {isPoules && (
+                <div className="field">
                   <label className="checkbox-label">
                     <input
                       type="checkbox"
@@ -2550,7 +2585,7 @@ export function Match13App({
               <button
                 className="cta"
                 style={{ marginTop: "1.2rem" }}
-                disabled={presentTeams.length < minToPlay}
+                disabled={presentTeams.length < minToPlay || !poulesVanDrieOk}
                 onClick={isPoules ? startPoulesTournament : generateNextRound}
               >
                 {t.match13.startTornooi}
@@ -2566,6 +2601,11 @@ export function Match13App({
             {!(isPoules ? groupStageStarted : rounds.length > 0) && presentTeams.length < minToPlay && (
               <p className="hint">
                 {t.match13.minimumOmTeStarten(minToPlay, isMeli ? t.match13.spelersWoord : t.match13.teamsWoord)}
+              </p>
+            )}
+            {!groupStageStarted && poulesVanDrie && !poulesVanDrieOk && presentTeams.length >= minToPlay && (
+              <p className="hint" style={{ fontWeight: 700 }}>
+                {t.match13.pouleDrieKlopNiet(presentTeams.length)}
               </p>
             )}
             </section>

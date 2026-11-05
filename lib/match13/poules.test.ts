@@ -13,6 +13,7 @@ import {
   playableMatches,
   poulesOf,
   poulesRestRanking,
+  poulesVanDrieKlopt,
   pouleQualifiersReady,
   qualifiersFromBarrageBracket,
   qualifiersFromRoundRobin,
@@ -31,6 +32,46 @@ function score(matches: BracketMatch[], id: string, a: number, b: number): Brack
 }
 
 describe("assignPoules", () => {
+  it("poules van 3: alle poules zijn precies 3 teams, nooit 2", () => {
+    for (const n of [3, 6, 9, 12, 15, 21, 30]) {
+      const teams = Array.from({ length: n }, (_, i) => makeTeam(`T${i}`));
+      const poules = assignPoules(teams, 3);
+      const sizes = new Map<string, number>();
+      for (const label of poules.values()) sizes.set(label, (sizes.get(label) ?? 0) + 1);
+      expect(sizes.size).toBe(n / 3);
+      expect([...sizes.values()].every((x) => x === 3)).toBe(true);
+    }
+  });
+
+  it("poules van 3: elk team zit in precies 1 poule", () => {
+    const teams = Array.from({ length: 12 }, (_, i) => makeTeam(`T${i}`));
+    const poules = assignPoules(teams, 3);
+    expect(poules.size).toBe(12);
+    expect(new Set(poules.keys()).size).toBe(12);
+  });
+
+  it("poules van 3: klopt enkel bij een aantal deelbaar door 3", () => {
+    expect([3, 6, 9, 12, 15].every(poulesVanDrieKlopt)).toBe(true);
+    expect([0, 1, 2, 4, 5, 7, 8, 10, 11].some(poulesVanDrieKlopt)).toBe(false);
+  });
+
+  it("poules van 3 met een aantal dat niet past: valt terug op de standaardloting", () => {
+    const teams = Array.from({ length: 8 }, (_, i) => makeTeam(`T${i}`));
+    const poules = assignPoules(teams, 3);
+    const sizes = new Map<string, number>();
+    for (const label of poules.values()) sizes.set(label, (sizes.get(label) ?? 0) + 1);
+    expect([...sizes.values()].sort()).toEqual([4, 4]);
+  });
+
+  it("poules van 3 gebruiken hetzelfde systeem als 4: vrij geloot team wint ronde 1 automatisch", () => {
+    const teams = Array.from({ length: 3 }, (_, i) => makeTeam(`T${i}`));
+    const poules = assignPoules(teams, 3);
+    const grouped = teams.map((t) => ({ ...t, poule: poules.get(t.id) }));
+    const bracket = buildPouleBracket("A", grouped, 1);
+    expect(bracket.some((m) => m.id.endsWith("-R1-BYE"))).toBe(true);
+    expect(bracket.some((m) => m.id.endsWith("-BAR"))).toBe(true);
+  });
+
   it("makes pools of 4 when the count divides evenly", () => {
     const teams = Array.from({ length: 8 }, (_, i) => makeTeam(`T${i}`));
     const poules = assignPoules(teams);

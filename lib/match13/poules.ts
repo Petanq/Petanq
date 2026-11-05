@@ -47,14 +47,23 @@ function shuffle<T>(arr: T[]): T[] {
  * specific pool is random (there's no seeding data at registration time).
  * Returns teamId -> pool label ("A", "B", ... "AA", "AB", ...).
  */
-export function assignPoules(teams: Team[]): Map<string, string> {
+// Poules van 3: alle poules zijn precies 3 teams, dus het aantal moet deelbaar zijn door 3.
+export function poulesVanDrieKlopt(n: number): boolean {
+  return n >= 3 && n % 3 === 0;
+}
+
+export function assignPoules(teams: Team[], grootte: 3 | 4 = 4): Map<string, string> {
   const n = teams.length;
 
   let triples = -1;
-  for (let t = 0; t * 3 <= n; t++) {
-    if ((n - t * 3) % 4 === 0) {
-      triples = t;
-      break;
+  if (grootte === 3 && poulesVanDrieKlopt(n)) {
+    triples = n / 3;
+  } else {
+    for (let t = 0; t * 3 <= n; t++) {
+      if ((n - t * 3) % 4 === 0) {
+        triples = t;
+        break;
+      }
     }
   }
 

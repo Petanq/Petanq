@@ -788,6 +788,15 @@ const nl = {
     hintPoules:
       "Bij Poules speel je in poules van 4: winnaars tegen winnaars (rechtstreeks door bij 2 zeges), verliezers tegen verliezers (bij verlies uitgeschakeld), en een barrage om de 2de plaats. Nadien volgt een knock-outfase — elk plein speelt door zodra zijn twee tegenstanders gekend zijn, zonder op de andere pleinen te wachten. Twee ploegen uit dezelfde poule komen elkaar pas in de finale opnieuw tegen.",
     pouleTeamGrootte: "Teamgrootte binnen de poules",
+    pouleGrootte: "Aantal teams per poule",
+    pouleGrootte4: "Poules van 4",
+    pouleGrootte3: "Poules van 3",
+    hintPouleGrootte4: "Standaard: poules van 4. Past het aantal niet, dan wordt een poule van 3 gebruikt om het aan te vullen.",
+    hintPouleGrootte3:
+      "Alle poules zijn precies 3 teams, nooit 2. Zelfde systeem als bij 4: het team dat vrij is geloot wint de eerste ronde automatisch, daarna volgen de winnaarsmatch, de verliezersmatch en de barrage. Het aantal teams moet deelbaar zijn door 3.",
+    pouleDrieKlopt: (n: number) => `Poules van 3: ${n} teams, dat zijn ${n / 3} poules. Klaar om te starten.`,
+    pouleDrieKlopNiet: (n: number) =>
+      `Poules van 3: je hebt ${n} teams en dat moet deelbaar zijn door 3. Voeg er ${3 - (n % 3)} toe of haal er ${n % 3} weg.`,
     hintPouleTeamGrootte: "Poules kan met Tête-à-tête (1 tegen 1), Doublet (2 tegen 2) of Triplet (3 tegen 3) gespeeld worden.",
     hintAndereFormats:
       "Bepaalt enkel de weergave — de loting werkt hetzelfde voor elk formaat: vaste teams, geen herhaalde tegenstanders. Ronde 1 is een vrije loting; vanaf ronde 2 koppelt de app op stand (winnaars tegen winnaars).",
@@ -1910,6 +1919,15 @@ const fr: typeof nl = {
     hintPoules:
       "Avec Poules, vous jouez en poules de 4 : vainqueurs contre vainqueurs (qualification directe après 2 victoires), perdants contre perdants (éliminé en cas de défaite), et une barrage pour la 2e place. Suit ensuite une phase finale — chaque terrain continue dès que ses deux adversaires sont connus, sans attendre les autres terrains. Deux équipes de la même poule ne se rencontrent à nouveau qu'en finale.",
     pouleTeamGrootte: "Taille d'équipe dans les poules",
+    pouleGrootte: "Nombre d'équipes par poule",
+    pouleGrootte4: "Poules de 4",
+    pouleGrootte3: "Poules de 3",
+    hintPouleGrootte4: "Par défaut : poules de 4. Si le nombre ne tombe pas juste, une poule de 3 sert de complément.",
+    hintPouleGrootte3:
+      "Toutes les poules comptent exactement 3 équipes, jamais 2. Même système qu'à 4 : l'équipe tirée libre gagne automatiquement le premier tour, puis viennent le match des gagnants, le match des perdants et la barrage. Le nombre d'équipes doit être divisible par 3.",
+    pouleDrieKlopt: (n: number) => `Poules de 3 : ${n} équipes, soit ${n / 3} poules. Prêt à démarrer.`,
+    pouleDrieKlopNiet: (n: number) =>
+      `Poules de 3 : vous avez ${n} équipes et ce nombre doit être divisible par 3. Ajoutez-en ${3 - (n % 3)} ou retirez-en ${n % 3}.`,
     hintPouleTeamGrootte: "Les poules peuvent se jouer en Tête-à-tête (1 contre 1), Doublet (2 contre 2) ou Triplet (3 contre 3).",
     hintAndereFormats:
       "Ne détermine que l'affichage — le tirage fonctionne de la même façon pour chaque format : équipes fixes, pas d'adversaires répétés. La manche 1 est un tirage libre ; à partir de la manche 2, l'app associe selon le classement (vainqueurs contre vainqueurs).",

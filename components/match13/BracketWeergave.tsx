@@ -89,8 +89,35 @@ function BracketConnectors({
           const bronBox = bronEl.getBoundingClientRect();
           const bronY = bronBox.top + bronBox.height / 2 - containerBox.top;
           const bronX = bronBox.right - containerBox.left;
-          const middenX = bronX + (doelX - bronX) / 2;
-          nieuwePaths.push(`M ${bronX} ${bronY} H ${middenX} V ${doelY} H ${doelX}`);
+          // Staan er kaartjes tússen bron en doel (een kolom wordt overgeslagen, zoals
+          // Ronde 1 → Barrage in een poule van 3), dan zou de rechte lijn achter dat
+          // kaartje verdwijnen en als losse stukjes ogen. Loop er dan netjes onderlangs.
+          let maxOnder = -Infinity;
+          let minBoven = Infinity;
+          nodeRefs.current?.forEach((el, id) => {
+            if (id === m.id || id === bron.matchId) return;
+            const b = el.getBoundingClientRect();
+            if (b.left >= bronBox.right + 1 && b.right <= doelBox.left - 1) {
+              maxOnder = Math.max(maxOnder, b.bottom - containerBox.top);
+              minBoven = Math.min(minBoven, b.top - containerBox.top);
+            }
+          });
+          if (maxOnder > -Infinity) {
+            const stap = 9;
+            if (bronY <= minBoven - 6 || bronY >= maxOnder + 6) {
+              // De bron zit boven (of onder) alle kaartjes ertussen: rechtdoor erlangs en pas vlak
+              // voor het doel omhoog/omlaag. Zo kruist de lijn geen enkele andere verbinding.
+              nieuwePaths.push(`M ${bronX} ${bronY} H ${doelX - stap} V ${doelY} H ${doelX}`);
+            } else {
+              const routeY = Math.max(maxOnder, bronY, doelY) + 14;
+              nieuwePaths.push(
+                `M ${bronX} ${bronY} H ${bronX + stap} V ${routeY} H ${doelX - stap} V ${doelY} H ${doelX}`,
+              );
+            }
+          } else {
+            const middenX = bronX + (doelX - bronX) / 2;
+            nieuwePaths.push(`M ${bronX} ${bronY} H ${middenX} V ${doelY} H ${doelX}`);
+          }
         }
       }
       setPaths(nieuwePaths);

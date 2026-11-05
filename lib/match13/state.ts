@@ -35,6 +35,9 @@ export interface AppState {
   // bepaalt de teamgrootte binnen de poules. undefined = Doublet (2), het
   // oorspronkelijke, enige gedrag vóór dit veld bestond.
   pouleTeamSize?: 1 | 2 | 3;
+  // Enkel relevant als format === "poules": 4 (standaard, met een poule van 3 als aanvulling)
+  // of 3 (alle poules precies 3 teams, nooit 2; het aantal teams moet deelbaar zijn door 3).
+  pouleGrootte?: 3 | 4;
   // Enkel relevant als format === "poules": speel je, naast de gewone
   // winnaars-piramide, ook een 2de piramide voor wie er in de poule-fase
   // uitvliegt ("Consolante" in petanque-vaktermen)? Een bewuste keuze, geen

@@ -1451,6 +1451,7 @@
   left: 0;
   pointer-events: none;
   z-index: 0;
+  overflow: visible;
 }
 .match13-scope .bracket-connectors path {
   fill: none;
@@ -1706,7 +1707,9 @@
   color: var(--accent);
   font-size: 1.1rem;
   font-weight: 700;
-  white-space: nowrap;
+  min-width: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 .match13-scope .bracket-donker-blok h4 {
   color: #fff;
