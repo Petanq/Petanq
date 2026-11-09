@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { talenAlternatief } from "@/lib/seo-talen";
 import { getActieveClubs } from "@/lib/data";
 import { getClubBeheerData } from "@/lib/club-beheer/data";
 import { ClubBeheerProvider } from "@/components/club-beheer/ClubBeheerContext";
@@ -7,6 +8,7 @@ import { ClubsBrowser } from "@/components/clubs-browser";
 export const metadata: Metadata = {
   title: "Clubs",
   description: "Alle petanqueclubs in Vlaanderen, Wallonië en Brussel, per provincie.",
+  alternates: talenAlternatief("/clubs", "/clubs", "/fr/clubs"),
 };
 
 export default async function ClubsPagina() {

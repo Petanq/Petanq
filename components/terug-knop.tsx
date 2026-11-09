@@ -19,11 +19,12 @@ export function TerugKnop() {
     aantalPaginas.current += 1;
   }, [pathname]);
 
-  if (pathname === "/") return null;
+  const startPad = pathname.startsWith("/fr") ? "/fr" : "/";
+  if (pathname === "/" || pathname === "/fr") return null;
 
   function terug() {
     if (aantalPaginas.current > 1) router.back();
-    else router.push("/");
+    else router.push(startPad);
   }
 
   return (

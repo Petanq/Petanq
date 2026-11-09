@@ -8,7 +8,11 @@ import { LanguageToggle } from "./language-toggle";
 import { getAantalOpgeslagen, OPGESLAGEN_WIJZIGING_EVENT } from "@/lib/opgeslagen-toernooien";
 
 export function Nav() {
-  const { t } = useTranslation();
+  const { t, taal } = useTranslation();
+  // In het Frans wijzen de links naar de Franse pagina's (/fr), zodat de bezoeker en Google in het Frans blijven.
+  const thuisHref = taal === "fr" ? "/fr" : "/";
+  const kalenderHref = taal === "fr" ? "/fr#toernooien" : "/#toernooien";
+  const clubsHref = taal === "fr" ? "/fr/clubs" : "/clubs";
   const [menuOpen, setMenuOpen] = useState(false);
   const [aantalOpgeslagen, setAantalOpgeslagen] = useState(0);
 
@@ -28,7 +32,7 @@ export function Nav() {
   return (
     <nav className="sticky top-0 z-[300] border-b border-white/[0.07] bg-blauw">
       <div className="flex h-16 items-center justify-between gap-2 px-4 max-[359px]:px-3 sm:px-6 lg:px-10">
-        <Link href="/" className="flex items-center gap-1.5 sm:gap-2.5">
+        <Link href={thuisHref} className="flex items-center gap-1.5 sm:gap-2.5">
           <Logo className="h-10 w-10 max-[359px]:h-8 max-[359px]:w-8 sm:h-14 sm:w-14" />
           <div className="flex flex-col leading-none">
             <span className="flex items-center font-titel text-lg font-extrabold tracking-tight text-white max-[359px]:text-[0.95rem] sm:text-2xl">
@@ -41,10 +45,10 @@ export function Nav() {
         </Link>
 
         <div className="hidden gap-1 xl:flex">
-          <Link href="/#toernooien" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
+          <Link href={kalenderHref} className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.toernooien}
           </Link>
-          <Link href="/clubs" className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
+          <Link href={clubsHref} className="rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
             {t.nav.clubs}
           </Link>
           <Link href="/mijn-tornooien" className="relative rounded-md px-3.5 py-1.5 text-[0.85rem] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-geel">
@@ -115,14 +119,14 @@ export function Nav() {
             Match<span className="text-geel">13</span>
           </Link>
           <Link
-            href="/#toernooien"
+            href={kalenderHref}
             onClick={() => setMenuOpen(false)}
             className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >
             {t.nav.toernooien}
           </Link>
           <Link
-            href="/clubs"
+            href={clubsHref}
             onClick={() => setMenuOpen(false)}
             className="rounded-md px-3.5 py-2.5 text-[0.9rem] font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-geel"
           >

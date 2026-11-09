@@ -7,9 +7,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
 
   const statischePaden: MetadataRoute.Sitemap = [
-    { url: base, changeFrequency: "daily", priority: 1 },
+    { url: base, changeFrequency: "daily", priority: 1, alternates: { languages: { "nl-BE": base, "fr-BE": `${base}/fr` } } },
+    { url: `${base}/fr`, changeFrequency: "daily", priority: 0.9, alternates: { languages: { "nl-BE": base, "fr-BE": `${base}/fr` } } },
     { url: `${base}/match13`, changeFrequency: "weekly", priority: 0.9 },
-    { url: `${base}/clubs`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${base}/clubs`, changeFrequency: "weekly", priority: 0.8, alternates: { languages: { "nl-BE": `${base}/clubs`, "fr-BE": `${base}/fr/clubs` } } },
+    { url: `${base}/fr/clubs`, changeFrequency: "weekly", priority: 0.7, alternates: { languages: { "nl-BE": `${base}/clubs`, "fr-BE": `${base}/fr/clubs` } } },
     { url: `${base}/partners`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/petanque-reizen`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${base}/toernooi-toevoegen`, changeFrequency: "monthly", priority: 0.5 },
