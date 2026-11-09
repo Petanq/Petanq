@@ -17,6 +17,7 @@ import {
 import { vertaalProvincie } from "@/lib/provincies";
 import { CATEGORIE_STREEP } from "@/lib/stijlen";
 import { Knop } from "@/components/ui/knop";
+import { volgToernooiActie } from "@/lib/toernooi-acties";
 import { googleAgendaLink, downloadIcs } from "@/lib/agenda";
 import { ToernooiOpslaanKnop } from "@/components/toernooi-opslaan-knop";
 import { googleMapsUrl, wazeUrl } from "@/lib/locatie";
@@ -96,6 +97,7 @@ export function TournamentDetail({
   // opent (bv. op desktop, of niet geïnstalleerd), valt dit terug op de
   // gewone Facebook-deelvenster na een korte timeout.
   function deelViaMessenger() {
+    volgToernooiActie(toernooi.id, "delen_messenger");
     const messengerLink = `fb-messenger://share/?link=${encodeURIComponent(deelUrl)}`;
     const fallbackLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(deelUrl)}`;
     // Een window.open() in de setTimeout zou als pop-up geblokkeerd worden
@@ -117,6 +119,7 @@ export function TournamentDetail({
   }
 
   async function linkKopieren() {
+    volgToernooiActie(toernooi.id, "delen_link");
     try {
       await navigator.clipboard.writeText(deelUrl);
       setGekopieerd(true);
@@ -279,6 +282,7 @@ export function TournamentDetail({
               <div className="flex flex-wrap gap-2">
                 <a
                   href={googleMapsUrl(toernooi.adres, toernooi.gemeente)}
+                  onClick={() => volgToernooiActie(toernooi.id, "route_google")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={ROUTE_KNOP}
@@ -288,6 +292,7 @@ export function TournamentDetail({
                 </a>
                 <a
                   href={wazeUrl(toernooi.adres, toernooi.gemeente)}
+                  onClick={() => volgToernooiActie(toernooi.id, "route_waze")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={ROUTE_KNOP}
@@ -345,6 +350,7 @@ export function TournamentDetail({
             <Kaart titel={t.lijst.afficheTitel} className="order-5 lg:order-none">
               <a
                 href={toernooi.affiche_url}
+                onClick={() => volgToernooiActie(toernooi.id, "affiche")}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={t.lijst.openAfficheGroot}
@@ -369,15 +375,18 @@ export function TournamentDetail({
           <Kaart className="order-6 lg:order-none">
             {toernooi.link_inschrijving && (
               <Groep titel={t.lijst.inschrijvenTitel}>
-                <Knop href={toernooi.link_inschrijving} variant="rood">
-                  {t.hero.toernooiAanmelden}
-                </Knop>
+                <div className="contents" onClickCapture={() => volgToernooiActie(toernooi.id, "inschrijven")}>
+                  <Knop href={toernooi.link_inschrijving} variant="rood">
+                    {t.hero.toernooiAanmelden}
+                  </Knop>
+                </div>
               </Groep>
             )}
 
             <Groep titel={t.lijst.voegToeAanAgenda}>
               <a
                 href={googleAgendaLink(toernooi, naam)}
+                onClick={() => volgToernooiActie(toernooi.id, "agenda_google")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={ACTIE_KNOP}
@@ -385,7 +394,13 @@ export function TournamentDetail({
                 <GoogleAgendaIcoon className="h-6 w-6 shrink-0" />
                 {t.lijst.googleAgenda}
               </a>
-              <button onClick={() => downloadIcs(toernooi, naam)} className={ACTIE_KNOP}>
+              <button
+                onClick={() => {
+                  volgToernooiActie(toernooi.id, "agenda_ics");
+                  downloadIcs(toernooi, naam);
+                }}
+                className={ACTIE_KNOP}
+              >
                 <AgendaBestandIcoon className="h-6 w-6 shrink-0" />
                 {t.lijst.icsBestand}
               </button>
@@ -396,6 +411,7 @@ export function TournamentDetail({
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${naam} — ${toernooi.clubnaam}\n${deelUrl}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => volgToernooiActie(toernooi.id, "delen_whatsapp")}
                 className={ACTIE_KNOP_VIERKANT}
               >
                 <WhatsAppIcoon className="h-7 w-7" />
@@ -413,7 +429,7 @@ export function TournamentDetail({
 
             <Groep titel={t.lijst.contactTitel}>
               {toernooi.contact_email && (
-                <a href={`mailto:${toernooi.contact_email}`} className={`${ACTIE_KNOP} break-words`}>
+                <a href={`mailto:${toernooi.contact_email}`} onClick={() => volgToernooiActie(toernooi.id, "contact_mail")} className={`${ACTIE_KNOP} break-words`}>
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center text-[#1f1f1f]">
                     <LijnIcoon pad={LIJN.mail} />
                   </span>

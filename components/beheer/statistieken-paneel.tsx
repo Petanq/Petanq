@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useTranslation } from "@/lib/language-context";
-import { BezoekStatistieken, BezoekPerProvincie, BezoekPerDag, ToernooiStatistieken } from "@/lib/data";
+import { BezoekStatistieken, BezoekPerProvincie, BezoekPerDag, ToernooiStatistieken, BezoekKenmerken, ToernooiActies } from "@/lib/data";
+import { MetingenPaneel } from "@/components/beheer/metingen-paneel";
 import { Provincie, vertaalProvincie } from "@/lib/provincies";
 import { dagVanWeekKort, dagNummer, maandKort } from "@/lib/datum";
 import { siteUrl } from "@/lib/site-url";
@@ -20,6 +21,8 @@ export function StatistiekenPaneel({
   dossierAanvragen,
   teambuildingDoorkliks,
   toernooien,
+  kenmerken,
+  acties,
   isAdmin,
 }: {
   bezoeken: BezoekStatistieken;
@@ -32,6 +35,8 @@ export function StatistiekenPaneel({
   dossierAanvragen: number;
   teambuildingDoorkliks: number;
   toernooien: ToernooiStatistieken;
+  kenmerken: BezoekKenmerken | null;
+  acties: ToernooiActies | null;
   isAdmin: boolean;
 }) {
   const { t, taal } = useTranslation();
@@ -142,6 +147,8 @@ export function StatistiekenPaneel({
               <p className="mt-2 text-xs text-grijs">{t.beheer.bezoekenPerProvincieUitleg}</p>
             </div>
           )}
+
+          {isAdmin && <MetingenPaneel kenmerken={kenmerken} acties={acties} />}
 
           {isAdmin && bezoekenPerDag.length > 0 && (
             <div className="border-t border-rand pt-4">

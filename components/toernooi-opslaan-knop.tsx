@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/lib/language-context";
 import { isOpgeslagen, getNotitie, toernooiOpslaan, toernooiVerwijderen, notitieBijwerken } from "@/lib/opgeslagen-toernooien";
+import { volgToernooiActie } from "@/lib/toernooi-acties";
 
 // Opvallende kaart in de rechterkolom van de tornooipagina: voor het opslaan
 // vol goud met een donkere knop, daarna donker met een gouden ster.
@@ -41,6 +42,7 @@ export function ToernooiOpslaanKnop({ toernooiId }: { toernooiId: string }) {
       toonMelding(t.lijst.toernooiVerwijderdMelding);
     } else {
       toernooiOpslaan(toernooiId);
+      volgToernooiActie(toernooiId, "opslaan");
       setOpgeslagen(true);
       toonMelding(t.lijst.toernooiToegevoegdMelding);
     }

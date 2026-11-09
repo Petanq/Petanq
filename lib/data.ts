@@ -213,15 +213,19 @@ export type BezoekPerProvincie = { provincie: string; aantal: number };
 
 export async function getBezoekenPerProvincie(): Promise<BezoekPerProvincie[]> {
   const supabase = createServiceRoleClient();
-  const { data, error } = await supabase.from("bezoeken_provincie").select("provincie, aantal");
+  // Per bladzijde van 1000 ophalen: Supabase geeft anders maximaal 1000 rijen terug en dan klopt het totaal niet meer.
+  const data = await haalAlleRijen<{ provincie: string; aantal: number }>("bezoeken_provincie", "provincie, aantal", [
+    "dag",
+    "provincie",
+  ]);
 
-  if (error || !data) {
-    console.error("Kon bezoeken per provincie niet ophalen:", error?.message);
+  if (!data) {
+    console.error("Kon bezoeken per provincie niet ophalen");
     return [];
   }
 
   const totalen = new Map<string, number>();
-  for (const rij of data as { provincie: string; aantal: number }[]) {
+  for (const rij of data) {
     totalen.set(rij.provincie, (totalen.get(rij.provincie) ?? 0) + rij.aantal);
   }
 
@@ -352,4 +356,147 @@ export async function getIdeeen(): Promise<Idee[]> {
     return [];
   }
   return data as Idee[];
+}
+
+// Haalt alle rijen van een tabel op, bladzijde per bladzijde (Supabase geeft standaard maar 1000 rijen terug).
+// `volgorde` moet de hele sleutel van de tabel bevatten, zodat de bladzijden niet door elkaar lopen.
+async function haalAlleRijen<T>(tabel: string, kolommen: string, volgorde: string[]): Promise<T[] | null> {
+  const supabase = createServiceRoleClient();
+  const alles: T[] = [];
+  for (let van = 0; ; van += 1000) {
+    let query = supabase.from(tabel).select(kolommen);
+    for (const kolom of volgorde) query = query.order(kolom, { ascending: true });
+    const { data, error } = await query.range(van, van + 999);
+    if (error || !data) return null;
+    alles.push(...(data as unknown as T[]));
+    if (data.length < 1000) break;
+  }
+  return alles;
+}
+
+function datumKort(iso: string | null | undefined): string | null {
+  return iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)}` : null;
+}
+
+export type SleutelAantal = { sleutel: string; aantal: number };
+
+export type BezoekKenmerken = {
+  sinds: string | null;
+  totaal: number;
+  belgie: number;
+  buitenland: number;
+  onbekend: number;
+  bots: number;
+  talen: SleutelAantal[];
+  landen: SleutelAantal[];
+  provincies: SleutelAantal[];
+};
+
+function optellen(map: Map<string, number>, sleutel: string, aantal: number) {
+  map.set(sleutel, (map.get(sleutel) ?? 0) + aantal);
+}
+
+function gesorteerd(map: Map<string, number>, max?: number): SleutelAantal[] {
+  const lijst = Array.from(map.entries())
+    .map(([sleutel, aantal]) => ({ sleutel, aantal }))
+    .sort((a, b) => b.aantal - a.aantal);
+  return max ? lijst.slice(0, max) : lijst;
+}
+
+// Wie bezoekt de site: Belgen, buitenland, onbekend en bots uit elkaar (tabel bezoeken_kenmerken, migratie 0067).
+// Geeft null als de tabel nog niet bestaat.
+export async function getBezoekKenmerken(): Promise<BezoekKenmerken | null> {
+  const rijen = await haalAlleRijen<{
+    dag: string;
+    land: string;
+    provincie: string;
+    taal: string;
+    bot: boolean;
+    aantal: number;
+  }>("bezoeken_kenmerken", "dag, land, provincie, taal, bot, aantal", ["dag", "land", "provincie", "taal", "bot"]);
+  if (!rijen) return null;
+
+  const talen = new Map<string, number>();
+  const landen = new Map<string, number>();
+  const provincies = new Map<string, number>();
+  let belgie = 0;
+  let buitenland = 0;
+  let onbekend = 0;
+  let bots = 0;
+  let sinds: string | null = null;
+  for (const r of rijen) {
+    if (!sinds || r.dag < sinds) sinds = r.dag;
+    if (r.bot) {
+      bots += r.aantal;
+      continue;
+    }
+    optellen(talen, r.taal, r.aantal);
+    optellen(landen, r.land, r.aantal);
+    if (r.land === "BE") {
+      belgie += r.aantal;
+      optellen(provincies, r.provincie, r.aantal);
+    } else if (r.land === "onbekend") onbekend += r.aantal;
+    else buitenland += r.aantal;
+  }
+  return {
+    sinds: datumKort(sinds),
+    totaal: belgie + buitenland + onbekend + bots,
+    belgie,
+    buitenland,
+    onbekend,
+    bots,
+    talen: gesorteerd(talen),
+    landen: gesorteerd(landen, 8),
+    provincies: gesorteerd(provincies),
+  };
+}
+
+export type ToernooiActies = {
+  sinds: string | null;
+  totalen: { actie: string; aantal: number }[];
+  top: { id: string; naam: string; club: string; aantal: number }[];
+};
+
+// Doorklikken op tornooipagina's: totaal per soort en de tornooien met de meeste doorklikken
+// (tabel toernooi_acties, migratie 0067). Geeft null als de tabel nog niet bestaat.
+export async function getToernooiActies(): Promise<ToernooiActies | null> {
+  const rijen = await haalAlleRijen<{ dag: string; toernooi_id: string; actie: string; aantal: number }>(
+    "toernooi_acties",
+    "dag, toernooi_id, actie, aantal",
+    ["dag", "toernooi_id", "actie"]
+  );
+  if (!rijen) return null;
+
+  const perActie = new Map<string, number>();
+  const perToernooi = new Map<string, number>();
+  let sinds: string | null = null;
+  for (const r of rijen) {
+    if (!sinds || r.dag < sinds) sinds = r.dag;
+    optellen(perActie, r.actie, r.aantal);
+    optellen(perToernooi, r.toernooi_id, r.aantal);
+  }
+
+  const topIds = gesorteerd(perToernooi, 8);
+  const namen = new Map<string, { naam: string; club: string }>();
+  if (topIds.length > 0) {
+    const supabase = createServiceRoleClient();
+    const { data } = await supabase
+      .from("toernooien")
+      .select("id, naam_nl, clubnaam")
+      .in("id", topIds.map((t) => t.sleutel));
+    for (const t of (data ?? []) as { id: string; naam_nl: string; clubnaam: string }[]) {
+      namen.set(t.id, { naam: t.naam_nl, club: t.clubnaam });
+    }
+  }
+
+  return {
+    sinds: datumKort(sinds),
+    totalen: gesorteerd(perActie).map((r) => ({ actie: r.sleutel, aantal: r.aantal })),
+    top: topIds.map((r) => ({
+      id: r.sleutel,
+      naam: namen.get(r.sleutel)?.naam ?? "—",
+      club: namen.get(r.sleutel)?.club ?? "",
+      aantal: r.aantal,
+    })),
+  };
 }

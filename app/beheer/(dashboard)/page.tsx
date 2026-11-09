@@ -1,6 +1,8 @@
 import {
   getInBehandelingToernooien,
   getBezoekStatistieken,
+  getBezoekKenmerken,
+  getToernooiActies,
   getBezoekenPerProvincie,
   getBezoekenPerDag,
   getPaginaBezoekTotaal,
@@ -32,7 +34,10 @@ export default async function BeheerDashboardPagina() {
     goedgekeurdeToernooien,
     magAdminZien,
     huidigeModerator,
+    bezoekKenmerken,
+    toernooiActies,
   ] = await Promise.all([
+
     getInBehandelingToernooien(),
     getBezoekStatistieken(),
     getBezoekenPerProvincie(),
@@ -47,6 +52,8 @@ export default async function BeheerDashboardPagina() {
     getAlleGoedgekeurdeToernooienVoorBeheer(),
     isAdmin(),
     getHuidigeModerator(),
+    getBezoekKenmerken(),
+    getToernooiActies(),
   ]);
 
   // Een gewone moderator ziet enkel toernooien binnen het toegangsgebied dat
@@ -87,6 +94,8 @@ export default async function BeheerDashboardPagina() {
         dossierAanvragen={dossierAanvragen}
         teambuildingDoorkliks={teambuildingDoorkliks}
         toernooien={toernooiStatistieken}
+        kenmerken={bezoekKenmerken}
+        acties={toernooiActies}
         isAdmin={magAdminZien}
       />
       <PendingList toernooien={zichtbareToernooien} goedgekeurdeToernooien={goedgekeurdeToernooien} />
