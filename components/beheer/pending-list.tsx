@@ -1,5 +1,6 @@
 "use client";
 
+import { veiligeUrl } from "@/lib/veilige-url";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
@@ -168,7 +169,7 @@ export function PendingList({
               {tn.max_ploegen && <Detail label={t.form.maxPloegen}>{tn.max_ploegen}</Detail>}
               {tn.link_inschrijving && (
                 <Detail label={t.form.linkInschrijving}>
-                  <a href={tn.link_inschrijving} target="_blank" rel="noopener noreferrer" className="underline">
+                  <a href={veiligeUrl(tn.link_inschrijving)} target="_blank" rel="noopener noreferrer" className="underline">
                     {tn.link_inschrijving}
                   </a>
                 </Detail>

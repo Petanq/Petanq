@@ -1,3 +1,4 @@
+import { httpUrl } from "@/lib/veilige-url";
 import { z } from "zod";
 
 // Openingsuren die een club zelf beheert. Twee weekschema's (zomer 1 april - 30 september,
@@ -92,7 +93,7 @@ export const clubGegevensSchema = z
     adres: z.string().trim().max(200),
     contact_email: z.union([z.literal(""), z.string().trim().email().max(160)]),
     telefoon: z.string().trim().max(40),
-    website: z.union([z.literal(""), z.string().trim().url().max(200)]),
+    website: z.union([z.literal(""), z.string().trim().max(200).pipe(httpUrl)]),
   })
   .partial();
 

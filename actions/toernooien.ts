@@ -15,6 +15,7 @@ import { geocodeAdres } from "@/lib/geocode";
 import { vindClubVoorTornooi } from "@/lib/club-koppelen";
 import { lijktBuitenBelgie, type BuitenlandVermoeden } from "@/lib/buitenland";
 import { laadPostcodes } from "@/lib/postcodes";
+import { magFormulierIndienen, magMailVersturenNaar } from "@/lib/formulier-limiet";
 
 export type BestaandDubbelTornooi = {
   naam_nl: string;
@@ -130,6 +131,9 @@ export async function toernooiIndienen(
   if (!parsed.success) {
     return { succes: false, fout: "ongeldige_invoer" };
   }
+  // Grens per bezoeker (ruim genoeg voor een hele reeks affiches in één keer).
+  if (!(await magFormulierIndienen("toernooi", 80))) return { succes: false, fout: "te_veel" };
+
   const data = parsed.data;
   const kwalificatiedata = (data.kwalificatiedata ?? [])
     .filter((k) => k.datum)
@@ -172,7 +176,10 @@ export async function toernooiIndienen(
   // op — dat mag een inzending nooit laten mislukken.
   const geocode = await geocodeAdres(data.adres || null, data.gemeente, data.provincie);
 
-  const supabase = await createClient();
+  // Inzenden gebeurt hier, aan de serverkant, zodat de controles en grenzen hierboven altijd gelden. De
+  // status staat vast op "in_behandeling": een bezoeker kan nooit zelf iets goedkeuren. (De openbare
+  // schrijfrechten in de databank zelf zijn met SQL 0070 gesloten.)
+  const supabase = createServiceRoleClient();
   const { error } = await supabase.from("toernooien").insert({
     datum: data.datum,
     uur: data.uur,
@@ -221,7 +228,7 @@ export async function toernooiIndienen(
     const resend = getResendClient();
     const naam = taalFormulier === "fr" ? data.naam_fr : data.naam_nl;
 
-    if (data.contact_email) {
+    if (data.contact_email && (await magMailVersturenNaar(data.contact_email))) {
       await resend.emails.send({
         from: AFZENDER,
         to: data.contact_email,

@@ -12,6 +12,7 @@ import { siteUrl } from "@/lib/site-url";
 import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
 import { Provincie } from "@/lib/provincies";
 import { geocodeAdres } from "@/lib/geocode";
+import { magFormulierIndienen, magMailVersturenNaar } from "@/lib/formulier-limiet";
 
 export type ClubActieResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -23,12 +24,16 @@ export async function clubVoorstellen(
   if (!parsed.success) {
     return { succes: false, fout: "ongeldige_invoer" };
   }
+  if (!(await magFormulierIndienen("club", 10))) return { succes: false, fout: "te_veel" };
 
   // Best-effort: mislukt geocoding, dan slaan we gewoon zonder coördinaten
   // op — dat mag een club-aanmelding nooit laten mislukken.
   const geocode = await geocodeAdres(parsed.data.adres || null, parsed.data.gemeente, parsed.data.provincie);
 
-  const supabase = await createClient();
+  // Inzenden gebeurt hier, aan de serverkant, zodat de controles en grenzen hierboven altijd gelden. De
+  // status staat vast op "in_behandeling": een bezoeker kan nooit zelf iets goedkeuren. (De openbare
+  // schrijfrechten in de databank zelf zijn met SQL 0070 gesloten.)
+  const supabase = createServiceRoleClient();
   const { error } = await supabase.from("clubs").insert({
     naam: parsed.data.naam,
     gemeente: parsed.data.gemeente,
@@ -51,7 +56,7 @@ export async function clubVoorstellen(
   try {
     const resend = getResendClient();
 
-    if (parsed.data.contact_email) {
+    if (parsed.data.contact_email && (await magMailVersturenNaar(parsed.data.contact_email))) {
       await resend.emails.send({
         from: AFZENDER,
         to: parsed.data.contact_email,

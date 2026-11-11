@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ALLE_PROVINCIES } from "./provincies";
 import { normaliseerUrl } from "./normaliseer-url";
+import { httpUrl } from "./veilige-url";
 
 const provincieEnum = z.enum(ALLE_PROVINCIES as [string, ...string[]]);
 
@@ -8,7 +9,7 @@ const provincieEnum = z.enum(ALLE_PROVINCIES as [string, ...string[]]);
 // protocol (bv. "www.site.be") niet als ongeldig wordt afgekeurd.
 const urlVeld = z.preprocess(
   (waarde) => (typeof waarde === "string" ? normaliseerUrl(waarde) : waarde),
-  z.string().trim().url().nullable().optional().or(z.literal(""))
+  httpUrl.nullable().optional().or(z.literal(""))
 );
 
 const huidigJaar = new Date().getFullYear();
@@ -71,7 +72,7 @@ const toernooiBaseSchema = z.object({
   max_ploegen: z.coerce.number().int().min(1).max(500).nullable().optional(),
   link_inschrijving: urlVeld,
   opmerking: z.string().trim().max(1000).nullable().optional(),
-  affiche_url: z.string().trim().url().nullable().optional().or(z.literal("")),
+  affiche_url: httpUrl.nullable().optional().or(z.literal("")),
   open_toernooi: z.boolean().optional().default(false),
   finale: z.boolean().optional().default(false),
   kwalificatiedata: z.array(kwalificatieDatumVeld).max(15).nullable().optional(),
@@ -116,7 +117,7 @@ export const clubSchema = z.object({
   contact_email: z.string().trim().email().nullable().optional().or(z.literal("")),
   telefoon: z.string().trim().max(30).nullable().optional().or(z.literal("")),
   openingsuren: z.string().trim().max(300).nullable().optional().or(z.literal("")),
-  foto_url: z.string().trim().url().nullable().optional().or(z.literal("")),
+  foto_url: httpUrl.nullable().optional().or(z.literal("")),
   ingediend_door: z.string().trim().max(120).nullable().optional().or(z.literal("")),
 });
 

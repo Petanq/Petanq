@@ -1,5 +1,6 @@
 "use client";
 
+import { veiligeUrl } from "@/lib/veilige-url";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -112,7 +113,7 @@ export function Match13GebruikerDetail({
               <dt style={{ color: "var(--ink-muted)" }}>{t.match13.labelWebsite}</dt>
               <dd style={{ margin: 0 }}>
                 {gebruiker.echteClub.website ? (
-                  <a href={gebruiker.echteClub.website} target="_blank" rel="noreferrer">
+                  <a href={veiligeUrl(gebruiker.echteClub.website)} target="_blank" rel="noreferrer">
                     {gebruiker.echteClub.website}
                   </a>
                 ) : (

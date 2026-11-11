@@ -3,6 +3,7 @@
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { vrijwilligerAanmeldenSchema } from "@/lib/validations";
 import { Provincie } from "@/lib/provincies";
+import { magFormulierIndienen } from "@/lib/formulier-limiet";
 
 export type VrijwilligerAanmeldenResultaat = { succes: true } | { succes: false; fout: string };
 
@@ -17,6 +18,7 @@ export async function vrijwilligerAanmelden(input: {
 }): Promise<VrijwilligerAanmeldenResultaat> {
   const parsed = vrijwilligerAanmeldenSchema.safeParse(input);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
+  if (!(await magFormulierIndienen("vrijwilliger", 5))) return { succes: false, fout: "te_veel" };
 
   const serviceClient = createServiceRoleClient();
 

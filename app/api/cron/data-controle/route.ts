@@ -16,7 +16,8 @@ import { vertaalProvincie, Provincie } from "@/lib/provincies";
 // is niet publiek aanroepbaar zonder dat geheim te kennen.
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  // Zonder ingesteld geheim mag niemand binnen (anders zou "Bearer undefined" volstaan).
+  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ succes: false, fout: "niet_geautoriseerd" }, { status: 401 });
   }
 

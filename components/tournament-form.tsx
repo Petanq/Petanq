@@ -1,5 +1,7 @@
 "use client";
 
+import { CLUB_PUBLIEK } from "@/lib/kolommen";
+import { veiligeUrl } from "@/lib/veilige-url";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
@@ -113,9 +115,9 @@ export function TournamentForm() {
     const supabase = createClient();
     supabase
       .from("clubs")
-      .select("*")
+      .select(CLUB_PUBLIEK)
       .eq("actief", true)
-      .then(({ data }) => setClubs((data as Club[]) ?? []));
+      .then(({ data }) => setClubs((data as unknown as Club[]) ?? []));
   }, []);
 
   function veldFout(waarde: string): string {
@@ -661,7 +663,7 @@ export function TournamentForm() {
                     {bestaandDubbel.clubnaam}
                   </p>
                   {bestaandDubbel.affiche_url && (
-                    <a href={bestaandDubbel.affiche_url} target="_blank" rel="noopener noreferrer" className="mt-2 block">
+                    <a href={veiligeUrl(bestaandDubbel.affiche_url)} target="_blank" rel="noopener noreferrer" className="mt-2 block">
                       <img src={bestaandDubbel.affiche_url} alt="" className="max-h-48 rounded-md border border-rand" />
                     </a>
                   )}
@@ -1060,7 +1062,7 @@ export function TournamentForm() {
 
           {status === "fout" && !bestaandDubbel && (
             <p className="text-sm font-medium text-rood-2">
-              {foutReden === "ongeldige_invoer" ? t.form.foutOngeldigeInvoer : t.form.fout}
+              {foutReden === "ongeldige_invoer" ? t.form.foutOngeldigeInvoer : foutReden === "te_veel" ? t.form.foutTeVeel : t.form.fout}
             </p>
           )}
 

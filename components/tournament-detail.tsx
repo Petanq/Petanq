@@ -1,5 +1,6 @@
 "use client";
 
+import { veiligeUrl } from "@/lib/veilige-url";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -349,7 +350,7 @@ export function TournamentDetail({
           {toernooi.affiche_url && (
             <Kaart titel={t.lijst.afficheTitel} className="order-5 lg:order-none">
               <a
-                href={toernooi.affiche_url}
+                href={veiligeUrl(toernooi.affiche_url)}
                 onClick={() => volgToernooiActie(toernooi.id, "affiche")}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -376,7 +377,7 @@ export function TournamentDetail({
             {toernooi.link_inschrijving && (
               <Groep titel={t.lijst.inschrijvenTitel}>
                 <div className="contents" onClickCapture={() => volgToernooiActie(toernooi.id, "inschrijven")}>
-                  <Knop href={toernooi.link_inschrijving} variant="rood">
+                  <Knop href={veiligeUrl(toernooi.link_inschrijving)} variant="rood">
                     {t.hero.toernooiAanmelden}
                   </Knop>
                 </div>

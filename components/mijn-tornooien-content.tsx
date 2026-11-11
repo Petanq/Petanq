@@ -1,5 +1,6 @@
 "use client";
 
+import { TOERNOOI_PUBLIEK } from "@/lib/kolommen";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
@@ -74,10 +75,10 @@ export function MijnTornooienContent() {
     const supabase = createClient();
     supabase
       .from("toernooien")
-      .select("*")
+      .select(TOERNOOI_PUBLIEK)
       .in("id", lijst.map((o) => o.id))
       .then(({ data }) => {
-        setToernooien((data as Toernooi[]) ?? []);
+        setToernooien((data as unknown as Toernooi[]) ?? []);
         setLaden(false);
       });
   }, []);

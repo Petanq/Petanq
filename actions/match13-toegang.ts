@@ -7,6 +7,7 @@ import { maakKorteLink } from "@/lib/korte-link";
 import { siteUrl } from "@/lib/site-url";
 import { match13AanvraagSchema } from "@/lib/validations";
 import { getResendClient, AFZENDER } from "@/lib/resend";
+import { magFormulierIndienen, magMailVersturenNaar } from "@/lib/formulier-limiet";
 import { MeldingMatch13AanvraagEmail, meldingMatch13AanvraagOnderwerp } from "@/lib/emails/melding-match13-aanvraag";
 import {
   BevestigingMatch13AanvraagEmail,
@@ -508,8 +509,12 @@ export async function match13ToegangAanvragen(
 ): Promise<Match13ToegangActieResultaat> {
   const parsed = match13AanvraagSchema.safeParse(input);
   if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
+  if (!(await magFormulierIndienen("match13_aanvraag", 5))) return { succes: false, fout: "te_veel" };
 
-  const supabase = await createClient();
+  // Inzenden gebeurt hier, aan de serverkant, zodat de controles en grenzen hierboven altijd gelden. De
+  // status staat vast op "in_behandeling": een bezoeker kan nooit zelf iets goedkeuren. (De openbare
+  // schrijfrechten in de databank zelf zijn met SQL 0070 gesloten.)
+  const supabase = createServiceRoleClient();
   const { error } = await supabase.from("match13_aanvragen").insert({
     club: parsed.data.club,
     naam: parsed.data.naam,
@@ -524,12 +529,14 @@ export async function match13ToegangAanvragen(
 
   try {
     const resend = getResendClient();
-    await resend.emails.send({
-      from: AFZENDER,
-      to: parsed.data.email,
-      subject: bevestigingMatch13AanvraagOnderwerp(taalFormulier),
-      react: BevestigingMatch13AanvraagEmail({ taal: taalFormulier, club: parsed.data.club }),
-    });
+    if (await magMailVersturenNaar(parsed.data.email)) {
+      await resend.emails.send({
+        from: AFZENDER,
+        to: parsed.data.email,
+        subject: bevestigingMatch13AanvraagOnderwerp(taalFormulier),
+        react: BevestigingMatch13AanvraagEmail({ taal: taalFormulier, club: parsed.data.club }),
+      });
+    }
 
     const serviceClient = createServiceRoleClient();
     const { data: moderatoren } = await serviceClient.from("moderatoren").select("email").eq("rol", "admin");

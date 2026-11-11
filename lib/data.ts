@@ -1,11 +1,12 @@
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Club, Idee, Moderator, Toernooi } from "@/lib/types";
+import { CLUB_PUBLIEK, TOERNOOI_PUBLIEK } from "@/lib/kolommen";
 
 export async function getGoedgekeurdeToernooien(): Promise<Toernooi[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("toernooien")
-    .select("*")
+    .select(TOERNOOI_PUBLIEK)
     .eq("status", "goedgekeurd")
     .is("verwijderd_op", null)
     .order("datum", { ascending: true })
@@ -15,21 +16,21 @@ export async function getGoedgekeurdeToernooien(): Promise<Toernooi[]> {
     console.error("Kon toernooien niet ophalen:", error.message);
     return [];
   }
-  return data as Toernooi[];
+  return data as unknown as Toernooi[];
 }
 
 export async function getToernooiById(id: string): Promise<Toernooi | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("toernooien")
-    .select("*")
+    .select(TOERNOOI_PUBLIEK)
     .eq("id", id)
     .eq("status", "goedgekeurd")
     .is("verwijderd_op", null)
     .single();
 
   if (error) return null;
-  return data as Toernooi;
+  return data as unknown as Toernooi;
 }
 
 export async function getInBehandelingToernooien(): Promise<Toernooi[]> {
@@ -332,7 +333,7 @@ export async function getActieveClubs(): Promise<Club[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("clubs")
-    .select("*")
+    .select(CLUB_PUBLIEK)
     .eq("actief", true)
     .is("verwijderd_op", null)
     .order("naam", { ascending: true });
@@ -341,7 +342,7 @@ export async function getActieveClubs(): Promise<Club[]> {
     console.error("Kon clubs niet ophalen:", error.message);
     return [];
   }
-  return data as Club[];
+  return data as unknown as Club[];
 }
 
 export async function getIdeeen(): Promise<Idee[]> {
