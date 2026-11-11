@@ -56,7 +56,7 @@ export function NabijeClubs({
     <div className="mt-5">
       <div className="mb-2 flex items-center justify-between gap-3">
         <h2 className={`font-titel text-lg font-bold ${donker ? "text-white" : "text-donker"}`}>
-          {t.clubsPagina.dichtstBijPlaats} <span className={donker ? "text-geel" : "text-[#b8860b]"}>{plaatsLabel(plaats)}</span>
+          {t.clubsPagina.dichtstBijPlaats} <span className={donker ? "text-geel" : "text-[#8a6508]"}>{plaatsLabel(plaats)}</span>
         </h2>
         <button
           type="button"
@@ -76,7 +76,7 @@ export function NabijeClubs({
           ))}
         </div>
       )}
-      <p className={`mt-2 text-[0.65rem] ${donker ? "text-white/40" : "text-grijs/70"}`}>
+      <p className={`mt-2 text-[0.65rem] ${donker ? "text-white/65" : "text-grijs"}`}>
         Postcodes:{" "}
         <a href="https://www.geonames.org" target="_blank" rel="noopener noreferrer" className="underline">
           GeoNames

@@ -163,6 +163,15 @@ export function ClubWijzigingKnop({ club }: { club: ClubInfo }) {
 
             {verstuurd ? (
               <div className="flex flex-col gap-4">
+                {/* Het embleem van Petanque13 op het bedankscherm (hier komt later ook de sponsor onder). */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/logo-volledig.png"
+                  alt="Petanque13"
+                  width={1526}
+                  height={344}
+                  className="mx-auto mt-2 h-auto w-[220px] max-w-full"
+                />
                 <p className="cb-melding ok">{c.wijzigBedankt}</p>
                 <button type="button" className="cb-knop" onClick={sluiten}>
                   {c.wijzigSluiten}

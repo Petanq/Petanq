@@ -88,7 +88,7 @@ export function MijnPlaatsBalk({
               </button>
             ))}
           </div>
-          <p className="w-full text-[0.68rem] text-white/45">{t.lijst.afstandHemelsbreed}</p>
+          <p className="w-full text-[0.7rem] text-white/65">{t.lijst.afstandHemelsbreed}</p>
         </div>
       ) : (
         <>
@@ -118,6 +118,7 @@ export function MijnPlaatsBalk({
                 enterKeyHint="search"
                 autoComplete="off"
                 placeholder={t.lijst.afstandPlaceholder}
+                aria-label={t.lijst.afstandPlaceholder}
                 className="w-full min-w-0 bg-transparent py-2.5 text-[0.82rem] text-white outline-none placeholder:text-white/50"
               />
             </label>

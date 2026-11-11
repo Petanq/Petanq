@@ -139,7 +139,7 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
       <div id="provincies" className="mx-auto max-w-[1140px] px-6 py-8 lg:px-10">
         <a
           href={`mailto:info@petanque13.be?subject=${encodeURIComponent("Melding fout bij een club")}`}
-          className="mb-6 inline-block text-xs font-semibold text-grijs underline hover:text-donker"
+          className="mb-4 inline-flex min-h-[44px] items-center text-xs font-semibold text-grijs underline hover:text-donker"
         >
           {t.lijst.meldFout}
         </a>
@@ -200,16 +200,16 @@ export function ClubsBrowser({ clubs }: { clubs: Club[] }) {
                           <circle cx="12" cy="10" r="2.5" />
                         </svg>
                       </span>
-                      <span className="text-[0.8rem] font-extrabold uppercase tracking-widest text-[#b8860b] transition-colors group-hover:text-donker">
+                      <span className="text-[0.8rem] font-extrabold uppercase tracking-widest text-[#8a6508] transition-colors group-hover:text-donker">
                         {vertaalProvincie(provincie, taal)}
                       </span>
                     </span>
                     <span className="flex items-center gap-2">
-                      <span className="rounded-full bg-[#fdf3d9] px-2.5 py-0.5 text-xs font-bold text-[#b8860b]">
+                      <span className="rounded-full bg-[#fdf3d9] px-2.5 py-0.5 text-xs font-bold text-[#8a6508]">
                         {clubsInProvincie.length}
                       </span>
                       <span
-                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs text-[#b8860b] transition-all ${
+                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs text-[#8a6508] transition-all ${
                           uitgeklapt
                             ? "rotate-90 bg-geel text-donker"
                             : "bg-[#fdf3d9] group-hover:bg-geel group-hover:text-donker"

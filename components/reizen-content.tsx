@@ -94,7 +94,7 @@ export function ReizenContent() {
                   </div>
                   <div>
                     <dt className="text-xs font-bold text-donker">{t.reizenPagina.prijsVanafLabel}</dt>
-                    <dd className="font-semibold text-[#b8860b]">
+                    <dd className="font-semibold text-[#8a6508]">
                       {taal === "fr" ? reis.prijsVanafFr : reis.prijsVanafNl}
                     </dd>
                   </div>

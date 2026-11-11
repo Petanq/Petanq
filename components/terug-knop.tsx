@@ -34,7 +34,7 @@ export function TerugKnop() {
         <button
           type="button"
           onClick={terug}
-          className="-ml-2 inline-flex items-center gap-1.5 rounded-md px-2 py-2.5 text-[0.9rem] font-bold text-blauw transition-colors hover:text-blauw-2 active:bg-black/5"
+          className="-ml-2 inline-flex items-center gap-1.5 rounded-md px-2 min-h-[44px] text-[0.9rem] font-bold text-blauw transition-colors hover:text-blauw-2 active:bg-black/5"
         >
           <span aria-hidden className="text-xl leading-none">
             ‹

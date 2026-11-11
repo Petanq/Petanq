@@ -43,7 +43,7 @@ const ACTIE_KNOP =
 const ACTIE_KNOP_VIERKANT =
   "flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-[#1f1f1f]/15 bg-white px-2 py-3 text-center text-[0.8rem] font-bold text-[#1f1f1f] transition-all hover:border-geel hover:bg-[#fff6d6] active:scale-[0.98]";
 const ROUTE_KNOP =
-  "inline-flex items-center gap-2 rounded-full border-2 border-[#1f1f1f]/15 bg-white px-4 py-2 text-sm font-bold text-[#1f1f1f] transition-all hover:border-geel hover:bg-[#fff6d6] active:scale-[0.97]";
+  "inline-flex min-h-[44px] items-center gap-2 rounded-full border-2 border-[#1f1f1f]/15 bg-white px-4 text-sm font-bold text-[#1f1f1f] transition-all hover:border-geel hover:bg-[#fff6d6] active:scale-[0.97]";
 
 export function TournamentDetail({
   toernooi,
@@ -174,7 +174,7 @@ export function TournamentDetail({
               </span>
             )}
             {toernooi.open_toernooi && (
-              <span className="rounded-full bg-[#0d9488] px-2.5 py-1 text-[0.62rem] sm:px-3 sm:text-[0.7rem] font-extrabold uppercase tracking-wide text-white">
+              <span className="rounded-full bg-[#0f766e] px-2.5 py-1 text-[0.62rem] sm:px-3 sm:text-[0.7rem] font-extrabold uppercase tracking-wide text-white">
                 {t.lijst.openBadge}
               </span>
             )}
@@ -321,7 +321,7 @@ export function TournamentDetail({
                     target="_blank"
                     rel="noopener noreferrer"
                     title={t.lijst.kwalificatieDatumToevoegenAanAgenda}
-                    className="rounded-full border-2 border-geel bg-white px-4 py-2 text-sm font-bold text-[#1f1f1f] transition-colors hover:bg-[#f8d55a]"
+                    className="inline-block min-h-[44px] rounded-full border-2 border-geel bg-white px-4 py-[0.55rem] text-sm font-bold text-[#1f1f1f] transition-colors hover:bg-[#f8d55a]"
                   >
                     {dagVanWeekKort(schifting.datum, taal)} {dagNummer(schifting.datum)}{" "}
                     {maandVolledig(parseDatum(schifting.datum).getMonth(), taal)}
@@ -440,7 +440,7 @@ export function TournamentDetail({
                 href={`mailto:info@petanque13.be?subject=${encodeURIComponent(
                   `Melding fout bij toernooi: ${naam}`
                 )}`}
-                className="text-sm font-bold text-[#3d3c38] underline underline-offset-2 hover:text-black"
+                className="inline-flex min-h-[44px] items-center text-sm font-bold text-[#3d3c38] underline underline-offset-2 hover:text-black"
               >
                 {t.lijst.meldFout}
               </a>

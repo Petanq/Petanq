@@ -111,7 +111,7 @@ export function MijnTornooienContent() {
         } ${voorbijTornooi ? "opacity-70" : ""}`}
       >
         {groot && (
-          <p className="mb-3 text-[0.7rem] font-extrabold uppercase tracking-[0.14em] text-[#b8860b]">
+          <p className="mb-3 text-[0.7rem] font-extrabold uppercase tracking-[0.14em] text-[#8a6508]">
             {t.lijst.agendaVolgende}
           </p>
         )}
@@ -178,6 +178,7 @@ export function MijnTornooienContent() {
           value={notitie}
           onChange={(e) => notitieWijzigen(tn.id, e.target.value)}
           placeholder={t.lijst.notitiePlaceholder}
+          aria-label={t.lijst.notitiePlaceholder}
           rows={2}
           className="veld-input mt-3 w-full resize-none"
         />

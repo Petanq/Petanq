@@ -56,7 +56,7 @@ export function PartnerBalk() {
               </ul>
               <Link
                 href="/partners"
-                className="rounded-full border border-geel/60 px-4 py-1.5 text-xs font-bold text-geel transition-colors hover:bg-geel hover:text-[#1f1f1f]"
+                className="inline-flex min-h-[44px] items-center rounded-full border border-geel/60 px-4 text-xs font-bold text-geel transition-colors hover:bg-geel hover:text-[#1f1f1f]"
               >
                 {t.partnerBalk.wordPartner} →
               </Link>

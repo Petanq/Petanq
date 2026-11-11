@@ -218,7 +218,7 @@ function Stat({ href, waarde, label }: { href: string; waarde: string; label: st
       <div className="font-titel text-3xl leading-none text-geel transition-colors group-hover:text-white">
         {waarde}
       </div>
-      <div className="mt-1 whitespace-pre-line text-[0.72rem] font-semibold uppercase tracking-wide text-white/45 underline decoration-transparent underline-offset-4 transition-colors group-hover:text-white/70 group-hover:decoration-white/40">
+      <div className="mt-1 whitespace-pre-line text-[0.72rem] font-semibold uppercase tracking-wide text-white/65 underline decoration-transparent underline-offset-4 transition-colors group-hover:text-white/70 group-hover:decoration-white/40">
         {label}
       </div>
     </Link>

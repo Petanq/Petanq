@@ -86,6 +86,7 @@ export function ToernooiOpslaanKnop({ toernooiId }: { toernooiId: string }) {
               bewaardTimer.current = setTimeout(() => setNotitieBewaard(true), 600);
             }}
             placeholder={t.lijst.notitiePlaceholder}
+            aria-label={t.lijst.notitiePlaceholder}
             rows={2}
             className="veld-input w-full resize-none"
           />

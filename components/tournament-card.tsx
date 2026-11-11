@@ -126,7 +126,7 @@ export function TournamentCard({
           {t.categorie[toernooi.categorie]}
         </span>
         {toernooi.open_toernooi && (
-          <span className="whitespace-nowrap rounded-full bg-[#f0fdfa] px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[#0d9488]">
+          <span className="whitespace-nowrap rounded-full bg-[#f0fdfa] px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-[#0f766e]">
             {t.lijst.openBadge}
           </span>
         )}

@@ -32,13 +32,13 @@ export function Nav() {
   return (
     <nav className="sticky top-0 z-[300] border-b border-white/[0.07] bg-blauw">
       <div className="flex h-16 items-center justify-between gap-2 px-4 max-[359px]:px-3 sm:px-6 lg:px-10">
-        <Link href={thuisHref} className="flex items-center gap-1.5 sm:gap-2.5">
+        <Link href={thuisHref} className="flex min-h-[44px] items-center gap-1.5 sm:gap-2.5">
           <Logo className="h-10 w-10 max-[359px]:h-8 max-[359px]:w-8 sm:h-14 sm:w-14" />
           <div className="flex flex-col leading-none">
             <span className="flex items-center font-titel text-lg font-extrabold tracking-tight text-white max-[359px]:text-[0.95rem] sm:text-2xl">
               Petanque13
             </span>
-            <span className="hidden text-[0.6rem] font-semibold uppercase tracking-widest text-white/40 min-[420px]:block">
+            <span className="hidden text-[0.62rem] font-semibold uppercase tracking-widest text-white/60 min-[420px]:block">
               {t.nav.subtitel}
             </span>
           </div>
@@ -72,10 +72,10 @@ export function Nav() {
             href="https://www.facebook.com/profile.php?id=61592011318511"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Facebook"
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1877F2] text-white transition-opacity hover:opacity-85 sm:h-8 sm:w-8"
+            aria-label={t.nav.facebook}
+            className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1877F2] text-white transition-opacity after:absolute after:-inset-2 after:content-[''] hover:opacity-85 sm:h-8 sm:w-8"
           >
-            <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden="true">
               <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z" />
             </svg>
           </a>
@@ -97,7 +97,8 @@ export function Nav() {
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Menu"
             aria-expanded={menuOpen}
-            className="relative flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-md transition-colors hover:bg-white/[0.08] xl:hidden"
+            aria-controls="hoofdmenu"
+            className="relative flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-md max-[359px]:w-10 transition-colors hover:bg-white/[0.08] xl:hidden"
           >
             <span className={`h-0.5 w-5 rounded-full bg-white transition-transform ${menuOpen ? "translate-y-2 rotate-45" : ""}`} />
             <span className={`h-0.5 w-5 rounded-full bg-white transition-opacity ${menuOpen ? "opacity-0" : ""}`} />
@@ -110,7 +111,7 @@ export function Nav() {
       </div>
 
       {menuOpen && (
-        <div className="flex flex-col gap-1 border-t border-white/[0.07] bg-blauw px-6 py-3 xl:hidden">
+        <div id="hoofdmenu" className="flex flex-col gap-1 border-t border-white/[0.07] bg-blauw px-6 py-3 xl:hidden">
           <Link
             href="/match13"
             onClick={() => setMenuOpen(false)}

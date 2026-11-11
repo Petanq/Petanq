@@ -41,6 +41,8 @@ export function NewsletterBlock() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t.nieuwsbrief.emailPlaceholder}
+            aria-label={t.nieuwsbrief.emailPlaceholder}
+            autoComplete="email"
             className="w-[200px] rounded-lg border-none px-3.5 py-2.5 font-body text-[0.85rem] outline-none"
           />
           <Knop type="submit" variant="geel" disabled={status === "bezig"}>

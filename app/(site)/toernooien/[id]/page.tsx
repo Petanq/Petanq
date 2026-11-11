@@ -22,7 +22,17 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return {
     title: titel,
     description: beschrijving,
-    openGraph: { title: titel, description: beschrijving, type: "article" },
+    alternates: { canonical: `/toernooien/${toernooi.id}` },
+    // De voorbeeldfoto (og:image) komt uit opengraph-image.tsx in deze map.
+    openGraph: {
+      title: titel,
+      description: beschrijving,
+      type: "article",
+      siteName: "Petanque13",
+      locale: "nl_BE",
+      url: `/toernooien/${toernooi.id}`,
+    },
+    twitter: { card: "summary_large_image", title: titel, description: beschrijving },
   };
 }
 

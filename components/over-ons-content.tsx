@@ -32,7 +32,7 @@ export function OverOnsContent() {
             {t.overOnsPagina.alinea3}{" "}
             <Link
               href="/beheer/aanmelden"
-              className="text-rood hover:underline"
+              className="text-rood-2 underline underline-offset-2 hover:no-underline"
             >
               {t.overOnsPagina.vrijwilligerKnop}
             </Link>
@@ -44,7 +44,7 @@ export function OverOnsContent() {
               target="_blank"
               rel="noopener"
               onClick={() => telDoorklik(TEAMBUILDING_DOORKLIK_PAD)}
-              className="text-rood hover:underline"
+              className="text-rood-2 underline underline-offset-2 hover:no-underline"
             >
               {t.overOnsPagina.teambuildingLink}
             </a>
@@ -53,12 +53,12 @@ export function OverOnsContent() {
             {t.overOnsPagina.contact}{" "}
             <a
               href="mailto:info@petanque13.be"
-              className="text-rood hover:underline"
+              className="text-rood-2 underline underline-offset-2 hover:no-underline"
             >
               info@petanque13.be
             </a>{" "}
             {t.overOnsPagina.ofBel}{" "}
-            <a href="tel:0479499167" className="text-rood hover:underline">
+            <a href="tel:0479499167" className="text-rood-2 underline underline-offset-2 hover:no-underline">
               0479 49 91 67
             </a>
           </p>

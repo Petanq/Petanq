@@ -27,11 +27,12 @@ export function LanguageToggle() {
   }
 
   return (
-    <div className="flex gap-0.5 rounded-lg bg-white/10 p-[3px]">
+    <div className="flex gap-0.5 overflow-hidden rounded-lg bg-white/10" role="group" aria-label="Taal / Langue">
       <button
         onClick={() => kies("nl")}
-        className={`rounded-md px-2 py-1 font-body text-[0.75rem] font-bold transition-colors sm:px-3 sm:text-[0.8rem] ${
-          taal === "nl" ? "bg-geel text-donker shadow" : "text-white/50 hover:text-white/80"
+        lang="nl"
+        className={`flex min-h-[44px] items-center whitespace-nowrap rounded-lg px-2 max-[359px]:px-1.5 font-body text-[0.75rem] font-bold transition-colors sm:px-3 sm:text-[0.8rem] ${
+          taal === "nl" ? "bg-geel text-donker shadow" : "text-white/70 hover:text-white"
         }`}
         aria-pressed={taal === "nl"}
       >
@@ -39,8 +40,9 @@ export function LanguageToggle() {
       </button>
       <button
         onClick={() => kies("fr")}
-        className={`rounded-md px-2 py-1 font-body text-[0.75rem] font-bold transition-colors sm:px-3 sm:text-[0.8rem] ${
-          taal === "fr" ? "bg-geel text-donker shadow" : "text-white/50 hover:text-white/80"
+        lang="fr"
+        className={`flex min-h-[44px] items-center whitespace-nowrap rounded-lg px-2 max-[359px]:px-1.5 font-body text-[0.75rem] font-bold transition-colors sm:px-3 sm:text-[0.8rem] ${
+          taal === "fr" ? "bg-geel text-donker shadow" : "text-white/70 hover:text-white"
         }`}
         aria-pressed={taal === "fr"}
       >

@@ -161,6 +161,7 @@ export function FilterSidebar({
           value={filters.zoek}
           onChange={(e) => setFilters({ ...filters, zoek: e.target.value })}
           placeholder={t.filters.zoekPlaceholder}
+          aria-label={t.filters.zoekPlaceholder}
           className="w-full rounded-xl border-[1.5px] border-[#ecdca0] bg-licht py-2.5 pl-9 pr-3 font-body text-[0.85rem] outline-none transition-colors focus:border-geel focus:bg-white"
         />
       </div>
@@ -185,7 +186,7 @@ export function FilterSidebar({
           )}
         </span>
         <span
-          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#fdf3d9] text-xs text-[#b8860b] transition-transform ${
+          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#fdf3d9] text-xs text-[#8a6508] transition-transform ${
             mobielOpen ? "rotate-180" : ""
           }`}
           aria-hidden

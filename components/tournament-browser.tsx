@@ -170,16 +170,16 @@ export function TournamentBrowser({
             <div className="flex shrink-0 overflow-hidden rounded-full border-[1.5px] border-[#e3cb87] bg-white">
               <button
                 onClick={() => setWeergave("lijst")}
-                className={`px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
-                  weergave === "lijst" ? "bg-geel text-donker" : "text-grijs hover:bg-[#fdf3d9] hover:text-[#b8860b]"
+                className={`min-h-[44px] px-4 text-xs font-bold transition-all active:scale-95 ${
+                  weergave === "lijst" ? "bg-geel text-donker" : "text-grijs hover:bg-[#fdf3d9] hover:text-[#8a6508]"
                 }`}
               >
                 {t.lijst.weergaveLijst}
               </button>
               <button
                 onClick={() => setWeergave("kalender")}
-                className={`px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
-                  weergave === "kalender" ? "bg-geel text-donker" : "text-grijs hover:bg-[#fdf3d9] hover:text-[#b8860b]"
+                className={`min-h-[44px] px-4 text-xs font-bold transition-all active:scale-95 ${
+                  weergave === "kalender" ? "bg-geel text-donker" : "text-grijs hover:bg-[#fdf3d9] hover:text-[#8a6508]"
                 }`}
               >
                 {t.lijst.weergaveKalender}

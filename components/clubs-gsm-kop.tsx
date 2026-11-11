@@ -92,6 +92,7 @@ export function ClubsGsmKop({
             enterKeyHint="search"
             autoComplete="off"
             placeholder={t.clubsPagina.gsmZoek}
+            aria-label={t.clubsPagina.gsmZoek}
             className="w-full min-w-0 bg-transparent py-3 text-[0.82rem] text-white outline-none placeholder:text-white/50"
           />
         </label>
@@ -144,7 +145,7 @@ export function ClubsGsmKop({
               key={w}
               type="button"
               onClick={() => setWeergave(w)}
-              className={`px-4 py-2 ${weergave === w ? "bg-geel text-donker" : "text-white/80"}`}
+              className={`min-h-[44px] px-4 ${weergave === w ? "bg-geel text-donker" : "text-white/80"}`}
             >
               {w === "kaart" ? t.clubsPagina.kaart : t.clubsPagina.lijst}
             </button>

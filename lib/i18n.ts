@@ -3,6 +3,8 @@ export type Taal = "nl" | "fr";
 const nl = {
   nav: {
     subtitel: "De Belgische Petanquekalender",
+    naarInhoud: "Ga naar de inhoud",
+    facebook: "Petanque13 op Facebook",
     toernooien: "Toernooien",
     clubs: "Clubs",
     reizen: "Op reis met Claudy",
@@ -1178,6 +1180,8 @@ const nl = {
 const fr: typeof nl = {
   nav: {
     subtitel: "Le calendrier belge de pétanque",
+    naarInhoud: "Aller au contenu",
+    facebook: "Petanque13 sur Facebook",
     toernooien: "Tournois",
     clubs: "Clubs",
     reizen: "En voyage avec Claudy",

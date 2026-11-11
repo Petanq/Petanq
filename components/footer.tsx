@@ -20,7 +20,7 @@ export function Footer() {
       />
       <span>
         {t.footer.tekst}{" "}
-        <a href="mailto:info@petanque13.be" className="text-rood no-underline hover:underline">
+        <a href="mailto:info@petanque13.be" className="text-rood underline underline-offset-2 hover:no-underline [.site-foto_&]:text-rood-2">
           {t.footer.link}
         </a>
       </span>
@@ -31,25 +31,25 @@ export function Footer() {
           target="_blank"
           rel="noopener"
           onClick={() => telDoorklik(TEAMBUILDING_DOORKLIK_PAD)}
-          className="text-rood no-underline hover:underline"
+          className="text-rood underline underline-offset-2 hover:no-underline [.site-foto_&]:text-rood-2"
         >
           {t.footer.teambuildingLink}
         </a>
       </div>
-      <div className="mt-3 flex items-center justify-center gap-3">
-        <Link href="/privacybeleid" className="text-grijs underline hover:text-donker">
+      <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2">
+        <Link href="/privacybeleid" className="inline-flex min-h-[44px] items-center px-1 text-grijs underline hover:text-donker">
           {t.footer.privacybeleid}
         </Link>
-        <span className="text-rand">·</span>
-        <Link href="/partners" className="text-grijs underline hover:text-donker">
+        <span className="text-rand" aria-hidden="true">·</span>
+        <Link href="/partners" className="inline-flex min-h-[44px] items-center px-1 text-grijs underline hover:text-donker">
           {t.partnersPagina.titel}
         </Link>
-        <span className="text-rand">·</span>
-        <Link href="/beheer/login" className="text-grijs underline hover:text-donker">
+        <span className="text-rand" aria-hidden="true">·</span>
+        <Link href="/beheer/login" className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center px-1 text-grijs underline hover:text-donker">
           {t.nav.login}
         </Link>
       </div>
-      <div className="mt-3 text-[0.7rem] text-grijs/70">
+      <div className="mt-2 text-[0.75rem] text-grijs">
         {t.footer.copyright} · Frederic Keulemans · {t.footer.ondernemingsnr} BE 1042.720.306
       </div>
     </div>
