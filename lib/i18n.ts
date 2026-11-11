@@ -196,8 +196,9 @@ const nl = {
     teambuilding: "Pétanque-teambuilding voor bedrijven:",
     teambuildingLink: "Teambuilding13",
     privacybeleid: "Privacybeleid",
+    voorwaarden: "Gebruiksvoorwaarden",
     ondernemingsnr: "Ondernemingsnr.",
-    copyright: `© ${new Date().getFullYear()} Petanque13`,
+    copyright: `© ${new Date().getFullYear()} Petanque13. Alle rechten voorbehouden.`,
   },
   clubsPagina: {
     titel: "Clubs",
@@ -1378,8 +1379,9 @@ const fr: typeof nl = {
     teambuilding: "Team building pétanque pour entreprises :",
     teambuildingLink: "Teambuilding13",
     privacybeleid: "Politique de confidentialité",
+    voorwaarden: "Conditions d'utilisation",
     ondernemingsnr: "N° d'entreprise",
-    copyright: `© ${new Date().getFullYear()} Petanque13`,
+    copyright: `© ${new Date().getFullYear()} Petanque13. Tous droits réservés.`,
   },
   clubsPagina: {
     titel: "Clubs",

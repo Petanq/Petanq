@@ -41,6 +41,10 @@ export function Footer() {
           {t.footer.privacybeleid}
         </Link>
         <span className="text-rand" aria-hidden="true">·</span>
+        <Link href="/gebruiksvoorwaarden" className="inline-flex min-h-[44px] items-center px-1 text-grijs underline hover:text-donker">
+          {t.footer.voorwaarden}
+        </Link>
+        <span className="text-rand" aria-hidden="true">·</span>
         <Link href="/partners" className="inline-flex min-h-[44px] items-center px-1 text-grijs underline hover:text-donker">
           {t.partnersPagina.titel}
         </Link>

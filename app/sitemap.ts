@@ -18,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/clubs/toevoegen`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${base}/over-ons`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/privacybeleid`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/gebruiksvoorwaarden`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
   const toernooiPaden: MetadataRoute.Sitemap = toernooien.map((toernooi) => ({
