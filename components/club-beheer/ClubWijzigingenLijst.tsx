@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/language-context";
 import {
+  keurBezoekerVoorstelGoed,
   keurWijzigingGoed,
+  wijsBezoekerVoorstelAf,
   wijsWijzigingAf,
   zetClubVertrouwd,
   type TeKeurenWijziging,
@@ -61,6 +63,12 @@ function Kaart({ w }: { w: TeKeurenWijziging }) {
         <h2>{w.clubNaam}</h2>
         <span>{c.keurIngediend(new Date(w.ingediendOp).toLocaleString(taal === "fr" ? "fr-BE" : "nl-BE"))}</span>
       </div>
+
+      {w.bron === "bezoeker" && w.indiener && (
+        <p className="cb-melding" style={{ margin: "0 0 0.8rem" }}>
+          {c.keurBezoeker(w.indiener.naam, w.indiener.email)}
+        </p>
+      )}
 
       {gegevensSleutels.length > 0 && (
         <div className="cb-voor-na" style={{ marginBottom: "0.8rem" }}>
@@ -157,11 +165,11 @@ function Kaart({ w }: { w: TeKeurenWijziging }) {
       )}
 
       <div className="cb-keur-acties cb-scope">
-        <button type="button" className="cb-knop" disabled={bezig} onClick={() => actie(() => keurWijzigingGoed(w.id))}>
+        <button type="button" className="cb-knop" disabled={bezig} onClick={() => actie(() => (w.bron === "bezoeker" ? keurBezoekerVoorstelGoed(w.id) : keurWijzigingGoed(w.id)))}>
           {c.keurGoed}
         </button>
         <input type="text" value={reden} maxLength={300} placeholder={c.keurRedenPlaceholder} aria-label={c.keurRedenPlaceholder} onChange={(e) => setReden(e.target.value)} />
-        <button type="button" className="cb-knop rand" disabled={bezig} onClick={() => actie(() => wijsWijzigingAf(w.id, reden))}>
+        <button type="button" className="cb-knop rand" disabled={bezig} onClick={() => actie(() => (w.bron === "bezoeker" ? wijsBezoekerVoorstelAf(w.id, reden) : wijsWijzigingAf(w.id, reden)))}>
           {c.keurAfwijs}
         </button>
       </div>

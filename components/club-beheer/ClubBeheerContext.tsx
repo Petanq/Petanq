@@ -18,6 +18,11 @@ export function ClubBeheerProvider({ data, children }: { data: ClubBeheerData; c
   return <ClubBeheerContext.Provider value={data}>{children}</ClubBeheerContext.Provider>;
 }
 
+// De uren die nu online staan voor een club (of null), bv. om ze in een formulier voor te vullen.
+export function useClubUren(clubId: string): ClubUren | null {
+  return useContext(ClubBeheerContext).uren[clubId] ?? null;
+}
+
 export function ClubUrenVoorClub({ clubId }: { clubId: string }) {
   const data = useContext(ClubBeheerContext);
   const uren = data.uren[clubId] ?? null;

@@ -8,9 +8,18 @@ import { CLUBS_MOGEN_ZELF_BEHEREN } from "@/lib/club-beheer/instellingen";
 import { getResendClient, AFZENDER } from "@/lib/resend";
 import { siteUrl } from "@/lib/site-url";
 import { MeldingClubWijzigingEmail, meldingClubWijzigingOnderwerp } from "@/lib/emails/melding-club-wijziging";
+import { ClubVoorstelBezoekerEmail, clubVoorstelBezoekerOnderwerp } from "@/lib/emails/club-voorstel-bezoeker";
+import {
+  MAX_PER_CLUB_PER_DAG,
+  MAX_PER_EMAIL_PER_DAG,
+  MAX_WACHTEND_PER_CLUB,
+  MIN_INVUL_MS,
+  bezoekerVoorstelSchema,
+} from "@/lib/club-beheer/bezoeker";
 import {
   brusselsVandaag,
   gelijkeUren,
+  heeftIngevuldeUren,
   voorstelSchema,
   type ClubGegevens,
   type ClubUren,
@@ -40,7 +49,7 @@ function tabelOntbreekt(error: { code?: string; message?: string } | null): bool
     error.code === "42P01" ||
     error.code === "PGRST205" ||
     error.code === "42883" ||
-    /club_uren|club_wijzigingen|club_vandaag|mag_club_beheren|vertrouwd/i.test(error.message ?? "")
+    /club_uren|club_wijzigingen|club_bezoeker_voorstellen|club_vandaag|mag_club_beheren|vertrouwd/i.test(error.message ?? "")
   );
 }
 
@@ -273,6 +282,8 @@ export async function wisVandaag(clubId: string): Promise<ClubBeheerResultaat> {
 
 export interface TeKeurenWijziging {
   id: string;
+  // "account": voorstel van een ingelogde club; "bezoeker": voorstel van iemand zonder account.
+  bron: "account" | "bezoeker";
   clubId: string;
   clubNaam: string;
   ingediendOp: string;
@@ -280,19 +291,31 @@ export interface TeKeurenWijziging {
   huidigeGegevens: ClubGegevens;
   huidigeUren: ClubUren | null;
   vertrouwd: boolean;
+  indiener: { naam: string; email: string } | null;
 }
 
 export async function haalTeKeuren(): Promise<TeKeurenWijziging[]> {
   if (!(await isAdmin())) return [];
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("club_wijzigingen")
-    .select("id, club_id, ingediend_op, voorstel")
-    .eq("status", "wachtend")
-    .order("ingediend_op", { ascending: true });
-  if (error || !data || data.length === 0) return [];
+  const service = createServiceRoleClient();
+  const [accountRes, bezoekerRes] = await Promise.all([
+    supabase
+      .from("club_wijzigingen")
+      .select("id, club_id, ingediend_op, voorstel")
+      .eq("status", "wachtend")
+      .order("ingediend_op", { ascending: true }),
+    // Enkel de service-rol leest deze tabel (bevat e-mailadressen). Ontbreekt de tabel nog: gewoon leeg.
+    service
+      .from("club_bezoeker_voorstellen")
+      .select("id, club_id, ingediend_op, voorstel, indiener_naam, indiener_email")
+      .eq("status", "wachtend")
+      .order("ingediend_op", { ascending: true }),
+  ]);
+  const accountRijen = accountRes.error ? [] : accountRes.data ?? [];
+  const bezoekerRijen = bezoekerRes.error ? [] : bezoekerRes.data ?? [];
+  if (accountRijen.length === 0 && bezoekerRijen.length === 0) return [];
 
-  const ids = data.map((r) => r.club_id as string);
+  const ids = Array.from(new Set([...accountRijen, ...bezoekerRijen].map((r) => r.club_id as string)));
   const [clubsRes, urenRes] = await Promise.all([
     supabase.from("clubs").select("id, naam, adres, contact_email, telefoon, website, vertrouwd").in("id", ids),
     supabase.from("club_uren").select("club_id, uren").in("club_id", ids),
@@ -300,10 +323,15 @@ export async function haalTeKeuren(): Promise<TeKeurenWijziging[]> {
   const clubs = new Map((clubsRes.data ?? []).map((c) => [c.id as string, c]));
   const uren = new Map((urenRes.data ?? []).map((u) => [u.club_id as string, u.uren as ClubUren]));
 
-  return data.map((r) => {
+  function maak(
+    r: { id: unknown; club_id: unknown; ingediend_op: unknown; voorstel: unknown },
+    bron: "account" | "bezoeker",
+    indiener: { naam: string; email: string } | null
+  ): TeKeurenWijziging {
     const club = clubs.get(r.club_id as string);
     return {
       id: r.id as string,
+      bron,
       clubId: r.club_id as string,
       clubNaam: (club?.naam as string) ?? "(onbekende club)",
       ingediendOp: r.ingediend_op as string,
@@ -316,18 +344,27 @@ export async function haalTeKeuren(): Promise<TeKeurenWijziging[]> {
       },
       huidigeUren: uren.get(r.club_id as string) ?? null,
       vertrouwd: !!club?.vertrouwd,
+      indiener,
     };
-  });
+  }
+
+  return [
+    ...accountRijen.map((r) => maak(r, "account", null)),
+    ...bezoekerRijen.map((r) =>
+      maak(r, "bezoeker", { naam: (r.indiener_naam as string) ?? "", email: (r.indiener_email as string) ?? "" })
+    ),
+  ].sort((a, b) => a.ingediendOp.localeCompare(b.ingediendOp));
 }
 
 export async function telTeKeuren(): Promise<number> {
   if (!(await isAdmin())) return 0;
   const supabase = await createClient();
-  const { count, error } = await supabase
-    .from("club_wijzigingen")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "wachtend");
-  return error ? 0 : count ?? 0;
+  const service = createServiceRoleClient();
+  const [account, bezoeker] = await Promise.all([
+    supabase.from("club_wijzigingen").select("id", { count: "exact", head: true }).eq("status", "wachtend"),
+    service.from("club_bezoeker_voorstellen").select("id", { count: "exact", head: true }).eq("status", "wachtend"),
+  ]);
+  return (account.error ? 0 : account.count ?? 0) + (bezoeker.error ? 0 : bezoeker.count ?? 0);
 }
 
 export async function keurWijzigingGoed(id: string): Promise<ClubBeheerResultaat> {
@@ -381,6 +418,161 @@ export async function zetClubVertrouwd(clubId: string, vertrouwd: boolean): Prom
   const supabase = await createClient();
   const { error } = await supabase.from("clubs").update({ vertrouwd }).eq("id", clubId);
   if (error) return { succes: false, fout: tabelOntbreekt(error) ? "nog_niet_beschikbaar" : "opslaan_mislukt" };
+  revalidatePath("/beheer/club-wijzigingen");
+  return { succes: true };
+}
+
+// ── Voorstellen van bezoekers (zonder account) ─────────────────────────────────
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Best-effort: een mislukte mail mag het indienen of behandelen nooit laten mislukken.
+async function mailBezoeker(
+  naar: string,
+  taal: "nl" | "fr",
+  clubNaam: string,
+  soort: "ontvangen" | "goedgekeurd" | "afgewezen",
+  reden?: string
+): Promise<void> {
+  if (!naar) return;
+  try {
+    await getResendClient().emails.send({
+      from: AFZENDER,
+      to: naar,
+      subject: clubVoorstelBezoekerOnderwerp(taal, soort),
+      react: ClubVoorstelBezoekerEmail({ taal, clubNaam, soort, reden }),
+    });
+  } catch (fout) {
+    console.error("Mail aan indiener van clubvoorstel mislukt:", fout);
+  }
+}
+
+// Iedereen mag een aanpassing voorstellen voor de gegevens of openingsuren van een club, zonder account.
+// Er komt NOOIT iets rechtstreeks online: het voorstel wacht tot de admin het goedkeurt.
+export async function dienBezoekerVoorstelIn(clubId: string, invoer: unknown): Promise<ClubBeheerResultaat> {
+  if (!UUID.test(clubId)) return { succes: false, fout: "niet_gevonden" };
+  const parsed = bezoekerVoorstelSchema.safeParse(invoer);
+  if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
+  const p = parsed.data;
+
+  // Robots: doen alsof het gelukt is, zonder iets op te slaan.
+  if (p.website_bevestig) return { succes: true, status: "wachtend" };
+  if (p.startMs !== undefined && Date.now() - p.startMs < MIN_INVUL_MS) return { succes: true, status: "wachtend" };
+
+  const service = createServiceRoleClient();
+  const { data: club } = await service
+    .from("clubs")
+    .select("id, naam, adres, contact_email, telefoon, website, actief, verwijderd_op")
+    .eq("id", clubId)
+    .maybeSingle();
+  if (!club || !club.actief || club.verwijderd_op) return { succes: false, fout: "niet_gevonden" };
+  const { data: urenRij } = await service.from("club_uren").select("uren").eq("club_id", clubId).maybeSingle();
+  const huidigeUren = (urenRij?.uren as ClubUren | undefined) ?? null;
+
+  // Enkel wat echt verschilt van wat er nu online staat.
+  const huidigeGegevens: ClubGegevens = {
+    adres: (club.adres as string | null) ?? "",
+    contact_email: (club.contact_email as string | null) ?? "",
+    telefoon: (club.telefoon as string | null) ?? "",
+    website: (club.website as string | null) ?? "",
+  };
+  const voorstel: Voorstel = {};
+  if (p.voorstel.gegevens) {
+    const gewijzigd: Partial<ClubGegevens> = {};
+    for (const sleutel of ["adres", "contact_email", "telefoon", "website"] as const) {
+      const nieuw = p.voorstel.gegevens[sleutel];
+      if (nieuw !== undefined && nieuw !== huidigeGegevens[sleutel]) gewijzigd[sleutel] = nieuw;
+    }
+    if (Object.keys(gewijzigd).length > 0) voorstel.gegevens = gewijzigd;
+  }
+  // Heeft de club nog geen uren en is het "voorstel" een leeg schema (alles gesloten), dan is dat geen wijziging.
+  if (p.voorstel.uren && !gelijkeUren(p.voorstel.uren, huidigeUren) && (huidigeUren || heeftIngevuldeUren(p.voorstel.uren))) {
+    voorstel.uren = p.voorstel.uren;
+  }
+  if (!voorstel.gegevens && !voorstel.uren) return { succes: true, status: "geen_wijziging" };
+
+  // Grenzen tegen misbruik: per club per dag, openstaande voorstellen per club, en per e-mailadres per dag.
+  const sinds = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const email = p.email.toLowerCase();
+  const [perClub, wachtend, perMail] = await Promise.all([
+    service.from("club_bezoeker_voorstellen").select("id", { count: "exact", head: true }).eq("club_id", clubId).gte("ingediend_op", sinds),
+    service.from("club_bezoeker_voorstellen").select("id", { count: "exact", head: true }).eq("club_id", clubId).eq("status", "wachtend"),
+    service.from("club_bezoeker_voorstellen").select("id", { count: "exact", head: true }).eq("indiener_email", email).gte("ingediend_op", sinds),
+  ]);
+  const telFout = perClub.error ?? wachtend.error ?? perMail.error;
+  if (telFout) return { succes: false, fout: tabelOntbreekt(telFout) ? "nog_niet_beschikbaar" : "opslaan_mislukt" };
+  if ((perClub.count ?? 0) >= MAX_PER_CLUB_PER_DAG || (wachtend.count ?? 0) >= MAX_WACHTEND_PER_CLUB || (perMail.count ?? 0) >= MAX_PER_EMAIL_PER_DAG) {
+    return { succes: false, fout: "te_veel" };
+  }
+
+  const { error } = await service
+    .from("club_bezoeker_voorstellen")
+    .insert({ club_id: clubId, voorstel, indiener_naam: p.naam, indiener_email: email, taal: p.taal });
+  if (error) return { succes: false, fout: tabelOntbreekt(error) ? "nog_niet_beschikbaar" : "opslaan_mislukt" };
+
+  revalidatePath("/beheer/club-wijzigingen");
+  await mailBezoeker(email, p.taal, club.naam as string, "ontvangen");
+  await meldAanAdmins(club.naam as string, voorstel);
+  return { succes: true, status: "wachtend" };
+}
+
+export async function keurBezoekerVoorstelGoed(id: string): Promise<ClubBeheerResultaat> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+  const service = createServiceRoleClient();
+  const { data: rij } = await service
+    .from("club_bezoeker_voorstellen")
+    .select("club_id, voorstel, status, indiener_email, taal")
+    .eq("id", id)
+    .maybeSingle();
+  if (!rij || rij.status !== "wachtend") return { succes: false, fout: "niet_gevonden" };
+
+  // Voor de zekerheid nog eens controleren voor het online komt.
+  const parsed = voorstelSchema.safeParse(rij.voorstel);
+  if (!parsed.success) return { succes: false, fout: "ongeldige_invoer" };
+
+  const { fout } = await pasVoorstelToe(rij.club_id as string, parsed.data);
+  if (fout) return { succes: false, fout: "opslaan_mislukt" };
+
+  const { data: club } = await service.from("clubs").select("naam").eq("id", rij.club_id).maybeSingle();
+  await service
+    .from("club_bezoeker_voorstellen")
+    .update({
+      status: "goedgekeurd",
+      behandeld_op: new Date().toISOString(),
+      behandeld_door: await huidigeGebruikerId(),
+      indiener_email: "", // niet langer bewaren nu het voorstel behandeld is
+    })
+    .eq("id", id);
+  await mailBezoeker(rij.indiener_email as string, (rij.taal as "nl" | "fr") ?? "nl", (club?.naam as string) ?? "", "goedgekeurd");
+  revalidatePath("/beheer/club-wijzigingen");
+  return { succes: true };
+}
+
+export async function wijsBezoekerVoorstelAf(id: string, reden: string): Promise<ClubBeheerResultaat> {
+  if (!(await isAdmin())) return { succes: false, fout: "niet_geautoriseerd" };
+  const service = createServiceRoleClient();
+  const { data: rij } = await service
+    .from("club_bezoeker_voorstellen")
+    .select("club_id, status, indiener_email, taal")
+    .eq("id", id)
+    .maybeSingle();
+  if (!rij || rij.status !== "wachtend") return { succes: false, fout: "niet_gevonden" };
+
+  const schoneReden = reden.trim().slice(0, 300);
+  const { data: club } = await service.from("clubs").select("naam").eq("id", rij.club_id).maybeSingle();
+  const { error } = await service
+    .from("club_bezoeker_voorstellen")
+    .update({
+      status: "afgewezen",
+      reden_afwijzing: schoneReden || null,
+      behandeld_op: new Date().toISOString(),
+      behandeld_door: await huidigeGebruikerId(),
+      indiener_email: "",
+    })
+    .eq("id", id)
+    .eq("status", "wachtend");
+  if (error) return { succes: false, fout: "opslaan_mislukt" };
+  await mailBezoeker(rij.indiener_email as string, (rij.taal as "nl" | "fr") ?? "nl", (club?.naam as string) ?? "", "afgewezen", schoneReden || undefined);
   revalidatePath("/beheer/club-wijzigingen");
   return { succes: true };
 }

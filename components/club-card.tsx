@@ -3,6 +3,7 @@ import { avatarTintVoor } from "@/lib/initialen";
 import { formatKm } from "@/lib/postcodes";
 import { ClubUrenVoorClub } from "@/components/club-beheer/ClubBeheerContext";
 import { ClubRoute } from "@/components/club-route";
+import { ClubWijzigingKnop } from "@/components/club-beheer/ClubWijzigingKnop";
 
 const LIJN = { fill: "none", stroke: "currentColor", strokeWidth: 2.2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
 
@@ -94,6 +95,7 @@ export function ClubCard({ club, km }: { club: Club; km?: number }) {
       {/* onder de rij, zodat de opengeklapte week de hele kaartbreedte gebruikt */}
       <ClubUrenVoorClub clubId={club.id} />
       <ClubRoute adres={club.adres} gemeente={club.gemeente} />
+      <ClubWijzigingKnop club={club} />
     </div>
   );
 }
