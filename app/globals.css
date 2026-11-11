@@ -138,6 +138,17 @@ body {
   padding: 6px 12px;
 }
 
+/* Witte invoervelden op de donkere sitefoto: de tekst die je typt moet donker blijven. (De regel
+   voor .text-donker hierboven sijpelt anders via @apply in .veld-input en maakt de tekst bijna wit.)
+   Staat vóór .wizard-donker, dat zijn eigen donkere velden met witte tekst heeft. */
+.site-foto .veld-input {
+  color: #1f1f1f;
+  caret-color: #1f1f1f;
+}
+.site-foto .veld-input::placeholder {
+  color: #767676;
+}
+
 /* Tornooi-toevoegen-formulier (4 stappen): donker thema, enkel binnen .wizard-donker */
 .wizard-donker .veld-input {
   width: 100%;

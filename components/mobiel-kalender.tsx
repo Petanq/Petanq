@@ -8,7 +8,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 // Op pc is de lijst altijd zichtbaar: daar doet dit niets.
 type KalenderContext = { open: boolean; toon: () => void };
 
-// Het Tornooien-kader opent de lijst meteen in kalenderweergave.
+// Het Tornooien-kader opent de lijst (de eerste tornooien, met "Toon meer"). De kalender blijft bereikbaar via het Lijst/Kalender-knopje. Het event bestaat nog voor wie de kalender rechtstreeks wil tonen.
 export const TOON_KALENDER_EVENT = "p13-toon-kalender";
 
 const Context = createContext<KalenderContext>({ open: true, toon: () => {} });
@@ -24,7 +24,6 @@ export function MobielKalenderProvider({ children }: { children: ReactNode }) {
   const toon = useCallback(() => {
     setOpen(true);
     setScrollNaarLijst(true);
-    window.dispatchEvent(new Event(TOON_KALENDER_EVENT));
   }, []);
 
   useEffect(() => {
