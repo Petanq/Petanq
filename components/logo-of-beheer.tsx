@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { createClient } from "@/lib/supabase/client";
+import { telTeKeuren } from "@/actions/club-beheer";
 
 export type BeheerStatus = {
   moderator: boolean;
@@ -15,6 +16,8 @@ export type BeheerStatus = {
   verwijderaanvragen: number;
   // Nieuwe clubs die in Match13 zijn ingetikt en nagekeken moeten worden (enkel admin).
   nieuweMatch13Clubs?: number;
+  // Voorstellen van clubs en bezoekers die op goedkeuring van de admin wachten (enkel admin).
+  clubVoorstellen?: number;
 };
 
 // Onder het menu van elke pagina: normaal het logo, maar wie ingelogd is als
@@ -34,7 +37,7 @@ export function LogoOfBeheer() {
     if (process.env.NODE_ENV !== "production") {
       try {
         if (localStorage.getItem("p13-demo-beheer") === "1") {
-          setStatus({ moderator: true, admin: true, match13: true, inBehandeling: 3, wachtendeClubs: 1, verwijderaanvragen: 2 });
+          setStatus({ moderator: true, admin: true, match13: true, inBehandeling: 3, wachtendeClubs: 1, verwijderaanvragen: 2, clubVoorstellen: 2 });
           return;
         }
       } catch {}
@@ -61,7 +64,9 @@ export function LogoOfBeheer() {
       let wachtendeClubs = 0;
       let verwijderaanvragen = 0;
       let nieuweMatch13Clubs = 0;
+      let clubVoorstellen = 0;
       if (admin) {
+        clubVoorstellen = await telTeKeuren().catch(() => 0);
         const r = await supabase
           .from("match13_nieuwe_clubs")
           .select("id", { count: "exact", head: true })
@@ -96,7 +101,7 @@ export function LogoOfBeheer() {
         wachtendeClubs = b;
         verwijderaanvragen = c + d;
       }
-      if (actief) setStatus({ moderator, admin, match13, inBehandeling, wachtendeClubs, verwijderaanvragen, nieuweMatch13Clubs });
+      if (actief) setStatus({ moderator, admin, match13, inBehandeling, wachtendeClubs, verwijderaanvragen, nieuweMatch13Clubs, clubVoorstellen });
     }
 
     controleer();
@@ -126,7 +131,7 @@ export function LogoOfBeheer() {
 // knopje in de logo-balk naar het beheer (de volledige kaders staan daar zelf).
 function BeheerKnop({ status }: { status: BeheerStatus }) {
   const { t } = useTranslation();
-  const wachtend = status.inBehandeling + status.wachtendeClubs + status.verwijderaanvragen + (status.admin ? status.nieuweMatch13Clubs ?? 0 : 0);
+  const wachtend = status.inBehandeling + status.wachtendeClubs + status.verwijderaanvragen + (status.admin ? (status.nieuweMatch13Clubs ?? 0) + (status.clubVoorstellen ?? 0) : 0);
   const href = status.moderator ? "/beheer" : "/beheer/match13";
   const label = status.moderator ? t.beheer.dashboard : "Match13";
   return (
@@ -176,6 +181,14 @@ export function BeheerKaderRooster({ status, actiefHref }: { status: BeheerStatu
       });
     }
   }
+  if (status.admin) {
+    kaders.push({
+      href: "/beheer/club-wijzigingen",
+      label: t.clubBeheer.keurTegel,
+      icoon: <IcoonPotlood />,
+      badge: status.clubVoorstellen,
+    });
+  }
   if (status.admin || status.match13) {
     kaders.push({
       href: "/beheer/match13",
@@ -190,7 +203,7 @@ export function BeheerKaderRooster({ status, actiefHref }: { status: BeheerStatu
   }
 
   return (
-    <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 lg:grid-cols-8">
+    <div className={`grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2 ${kaders.length >= 9 ? "lg:grid-cols-9" : "lg:grid-cols-8"}`}>
       {kaders.map((k) => {
         const actief = actiefHref === k.href;
         return (
@@ -280,6 +293,13 @@ function IcoonLamp() {
   return (
     <svg {...SVG}>
       <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z" />
+    </svg>
+  );
+}
+function IcoonPotlood() {
+  return (
+    <svg {...SVG}>
+      <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
     </svg>
   );
 }

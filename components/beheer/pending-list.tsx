@@ -95,6 +95,11 @@ export function PendingList({
               </div>
             );
           })()}
+          {!tn.club_id && (
+            <div className="mb-3 rounded-md border border-[#bfdbfe] bg-[#eff6ff] p-2.5 text-xs text-[#1e40af]">
+              {t.beheer.nietGekoppeld}
+            </div>
+          )}
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-blauw-2">

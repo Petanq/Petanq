@@ -12,6 +12,7 @@ import { siteUrl } from "@/lib/site-url";
 import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
 import { Provincie } from "@/lib/provincies";
 import { geocodeAdres } from "@/lib/geocode";
+import { vindClubVoorTornooi } from "@/lib/club-koppelen";
 
 export type BestaandDubbelTornooi = {
   naam_nl: string;
@@ -86,6 +87,26 @@ export async function checkDubbelToernooi(velden: DubbelCheckVelden): Promise<Be
   return mogelijkeDubbels?.[0] ?? null;
 }
 
+// Typt de organisator de clubnaam zelf in (of negeert hij de suggestie), dan zoeken we de club zelf op:
+// zo hangt het tornooi toch aan de juiste club (adres, uren, contact) en vangt de dubbel-check meer.
+// Alleen bij een duidelijke match (zie lib/club-koppelen.ts); anders blijft het tornooi ongekoppeld
+// en ziet de moderator een melding bij het nakijken.
+async function zoekClubId(clubnaam: string, gemeente: string, adres: string | null): Promise<string | null> {
+  try {
+    const serviceClient = createServiceRoleClient();
+    const { data: clubs } = await serviceClient
+      .from("clubs")
+      .select("id, naam, gemeente, adres")
+      .eq("actief", true)
+      .is("verwijderd_op", null)
+      .limit(2000);
+    return vindClubVoorTornooi({ clubnaam, gemeente, adres }, clubs ?? [])?.id ?? null;
+  } catch (e) {
+    console.error("Club zoeken mislukt:", e);
+    return null;
+  }
+}
+
 export async function toernooiIndienen(
   input: unknown,
   taalFormulier: "nl" | "fr",
@@ -100,6 +121,8 @@ export async function toernooiIndienen(
     .filter((k) => k.datum)
     .map((k) => ({ datum: k.datum, uur: k.uur || null, opmerking: k.opmerking || null }));
 
+  const clubId = data.club_id || (await zoekClubId(data.clubnaam, data.gemeente, data.adres || null));
+
   if (!negeerDubbelCheck) {
     const bestaand = await checkDubbelToernooi({
       datum: data.datum,
@@ -108,11 +131,26 @@ export async function toernooiIndienen(
       speelvorm: data.speelvorm,
       aantal_ronden: data.aantal_ronden ?? null,
       aantal_poules: data.aantal_poules ?? null,
-      club_id: data.club_id ?? null,
+      club_id: clubId,
       clubnaam: data.clubnaam,
     });
     if (bestaand) {
       return { succes: false, fout: "dubbel_toernooi", bestaand };
+    }
+
+    // Tweede, ruimere controle: dezelfde club, dezelfde dag en dezelfde categorie is vrijwel altijd
+    // hetzelfde tornooi, ook als formule of rondes anders zijn ingevuld.
+    if (clubId && data.categorie !== "circuit") {
+      const { data: zelfdeDag } = await createServiceRoleClient()
+        .from("toernooien")
+        .select("naam_nl, naam_fr, datum, clubnaam, affiche_url")
+        .eq("club_id", clubId)
+        .eq("datum", data.datum)
+        .eq("categorie", data.categorie)
+        .is("verwijderd_op", null)
+        .neq("status", "geweigerd")
+        .limit(1);
+      if (zelfdeDag?.[0]) return { succes: false, fout: "dubbel_toernooi", bestaand: zelfdeDag[0] };
     }
   }
 
@@ -125,7 +163,7 @@ export async function toernooiIndienen(
     datum: data.datum,
     uur: data.uur,
     clubnaam: data.clubnaam,
-    club_id: data.club_id || null,
+    club_id: clubId,
     naam_nl: data.naam_nl,
     naam_fr: data.naam_fr,
     gemeente: data.gemeente,
