@@ -13,6 +13,8 @@ import { heeftToegangTotProvincie } from "@/lib/moderator-toegang";
 import { Provincie } from "@/lib/provincies";
 import { geocodeAdres } from "@/lib/geocode";
 import { vindClubVoorTornooi } from "@/lib/club-koppelen";
+import { lijktBuitenBelgie, type BuitenlandVermoeden } from "@/lib/buitenland";
+import { laadPostcodes } from "@/lib/postcodes";
 
 export type BestaandDubbelTornooi = {
   naam_nl: string;
@@ -103,6 +105,18 @@ async function zoekClubId(clubnaam: string, gemeente: string, adres: string | nu
     return vindClubVoorTornooi({ clubnaam, gemeente, adres }, clubs ?? [])?.id ?? null;
   } catch (e) {
     console.error("Club zoeken mislukt:", e);
+    return null;
+  }
+}
+
+// Zachte controle voor het formulier: lijkt dit adres buiten België te liggen? Geeft enkel een waarschuwing
+// terug, nooit een blokkade (er zijn veel spellingvarianten en deelgemeenten).
+export async function controleerPlaats(adres: string, gemeente: string): Promise<BuitenlandVermoeden> {
+  try {
+    if (!gemeente.trim() && !adres.trim()) return null;
+    return lijktBuitenBelgie(adres.slice(0, 200), gemeente.slice(0, 120), await laadPostcodes());
+  } catch (e) {
+    console.error("Plaatscontrole mislukt:", e);
     return null;
   }
 }

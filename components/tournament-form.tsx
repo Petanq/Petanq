@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "@/lib/language-context";
 import { ALLE_PROVINCIES, Provincie, vertaalProvincie } from "@/lib/provincies";
 import { Categorie, Formule, Speelvorm, Club, KwalificatieDatum } from "@/lib/types";
-import { toernooiIndienen, checkDubbelToernooi, BestaandDubbelTornooi } from "@/actions/toernooien";
+import { toernooiIndienen, checkDubbelToernooi, controleerPlaats, BestaandDubbelTornooi } from "@/actions/toernooien";
 import { uploadNaarStorage } from "@/lib/upload-bestand";
 import { verwerkAfficheAfbeelding } from "@/lib/verwerk-affiche-afbeelding";
 import { afficheAnalyseren, AfficheVelden } from "@/actions/affiche-analyseren";
@@ -54,6 +54,7 @@ export function TournamentForm() {
   const [stap, setStap] = useState(1);
   const [foutReden, setFoutReden] = useState<string | null>(null);
   const [bestaandDubbel, setBestaandDubbel] = useState<BestaandDubbelTornooi | null>(null);
+  const [buitenland, setBuitenland] = useState<"postcode" | "plaats" | null>(null);
 
   const [naamIndiener, setNaamIndiener] = useState("");
   const [datum, setDatum] = useState("");
@@ -151,6 +152,15 @@ export function TournamentForm() {
     setAdresVanClub(false);
     setAutoIngevuld(false);
     setVerzendPoging(false);
+  }
+
+  // Zachte waarschuwing (geen blokkade) als adres of gemeente buiten België lijkt te liggen.
+  async function controleerBuitenland(nieuwAdres: string, nieuweGemeente: string) {
+    if (!nieuweGemeente.trim() && !nieuwAdres.trim()) {
+      setBuitenland(null);
+      return;
+    }
+    setBuitenland(await controleerPlaats(nieuwAdres, nieuweGemeente));
   }
 
   function vulVeldenInVanAffiche(velden: AfficheVelden) {
@@ -844,6 +854,7 @@ export function TournamentForm() {
                 required={openToernooi}
                 value={adres}
                 onChange={(e) => setAdres(e.target.value)}
+                onBlur={() => controleerBuitenland(adres, gemeente)}
                 className={`veld-input ${openToernooi ? veldFout(adres) : ""}`}
               />
             </Veld>
@@ -853,8 +864,14 @@ export function TournamentForm() {
                   required
                   value={gemeente}
                   onChange={(e) => setGemeente(e.target.value)}
+                  onBlur={() => controleerBuitenland(adres, gemeente)}
                   className={`veld-input ${veldFout(gemeente)}`}
                 />
+                {buitenland && (
+                  <p role="alert" className="mt-1.5 rounded-md border border-[#fde68a] bg-[#fffbeb] p-2.5 text-xs font-semibold text-[#92400e]">
+                    {buitenland === "postcode" ? t.form.buitenlandPostcode : t.form.buitenlandPlaats}
+                  </p>
+                )}
               </Veld>
               <Veld label={t.form.provincie} verplicht id="veld-provincie">
                 <select

@@ -461,6 +461,10 @@ const nl = {
     verzonden: "Bedankt! Je toernooi is ontvangen en wordt binnen 48 uur bekeken.",
     fout: "Er ging iets mis bij het versturen. Probeer het later opnieuw.",
     foutDubbel: "Dit lijkt al in de kalender te staan — controleer hieronder of het om hetzelfde tornooi gaat:",
+    buitenlandPlaats:
+      "Deze plaats vinden we niet in onze lijst van Belgische gemeenten. Petanque13 toont enkel tornooien in België. Klopt de schrijfwijze, of ligt dit in het buitenland?",
+    buitenlandPostcode:
+      "Dit adres heeft een postcode van 5 cijfers, en dat wijst op het buitenland. Petanque13 toont enkel tornooien in België.",
     knopTochVersturen: "Toch versturen — dit is een ander tornooi",
     foutOngeldigeInvoer:
       "Er staat iets ongeldig in het formulier — controleer zeker of alle datums (ook de schiftingsdata) niet per ongeluk in het verleden liggen.",
@@ -1640,6 +1644,10 @@ const fr: typeof nl = {
     verzonden: "Merci ! Votre tournoi a été reçu et sera examiné sous 48 heures.",
     fout: "Une erreur est survenue lors de l'envoi. Réessayez plus tard.",
     foutDubbel: "Celui-ci semble déjà figurer dans le calendrier — vérifiez ci-dessous s'il s'agit du même tournoi :",
+    buitenlandPlaats:
+      "Nous ne trouvons pas cette localité dans notre liste des communes belges. Petanque13 n'affiche que les tournois en Belgique. L'orthographe est-elle correcte, ou est-ce à l'étranger ?",
+    buitenlandPostcode:
+      "Cette adresse a un code postal à 5 chiffres, ce qui indique l'étranger. Petanque13 n'affiche que les tournois en Belgique.",
     knopTochVersturen: "Envoyer quand même — c'est un autre tournoi",
     foutOngeldigeInvoer:
       "Un champ du formulaire n'est pas valide — vérifiez que toutes les dates (y compris les dates d'éliminatoires) ne sont pas accidentellement dans le passé.",

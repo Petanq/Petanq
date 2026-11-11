@@ -15,7 +15,7 @@ export function normaliseerPlaats(tekst: string): string {
 }
 
 // Nederlandse naam <-> Franse naam: wie "Luik" typt, vindt "Liège" (en omgekeerd).
-const ALIAS: Record<string, string> = {
+export const ALIAS: Record<string, string> = {
   gand: "gent",
   anvers: "antwerpen",
   bruges: "brugge",
