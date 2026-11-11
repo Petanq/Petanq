@@ -106,7 +106,9 @@ export function LogoOfBeheer() {
   }, []);
 
   return (
-    <div className="relative border-b border-rand bg-white px-6 py-4 text-center">
+    // Op de gsm staat het logo al in de balk erboven: de witte band tonen we daar enkel nog voor
+    // wie ingelogd is (het beheerknopje), zodat bezoekers geen dubbel logo en ~80 px schermruimte kwijt zijn.
+    <div className={`relative border-b border-rand bg-white px-6 py-4 text-center ${status ? "" : "max-md:hidden"}`}>
       <Image
         src="/images/logo-volledig.png"
         alt="Petanque13"
